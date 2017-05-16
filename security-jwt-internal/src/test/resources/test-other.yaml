@@ -1,0 +1,10 @@
+fraho:
+  jwt:
+    token:
+      expiration: 2 seconds
+      algorithm: HS256
+      hmac: out/hmac-hs256.key
+    refresh:
+      expiration: 2 seconds
+      cache:
+        impl: eu.fraho.spring.securityJwt.service.InternalTokenStore

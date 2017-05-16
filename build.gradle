@@ -1,0 +1,46 @@
+buildscript {
+    ext {
+        projectVersion = '0.4.0-SNAPSHOT'
+    }
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+
+    repositories {
+        mavenCentral()
+    }
+
+    group = 'eu.fraho.spring'
+
+    jar {
+        version = "${projectVersion}"
+    }
+    buildscript {
+        ext {
+            springBootVersion = '1.5.3.RELEASE'
+            springDependencyManagementVersion = '1.0.2.RELEASE'
+            lombokVersion = '1.+'
+            springfoxVersion = '2.+'
+            nimbusJwtVersion = '4.+'
+            commonsCodecVersion = '1.+'
+            bouncyCastleVersion = '1.+'
+            spyMemcachedVersion = '2.+'
+            expiringMapVersion = '0.+'
+        }
+        repositories {
+            mavenCentral()
+        }
+    }
+    dependencies {
+        compile("org.projectlombok:lombok:${lombokVersion}")
+
+        testCompile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+        testCompile("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
+        testCompile('org.springframework.boot:spring-boot-starter-test')
+        testCompile('org.springframework:spring-aspects')
+    }
+}

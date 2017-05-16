@@ -1,0 +1,7 @@
+fraho:
+  crypt:
+    algorithm: DES
+  jwt:
+    token:
+      algorithm: HS256
+      hmac: out/hmac-hs256.key
