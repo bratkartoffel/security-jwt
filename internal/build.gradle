@@ -1,0 +1,18 @@
+buildscript {
+    dependencies {
+        classpath "io.spring.gradle:dependency-management-plugin:${springDependencyManagementVersion}"
+    }
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-starter-parent:${springBootVersion}"
+    }
+}
+dependencies {
+    compile project(':base')
+
+    compile("net.jodah:expiringmap:${expiringMapVersion}")
+}

@@ -1,1 +1,1 @@
-include ":security-jwt-base", ":security-jwt-internal", ":security-jwt-memcache"
+include ":base", ":internal", ":memcache"

@@ -1,7 +1,0 @@
-fraho:
-  jwt:
-    token:
-      expiration: 2 seconds
-      algorithm: ES256
-      pub: out/ecdsa.pub
-      priv: out/ecdsa.priv

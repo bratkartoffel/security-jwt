@@ -1,11 +1,16 @@
 buildscript {
     ext {
-        projectVersion = '0.4.0-SNAPSHOT'
+        projectVersion = '0.5.2-SNAPSHOT'
     }
     repositories {
         mavenCentral()
     }
+    dependencies {
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.8.0"
+    }
 }
+
+apply plugin: 'io.codearte.nexus-staging'
 
 subprojects {
     apply plugin: 'java'
@@ -15,21 +20,24 @@ subprojects {
     }
 
     group = 'eu.fraho.spring'
+    archivesBaseName = "security-jwt-${project.name}"
+    version = "${projectVersion}"
+		description = "Spring boot security integration for JWT"
 
     jar {
-        version = "${projectVersion}"
+        version = "${project.version}"
     }
     buildscript {
         ext {
-            springBootVersion = '1.5.3.RELEASE'
-            springDependencyManagementVersion = '1.0.2.RELEASE'
-            lombokVersion = '1.+'
-            springfoxVersion = '2.+'
-            nimbusJwtVersion = '4.+'
-            commonsCodecVersion = '1.+'
-            bouncyCastleVersion = '1.+'
-            spyMemcachedVersion = '2.+'
-            expiringMapVersion = '0.+'
+            springBootVersion = '[1.5,2.0['
+            springDependencyManagementVersion = '[1.0,2.0['
+            lombokVersion = '[1.16,2.0['
+            springfoxVersion = '[2.6,3.0['
+            nimbusJwtVersion = '[4.37,5.0['
+            commonsCodecVersion = '[1.10,2.0['
+            bouncyCastleVersion = '[1.57,2.0['
+            spyMemcachedVersion = '[2.12,3.0['
+            expiringMapVersion = '[0.5,1.0['
         }
         repositories {
             mavenCentral()
@@ -38,9 +46,88 @@ subprojects {
     dependencies {
         compile("org.projectlombok:lombok:${lombokVersion}")
 
-        testCompile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-        testCompile("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
         testCompile('org.springframework.boot:spring-boot-starter-test')
         testCompile('org.springframework:spring-aspects')
+        testCompile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+        testCompile("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
+    }
+
+		// release stuff
+		apply plugin: 'maven'
+		task javadocJar(type: Jar) {
+				classifier = 'javadoc'
+				from javadoc
+		}
+
+		task sourcesJar(type: Jar) {
+				classifier = 'sources'
+				from sourceSets.main.allSource
+		}
+
+		artifacts {
+				archives javadocJar, sourcesJar
+		}
+}
+
+if (project.hasProperty('release')) {
+    subprojects {
+        apply plugin: 'signing'
+
+        // Signature of artifacts
+        signing {
+            sign configurations.archives
+        }
+
+        // OSSRH publication
+        uploadArchives {
+            repositories {
+                mavenDeployer {
+                    // POM signature
+                    beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+                    // Target repository
+                    if (project.version.endsWith('-SNAPSHOT')) {
+                        repository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
+                            authentication(userName: ossrhUsername, password: ossrhPassword)
+                        }
+                    } else {
+                        repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2") {
+                            authentication(userName: ossrhUsername, password: ossrhPassword)
+                        }
+                    }
+                    pom.project {
+                        name project.archivesBaseName
+                        description project.description
+                        url 'https://github.com/bratkartoffel/security-jwt'
+
+                        scm {
+                            connection 'scm:git:https://github.com/bratkartoffel/security-jwt.git'
+                            developerConnection 'scm:git:git@github.com:bratkartoffel/security-jwt.git'
+                            url 'https://github.com/bratkartoffel/security-jwt.git'
+                        }
+
+                        licenses {
+                            license {
+                                name 'The MIT License (MIT)'
+                                url 'http://opensource.org/licenses/MIT'
+                                distribution 'repo'
+                            }
+                        }
+
+                        developers {
+                            developer {
+                                id = 'bratkartoffel'
+                                name = 'Simon Frankenberger'
+                                email = 'simon-ossrh-release@fraho.eu'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    nexusStaging {
+        username = ossrhUsername
+        password = ossrhPassword
     }
 }

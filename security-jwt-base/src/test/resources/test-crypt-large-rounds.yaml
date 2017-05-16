@@ -1,8 +1,0 @@
-fraho:
-  crypt:
-    algorithm: SHA256
-    rounds: 1000000
-  jwt:
-    token:
-      algorithm: HS256
-      hmac: out/hmac-hs256.key
