@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        projectVersion = '0.5.3-SNAPSHOT'
+        projectVersion = '0.6.0'
     }
     repositories {
         mavenCentral()
