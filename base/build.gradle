@@ -1,0 +1,22 @@
+buildscript {
+    dependencies {
+        classpath "io.spring.gradle:dependency-management-plugin:${springDependencyManagementVersion}"
+    }
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-starter-parent:${springBootVersion}"
+    }
+}
+dependencies {
+    compile('org.springframework.boot:spring-boot-starter-web')
+    compile('org.springframework.boot:spring-boot-starter-security')
+
+    compile("com.nimbusds:nimbus-jose-jwt:${nimbusJwtVersion}")
+    compile("commons-codec:commons-codec:${commonsCodecVersion}")
+    compile("org.bouncycastle:bcprov-jdk15on:${bouncyCastleVersion}")
+    compile("io.springfox:springfox-swagger2:${springfoxVersion}")
+}

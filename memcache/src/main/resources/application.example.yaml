@@ -1,0 +1,9 @@
+fraho:
+  jwt:
+    refresh:
+      cache:
+        impl: eu.fraho.spring.securityJwt.service.MemcacheTokenStore
+        memcache:
+          host: 127.0.0.1         # memcache hostname or ip
+          port: 11211             # memcache port
+          timeout: 5              # second(s)

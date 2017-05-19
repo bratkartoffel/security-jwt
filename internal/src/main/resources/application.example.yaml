@@ -1,0 +1,5 @@
+fraho:
+  jwt:
+    refresh:
+      cache:
+        impl: eu.fraho.spring.securityJwt.service.InternalTokenStore
