@@ -29,7 +29,7 @@ The default configuration should be sufficient for the most use cases.
 <dependency>
     <groupId>eu.fraho.spring</groupId>
     <artifactId>security-jwt-base</artifactId>
-    <version>0.5.2</version>
+    <version>0.6.0</version>
 </dependency>
 ```
 
@@ -38,12 +38,12 @@ When you want to add refresh token support, then choose one of the following dep
 <dependency>
     <groupId>eu.fraho.spring</groupId>
     <artifactId>security-jwt-internal</artifactId>
-    <version>0.5.2</version>
+    <version>0.6.0</version>
 </dependency>
 <dependency>
     <groupId>eu.fraho.spring</groupId>
     <artifactId>security-jwt-memcache</artifactId>
-    <version>0.5.2</version>
+    <version>0.6.0</version>
 </dependency>
 ```
 Please note that the memcache-plugin needs an external memcached server.
@@ -106,5 +106,5 @@ gradlew.bat assemble
 # to local repository:
 ./gradlew install
 # to central:
-./gradlew -Prelease check uploadArchives closeAndPromoteRepository
+./gradlew -Prelease check uploadArchives
 ```
