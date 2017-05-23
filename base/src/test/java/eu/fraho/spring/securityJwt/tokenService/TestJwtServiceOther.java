@@ -186,4 +186,16 @@ public class TestJwtServiceOther extends AbstractTest {
     public void testGenerateRefreshToken() {
         Assert.assertNotNull("Token should be generated", jwtTokenService.generateRefreshToken("jsmith"));
     }
+
+    @Test
+    public void testNullAlgorithm() throws Exception {
+        final String token = "eyJhbGciOm51bGx9.eyJzdWIiOiJ4IiwiZXhwIjoyNDk1MTE4NzIwLCJpYXQiOjE0OTUxMTg3MTh9.Nsf-8lD7sCCz5ZH9AErrrYm9SYEXi_MO2z9BA4MOIXE";
+        Assert.assertFalse("Accepted NULL algorithm", jwtTokenService.validateToken(token));
+    }
+
+    @Test
+    public void testUnknownTokenAlgorithm() throws Exception {
+        final String token = "eyJhbGciOiJmb29iYXIifQ.eyJzdWIiOiJ4IiwiZXhwIjoyNDk1MTE4NzIwLCJpYXQiOjE0OTUxMTg3MTh9.09UuAR7VTtcmYf8_NzSmAHbEFghFb6igTEx6bgnt7OA";
+        Assert.assertFalse("Accepted unknown algorithm", jwtTokenService.validateToken(token));
+    }
 }
