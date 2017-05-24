@@ -8,18 +8,22 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class MockTokenStore implements RefreshTokenStore {
+    private Optional<String> activeToken = Optional.empty();
+
     @Override
     public void saveToken(String username, String deviceId, String token) {
-        // ignore
+        activeToken = Optional.of(username + deviceId + token);
     }
 
     @Override
     public boolean useToken(String username, String deviceId, String token) {
-        return false;
+        String toCheck = username + deviceId + token;
+        return activeToken.map(toCheck::equals).orElse(false);
     }
 
     @Override

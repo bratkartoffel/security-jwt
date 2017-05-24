@@ -51,7 +51,7 @@ Please note that the memcache-plugin needs an external memcached server.
 # Usage
 * Add the dependencies to your build script
 * Configure your boot application to pick up our components (add "eu.fraho.spring.securityJwt" to the scanBasePackages field of your @SpringBootApplication)
-* Create an implementation of UserDetailsService (you should have already done that) 
+* Create an implementation of UserDetailsService that returns an instance of JwtUser
 * Optionally use my enhanced PasswordEncoder as a @Bean
 * Configure at least the JWT secrets (public + private keys or a hmac keyfile) in your application.yml
 

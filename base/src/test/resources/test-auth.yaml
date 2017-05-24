@@ -9,3 +9,4 @@ fraho:
     refresh:
       expiration: 5 seconds
       deviceIdLength: 10
+      cache.impl: eu.fraho.spring.securityJwt.spring.MockTokenStore

@@ -28,7 +28,13 @@ public class UserDetailsServiceTestImpl implements UserDetailsService {
         user.setAccountNonLocked(true);
         user.setCredentialsNonExpired(true);
         user.setEnabled(true);
-        user.setAuthorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
+        if(username.equals("admin")) {
+            user.setAuthorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN")));
+            user.setAuthority("ROLE_ADMIN");
+        } else {
+            user.setAuthorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
+            user.setAuthority("ROLE_USER");
+        }
         user.setApiAccessAllowed(true);
 
         if (username.equals("user_totp")) {
