@@ -2,7 +2,6 @@ package eu.fraho.spring.securityJwt.service;
 
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
-import eu.fraho.spring.securityJwt.exceptions.JwtRefreshException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.jodah.expiringmap.ExpirationPolicy;

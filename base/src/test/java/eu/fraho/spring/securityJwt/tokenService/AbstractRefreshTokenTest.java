@@ -176,4 +176,20 @@ public abstract class AbstractRefreshTokenTest extends JwtTokenServiceImplAccess
         Assert.assertTrue("Wrong token revoked", tokens2.contains(tokenA));
     }
 
+    @Test
+    public void testRemoveSingleTokenByName() throws InterruptedException {
+        String jsmith = "jsmith";
+
+        RefreshToken tokenA = jwtTokenService.generateRefreshToken(jsmith);
+        jwtTokenService.generateRefreshToken(jsmith, "foobar");
+
+        final List<RefreshToken> tokens = jwtTokenService.listRefreshTokens(jsmith);
+        Assert.assertEquals("Token count don't match", 2, tokens.size());
+
+        Assert.assertTrue("Token should be revoked", jwtTokenService.revokeRefreshToken(jsmith, "foobar"));
+        Assert.assertEquals("Token list is not immutable", 2, tokens.size());
+        final List<RefreshToken> tokens2 = jwtTokenService.listRefreshTokens(jsmith);
+        Assert.assertEquals("Token was not revoked", 1, tokens2.size());
+        Assert.assertTrue("Wrong token revoked", tokens2.contains(tokenA));
+    }
 }

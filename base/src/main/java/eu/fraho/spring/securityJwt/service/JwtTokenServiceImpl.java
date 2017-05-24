@@ -86,6 +86,8 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         log.debug("Initializing");
+        signer = null;
+        verifier = null;
 
         // parse the signature algorithm
         signatureAlgorithm = JWSAlgorithm.parse(algorithm);
@@ -258,10 +260,6 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
 
     @Override
     public RefreshToken generateRefreshToken(String user, String deviceId) {
-        if (refreshTokenStore instanceof NullTokenStore) {
-            return null;
-        }
-
         final String devId = truncateDeviceId(deviceId);
         byte[] data = new byte[refreshLength];
         random.nextBytes(data);

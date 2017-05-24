@@ -27,10 +27,10 @@ public class TotpServiceImpl implements TotpService, InitializingBean {
     private final Random random = new SecureRandom();
 
     @Value("${fraho.totp.variance:" + TOTP_VARIANCE_DEFAULT + "}")
-    private Integer kmsTotpVariance = TOTP_VARIANCE_DEFAULT;
+    private Integer totpVariance = TOTP_VARIANCE_DEFAULT;
 
     @Value("${fraho.totp.length:" + TOTP_LENGTH_DEFAULT + "}")
-    private Integer kmsTotpLength = TOTP_LENGTH_DEFAULT;
+    private Integer totpLength = TOTP_LENGTH_DEFAULT;
 
     public long getCurrentCodeForTesting(String secret) throws InvalidKeyException, NoSuchAlgorithmException {
         if (System.getProperty("IN_TESTING") == null) {
@@ -64,7 +64,7 @@ public class TotpServiceImpl implements TotpService, InitializingBean {
         final byte[] secretBytes = base32.decode(secret);
         boolean result = false;
         try {
-            for (int i = -kmsTotpVariance; i <= kmsTotpVariance; i++) {
+            for (int i = -totpVariance; i <= totpVariance; i++) {
                 if (getCode(secretBytes, timeIndex + i) == code) {
                     result = true;
                     break;
@@ -78,22 +78,22 @@ public class TotpServiceImpl implements TotpService, InitializingBean {
 
     @Override
     public String generateSecret() {
-        final byte[] secret = new byte[kmsTotpLength];
+        final byte[] secret = new byte[totpLength];
         random.nextBytes(secret);
         return base32.encodeToString(secret);
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        if (kmsTotpVariance < TOTP_VARIANCE_MIN || kmsTotpVariance > TOTP_VARIANCE_MAX) {
+        if (totpVariance < TOTP_VARIANCE_MIN || totpVariance > TOTP_VARIANCE_MAX) {
             log.warn("TOTP variance out of bounds ({} <= {} <= {}), forcing to default ({})",
-                    TOTP_VARIANCE_MIN, kmsTotpVariance, TOTP_VARIANCE_MAX, TOTP_VARIANCE_DEFAULT);
-            kmsTotpVariance = TOTP_VARIANCE_DEFAULT;
+                    TOTP_VARIANCE_MIN, totpVariance, TOTP_VARIANCE_MAX, TOTP_VARIANCE_DEFAULT);
+            totpVariance = TOTP_VARIANCE_DEFAULT;
         }
-        if (kmsTotpLength < TOTP_LENGTH_MIN || kmsTotpLength > TOTP_LENGTH_MAX) {
+        if (totpLength < TOTP_LENGTH_MIN || totpLength > TOTP_LENGTH_MAX) {
             log.warn("TOTP length out of bounds ({} <= {} <= {}), forcing to default ({})",
-                    TOTP_LENGTH_MIN, kmsTotpLength, TOTP_LENGTH_MAX, TOTP_LENGTH_DEFAULT);
-            kmsTotpLength = TOTP_LENGTH_DEFAULT;
+                    TOTP_LENGTH_MIN, totpLength, TOTP_LENGTH_MAX, TOTP_LENGTH_DEFAULT);
+            totpLength = TOTP_LENGTH_DEFAULT;
         }
     }
 }

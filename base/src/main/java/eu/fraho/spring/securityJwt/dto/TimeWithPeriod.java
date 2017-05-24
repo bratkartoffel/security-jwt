@@ -76,6 +76,11 @@ public class TimeWithPeriod {
         return String.format("%d %s", quantity, timeUnit);
     }
 
+    @Override
+    public int hashCode() {
+        return toSeconds();
+    }
+
     public boolean equals(Object o) {
         if (o == null || !(o instanceof TimeWithPeriod)) {
             return false;

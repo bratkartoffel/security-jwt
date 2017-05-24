@@ -21,31 +21,6 @@ import java.util.stream.Collectors;
 import static eu.fraho.spring.securityJwt.service.JwtTokenService.DEFAULT_CACHE_PREFIX;
 import static eu.fraho.spring.securityJwt.service.JwtTokenService.DEFAULT_REFRESH_EXPIRATION;
 
-/**
- * <h3>Used properties from configuration file:</h3>
- * <table border="1" summary="list of configuration properties">
- * <tr>
- * <th>Property</th>
- * <th>Default value</th>
- * <th>Description</th>
- * </tr>
- * <tr>
- * <td>fraho.jwt.refresh.cache.memcache.host</td>
- * <td>{@value #DEFAULT_MEMCACHE_HOST}</td>
- * <td>Hostname or IP Adress of memcache server.</td>
- * </tr>
- * <tr>
- * <td>fraho.jwt.refresh.cache.memcache.port</td>
- * <td>{@value #DEFAULT_MEMCACHE_PORT}</td>
- * <td>Port of memcache server.</td>
- * </tr>
- * <tr>
- * <td>fraho.jwt.refresh.cache.memcache.timeout</td>
- * <td>{@value #DEFAULT_MEMCACHE_TIMEOUT}</td>
- * <td>Timeout (in seconds) when talking to memcache server.</td>
- * </tr>
- * </table>
- */
 @Slf4j
 @Getter
 public class MemcacheTokenStore implements RefreshTokenStore {

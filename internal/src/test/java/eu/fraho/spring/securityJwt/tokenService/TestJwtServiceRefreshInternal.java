@@ -19,10 +19,10 @@ import java.io.IOException;
 @Getter
 @Setter(AccessLevel.NONE)
 @Slf4j
-@SpringBootTest(properties = "spring.config.location=classpath:test-refresh-internal.yaml",
+@SpringBootTest(properties = "spring.config.location=classpath:internal-test-refresh.yaml",
         classes = TestApiApplication.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-public class TestJwtServiceRefreshTokenInternal extends AbstractRefreshTokenTest {
+public class TestJwtServiceRefreshInternal extends AbstractRefreshTokenTest {
     @BeforeClass
     public static void beforeClass() throws IOException {
         AbstractTest.beforeHmacClass();
@@ -30,6 +30,6 @@ public class TestJwtServiceRefreshTokenInternal extends AbstractRefreshTokenTest
 
     @Test
     public void checkCorrectImplementationInUse() {
-        Assert.assertEquals("Wrong implementation loaded", InternalTokenStore.class, getTokenStoreImplementation());
+        Assert.assertEquals("Wrong implementation loaded", InternalTokenStore.class, getTokenStoreType());
     }
 }

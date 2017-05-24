@@ -32,10 +32,10 @@ import java.util.Map;
 @Getter
 @Setter(AccessLevel.NONE)
 @Slf4j
-@SpringBootTest(properties = "spring.config.location=classpath:test-auth.yaml",
+@SpringBootTest(properties = "spring.config.location=classpath:memcache-test-auth.yaml",
         classes = TestApiApplication.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-public class TestAuthController extends AbstractTest {
+public class TestAuthControllerMemcache extends AbstractTest {
     public static final ObjectMapper mapper = new ObjectMapper();
     public static final String AUTH_LOGIN = "/auth/login";
     public static final String AUTH_REFRESH = "/auth/refresh";
@@ -49,7 +49,7 @@ public class TestAuthController extends AbstractTest {
 
     @BeforeClass
     public static void beforeClass() throws IOException {
-        AbstractTest.beforeHmacClass();
+        beforeHmacClass();
 
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         mapper.findAndRegisterModules();

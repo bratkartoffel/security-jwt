@@ -1,15 +1,14 @@
 package eu.fraho.spring.securityJwt.tokenService;
 
-import com.nimbusds.jose.JOSEException;
 import eu.fraho.spring.securityJwt.AbstractTest;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
+import eu.fraho.spring.securityJwt.exceptions.FeatureNotConfiguredException;
 import eu.fraho.spring.securityJwt.service.JwtTokenService;
 import eu.fraho.spring.securityJwt.spring.TestApiApplication;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,12 +33,44 @@ public class TestJwtServiceRefreshDisabled extends AbstractTest {
         AbstractTest.beforeHmacClass();
     }
 
-    @Test
-    public void testRefreshToken() throws JOSEException, InterruptedException {
-        String jsmith = "jsmith";
-        // first lease
-        RefreshToken token = jwtTokenService.generateRefreshToken(jsmith);
-        Assert.assertNull("Token generated", token);
-        Assert.assertFalse("Refresh token used", jwtTokenService.useRefreshToken(jsmith, "bar"));
+    @Test(expected = FeatureNotConfiguredException.class)
+    public void testGenerateRefreshToken() {
+        jwtTokenService.generateRefreshToken("foobar");
     }
+
+    @Test(expected = FeatureNotConfiguredException.class)
+    public void testUseRefreshToken() {
+        jwtTokenService.useRefreshToken("foobar", "bar");
+    }
+
+    @Test(expected = FeatureNotConfiguredException.class)
+    public void testListRefreshTokens() {
+        jwtTokenService.listRefreshTokens("foobar");
+    }
+
+    @Test(expected = FeatureNotConfiguredException.class)
+    public void testListRefreshTokensAll() {
+        jwtTokenService.listRefreshTokens();
+    }
+
+    @Test(expected = FeatureNotConfiguredException.class)
+    public void testClearRefreshTokens() {
+        jwtTokenService.clearTokens();
+    }
+
+    @Test(expected = FeatureNotConfiguredException.class)
+    public void testRevokeByName() {
+        jwtTokenService.revokeRefreshTokens("john");
+    }
+
+    @Test(expected = FeatureNotConfiguredException.class)
+    public void testRevokeByNameAndDevice() {
+        jwtTokenService.revokeRefreshToken("john", "mobile");
+    }
+
+    @Test(expected = FeatureNotConfiguredException.class)
+    public void testRevokeByNameAndToken() {
+        jwtTokenService.revokeRefreshToken("john", new RefreshToken("foobar", 1, "none"));
+    }
+
 }

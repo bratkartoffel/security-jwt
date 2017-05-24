@@ -32,17 +32,11 @@ enum PeriodWord {
 
     /**
      * The backing timeunit (used for conversion to seconds)
-     *
-     * @see #toSeconds(int)
      */
     private final TimeUnit timeUnit;
 
     PeriodWord(TimeUnit timeUnit) {
         this.timeUnit = timeUnit;
-    }
-
-    public int toSeconds(int value) {
-        return (int) timeUnit.toSeconds(value);
     }
 
     public TimeUnit getTimeUnit() {

@@ -26,10 +26,10 @@ import java.util.Optional;
 @Getter
 @Setter(AccessLevel.NONE)
 @Slf4j
-@SpringBootTest(properties = "spring.config.location=classpath:test-other.yaml",
+@SpringBootTest(properties = "spring.config.location=classpath:memcache-test-other.yaml",
         classes = TestApiApplication.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-public class TestJwtServiceOther extends AbstractTest {
+public class TestJwtServiceMemcacheOther extends AbstractTest {
     @Autowired
     protected JwtTokenService jwtTokenService = null;
 

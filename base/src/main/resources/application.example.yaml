@@ -17,9 +17,9 @@ fraho:
       cache:
         impl: null
         # Implemenation of eu.fraho.spring.securityJwt.service.RefreshTokenStore, my implementations:
-        #   null                                                      (built-in) Disable refresh tokens
-        #   eu.fraho.spring.securityJwt.service.InternalTokenStore    (dependency: security-jwt-internal) Store refresh tokens in memory
-        #   eu.fraho.spring.securityJwt.service.MemcacheTokenStore    (dependency: security-jwt-memcache) Store refresh tokens at an external memcache server
+        #   null                                                     (built-in) Disable refresh tokens
+        #   eu.fraho.spring.securityJwt.service.InternalTokenStore   (dependency: security-jwt-internal) Store refresh tokens in memory
+        #   eu.fraho.spring.securityJwt.service.MemcacheTokenStore   (dependency: security-jwt-memcache) Store refresh tokens at an external memcache server
         prefix: fraho-refresh  # prefix for all map entry keys
   totp:
     variance: 3  # allowed timewindows for totp tokens

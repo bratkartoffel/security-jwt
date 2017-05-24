@@ -11,7 +11,6 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import eu.fraho.spring.securityJwt.dto.AccessToken;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
-import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
