@@ -13,6 +13,7 @@ public class TestTimeWithPeriod {
         Assert.assertEquals("7 HOURS", new TimeWithPeriod(7, TimeUnit.HOURS).toString());
     }
 
+    @SuppressWarnings("ObjectEqualsNull") // is intended; check for correct null handling within "equals"
     @Test
     public void testEquals() {
         Assert.assertTrue(new TimeWithPeriod(1, TimeUnit.DAYS).equals(new TimeWithPeriod(24, TimeUnit.HOURS)));
@@ -25,5 +26,19 @@ public class TestTimeWithPeriod {
     public void testToSeconds() {
         Assert.assertEquals(3600, new TimeWithPeriod(1, TimeUnit.HOURS).toSeconds());
         Assert.assertEquals(86_400, new TimeWithPeriod(1, TimeUnit.DAYS).toSeconds());
+    }
+
+    @Test
+    public void testHashcode() {
+        Assert.assertEquals(new TimeWithPeriod(60, TimeUnit.MINUTES).hashCode(), new TimeWithPeriod(1, TimeUnit.HOURS).hashCode());
+        Assert.assertNotEquals(new TimeWithPeriod(1_000_000, TimeUnit.SECONDS).hashCode(), new TimeWithPeriod(1_000_001, TimeUnit.SECONDS).toSeconds());
+    }
+
+    @Test
+    public void testValues() {
+        TimeWithPeriod testee = new TimeWithPeriod(60, TimeUnit.MINUTES);
+        Assert.assertEquals(60, testee.getQuantity());
+        Assert.assertEquals(TimeUnit.MINUTES, testee.getTimeUnit());
+        Assert.assertEquals(60, new TimeWithPeriod(1_000_001, TimeUnit.SECONDS).toSeconds());
     }
 }
