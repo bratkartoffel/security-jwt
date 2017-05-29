@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -43,8 +44,8 @@ public class TestJwtServiceRefreshMemcache extends AbstractRefreshTokenTest {
         Assert.assertEquals("Wrong implementation loaded", MemcacheTokenStore.class, getTokenStoreType());
     }
 
-    @Test
-    public void testListRefreshTokensOtherEntries() throws InterruptedException {
+    @Test(timeout = 10_000L)
+    public void testListRefreshTokensOtherEntries() throws InterruptedException, ExecutionException {
         String jsmith = "jsmith";
         String xsmith = "xsmith";
 
@@ -54,7 +55,7 @@ public class TestJwtServiceRefreshMemcache extends AbstractRefreshTokenTest {
 
         MemcacheTokenStore store = (MemcacheTokenStore) getTokenStoreImpl();
         MemcachedClient client = store.getMemcachedClient();
-        client.set("foobar", 30, "hi");
+        client.set("foobar", 30, "hi").get();
 
         final Map<String, List<RefreshToken>> tokenMap = jwtTokenService.listRefreshTokens();
         Assert.assertEquals("User count don't match", 2, tokenMap.size());
