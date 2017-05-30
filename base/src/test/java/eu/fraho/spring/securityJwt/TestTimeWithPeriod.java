@@ -39,6 +39,5 @@ public class TestTimeWithPeriod {
         TimeWithPeriod testee = new TimeWithPeriod(60, TimeUnit.MINUTES);
         Assert.assertEquals(60, testee.getQuantity());
         Assert.assertEquals(TimeUnit.MINUTES, testee.getTimeUnit());
-        Assert.assertEquals(60, new TimeWithPeriod(1_000_001, TimeUnit.SECONDS).toSeconds());
     }
 }
