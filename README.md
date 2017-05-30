@@ -66,7 +66,7 @@ This library is customizable by the following properties:
 | fraho.jwt.token.algorithm        | ES256          | The signature algorithm used for the tokens. For a list of valid algorithms please see either the JWT spec or JWSAlgorithm|
 | fraho.jwt.token.issuer           | fraho-security | Sets the issuer of the token. The issuer is used in the tokens "iss" field|
 | fraho.jwt.token.pub              | null           | Defines the public key file when using a public / private key signature method|
-| fraho.jwt.token.priv             | null           | Defines the private key file when using a public / private key signature method. May be null if this service should only verify, but not issue tokens. In this case, calls to generateToken(JwtUser) will throw an IllegalArgumentException|
+| fraho.jwt.token.priv             | null           | Defines the private key file when using a public / private key signature method. May be null if this service should only verify, but not issue tokens. In this case, any calls to ```generateToken``` or ```generateRefreshToken``` will throw an FeatureNotConfiguredException. To the caller, it will be shown as a NOT_AUTHORIZED Http StatusCode.|
 | fraho.jwt.token.hmac             | null           | Defines the key file when using a hmac signature method|
 | fraho.jwt.token.expiration       | 1 hour         | The validity period of issued tokens. For details on how this field has to specified see TimeWithPeriod|
 | fraho.jwt.refresh.expiration     | 1 day          | How long are refresh tokens valid? For details on how this field has to specified see TimeWithPeriod|
