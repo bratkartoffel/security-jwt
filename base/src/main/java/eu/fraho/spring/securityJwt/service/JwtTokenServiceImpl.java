@@ -16,10 +16,14 @@ import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 import eu.fraho.spring.securityJwt.exceptions.FeatureNotConfiguredException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.aop.framework.Advised;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -56,6 +60,8 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
 
     private final SecureRandom random = new SecureRandom();
     @Autowired
+    private ApplicationContext applicationContext = null;
+    @Autowired
     private AutowireCapableBeanFactory autowireCapableBeanFactory = null;
     @Value("${fraho.jwt.token.algorithm:" + DEFAULT_ALGORITHM + "}")
     private String algorithm = DEFAULT_ALGORITHM;
@@ -73,8 +79,8 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     private Integer refreshLength = REFRESH_TOKEN_LEN_DEFAULT;
     @Value("${fraho.jwt.refresh.deviceIdLength:" + DEFAULT_MAX_DEVICE_ID_LENGTH + "}")
     private Integer maxDeviceIdLength = DEFAULT_MAX_DEVICE_ID_LENGTH;
-    @Value("${fraho.jwt.refresh.cache.impl:" + DEFAULT_CACHE_IMPL + "}")
-    private Class<? extends RefreshTokenStore> refreshTokenStoreImpl = null;
+    @Autowired
+    @Lazy
     private RefreshTokenStore refreshTokenStore = null;
     private transient volatile JWSSigner signer = null;
     private JWSVerifier verifier;
@@ -169,16 +175,6 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
 
         if (signer == null) {
             log.warn("No private key specified. This service may neither issue new tokens nor use refresh tokens.");
-        }
-
-        if (refreshTokenStoreImpl != null) {
-            log.debug("Using refresh token store implementation: {}", refreshTokenStoreImpl);
-            refreshTokenStore = refreshTokenStoreImpl.newInstance();
-            autowireCapableBeanFactory.autowireBean(refreshTokenStore);
-            refreshTokenStore.afterPropertiesSet();
-        } else {
-            log.debug("Disabling refresh token store, no implementation specified");
-            refreshTokenStore = new NullTokenStore();
         }
     }
 
@@ -333,10 +329,19 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     }
 
     Class<? extends RefreshTokenStore> getInternalRefreshTokenStoreType() {
-        return refreshTokenStoreImpl;
+        return getInternalRefreshTokenStore().getClass();
     }
 
     RefreshTokenStore getInternalRefreshTokenStore() {
-        return refreshTokenStore;
+        if (AopUtils.isJdkDynamicProxy(refreshTokenStore)) {
+            try {
+                return (RefreshTokenStore) ((Advised) refreshTokenStore).getTargetSource().getTarget();
+            } catch (Exception e) {
+                log.error("Unable to get proxy target", e);
+                return refreshTokenStore;
+            }
+        } else {
+            return refreshTokenStore;
+        }
     }
 }
