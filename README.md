@@ -5,11 +5,12 @@
 
 Providing a simple way to integrate [JWT](https://jwt.io/introduction/) into your spring boot application.
 
-This project is split into 3 parts:
+This project is split into 4 parts:
 
 * base: Basic integration of JWT into spring security (without refresh tokens)
 * internal: Support for an in-memory cache (ExpiringMap) for refresh tokens
 * memcache: Support for memcache to store refresh tokens
+* hibernate: Support for hibernate to store refresh tokens
 
 Simply use the dependencies within your build script, spring boot takes care of the rest.
 The default configuration should be sufficient for the most use cases.
@@ -19,10 +20,12 @@ The default configuration should be sufficient for the most use cases.
   * JWT Integration into Spring Security (including a [REST-Controller](base/src/main/java/eu/fraho/spring/securityJwt/controller/AuthenticationRestController.java) to authenticate against)
   * A [CryptPasswordEncoder](base/src/main/java/eu/fraho/spring/securityJwt/CryptPasswordEncoder.java) to generate / use linux system crypt(1)-hashes (supporting new $5$ and $6$ hashes and rounds)
   * Full support for [Swagger 2](https://github.com/springfox/springfox) documentation (REST Controller and DTO are annotated and described)
-* internal:
+* module [internal](internal/):
   * Refresh token support through an internal, in-memory map
-* memcache:
+* module [memcache](memcache/):
   * Refresh token support through an external memcache server
+* module [hibernate](hibernate/):
+	* Refresh token support using hibernate and a database table
 
 # Dependencies
 ```xml
@@ -45,8 +48,13 @@ When you want to add refresh token support, then choose one of the following dep
     <artifactId>security-jwt-memcache</artifactId>
     <version>0.6.0</version>
 </dependency>
+<dependency>
+    <groupId>eu.fraho.spring</groupId>
+    <artifactId>security-jwt-hibernate</artifactId>
+    <version>0.6.0</version>
+</dependency>
 ```
-For details on the usage of the plugins please see the relevant module directories: [internal](internal/) and [memcache](memcache/)
+For details on the usage of the plugins please see the README within the relevant module directories.
 
 # Usage
 * Add the dependencies to your build script
@@ -79,7 +87,7 @@ This library is customizable by the following properties:
 | fraho.jwt.refresh.expiration     | 1 day          | How long are refresh tokens valid? For details on how this field has to specified see [TimeWithPeriod](base/src/main/java/eu/fraho/spring/securityJwt/dto/TimeWithPeriod.java)|
 | fraho.jwt.refresh.length         | 24             | Defines the length of refresh tokens in bytes, without the base64 encoding|
 | fraho.jwt.refresh.deviceIdLength | 32             | Maximum length of device ids for refresh tokens. Any longer strings will be truncated to this length.|
-| fraho.jwt.refresh.cache.impl     | null           | Defines the implemenation for refresh token storage. The specified class has to implement the [RefreshTokenStore]((base/src/main/java/eu/fraho/spring/securityJwt/service/RefreshTokenStore.java)) Interface. To disable the refresh tokens at all use null as value.<br>You have to add at least one of the optional dependencies below to add refresh token support.<br>Please see [memcache](memcache/) or [internal](internal/) for valid values.|
+| fraho.jwt.refresh.cache.impl     | null           | Defines the implemenation for refresh token storage. The specified class has to implement the [RefreshTokenStore]((base/src/main/java/eu/fraho/spring/securityJwt/service/RefreshTokenStore.java)) Interface. To disable the refresh tokens at all use null as value.<br>You have to add at least one of the optional dependencies below to add refresh token support.<br>Please see module READMEs for valid values.|
 | fraho.jwt.refresh.cache.prefix   | fraho-refresh  | Defines a common prefix for all saved refresh entries. The map key is computed in the following way: "[prefix]:[username]:[deviceId]". If no deviceId was provided by the client, "__default" will be used instead|
 | fraho.totp.variance              | 3              | Defines the allowed variance / validity of TOTP pins. The number defines how many "old / expired" pins will be considered valid. A value of "3" is the official suggestion for TOTP. This value is used to consider small clock-differences between the client and server.|
 | fraho.totp.length                | 16             | Defines the length of the generated TOTP secrets|
