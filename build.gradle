@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        projectVersion = '0.7.0-SNAPSHOT'
+        projectVersion = '0.6.1-SNAPSHOT'
     }
     repositories {
         mavenCentral()
@@ -63,8 +63,14 @@ subprojects {
         from sourceSets.main.allSource
     }
 
+    task testsJar(type: Jar) {
+        classifier = 'tests'
+        from sourceSets.test.output
+        from sourceSets.test.allSource
+    }
+
     artifacts {
-        archives javadocJar, sourcesJar
+        archives javadocJar, sourcesJar, testsJar
     }
 
     // code coverage
