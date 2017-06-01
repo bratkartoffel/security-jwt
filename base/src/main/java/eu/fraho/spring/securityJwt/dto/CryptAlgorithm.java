@@ -14,6 +14,7 @@ package eu.fraho.spring.securityJwt.dto;
  * @see #SHA256
  * @see #SHA512
  */
+@SuppressWarnings("unused")
 public enum CryptAlgorithm {
     /**
      * Use classic DES crypt (insecure, no rounds supported)

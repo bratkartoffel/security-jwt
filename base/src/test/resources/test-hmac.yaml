@@ -4,5 +4,3 @@ fraho:
       expiration: 2 seconds
       algorithm: HS256
       hmac: build/hmac-hs256.key
-    refresh:
-      expiration: 2 seconds

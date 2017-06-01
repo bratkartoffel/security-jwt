@@ -73,7 +73,7 @@ This library is customizable by the following properties:
 | fraho.jwt.token.algorithm        | ES256          | The signature algorithm used for the tokens. For a list of valid algorithms please see either the [JWT spec](https://tools.ietf.org/html/rfc7518#section-3) or [JWSAlgorithm](https://bitbucket.org/connect2id/nimbus-jose-jwt/src/master/src/main/java/com/nimbusds/jose/JWSAlgorithm.java)|
 | fraho.jwt.token.issuer           | fraho-security | Sets the issuer of the token. The issuer is used in the tokens ```iss``` field|
 | fraho.jwt.token.pub              | null           | Defines the public key file when using a public / private key signature method|
-| fraho.jwt.token.priv             | null           | Defines the private key file when using a public / private key signature method. May be null if this service should only verify, but not issue tokens. In this case, any calls to ```generateToken``` or ```generateRefreshToken``` will throw an FeatureNotConfiguredException. To the caller, it will be shown as a NOT_AUTHORIZED Http StatusCode.|
+| fraho.jwt.token.priv             | null           | Defines the private key file when using a public / private key signature method. May be null if this service should only verify, but not issue tokens. In this case, any calls to ```generateToken``` or ```generateRefreshToken``` will throw an FeatureNotConfiguredException. To the caller, it will be shown as a UNAUTHORIZED Http StatusCode.|
 | fraho.jwt.token.hmac             | null           | Defines the key file when using a hmac signature method|
 | fraho.jwt.token.expiration       | 1 hour         | The validity period of issued tokens. For details on how this field has to specified see [TimeWithPeriod](base/src/main/java/eu/fraho/spring/securityJwt/dto/TimeWithPeriod.java)|
 | fraho.jwt.refresh.expiration     | 1 day          | How long are refresh tokens valid? For details on how this field has to specified see [TimeWithPeriod](base/src/main/java/eu/fraho/spring/securityJwt/dto/TimeWithPeriod.java)|
@@ -124,7 +124,7 @@ Request a token (login):
 >   "password": "userA"
 > }
 >
-< HTTP/1.1 200 
+< HTTP/1.1 200
 < X-Content-Type-Options: nosniff
 < X-XSS-Protection: 1; mode=block
 < Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -159,7 +159,7 @@ Usage of token to access some (secured) data:
 > Accept-Encoding: deflate, gzip
 > Authorization: Bearer eyJhbGciOiJFUzI1NiJ9...
 >
-< HTTP/1.1 200 
+< HTTP/1.1 200
 < X-Content-Type-Options: nosniff
 < X-XSS-Protection: 1; mode=block
 < Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -189,7 +189,7 @@ Use refresh token when token expired:
 >   "refreshToken": "5bYNdXEGQRzz6xD4yFmw2wNPjXAh+wMc"
 > }
 >
-< HTTP/1.1 200 
+< HTTP/1.1 200
 < X-Content-Type-Options: nosniff
 < X-XSS-Protection: 1; mode=block
 < Cache-Control: no-cache, no-store, max-age=0, must-revalidate

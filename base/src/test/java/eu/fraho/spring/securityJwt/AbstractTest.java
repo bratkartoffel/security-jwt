@@ -12,7 +12,7 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.security.Security;
-import java.util.Arrays;
+import java.util.Collections;
 
 @Slf4j
 public abstract class AbstractTest {
@@ -22,7 +22,7 @@ public abstract class AbstractTest {
         Security.addProvider(new BouncyCastleProvider());
     }
 
-    protected static void beforeHmacClass() throws IOException {
+    public static void beforeHmacClass() throws IOException {
         checkAndCreateOutDirs(OUT_KEY);
 
         SecureRandom random = new SecureRandom();
@@ -46,7 +46,7 @@ public abstract class AbstractTest {
         JwtUser user = new JwtUser();
         user.setId(42L);
         user.setUsername("jsmith");
-        user.setAuthorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
+        user.setAuthorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
         return user;
     }
 }

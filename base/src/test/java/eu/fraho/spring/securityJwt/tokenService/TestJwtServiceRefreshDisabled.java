@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +41,8 @@ public class TestJwtServiceRefreshDisabled extends AbstractTest {
 
     @Test(expected = FeatureNotConfiguredException.class)
     public void testUseRefreshToken() {
-        jwtTokenService.useRefreshToken("foobar", "bar");
+        Assert.assertNull(jwtTokenService.useRefreshToken("bar", "foo"));
+        jwtTokenService.useRefreshToken("foo", "baz");
     }
 
     @Test(expected = FeatureNotConfiguredException.class)

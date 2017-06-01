@@ -41,6 +41,19 @@ import java.util.*;
 @Component
 @Slf4j
 public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
+    public static final String DEFAULT_DEVICE_ID = "__default";
+    public static final String DEFAULT_ALGORITHM = "ES256";
+    public static final String DEFAULT_ISSUER = "fraho-security";
+    public static final String DEFAULT_EXPIRATION = "1 hour";
+    public static final int DEFAULT_MAX_DEVICE_ID_LENGTH = 32;
+    public static final String DEFAULT_REFRESH_EXPIRATION = "1 day";
+    public static final String DEFAULT_CACHE_IMPL = "#{null}";
+    public static final String DEFAULT_CACHE_PREFIX = "fraho-refresh";
+
+    public static final int REFRESH_TOKEN_LEN_MIN = 12;
+    public static final int REFRESH_TOKEN_LEN_DEFAULT = 24;
+    public static final int REFRESH_TOKEN_LEN_MAX = 48;
+
     private final SecureRandom random = new SecureRandom();
     @Autowired
     private AutowireCapableBeanFactory autowireCapableBeanFactory = null;

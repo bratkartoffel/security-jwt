@@ -19,11 +19,11 @@ import java.util.Base64;
 
 @Slf4j
 public class CreateEcdsaJwtKeys {
-    public static final String OUT_PUB_KEY = "build/pub.key";
-    public static final String OUT_PRIV_KEY = "build/priv.key";
-    public static final String OUT_PUB_JWK = "build/jwk_pub.json";
-    public static final String OUT_PRIV_JWK = "build/jwk_priv.json";
-    public static final ECKey.Curve CURVE = ECKey.Curve.P_256;
+    private static final String OUT_PUB_KEY = "build/pub.key";
+    private static final String OUT_PRIV_KEY = "build/priv.key";
+    private static final String OUT_PUB_JWK = "build/jwk_pub.json";
+    private static final String OUT_PRIV_JWK = "build/jwk_priv.json";
+    private static final ECKey.Curve CURVE = ECKey.Curve.P_256;
 
     public static void main(String[] args) throws Throwable {
         Security.addProvider(new BouncyCastleProvider());
@@ -47,7 +47,7 @@ public class CreateEcdsaJwtKeys {
         }
     }
 
-    public static void write() throws Throwable {
+    private static void write() throws Throwable {
         log.info("***** START write() *****");
         log.info("Initializing KeyPairGenerator");
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("ECDSA", "BC");
@@ -79,7 +79,7 @@ public class CreateEcdsaJwtKeys {
         log.info("***** END write() *****");
     }
 
-    public static void read() throws Throwable {
+    private static void read() throws Throwable {
         log.info("***** START read() *****");
         log.info("Initializing KeyFactory");
         KeyFactory keyFactory = KeyFactory.getInstance("ECDSA", "BC");

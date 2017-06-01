@@ -15,7 +15,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -43,7 +42,8 @@ public class JwtUser implements UserDetails, CredentialsContainer {
         user.setUsername(claims.getSubject());
         user.setAuthority(String.valueOf(claims.getClaim("authority")));
         user.setId(Long.valueOf(String.valueOf(claims.getClaim("uid"))));
-        user.setAuthorities(Arrays.asList(new SimpleGrantedAuthority(user.getAuthority())));
+        user.setAuthorities(Collections.singletonList(new SimpleGrantedAuthority(user.getAuthority())));
+        user.setAuthority(user.getAuthority());
         return user;
     }
 

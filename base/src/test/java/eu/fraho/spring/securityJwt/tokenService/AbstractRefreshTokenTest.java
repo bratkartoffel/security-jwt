@@ -133,7 +133,7 @@ public abstract class AbstractRefreshTokenTest extends JwtTokenServiceImplAccess
         final List<RefreshToken> tokens = jwtTokenService.listRefreshTokens(jsmith);
         Assert.assertEquals("Token count don't match", 2, tokens.size());
 
-        jwtTokenService.revokeRefreshTokens(jsmith);
+        Assert.assertEquals("Tokens should be revoked", 2, jwtTokenService.revokeRefreshTokens(jsmith));
         Assert.assertEquals("Token list is not immutable", 2, tokens.size());
         final List<RefreshToken> tokens2 = jwtTokenService.listRefreshTokens(jsmith);
         Assert.assertTrue("Tokens were not revoked", tokens2.isEmpty());

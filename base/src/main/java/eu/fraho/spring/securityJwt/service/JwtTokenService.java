@@ -18,19 +18,6 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface JwtTokenService {
-    String DEFAULT_DEVICE_ID = "__default";
-    String DEFAULT_ALGORITHM = "ES256";
-    String DEFAULT_ISSUER = "fraho-security";
-    String DEFAULT_EXPIRATION = "1 hour";
-    String DEFAULT_REFRESH_EXPIRATION = "1 day";
-    int DEFAULT_MAX_DEVICE_ID_LENGTH = 32;
-    String DEFAULT_CACHE_PREFIX = "fraho-refresh";
-    String DEFAULT_CACHE_IMPL = "#{null}";
-
-    int REFRESH_TOKEN_LEN_MIN = 12;
-    int REFRESH_TOKEN_LEN_DEFAULT = 24;
-    int REFRESH_TOKEN_LEN_MAX = 48;
-
     /**
      * Parse a token and return the encapsulated user object.
      * See {@link JwtUser#fromClaims(JWTClaimsSet)} for a list of copied / supported attributes.

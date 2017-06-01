@@ -17,8 +17,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.*;
-import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 
 @Getter
@@ -46,7 +48,6 @@ public class TestJwtServiceOnlyVerify extends AbstractCreateTokenTest {
         log.info("Extracting private / public keys");
         KeyFactory keyFactory = KeyFactory.getInstance("ECDSA", "BC");
         PublicKey publicKey = keyFactory.generatePublic(new X509EncodedKeySpec(keyPair.getPublic().getEncoded()));
-        PrivateKey privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(keyPair.getPrivate().getEncoded()));
 
         log.info("Writing public key to {}", OUT_PUB_KEY);
         Files.write(Paths.get(OUT_PUB_KEY), publicKey.getEncoded());

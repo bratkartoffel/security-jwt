@@ -18,20 +18,17 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static eu.fraho.spring.securityJwt.service.JwtTokenService.DEFAULT_CACHE_PREFIX;
-import static eu.fraho.spring.securityJwt.service.JwtTokenService.DEFAULT_REFRESH_EXPIRATION;
-
 @Slf4j
 @Getter
 public class MemcacheTokenStore implements RefreshTokenStore {
-    public static final String DEFAULT_MEMCACHE_HOST = "127.0.0.1";
-    public static final int DEFAULT_MEMCACHE_PORT = 11211;
-    public static final int DEFAULT_MEMCACHE_TIMEOUT = 5;
+    private static final String DEFAULT_MEMCACHE_HOST = "127.0.0.1";
+    private static final int DEFAULT_MEMCACHE_PORT = 11211;
+    private static final int DEFAULT_MEMCACHE_TIMEOUT = 5;
 
-    @Value("${fraho.jwt.refresh.expiration:" + DEFAULT_REFRESH_EXPIRATION + "}")
-    private TimeWithPeriod refreshExpiration = new TimeWithPeriod(DEFAULT_REFRESH_EXPIRATION);
-    @Value("${fraho.jwt.refresh.cache.prefix:" + DEFAULT_CACHE_PREFIX + "}")
-    private String refreshCachePrefix = DEFAULT_CACHE_PREFIX;
+    @Value("${fraho.jwt.refresh.expiration:" + JwtTokenServiceImpl.DEFAULT_REFRESH_EXPIRATION + "}")
+    private TimeWithPeriod refreshExpiration = new TimeWithPeriod(JwtTokenServiceImpl.DEFAULT_REFRESH_EXPIRATION);
+    @Value("${fraho.jwt.refresh.cache.prefix:" + JwtTokenServiceImpl.DEFAULT_CACHE_PREFIX + "}")
+    private String refreshCachePrefix = JwtTokenServiceImpl.DEFAULT_CACHE_PREFIX;
     @Value("${fraho.jwt.refresh.cache.memcache.host:" + DEFAULT_MEMCACHE_HOST + "}")
     private String cacheHost = DEFAULT_MEMCACHE_HOST;
     @Value("${fraho.jwt.refresh.cache.memcache.port:" + DEFAULT_MEMCACHE_PORT + "}")

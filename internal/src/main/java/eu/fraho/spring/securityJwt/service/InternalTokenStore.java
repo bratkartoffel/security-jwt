@@ -15,10 +15,10 @@ import java.util.regex.Pattern;
 @Slf4j
 @Getter
 public class InternalTokenStore implements RefreshTokenStore {
-    @Value("${fraho.jwt.refresh.expiration:" + JwtTokenService.DEFAULT_REFRESH_EXPIRATION + "}")
-    private TimeWithPeriod refreshExpiration = new TimeWithPeriod(JwtTokenService.DEFAULT_REFRESH_EXPIRATION);
-    @Value("${fraho.jwt.refresh.cache.prefix:" + JwtTokenService.DEFAULT_CACHE_PREFIX + "}")
-    private String refreshCachePrefix = JwtTokenService.DEFAULT_CACHE_PREFIX;
+    @Value("${fraho.jwt.refresh.expiration:" + JwtTokenServiceImpl.DEFAULT_REFRESH_EXPIRATION + "}")
+    private TimeWithPeriod refreshExpiration = new TimeWithPeriod(JwtTokenServiceImpl.DEFAULT_REFRESH_EXPIRATION);
+    @Value("${fraho.jwt.refresh.cache.prefix:" + JwtTokenServiceImpl.DEFAULT_CACHE_PREFIX + "}")
+    private String refreshCachePrefix = JwtTokenServiceImpl.DEFAULT_CACHE_PREFIX;
 
     private ExpiringMap<String, String> refreshTokenMap = null;
 

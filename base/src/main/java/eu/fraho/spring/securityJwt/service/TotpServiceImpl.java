@@ -23,6 +23,14 @@ import java.util.Random;
 @Component
 @Slf4j
 public class TotpServiceImpl implements TotpService, InitializingBean {
+    public static final int TOTP_LENGTH_MIN = 8;
+    public static final int TOTP_LENGTH_DEFAULT = 16;
+    public static final int TOTP_LENGTH_MAX = 32;
+
+    public static final int TOTP_VARIANCE_MIN = 1;
+    public static final int TOTP_VARIANCE_DEFAULT = 3;
+    public static final int TOTP_VARIANCE_MAX = 10;
+
     private final Base32 base32 = new Base32();
     private final Random random = new SecureRandom();
 

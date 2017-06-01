@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
  * @see #day
  * @see #days
  */
+@SuppressWarnings("unused")
 enum PeriodWord {
     second(TimeUnit.SECONDS),
     seconds(TimeUnit.SECONDS),

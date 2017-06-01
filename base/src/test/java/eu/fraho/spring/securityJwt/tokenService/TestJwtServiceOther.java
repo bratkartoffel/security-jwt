@@ -22,8 +22,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.util.Optional;
 
@@ -92,115 +94,67 @@ public class TestJwtServiceOther extends AbstractTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testUnknownAlgorithm() throws Exception {
-        Field algorithm = JwtTokenServiceImpl.class.getDeclaredField("algorithm");
-        algorithm.setAccessible(true);
-        Object oldValue = algorithm.get(jwtTokenService);
-        try {
-            algorithm.set(jwtTokenService, "Foobar");
-            ((InitializingBean) jwtTokenService).afterPropertiesSet();
-        } finally {
-            algorithm.set(jwtTokenService, oldValue);
-        }
+    public void testUnknownAlgorithm() throws Throwable {
+        withTempAlorithm("Foobar", this::reloadTokenService);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testHmacNoKey() throws Exception {
+    public void testHmacNoKey() throws Throwable {
         checkAndCreateOutDirs(OUT_KEY);
         Files.write(Paths.get(OUT_KEY), new byte[0]);
 
-        Field algorithm = JwtTokenServiceImpl.class.getDeclaredField("algorithm");
-        algorithm.setAccessible(true);
-        Object oldAlgo = algorithm.get(jwtTokenService);
-        try {
-            algorithm.set(jwtTokenService, "HS256");
-            ((InitializingBean) jwtTokenService).afterPropertiesSet();
-        } finally {
-            algorithm.set(jwtTokenService, oldAlgo);
-        }
+        withTempAlorithm("HS256", this::reloadTokenService);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testEcNoPrivKey() throws Exception {
+    public void testEcEmptyPrivKey() throws Throwable {
+        TestJwtServiceCreateTokenEcdsa.beforeClass();
         checkAndCreateOutDirs(TestJwtServiceCreateTokenEcdsa.OUT_PRIV_KEY);
         Files.write(Paths.get(TestJwtServiceCreateTokenEcdsa.OUT_PRIV_KEY), new byte[0]);
 
-        Field algorithm = JwtTokenServiceImpl.class.getDeclaredField("algorithm");
-        Field privKey = JwtTokenServiceImpl.class.getDeclaredField("privKey");
-        algorithm.setAccessible(true);
-        privKey.setAccessible(true);
-        Object oldAlgo = algorithm.get(jwtTokenService);
-        Object oldHmacKey = privKey.get(jwtTokenService);
-        try {
-            algorithm.set(jwtTokenService, "ES256");
-            privKey.set(jwtTokenService, TestJwtServiceCreateTokenEcdsa.OUT_PRIV_KEY);
-            ((InitializingBean) jwtTokenService).afterPropertiesSet();
-        } finally {
-            algorithm.set(jwtTokenService, oldAlgo);
-            privKey.set(jwtTokenService, oldHmacKey);
-        }
+        withTempAlorithm("ES256", () -> withTempField("privKey", Paths.get(TestJwtServiceCreateTokenEcdsa.OUT_PRIV_KEY), this::reloadTokenService));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testEcNoPubKey() throws Exception {
+    public void testEcEmptyPubKey() throws Throwable {
+        TestJwtServiceCreateTokenEcdsa.beforeClass();
         checkAndCreateOutDirs(TestJwtServiceCreateTokenEcdsa.OUT_PUB_KEY);
         Files.write(Paths.get(TestJwtServiceCreateTokenEcdsa.OUT_PUB_KEY), new byte[0]);
 
-        Field algorithm = JwtTokenServiceImpl.class.getDeclaredField("algorithm");
-        Field pubKey = JwtTokenServiceImpl.class.getDeclaredField("pubKey");
-        algorithm.setAccessible(true);
-        pubKey.setAccessible(true);
-        Object oldAlgo = algorithm.get(jwtTokenService);
-        Object oldHmacKey = pubKey.get(jwtTokenService);
-        try {
-            algorithm.set(jwtTokenService, "ES256");
-            pubKey.set(jwtTokenService, TestJwtServiceCreateTokenEcdsa.OUT_PUB_KEY);
-            ((InitializingBean) jwtTokenService).afterPropertiesSet();
-        } finally {
-            algorithm.set(jwtTokenService, oldAlgo);
-            pubKey.set(jwtTokenService, oldHmacKey);
-        }
+        withTempAlorithm("ES256", () -> withTempField("pubKey", Paths.get(TestJwtServiceCreateTokenEcdsa.OUT_PUB_KEY), this::reloadTokenService));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testRsaNoPrivKey() throws Exception {
+    public void testRsaEmptyPrivKey() throws Throwable {
+        TestJwtServiceCreateTokenRsa.beforeClass();
         checkAndCreateOutDirs(TestJwtServiceCreateTokenRsa.OUT_PRIV_KEY);
         Files.write(Paths.get(TestJwtServiceCreateTokenRsa.OUT_PRIV_KEY), new byte[0]);
 
-        Field algorithm = JwtTokenServiceImpl.class.getDeclaredField("algorithm");
-        Field privKey = JwtTokenServiceImpl.class.getDeclaredField("privKey");
-        algorithm.setAccessible(true);
-        privKey.setAccessible(true);
-        Object oldAlgo = algorithm.get(jwtTokenService);
-        Object oldHmacKey = privKey.get(jwtTokenService);
-        try {
-            algorithm.set(jwtTokenService, "RS256");
-            privKey.set(jwtTokenService, TestJwtServiceCreateTokenRsa.OUT_PRIV_KEY);
-            ((InitializingBean) jwtTokenService).afterPropertiesSet();
-        } finally {
-            algorithm.set(jwtTokenService, oldAlgo);
-            privKey.set(jwtTokenService, oldHmacKey);
-        }
+        withTempAlorithm("RS256", () -> withTempField("privKey", Paths.get(TestJwtServiceCreateTokenRsa.OUT_PRIV_KEY), this::reloadTokenService));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testRsaNoPubKey() throws Exception {
+    public void testRsaEmptyPubKey() throws Throwable {
+        TestJwtServiceCreateTokenRsa.beforeClass();
         checkAndCreateOutDirs(TestJwtServiceCreateTokenRsa.OUT_PUB_KEY);
         Files.write(Paths.get(TestJwtServiceCreateTokenRsa.OUT_PUB_KEY), new byte[0]);
 
-        Field algorithm = JwtTokenServiceImpl.class.getDeclaredField("algorithm");
-        Field pubKey = JwtTokenServiceImpl.class.getDeclaredField("pubKey");
-        algorithm.setAccessible(true);
-        pubKey.setAccessible(true);
-        Object oldAlgo = algorithm.get(jwtTokenService);
-        Object oldHmacKey = pubKey.get(jwtTokenService);
+        withTempAlorithm("RS256", () -> withTempField("pubKey", Paths.get(TestJwtServiceCreateTokenRsa.OUT_PUB_KEY), this::reloadTokenService));
+    }
+
+    @Test(expected = NoSuchFileException.class)
+    public void testRsaNoPubKey() throws Throwable {
+        TestJwtServiceCreateTokenRsa.beforeClass();
+        Assert.assertTrue("Keyfile should be deleted", new File(TestJwtServiceCreateTokenRsa.OUT_PUB_KEY).delete());
+
+        withTempAlorithm("RS256", () -> withTempField("pubKey", Paths.get(TestJwtServiceCreateTokenRsa.OUT_PUB_KEY), this::reloadTokenService));
+    }
+
+    private void reloadTokenService() {
         try {
-            algorithm.set(jwtTokenService, "RS256");
-            pubKey.set(jwtTokenService, TestJwtServiceCreateTokenRsa.OUT_PUB_KEY);
             ((InitializingBean) jwtTokenService).afterPropertiesSet();
-        } finally {
-            algorithm.set(jwtTokenService, oldAlgo);
-            pubKey.set(jwtTokenService, oldHmacKey);
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
         }
     }
 
@@ -245,5 +199,39 @@ public class TestJwtServiceOther extends AbstractTest {
     public void testUnknownTokenAlgorithm() throws Exception {
         final String token = "eyJhbGciOiJmb29iYXIifQ.eyJzdWIiOiJ4IiwiZXhwIjoyNDk1MTE4NzIwLCJpYXQiOjE0OTUxMTg3MTh9.09UuAR7VTtcmYf8_NzSmAHbEFghFb6igTEx6bgnt7OA";
         Assert.assertFalse("Accepted unknown algorithm", jwtTokenService.validateToken(token));
+    }
+
+    @Test
+    public void testParseUserGarbageToken() throws Exception {
+        final String token = "y51bGx9.eyJzdWIiTh9.Nsf-8lD724MOIXE";
+        Assert.assertFalse("No user should be returned", jwtTokenService.parseUser(token).isPresent());
+    }
+
+
+    private void withTempField(String fieldname, Object value, Runnable callback) {
+        try {
+            final Field field = JwtTokenServiceImpl.class.getDeclaredField(fieldname);
+            field.setAccessible(true);
+            Object oldValue = field.get(jwtTokenService);
+            try {
+                field.set(jwtTokenService, value);
+                callback.run();
+            } finally {
+                field.set(jwtTokenService, oldValue);
+                callback.run();
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private void withTempAlorithm(Object value, Runnable callback) throws Throwable {
+        try {
+            withTempField("algorithm", value, callback);
+        } catch (RuntimeException rex) {
+            Throwable tmp = rex;
+            while (tmp.getCause() != null) tmp = tmp.getCause();
+            throw tmp;
+        }
     }
 }
