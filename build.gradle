@@ -49,7 +49,6 @@ subprojects {
         testCompile('org.springframework.boot:spring-boot-starter-test')
         testCompile('org.springframework:spring-aspects')
         testCompile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-        testCompile("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
     }
 
     // release stuff
