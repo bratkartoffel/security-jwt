@@ -1,7 +1,6 @@
 fraho:
   jwt:
     token:
-      expiration: 2 seconds
       algorithm: RS256
       pub: build/rsa.pub
       priv: build/rsa.priv

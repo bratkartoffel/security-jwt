@@ -68,7 +68,12 @@ public class AuthenticationRestController {
 
         log.debug("Generating tokens");
         final AccessToken accessToken = jwtTokenUtil.generateToken(userDetails);
-        final RefreshToken refreshToken = jwtTokenUtil.generateRefreshToken(refreshRequest.getUsername(), refreshRequest.getDeviceId().orElse(null));
+        final RefreshToken refreshToken;
+        if (jwtTokenUtil.isRefreshTokenSupported()) {
+            refreshToken = jwtTokenUtil.generateRefreshToken(refreshRequest.getUsername(), refreshRequest.getDeviceId().orElse(null));
+        } else {
+            refreshToken = null;
+        }
 
         // Return the token
         JwtAuthenticationResponse body = new JwtAuthenticationResponse(accessToken, refreshToken);
@@ -106,8 +111,12 @@ public class AuthenticationRestController {
 
         log.debug("Generating tokens");
         final AccessToken accessToken = jwtTokenUtil.generateToken(userDetails);
-        final RefreshToken refreshToken = jwtTokenUtil.generateRefreshToken(authenticationRequest.getUsername(), authenticationRequest.getDeviceId().orElse(null));
-
+        final RefreshToken refreshToken;
+        if (jwtTokenUtil.isRefreshTokenSupported()) {
+            refreshToken = jwtTokenUtil.generateRefreshToken(authenticationRequest.getUsername(), authenticationRequest.getDeviceId().orElse(null));
+        } else {
+            refreshToken = null;
+        }
         // Return the token
         JwtAuthenticationResponse body = new JwtAuthenticationResponse(accessToken, refreshToken);
         log.info("Successfully created token for {}", userDetails.getUsername());
@@ -116,7 +125,9 @@ public class AuthenticationRestController {
 
     private boolean isTotpOk(JwtAuthenticationRequest authenticationRequest, JwtUser userDetails) {
         return userDetails.getTotpSecret().map(secret ->
-                authenticationRequest.getTotp().map(code -> totpService.verifyCode(secret, code)).orElse(false)
+                authenticationRequest.getTotp().map(code ->
+                        totpService.verifyCode(secret, code)
+                ).orElse(false)
         ).orElse(true);
     }
 }

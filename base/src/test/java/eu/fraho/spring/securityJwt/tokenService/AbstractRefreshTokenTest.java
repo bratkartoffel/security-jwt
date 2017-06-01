@@ -1,7 +1,14 @@
+/*
+ * MIT Licence
+ * Copyright (c) 2017 Simon Frankenberger
+ *
+ * Please see LICENCE.md for complete licence text.
+ */
 package eu.fraho.spring.securityJwt.tokenService;
 
+import com.nimbusds.jose.JOSEException;
+import eu.fraho.spring.securityJwt.AbstractTest;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
-import eu.fraho.spring.securityJwt.service.JwtTokenServiceImplAccessor;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +26,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter(AccessLevel.NONE)
 @Slf4j
-public abstract class AbstractRefreshTokenTest extends JwtTokenServiceImplAccessor {
+public abstract class AbstractRefreshTokenTest extends AbstractTest {
     @Before
     public void cleanupRefreshTokenMap() {
         jwtTokenService.clearTokens();
@@ -51,6 +58,15 @@ public abstract class AbstractRefreshTokenTest extends JwtTokenServiceImplAccess
         final List<RefreshToken> xsmithTokens = jwtTokenService.listRefreshTokens(xsmith);
         Assert.assertTrue("Not all tokens returned", xsmithTokens.contains(tokenC));
         Assert.assertEquals("Unexpected token cound", 1, xsmithTokens.size());
+    }
+
+    @Test(timeout = 10_000L)
+    public void testExpireRefreshToken() throws JOSEException, InterruptedException {
+        String jsmith = "jsmith";
+        RefreshToken token = jwtTokenService.generateRefreshToken(jsmith);
+        Assert.assertNotNull("No token generated", token.getToken());
+        Thread.sleep(jwtTokenService.getRefreshExpiration() * 1000 + 100);
+        Assert.assertFalse("Token didn't expire", jwtTokenService.useRefreshToken(jsmith, token));
     }
 
     @Test
@@ -192,4 +208,7 @@ public abstract class AbstractRefreshTokenTest extends JwtTokenServiceImplAccess
         Assert.assertEquals("Token was not revoked", 1, tokens2.size());
         Assert.assertTrue("Wrong token revoked", tokens2.contains(tokenA));
     }
+
+    @Test
+    public abstract void checkCorrectImplementationInUse();
 }

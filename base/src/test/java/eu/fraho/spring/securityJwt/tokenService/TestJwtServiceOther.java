@@ -1,10 +1,15 @@
+/*
+ * MIT Licence
+ * Copyright (c) 2017 Simon Frankenberger
+ *
+ * Please see LICENCE.md for complete licence text.
+ */
 package eu.fraho.spring.securityJwt.tokenService;
 
 import com.nimbusds.jose.JOSEException;
 import eu.fraho.spring.securityJwt.AbstractTest;
 import eu.fraho.spring.securityJwt.dto.AccessToken;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
-import eu.fraho.spring.securityJwt.service.JwtTokenService;
 import eu.fraho.spring.securityJwt.service.JwtTokenServiceImpl;
 import eu.fraho.spring.securityJwt.spring.TestApiApplication;
 import lombok.AccessLevel;
@@ -15,15 +20,12 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
@@ -36,9 +38,6 @@ import java.util.Optional;
         classes = TestApiApplication.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TestJwtServiceOther extends AbstractTest {
-    @Autowired
-    protected JwtTokenService jwtTokenService = null;
-
     @BeforeClass
     public static void beforeClass() throws Exception {
         AbstractTest.beforeHmacClass();
@@ -95,7 +94,7 @@ public class TestJwtServiceOther extends AbstractTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testUnknownAlgorithm() throws Throwable {
-        withTempAlorithm("Foobar", this::reloadTokenService);
+        withTempField("algorithm", "Foobar", this::reloadTokenService);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -103,7 +102,7 @@ public class TestJwtServiceOther extends AbstractTest {
         checkAndCreateOutDirs(OUT_KEY);
         Files.write(Paths.get(OUT_KEY), new byte[0]);
 
-        withTempAlorithm("HS256", this::reloadTokenService);
+        withTempField("algorithm", "HS256", this::reloadTokenService);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -112,7 +111,8 @@ public class TestJwtServiceOther extends AbstractTest {
         checkAndCreateOutDirs(TestJwtServiceCreateTokenEcdsa.OUT_PRIV_KEY);
         Files.write(Paths.get(TestJwtServiceCreateTokenEcdsa.OUT_PRIV_KEY), new byte[0]);
 
-        withTempAlorithm("ES256", () -> withTempField("privKey", Paths.get(TestJwtServiceCreateTokenEcdsa.OUT_PRIV_KEY), this::reloadTokenService));
+        withTempField("algorithm", "ES256", () ->
+                withTempField("privKey", Paths.get(TestJwtServiceCreateTokenEcdsa.OUT_PRIV_KEY), this::reloadTokenService));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -121,7 +121,8 @@ public class TestJwtServiceOther extends AbstractTest {
         checkAndCreateOutDirs(TestJwtServiceCreateTokenEcdsa.OUT_PUB_KEY);
         Files.write(Paths.get(TestJwtServiceCreateTokenEcdsa.OUT_PUB_KEY), new byte[0]);
 
-        withTempAlorithm("ES256", () -> withTempField("pubKey", Paths.get(TestJwtServiceCreateTokenEcdsa.OUT_PUB_KEY), this::reloadTokenService));
+        withTempField("algorithm", "ES256", () ->
+                withTempField("pubKey", Paths.get(TestJwtServiceCreateTokenEcdsa.OUT_PUB_KEY), this::reloadTokenService));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -130,7 +131,8 @@ public class TestJwtServiceOther extends AbstractTest {
         checkAndCreateOutDirs(TestJwtServiceCreateTokenRsa.OUT_PRIV_KEY);
         Files.write(Paths.get(TestJwtServiceCreateTokenRsa.OUT_PRIV_KEY), new byte[0]);
 
-        withTempAlorithm("RS256", () -> withTempField("privKey", Paths.get(TestJwtServiceCreateTokenRsa.OUT_PRIV_KEY), this::reloadTokenService));
+        withTempField("algorithm", "RS256", () ->
+                withTempField("privKey", Paths.get(TestJwtServiceCreateTokenRsa.OUT_PRIV_KEY), this::reloadTokenService));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -139,54 +141,47 @@ public class TestJwtServiceOther extends AbstractTest {
         checkAndCreateOutDirs(TestJwtServiceCreateTokenRsa.OUT_PUB_KEY);
         Files.write(Paths.get(TestJwtServiceCreateTokenRsa.OUT_PUB_KEY), new byte[0]);
 
-        withTempAlorithm("RS256", () -> withTempField("pubKey", Paths.get(TestJwtServiceCreateTokenRsa.OUT_PUB_KEY), this::reloadTokenService));
+        withTempField("algorithm", "RS256", () ->
+                withTempField("pubKey", Paths.get(TestJwtServiceCreateTokenRsa.OUT_PUB_KEY), this::reloadTokenService));
     }
 
-    @Test(expected = NoSuchFileException.class)
+    @Test
     public void testRsaNoPubKey() throws Throwable {
         TestJwtServiceCreateTokenRsa.beforeClass();
         Assert.assertTrue("Keyfile should be deleted", new File(TestJwtServiceCreateTokenRsa.OUT_PUB_KEY).delete());
 
-        withTempAlorithm("RS256", () -> withTempField("pubKey", Paths.get(TestJwtServiceCreateTokenRsa.OUT_PUB_KEY), this::reloadTokenService));
+        try {
+            withTempField("algorithm", "RS256", () ->
+                    withTempField("pubKey", Paths.get(TestJwtServiceCreateTokenRsa.OUT_PUB_KEY), this::reloadTokenService)
+            );
+        } catch (RuntimeException rex) {
+            Assert.assertTrue(NoSuchFileException.class.isInstance(rex.getCause()));
+        }
     }
 
     private void reloadTokenService() {
         try {
-            ((InitializingBean) jwtTokenService).afterPropertiesSet();
+            jwtTokenService.afterPropertiesSet();
+        } catch (RuntimeException rex) {
+            throw rex;
         } catch (Exception e) {
-            throw new IllegalStateException(e);
+            throw new RuntimeException(e);
         }
+    }
+
+    private void checkRefreshLengthDefault() {
+        reloadTokenService();
+        Assert.assertEquals((long) JwtTokenServiceImpl.REFRESH_TOKEN_LEN_DEFAULT, (long) jwtTokenService.getRefreshLength());
     }
 
     @Test
     public void testRefreshTokenLengthTooSmall() throws Exception {
-        Field refreshLength = JwtTokenServiceImpl.class.getDeclaredField("refreshLength");
-        refreshLength.setAccessible(true);
-        Object oldValue = refreshLength.get(jwtTokenService);
-        try {
-            refreshLength.set(jwtTokenService, -1);
-            ((InitializingBean) jwtTokenService).afterPropertiesSet();
-        } finally {
-            refreshLength.set(jwtTokenService, oldValue);
-        }
+        withTempField("refreshLength", -1, this::checkRefreshLengthDefault);
     }
 
     @Test
     public void testRefreshTokenLengthTooLarge() throws Exception {
-        Field refreshLength = JwtTokenServiceImpl.class.getDeclaredField("refreshLength");
-        refreshLength.setAccessible(true);
-        Object oldValue = refreshLength.get(jwtTokenService);
-        try {
-            refreshLength.set(jwtTokenService, Integer.MAX_VALUE);
-            ((InitializingBean) jwtTokenService).afterPropertiesSet();
-        } finally {
-            refreshLength.set(jwtTokenService, oldValue);
-        }
-    }
-
-    @Test
-    public void testGenerateRefreshToken() {
-        Assert.assertNotNull("Token should be generated", jwtTokenService.generateRefreshToken("jsmith"));
+        withTempField("refreshLength", 10000000, this::checkRefreshLengthDefault);
     }
 
     @Test
@@ -205,33 +200,5 @@ public class TestJwtServiceOther extends AbstractTest {
     public void testParseUserGarbageToken() throws Exception {
         final String token = "y51bGx9.eyJzdWIiTh9.Nsf-8lD724MOIXE";
         Assert.assertFalse("No user should be returned", jwtTokenService.parseUser(token).isPresent());
-    }
-
-
-    private void withTempField(String fieldname, Object value, Runnable callback) {
-        try {
-            final Field field = JwtTokenServiceImpl.class.getDeclaredField(fieldname);
-            field.setAccessible(true);
-            Object oldValue = field.get(jwtTokenService);
-            try {
-                field.set(jwtTokenService, value);
-                callback.run();
-            } finally {
-                field.set(jwtTokenService, oldValue);
-                callback.run();
-            }
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    private void withTempAlorithm(Object value, Runnable callback) throws Throwable {
-        try {
-            withTempField("algorithm", value, callback);
-        } catch (RuntimeException rex) {
-            Throwable tmp = rex;
-            while (tmp.getCause() != null) tmp = tmp.getCause();
-            throw tmp;
-        }
     }
 }

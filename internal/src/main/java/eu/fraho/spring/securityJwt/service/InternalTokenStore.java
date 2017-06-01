@@ -1,8 +1,13 @@
+/*
+ * MIT Licence
+ * Copyright (c) 2017 Simon Frankenberger
+ *
+ * Please see LICENCE.md for complete licence text.
+ */
 package eu.fraho.spring.securityJwt.service;
 
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
@@ -13,7 +18,6 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 @Slf4j
-@Getter
 public class InternalTokenStore implements RefreshTokenStore {
     @Value("${fraho.jwt.refresh.expiration:" + JwtTokenServiceImpl.DEFAULT_REFRESH_EXPIRATION + "}")
     private TimeWithPeriod refreshExpiration = new TimeWithPeriod(JwtTokenServiceImpl.DEFAULT_REFRESH_EXPIRATION);
@@ -118,5 +122,10 @@ public class InternalTokenStore implements RefreshTokenStore {
                 .expirationPolicy(ExpirationPolicy.CREATED)
                 .expiration(refreshExpiration.getQuantity(), refreshExpiration.getTimeUnit())
                 .build();
+    }
+
+    @Override
+    public TimeWithPeriod getRefreshExpiration() {
+        return refreshExpiration;
     }
 }

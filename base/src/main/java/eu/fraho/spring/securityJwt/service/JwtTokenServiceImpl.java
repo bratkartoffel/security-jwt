@@ -16,8 +16,6 @@ import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 import eu.fraho.spring.securityJwt.exceptions.FeatureNotConfiguredException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.aop.framework.Advised;
-import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,7 +49,6 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     public static final String DEFAULT_EXPIRATION = "1 hour";
     public static final int DEFAULT_MAX_DEVICE_ID_LENGTH = 32;
     public static final String DEFAULT_REFRESH_EXPIRATION = "1 day";
-    public static final String DEFAULT_CACHE_IMPL = "#{null}";
     public static final String DEFAULT_CACHE_PREFIX = "fraho-refresh";
 
     public static final int REFRESH_TOKEN_LEN_MIN = 12;
@@ -100,6 +97,11 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     @Override
     public Integer getRefreshExpiration() {
         return refreshTokenStore.getRefreshExpiration().toSeconds();
+    }
+
+    @Override
+    public Integer getRefreshLength() {
+        return refreshLength;
     }
 
     @Override
@@ -284,6 +286,11 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     }
 
     @Override
+    public boolean isRefreshTokenSupported() {
+        return !NullTokenStore.class.isInstance(refreshTokenStore);
+    }
+
+    @Override
     public boolean useRefreshToken(String username, RefreshToken token) {
         return useRefreshToken(username, token.getDeviceId(), token.getToken());
     }
@@ -326,22 +333,5 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     @Override
     public int clearTokens() {
         return refreshTokenStore.revokeTokens();
-    }
-
-    Class<? extends RefreshTokenStore> getInternalRefreshTokenStoreType() {
-        return getInternalRefreshTokenStore().getClass();
-    }
-
-    RefreshTokenStore getInternalRefreshTokenStore() {
-        if (AopUtils.isJdkDynamicProxy(refreshTokenStore)) {
-            try {
-                return (RefreshTokenStore) ((Advised) refreshTokenStore).getTargetSource().getTarget();
-            } catch (Exception e) {
-                log.error("Unable to get proxy target", e);
-                return refreshTokenStore;
-            }
-        } else {
-            return refreshTokenStore;
-        }
     }
 }

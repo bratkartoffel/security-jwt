@@ -99,6 +99,7 @@ gradlew.bat assemble
 * Changes are welcome, but please use pull requests with separate branches
 * TravisCI has to pass before merging
 * Code coverage should stay about the same level (please write tests for new features!)
+* When writing new modules please use my abstract testclasses which provide a great base (see [internal](internal/src/test/eu/fraho/securityJwt) for an example)
 
 # Releasing
 ```bash

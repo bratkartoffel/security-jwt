@@ -1,3 +1,9 @@
+/*
+ * MIT Licence
+ * Copyright (c) 2017 Simon Frankenberger
+ *
+ * Please see LICENCE.md for complete licence text.
+ */
 package eu.fraho.spring.securityJwt.service;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -30,9 +36,6 @@ public class RegisterRefreshTokenStore implements InitializingBean {
         }
         BeanDefinitionRegistry registry = ((BeanDefinitionRegistry) factory);
 
-        if (registry.containsBeanDefinition(BEAN_NAME)) {
-            registry.removeBeanDefinition(BEAN_NAME);
-        }
         GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
         beanDefinition.setBeanClass(refreshTokenStoreImpl);
         beanDefinition.setLazyInit(false);
@@ -41,9 +44,5 @@ public class RegisterRefreshTokenStore implements InitializingBean {
         beanDefinition.setScope(AbstractBeanDefinition.SCOPE_DEFAULT);
 
         registry.registerBeanDefinition(BEAN_NAME, beanDefinition);
-    }
-
-    public Class<? extends RefreshTokenStore> getRefreshTokenStoreImpl() {
-        return refreshTokenStoreImpl;
     }
 }

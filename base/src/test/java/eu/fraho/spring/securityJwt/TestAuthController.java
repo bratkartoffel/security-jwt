@@ -1,3 +1,9 @@
+/*
+ * MIT Licence
+ * Copyright (c) 2017 Simon Frankenberger
+ *
+ * Please see LICENCE.md for complete licence text.
+ */
 package eu.fraho.spring.securityJwt;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -39,12 +45,12 @@ public class TestAuthController extends AbstractTest {
     public static final String AUTH_LOGIN = "/auth/login";
     public static final String AUTH_REFRESH = "/auth/refresh";
     @Autowired
-    private WebApplicationContext context;
+    protected WebApplicationContext context;
     @Autowired
-    private Filter springSecurityFilterChain;
+    protected Filter springSecurityFilterChain;
     @Autowired
-    private TotpServiceImpl totpService;
-    private MockMvc mockMvc;
+    protected TotpServiceImpl totpService;
+    protected MockMvc mockMvc;
 
     @BeforeClass
     public static void beforeClass() throws IOException {

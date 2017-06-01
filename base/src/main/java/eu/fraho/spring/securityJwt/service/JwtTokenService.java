@@ -74,6 +74,19 @@ public interface JwtTokenService {
     Integer getRefreshExpiration();
 
     /**
+     * @return The length of the raw refresh tokens in bytes
+     */
+    Integer getRefreshLength();
+
+    /**
+     * Gracefully ask this service if refresh token support is enabled
+     * by a third-party addon.
+     *
+     * @return {@code true} when refresh tokens are supported
+     */
+    boolean isRefreshTokenSupported();
+
+    /**
      * Generate a simple refresh token using the default device id. This token is not a "normal" JWT.
      * It's just a base64-encoded string of random data.
      * Returns {@code null} if the property {@code fraho.jwt.refresh.enabled} is set to {@code false}.

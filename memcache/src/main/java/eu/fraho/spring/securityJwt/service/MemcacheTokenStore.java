@@ -1,9 +1,14 @@
+/*
+ * MIT Licence
+ * Copyright (c) 2017 Simon Frankenberger
+ *
+ * Please see LICENCE.md for complete licence text.
+ */
 package eu.fraho.spring.securityJwt.service;
 
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 import eu.fraho.spring.securityJwt.exceptions.JwtRefreshException;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.spy.memcached.MemcachedClient;
 import net.spy.memcached.internal.OperationFuture;
@@ -19,7 +24,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Getter
 public class MemcacheTokenStore implements RefreshTokenStore {
     private static final String DEFAULT_MEMCACHE_HOST = "127.0.0.1";
     private static final int DEFAULT_MEMCACHE_PORT = 11211;
@@ -177,5 +181,14 @@ public class MemcacheTokenStore implements RefreshTokenStore {
 
         log.info("Starting memcache connection to {}:{}", cacheHost, cachePort);
         memcachedClient = new MemcachedClient(new InetSocketAddress(cacheHost, cachePort));
+    }
+
+    @Override
+    public TimeWithPeriod getRefreshExpiration() {
+        return refreshExpiration;
+    }
+
+    public MemcachedClient getMemcachedClient() {
+        return memcachedClient;
     }
 }

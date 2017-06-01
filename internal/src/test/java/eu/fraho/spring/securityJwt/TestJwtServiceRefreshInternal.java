@@ -1,8 +1,15 @@
-package eu.fraho.spring.securityJwt.tokenService;
+/*
+ * MIT Licence
+ * Copyright (c) 2017 Simon Frankenberger
+ *
+ * Please see LICENCE.md for complete licence text.
+ */
+package eu.fraho.spring.securityJwt;
 
-import eu.fraho.spring.securityJwt.AbstractTest;
 import eu.fraho.spring.securityJwt.service.InternalTokenStore;
+import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
 import eu.fraho.spring.securityJwt.spring.TestApiApplication;
+import eu.fraho.spring.securityJwt.tokenService.AbstractRefreshTokenTest;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +18,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -23,13 +31,17 @@ import java.io.IOException;
         classes = TestApiApplication.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TestJwtServiceRefreshInternal extends AbstractRefreshTokenTest {
+    @Autowired
+    private RefreshTokenStore refreshTokenStore;
+
     @BeforeClass
     public static void beforeClass() throws IOException {
         AbstractTest.beforeHmacClass();
     }
 
     @Test
+    @Override
     public void checkCorrectImplementationInUse() {
-        Assert.assertEquals("Wrong implementation loaded", InternalTokenStore.class, getTokenStoreType());
+        Assert.assertEquals("Wrong implementation loaded", InternalTokenStore.class, refreshTokenStore.getClass());
     }
 }
