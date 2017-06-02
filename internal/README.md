@@ -1,4 +1,4 @@
-# In-Memory refresh token support for [security-jwt](../)
+# In-Memory refresh token support for security-jwt
 
 This module adds support for storing refresh tokens within an in-memory storage.
 

@@ -1,4 +1,4 @@
-# Memcache refresh token support for [security-jwt](../)
+# Memcache refresh token support for security-jwt
 
 This module adds support for storing refresh tokens at an external memcache server.
 

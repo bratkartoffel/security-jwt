@@ -1,4 +1,4 @@
-# Hibernate refresh token support for [security-jwt](../)
+# Hibernate refresh token support for security-jwt
 
 This module adds support for storing refresh tokens within
 your applications database.
