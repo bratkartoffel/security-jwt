@@ -14,7 +14,16 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * This class specifies a quanitity of periods.
- * Used for the configuration to provide some human readable values for the expiration settings.
+ * Used for the configuration to provide some human readable values for the expiration settings.<br>
+ * Just specify them like this: {@code fraho.jwt.example: 1 hour} or {@code fraho.jwt.example: 45 minutes}<br>
+ * <br>
+ * Example values:
+ * <ul>
+ * <li>1 hour</li>
+ * <li>42 seconds</li>
+ * <li>1 day</li>
+ * <li>7 days</li>
+ * </ul>
  *
  * @see #TimeWithPeriod(String)
  * @see #TimeWithPeriod(int, TimeUnit)
@@ -35,13 +44,6 @@ public class TimeWithPeriod {
 
     /**
      * Parse the given configuration value and extract the {@link #quantity} and {@link #timeUnit}.<br>
-     * Example values:
-     * <ul>
-     * <li>1 hour</li>
-     * <li>42 seconds</li>
-     * <li>1 day</li>
-     * <li>7 days</li>
-     * </ul>
      *
      * @param value A string representation like &quot;&lt;quantity&gt; &lt;timeUnit&gt;&quot;
      */
