@@ -6,6 +6,8 @@
  */
 package eu.fraho.spring.securityJwt.dto;
 
+import lombok.Getter;
+
 /**
  * Configuration of available crypt-algorithms.
  *
@@ -15,6 +17,7 @@ package eu.fraho.spring.securityJwt.dto;
  * @see #SHA512
  */
 @SuppressWarnings("unused")
+@Getter
 public enum CryptAlgorithm {
     /**
      * Use classic DES crypt (insecure, no rounds supported)
@@ -46,21 +49,5 @@ public enum CryptAlgorithm {
         this.roundsSupported = roundsSupported;
         this.prefix = prefix;
         this.saltLength = saltLength;
-    }
-
-    public boolean isInsecure() {
-        return insecure;
-    }
-
-    public boolean isRoundsSupported() {
-        return roundsSupported;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public int getSaltLength() {
-        return saltLength;
     }
 }
