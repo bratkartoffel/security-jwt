@@ -16,7 +16,6 @@ import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 import eu.fraho.spring.securityJwt.exceptions.FeatureNotConfiguredException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -288,7 +287,12 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
 
     @Override
     public boolean isRefreshTokenSupported() {
-        return !AopUtils.getTargetClass(refreshTokenStore).isAssignableFrom(NullTokenStore.class);
+        try {
+            refreshTokenStore.getRefreshExpiration();
+            return true;
+        } catch (FeatureNotConfiguredException fnce) {
+            return false;
+        }
     }
 
     @Override
