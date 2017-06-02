@@ -45,9 +45,9 @@ public class TestController extends AbstractTest {
     public static final String API_USER = "/api/user";
     public static final String HELLO_WORLD = "Hello world!";
     @Autowired
-    private WebApplicationContext context;
+    private WebApplicationContext context = null;
     @Autowired
-    private Filter springSecurityFilterChain;
+    private Filter springSecurityFilterChain = null;
     private MockMvc mockMvc;
 
     @BeforeClass
