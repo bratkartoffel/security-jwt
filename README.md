@@ -59,7 +59,7 @@ For details on the usage of the plugins please see the README within the relevan
 # Usage
 * Add the dependencies to your build script
 * Configure your boot application to pick up our components (add "eu.fraho.spring.securityJwt" to the scanBasePackages field of your ```@SpringBootApplication```)
-* Add the BouncyCastle Provider (e.g. within the [main-Method](base/src/test/java/eu/fraho/spring/securityJwt/spring/TestApiApplication.java))
+* Add the BouncyCastle Provider (e.g. within the [main-Method](base/src/test/java/eu/fraho/spring/securityJwt/AbstractTest.java))
 * Create an implementation of UserDetailsService that returns an instance of [JwtUser](base/src/main/java/eu/fraho/spring/securityJwt/dto/JwtUser.java)
 * Optionally use my enhanced PasswordEncoder as a ```@Bean```
 * Configure at least the JWT secrets (public + private keys or a hmac keyfile) in your ```application.yml```
