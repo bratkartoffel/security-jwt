@@ -85,7 +85,6 @@ public class TimeWithPeriod {
         if (o == null || !(o instanceof TimeWithPeriod)) {
             return false;
         }
-
-        return toSeconds() == ((TimeWithPeriod) o).toSeconds();
+        return (toSeconds() == ((TimeWithPeriod) o).toSeconds());
     }
 }

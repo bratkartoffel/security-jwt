@@ -4,7 +4,7 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.securityJwt;
+package eu.fraho.spring.securityJwt.dto;
 
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 import org.junit.Assert;

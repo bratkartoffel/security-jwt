@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Getter
-@Setter(AccessLevel.NONE)
 @Slf4j
 public abstract class AbstractRefreshTokenTest extends AbstractTest {
     @Before
@@ -211,4 +210,18 @@ public abstract class AbstractRefreshTokenTest extends AbstractTest {
 
     @Test
     public abstract void checkCorrectImplementationInUse();
+
+    @Test
+    public void testUseRefreshTokenOnlyStrings() {
+        String jsmith = "jsmith";
+
+        RefreshToken tokenA = jwtTokenService.generateRefreshToken(jsmith);
+        RefreshToken tokenB = jwtTokenService.generateRefreshToken(jsmith, "foobar");
+
+        final List<RefreshToken> tokens = jwtTokenService.listRefreshTokens(jsmith);
+        Assert.assertEquals("Token count don't match", 2, tokens.size());
+
+        Assert.assertTrue("Token should be used", jwtTokenService.useRefreshToken(jsmith, tokenA.getToken()));
+        Assert.assertEquals("Wrong token used", tokenB, jwtTokenService.listRefreshTokens(jsmith).get(0));
+    }
 }

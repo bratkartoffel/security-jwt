@@ -4,25 +4,29 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.securityJwt;
+package eu.fraho.spring.securityJwt.controller;
 
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.io.IOException;
 import java.util.Map;
 
 @Getter
-@Setter(AccessLevel.NONE)
 @Slf4j
-public abstract class TestAuthControllerRefresh extends TestAuthController {
+public abstract class AbstractTestAuthControllerWithRefresh extends AbstractTestAuthController {
+    @BeforeClass
+    public static void beforeClass() throws IOException {
+        AbstractTestAuthController.beforeClass();
+    }
+
     @Test
     public void testLoginSuccess() throws Exception {
         MockHttpServletRequestBuilder req;
@@ -58,7 +62,6 @@ public abstract class TestAuthControllerRefresh extends TestAuthController {
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized())
                 .andReturn();
     }
-
 
     @Test
     public void testRefreshDisabledAccount() throws Exception {

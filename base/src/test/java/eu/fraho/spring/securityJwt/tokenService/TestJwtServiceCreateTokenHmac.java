@@ -25,7 +25,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 @Getter
-@Setter(AccessLevel.NONE)
 @Slf4j
 @SpringBootTest(properties = "spring.config.location=classpath:test-hmac.yaml",
         classes = TestApiApplication.class)

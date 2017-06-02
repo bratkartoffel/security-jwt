@@ -4,12 +4,11 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.securityJwt;
+package eu.fraho.spring.securityJwt.service;
 
+import eu.fraho.spring.securityJwt.AbstractTest;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
-import eu.fraho.spring.securityJwt.service.MemcacheTokenStore;
-import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
 import eu.fraho.spring.securityJwt.spring.TestApiApplication;
 import eu.fraho.spring.securityJwt.tokenService.AbstractRefreshTokenTest;
 import lombok.AccessLevel;
@@ -36,9 +35,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Getter
-@Setter(AccessLevel.NONE)
 @Slf4j
-@SpringBootTest(properties = "spring.config.location=classpath:memcache-test-refresh.yaml",
+@SpringBootTest(properties = "spring.config.location=classpath:memcache-test.yaml",
         classes = TestApiApplication.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TestJwtServiceRefreshMemcache extends AbstractRefreshTokenTest {

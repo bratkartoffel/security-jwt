@@ -188,7 +188,7 @@ public class MemcacheTokenStore implements RefreshTokenStore {
         return refreshExpiration;
     }
 
-    public MemcachedClient getMemcachedClient() {
+    MemcachedClient getMemcachedClient() {
         return memcachedClient;
     }
 }
