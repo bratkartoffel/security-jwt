@@ -8,8 +8,10 @@ package eu.fraho.spring.securityJwt.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nimbusds.jwt.JWTClaimsSet;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,7 +21,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode(of = {"id", "username"})
 @NoArgsConstructor
 public class JwtUser implements UserDetails, CredentialsContainer {
     private Long id = -1L;

@@ -15,7 +15,7 @@ import net.jcip.annotations.Immutable;
 @Getter
 @Immutable
 @EqualsAndHashCode(callSuper = true)
-public class AccessToken extends Token {
+public final class AccessToken extends Token {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private final String type = "Bearer";
 

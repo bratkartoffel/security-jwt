@@ -6,7 +6,7 @@
  */
 package eu.fraho.spring.securityJwt.dto;
 
-import lombok.Value;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.jcip.annotations.Immutable;
 
@@ -28,10 +28,10 @@ import java.util.concurrent.TimeUnit;
  * @see #TimeWithPeriod(String)
  * @see #TimeWithPeriod(int, TimeUnit)
  */
-@Value
+@Getter
 @Slf4j
 @Immutable
-public class TimeWithPeriod {
+public final class TimeWithPeriod {
     /**
      * Quantity of the {@link #timeUnit}
      */

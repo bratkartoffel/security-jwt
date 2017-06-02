@@ -9,7 +9,6 @@ package eu.fraho.spring.securityJwt.service;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.dto.RefreshTokenEntity;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
-import eu.fraho.spring.securityJwt.exceptions.JwtRefreshException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,11 +35,11 @@ public class HibernateTokenStore implements RefreshTokenStore {
     public void saveToken(String username, String deviceId, String token) {
         revokeToken(username, deviceId);
         RefreshTokenEntity entity = new RefreshTokenEntity(username, deviceId, token);
-        try {
+
+        exceptionWrapper("Could not persist refresh token", () -> {
             em.persist(entity);
-        } catch (Exception ex) {
-            throw new JwtRefreshException("Could not persist refresh token", ex);
-        }
+            return entity;
+        });
     }
 
     @Override
@@ -53,11 +52,7 @@ public class HibernateTokenStore implements RefreshTokenStore {
         query.setParameter("token", token);
         setExpiration(query);
 
-        try {
-            return query.executeUpdate() != 0;
-        } catch (Exception ex) {
-            throw new JwtRefreshException("Could not use refresh token", ex);
-        }
+        return exceptionWrapper("Could not use refresh token", query::executeUpdate) != 0;
     }
 
     @Override
@@ -68,11 +63,8 @@ public class HibernateTokenStore implements RefreshTokenStore {
         query.setParameter("username", username);
         setExpiration(query);
 
-        try {
-            return query.getResultList().stream().map(e -> new RefreshToken(e.getToken(), calculateExpiration(e.getCreated()), e.getDeviceId())).collect(Collectors.toList());
-        } catch (Exception ex) {
-            throw new JwtRefreshException("Could not list refresh token", ex);
-        }
+        List<RefreshTokenEntity> result = exceptionWrapper("Could not list refresh token", query::getResultList);
+        return result.stream().map(e -> new RefreshToken(e.getToken(), calculateExpiration(e.getCreated()), e.getDeviceId())).collect(Collectors.toList());
     }
 
     private int calculateExpiration(ZonedDateTime created) {
@@ -90,17 +82,14 @@ public class HibernateTokenStore implements RefreshTokenStore {
         final TypedQuery<RefreshTokenEntity> query = em.createQuery("SELECT o FROM RefreshTokenEntity o WHERE " +
                 "created >= :expiration", RefreshTokenEntity.class);
         setExpiration(query);
-        try {
-            final List<RefreshTokenEntity> tokens = query.getResultList();
-            final Map<String, List<RefreshToken>> result = new HashMap<>();
 
-            tokens.forEach(e -> result.computeIfAbsent(e.getUsername(), s -> new ArrayList<>())
-                    .add(new RefreshToken(e.getToken(), calculateExpiration(e.getCreated()), e.getDeviceId())));
-            result.replaceAll((s, t) -> Collections.unmodifiableList(t));
-            return Collections.unmodifiableMap(result);
-        } catch (Exception ex) {
-            throw new JwtRefreshException("Could not list refresh token", ex);
-        }
+        final List<RefreshTokenEntity> tokens = exceptionWrapper("Could not list refresh token", query::getResultList);
+        final Map<String, List<RefreshToken>> result = new HashMap<>();
+
+        tokens.forEach(e -> result.computeIfAbsent(e.getUsername(), s -> new ArrayList<>())
+                .add(new RefreshToken(e.getToken(), calculateExpiration(e.getCreated()), e.getDeviceId())));
+        result.replaceAll((s, t) -> Collections.unmodifiableList(t));
+        return Collections.unmodifiableMap(result);
     }
 
     @Override
@@ -117,11 +106,7 @@ public class HibernateTokenStore implements RefreshTokenStore {
         query.setParameter("username", username);
         query.setParameter("deviceId", deviceId);
 
-        try {
-            return query.executeUpdate() != 0;
-        } catch (Exception ex) {
-            throw new JwtRefreshException("Could not revoke refresh token", ex);
-        }
+        return exceptionWrapper("Could not revoke refresh token", query::executeUpdate) != 0;
     }
 
     @Override
@@ -131,23 +116,14 @@ public class HibernateTokenStore implements RefreshTokenStore {
                 "username = :username");
         query.setParameter("username", username);
 
-        try {
-            return query.executeUpdate();
-        } catch (Exception ex) {
-            throw new JwtRefreshException("Could not revoke refresh token", ex);
-        }
+        return exceptionWrapper("Could not revoke refresh tokens", query::executeUpdate);
     }
 
     @Override
     @Transactional
     public int revokeTokens() {
         final Query query = em.createQuery("DELETE RefreshTokenEntity");
-
-        try {
-            return query.executeUpdate();
-        } catch (Exception ex) {
-            throw new JwtRefreshException("Could not revoke refresh token", ex);
-        }
+        return exceptionWrapper("Could not revoke refresh tokens", query::executeUpdate);
     }
 
     @Override

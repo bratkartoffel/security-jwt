@@ -15,7 +15,7 @@ import net.jcip.annotations.Immutable;
 @Getter
 @Immutable
 @EqualsAndHashCode(callSuper = true)
-public class RefreshToken extends Token {
+public final class RefreshToken extends Token {
     private final String deviceId;
 
     @JsonCreator

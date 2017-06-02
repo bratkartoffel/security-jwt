@@ -6,7 +6,6 @@
  */
 package eu.fraho.spring.securityJwt.dto;
 
-import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 import org.junit.Assert;
 import org.junit.Test;
 

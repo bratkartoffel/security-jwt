@@ -72,12 +72,7 @@ public class AuthenticationRestController {
 
         log.debug("Generating tokens");
         final AccessToken accessToken = jwtTokenUtil.generateToken(userDetails);
-        final RefreshToken refreshToken;
-        if (jwtTokenUtil.isRefreshTokenSupported()) {
-            refreshToken = jwtTokenUtil.generateRefreshToken(refreshRequest.getUsername(), refreshRequest.getDeviceId().orElse(null));
-        } else {
-            refreshToken = null;
-        }
+        final RefreshToken refreshToken = jwtTokenUtil.generateRefreshToken(refreshRequest.getUsername(), refreshRequest.getDeviceId().orElse(null));
 
         // Return the token
         JwtAuthenticationResponse body = new JwtAuthenticationResponse(accessToken, refreshToken);

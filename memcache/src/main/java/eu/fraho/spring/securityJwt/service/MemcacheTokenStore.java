@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -42,14 +43,20 @@ public class MemcacheTokenStore implements RefreshTokenStore {
 
     private MemcachedClient memcachedClient = null;
 
+    private <T> T getAndWait(String message, Supplier<OperationFuture<T>> action) {
+        try {
+            return action.get().get(cacheTimeout, TimeUnit.SECONDS);
+        } catch (TimeoutException | InterruptedException | ExecutionException e) {
+            throw new JwtRefreshException(message, e);
+        }
+    }
+
     @Override
     public void saveToken(String username, String deviceId, String token) {
         String key = String.format("%s:%s:%s", refreshCachePrefix, username, deviceId);
-        try {
-            memcachedClient.set(key, refreshExpiration.toSeconds(), token).get(cacheTimeout, TimeUnit.SECONDS);
-        } catch (TimeoutException | InterruptedException | ExecutionException e) {
-            throw new JwtRefreshException("Error while saving refresh token on memcache server", e);
-        }
+
+        getAndWait("Error while saving refresh token on memcache server", () ->
+                memcachedClient.set(key, refreshExpiration.toSeconds(), token));
     }
 
     @Override
@@ -59,11 +66,8 @@ public class MemcacheTokenStore implements RefreshTokenStore {
         final byte[] toCheck = token.getBytes(StandardCharsets.UTF_8);
 
         if (tokenEquals(stored, toCheck)) {
-            try {
-                return memcachedClient.delete(key).get(cacheTimeout, TimeUnit.SECONDS);
-            } catch (TimeoutException | InterruptedException | ExecutionException e) {
-                throw new JwtRefreshException("Error while deleting refresh token on memcache server", e);
-            }
+            return getAndWait("Error while deleting refresh token on memcache server", () ->
+                    memcachedClient.delete(key));
         }
 
         return false;
@@ -155,17 +159,14 @@ public class MemcacheTokenStore implements RefreshTokenStore {
                 deviceId.map(Pattern::quote).orElse("[^:]+"));
 
         final List<String> keys = listAllKeys(filter);
-        final List<OperationFuture> futures = new ArrayList<>();
+        final List<OperationFuture<Boolean>> futures = new ArrayList<>();
         for (String key : keys) {
             futures.add(memcachedClient.delete(key));
         }
 
         int count = keys.size();
-        for (OperationFuture future : futures) {
-            try {
-                future.get(cacheTimeout, TimeUnit.SECONDS);
-            } catch (TimeoutException | InterruptedException | ExecutionException e) {
-                log.error("Error while deleting refresh token on memcache server", e);
+        for (OperationFuture<Boolean> future : futures) {
+            if (!getAndWait("Error while saving refresh token on memcache server", () -> future)) {
                 count--;
             }
         }
