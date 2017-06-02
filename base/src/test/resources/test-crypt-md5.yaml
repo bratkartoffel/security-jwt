@@ -1,7 +1,0 @@
-fraho:
-  crypt:
-    algorithm: MD5
-  jwt:
-    token:
-      algorithm: HS256
-      hmac: build/hmac-hs256.key

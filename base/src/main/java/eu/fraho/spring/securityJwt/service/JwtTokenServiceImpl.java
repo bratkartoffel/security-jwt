@@ -20,6 +20,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,7 +43,21 @@ import java.util.*;
 @Component
 @Slf4j
 public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
+    public static final String DEFAULT_DEVICE_ID = "__default";
+    public static final String DEFAULT_ALGORITHM = "ES256";
+    public static final String DEFAULT_ISSUER = "fraho-security";
+    public static final String DEFAULT_EXPIRATION = "1 hour";
+    public static final int DEFAULT_MAX_DEVICE_ID_LENGTH = 32;
+    public static final String DEFAULT_REFRESH_EXPIRATION = "1 day";
+    public static final String DEFAULT_CACHE_PREFIX = "fraho-refresh";
+
+    public static final int REFRESH_TOKEN_LEN_MIN = 12;
+    public static final int REFRESH_TOKEN_LEN_DEFAULT = 24;
+    public static final int REFRESH_TOKEN_LEN_MAX = 48;
+
     private final SecureRandom random = new SecureRandom();
+    @Autowired
+    private ApplicationContext applicationContext = null;
     @Autowired
     private AutowireCapableBeanFactory autowireCapableBeanFactory = null;
     @Value("${fraho.jwt.token.algorithm:" + DEFAULT_ALGORITHM + "}")
@@ -60,8 +76,8 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     private Integer refreshLength = REFRESH_TOKEN_LEN_DEFAULT;
     @Value("${fraho.jwt.refresh.deviceIdLength:" + DEFAULT_MAX_DEVICE_ID_LENGTH + "}")
     private Integer maxDeviceIdLength = DEFAULT_MAX_DEVICE_ID_LENGTH;
-    @Value("${fraho.jwt.refresh.cache.impl:" + DEFAULT_CACHE_IMPL + "}")
-    private Class<? extends RefreshTokenStore> refreshTokenStoreImpl = null;
+    @Autowired
+    @Lazy
     private RefreshTokenStore refreshTokenStore = null;
     private transient volatile JWSSigner signer = null;
     private JWSVerifier verifier;
@@ -84,8 +100,15 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     }
 
     @Override
+    public Integer getRefreshLength() {
+        return refreshLength;
+    }
+
+    @Override
     public void afterPropertiesSet() throws Exception {
         log.debug("Initializing");
+        signer = null;
+        verifier = null;
 
         // parse the signature algorithm
         signatureAlgorithm = JWSAlgorithm.parse(algorithm);
@@ -154,16 +177,6 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
 
         if (signer == null) {
             log.warn("No private key specified. This service may neither issue new tokens nor use refresh tokens.");
-        }
-
-        if (refreshTokenStoreImpl != null) {
-            log.debug("Using refresh token store implementation: {}", refreshTokenStoreImpl);
-            refreshTokenStore = refreshTokenStoreImpl.newInstance();
-            autowireCapableBeanFactory.autowireBean(refreshTokenStore);
-            refreshTokenStore.afterPropertiesSet();
-        } else {
-            log.debug("Disabling refresh token store, no implementation specified");
-            refreshTokenStore = new NullTokenStore();
         }
     }
 
@@ -258,10 +271,6 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
 
     @Override
     public RefreshToken generateRefreshToken(String user, String deviceId) {
-        if (refreshTokenStore instanceof NullTokenStore) {
-            return null;
-        }
-
         final String devId = truncateDeviceId(deviceId);
         byte[] data = new byte[refreshLength];
         random.nextBytes(data);
@@ -274,6 +283,11 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     @Override
     public boolean useRefreshToken(String username, String refreshToken) {
         return useRefreshToken(username, DEFAULT_DEVICE_ID, refreshToken);
+    }
+
+    @Override
+    public boolean isRefreshTokenSupported() {
+        return !NullTokenStore.class.isInstance(refreshTokenStore);
     }
 
     @Override
@@ -319,13 +333,5 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     @Override
     public int clearTokens() {
         return refreshTokenStore.revokeTokens();
-    }
-
-    Class<? extends RefreshTokenStore> getInternalRefreshTokenStoreType() {
-        return refreshTokenStoreImpl;
-    }
-
-    RefreshTokenStore getInternalRefreshTokenStore() {
-        return refreshTokenStore;
     }
 }

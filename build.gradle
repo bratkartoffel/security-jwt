@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        projectVersion = '0.6.0'
+        projectVersion = '0.7.0'
     }
     repositories {
         mavenCentral()
@@ -38,6 +38,7 @@ subprojects {
             bouncyCastleVersion = '[1.57,2.0['
             spyMemcachedVersion = '[2.12,3.0['
             expiringMapVersion = '[0.5,1.0['
+            h2Version = '[1.4,2.0['
         }
         repositories {
             mavenCentral()
@@ -49,7 +50,6 @@ subprojects {
         testCompile('org.springframework.boot:spring-boot-starter-test')
         testCompile('org.springframework:spring-aspects')
         testCompile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-        testCompile("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
     }
 
     // release stuff
@@ -64,8 +64,14 @@ subprojects {
         from sourceSets.main.allSource
     }
 
+    task testsJar(type: Jar) {
+        classifier = 'tests'
+        from sourceSets.test.output
+        from sourceSets.test.allSource
+    }
+
     artifacts {
-        archives javadocJar, sourcesJar
+        archives javadocJar, sourcesJar, testsJar
     }
 
     // code coverage

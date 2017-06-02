@@ -1,8 +1,0 @@
-fraho:
-  totp:
-    variance: 3
-    length:   8
-  jwt:
-    token:
-      algorithm: HS256
-      hmac: build/hmac-hs256.key

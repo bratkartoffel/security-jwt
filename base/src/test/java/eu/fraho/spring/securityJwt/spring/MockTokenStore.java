@@ -1,3 +1,9 @@
+/*
+ * MIT Licence
+ * Copyright (c) 2017 Simon Frankenberger
+ *
+ * Please see LICENCE.md for complete licence text.
+ */
 package eu.fraho.spring.securityJwt.spring;
 
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
@@ -8,18 +14,22 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class MockTokenStore implements RefreshTokenStore {
+    private Optional<String> activeToken = Optional.empty();
+
     @Override
     public void saveToken(String username, String deviceId, String token) {
-        // ignore
+        activeToken = Optional.of(username + deviceId + token);
     }
 
     @Override
     public boolean useToken(String username, String deviceId, String token) {
-        return false;
+        String toCheck = username + deviceId + token;
+        return activeToken.map(toCheck::equals).orElse(false);
     }
 
     @Override

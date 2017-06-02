@@ -1,3 +1,9 @@
+/*
+ * MIT Licence
+ * Copyright (c) 2017 Simon Frankenberger
+ *
+ * Please see LICENCE.md for complete licence text.
+ */
 package eu.fraho.spring.securityJwt.tokenService;
 
 import eu.fraho.spring.securityJwt.spring.TestApiApplication;
@@ -17,7 +23,6 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 @Getter
-@Setter(AccessLevel.NONE)
 @Slf4j
 @SpringBootTest(properties = "spring.config.location=classpath:test-rsa.yaml",
         classes = TestApiApplication.class)

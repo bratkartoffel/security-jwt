@@ -8,57 +8,56 @@ package eu.fraho.spring.securityJwt.service;
 
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
+import eu.fraho.spring.securityJwt.exceptions.FeatureNotConfiguredException;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class NullTokenStore implements RefreshTokenStore {
     @Override
     public void saveToken(String username, String deviceId, String token) {
-        throw new IllegalStateException("No implementation configured");
+        throw new FeatureNotConfiguredException("No implementation configured");
     }
 
     @Override
     public boolean useToken(String username, String deviceId, String token) {
-        return false;
+        throw new FeatureNotConfiguredException("No implementation configured");
     }
 
     @Override
     public List<RefreshToken> listTokens(String username) {
-        return Collections.emptyList();
+        throw new FeatureNotConfiguredException("No implementation configured");
     }
 
     @Override
     public Map<String, List<RefreshToken>> listTokens() {
-        return Collections.emptyMap();
+        throw new FeatureNotConfiguredException("No implementation configured");
     }
 
     @Override
     public boolean revokeToken(String username, RefreshToken token) {
-        return false;
+        throw new FeatureNotConfiguredException("No implementation configured");
     }
 
     @Override
     public int revokeTokens(String username) {
-        return 0;
+        throw new FeatureNotConfiguredException("No implementation configured");
     }
 
     @Override
     public boolean revokeToken(String username, String deviceId) {
-        return false;
+        throw new FeatureNotConfiguredException("No implementation configured");
     }
 
     @Override
     public int revokeTokens() {
-        return 0;
+        throw new FeatureNotConfiguredException("No implementation configured");
     }
 
     public TimeWithPeriod getRefreshExpiration() {
-        return new TimeWithPeriod(0, TimeUnit.SECONDS);
+        throw new FeatureNotConfiguredException("No implementation configured");
     }
 
     @Override

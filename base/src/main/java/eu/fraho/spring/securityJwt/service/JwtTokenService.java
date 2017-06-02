@@ -11,7 +11,6 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import eu.fraho.spring.securityJwt.dto.AccessToken;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
-import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -19,19 +18,6 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface JwtTokenService {
-    String DEFAULT_DEVICE_ID = "__default";
-    String DEFAULT_ALGORITHM = "ES256";
-    String DEFAULT_ISSUER = "fraho-security";
-    String DEFAULT_EXPIRATION = "1 hour";
-    String DEFAULT_REFRESH_EXPIRATION = "1 day";
-    int DEFAULT_MAX_DEVICE_ID_LENGTH = 32;
-    String DEFAULT_CACHE_PREFIX = "fraho-refresh";
-    String DEFAULT_CACHE_IMPL = "#{null}";
-
-    int REFRESH_TOKEN_LEN_MIN = 12;
-    int REFRESH_TOKEN_LEN_DEFAULT = 24;
-    int REFRESH_TOKEN_LEN_MAX = 48;
-
     /**
      * Parse a token and return the encapsulated user object.
      * See {@link JwtUser#fromClaims(JWTClaimsSet)} for a list of copied / supported attributes.
@@ -86,6 +72,19 @@ public interface JwtTokenService {
      * @return The validity of newly created refresh tokens in seconds
      */
     Integer getRefreshExpiration();
+
+    /**
+     * @return The length of the raw refresh tokens in bytes
+     */
+    Integer getRefreshLength();
+
+    /**
+     * Gracefully ask this service if refresh token support is enabled
+     * by a third-party addon.
+     *
+     * @return {@code true} when refresh tokens are supported
+     */
+    boolean isRefreshTokenSupported();
 
     /**
      * Generate a simple refresh token using the default device id. This token is not a "normal" JWT.

@@ -6,6 +6,7 @@
  */
 package eu.fraho.spring.securityJwt.service;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base32;
 import org.springframework.beans.factory.InitializingBean;
@@ -23,20 +24,27 @@ import java.util.Random;
 @Component
 @Slf4j
 public class TotpServiceImpl implements TotpService, InitializingBean {
+    public static final int TOTP_LENGTH_MIN = 8;
+    public static final int TOTP_LENGTH_DEFAULT = 16;
+    public static final int TOTP_LENGTH_MAX = 32;
+
+    public static final int TOTP_VARIANCE_MIN = 1;
+    public static final int TOTP_VARIANCE_DEFAULT = 3;
+    public static final int TOTP_VARIANCE_MAX = 10;
+
     private final Base32 base32 = new Base32();
     private final Random random = new SecureRandom();
 
     @Value("${fraho.totp.variance:" + TOTP_VARIANCE_DEFAULT + "}")
-    private Integer kmsTotpVariance = TOTP_VARIANCE_DEFAULT;
+    @Getter
+    private Integer totpVariance = TOTP_VARIANCE_DEFAULT;
 
     @Value("${fraho.totp.length:" + TOTP_LENGTH_DEFAULT + "}")
-    private Integer kmsTotpLength = TOTP_LENGTH_DEFAULT;
+    @Getter
+    private Integer totpLength = TOTP_LENGTH_DEFAULT;
 
+    // TODO remove / make package private
     public long getCurrentCodeForTesting(String secret) throws InvalidKeyException, NoSuchAlgorithmException {
-        if (System.getProperty("IN_TESTING") == null) {
-            throw new IllegalStateException("Not in testing mode!");
-        }
-
         return getCode(base32.decode(secret), System.currentTimeMillis() / 1000 / 30);
     }
 
@@ -64,7 +72,7 @@ public class TotpServiceImpl implements TotpService, InitializingBean {
         final byte[] secretBytes = base32.decode(secret);
         boolean result = false;
         try {
-            for (int i = -kmsTotpVariance; i <= kmsTotpVariance; i++) {
+            for (int i = -totpVariance; i <= totpVariance; i++) {
                 if (getCode(secretBytes, timeIndex + i) == code) {
                     result = true;
                     break;
@@ -78,22 +86,22 @@ public class TotpServiceImpl implements TotpService, InitializingBean {
 
     @Override
     public String generateSecret() {
-        final byte[] secret = new byte[kmsTotpLength];
+        final byte[] secret = new byte[totpLength];
         random.nextBytes(secret);
         return base32.encodeToString(secret);
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
-        if (kmsTotpVariance < TOTP_VARIANCE_MIN || kmsTotpVariance > TOTP_VARIANCE_MAX) {
+    public void afterPropertiesSet() {
+        if (totpVariance < TOTP_VARIANCE_MIN || totpVariance > TOTP_VARIANCE_MAX) {
             log.warn("TOTP variance out of bounds ({} <= {} <= {}), forcing to default ({})",
-                    TOTP_VARIANCE_MIN, kmsTotpVariance, TOTP_VARIANCE_MAX, TOTP_VARIANCE_DEFAULT);
-            kmsTotpVariance = TOTP_VARIANCE_DEFAULT;
+                    TOTP_VARIANCE_MIN, totpVariance, TOTP_VARIANCE_MAX, TOTP_VARIANCE_DEFAULT);
+            totpVariance = TOTP_VARIANCE_DEFAULT;
         }
-        if (kmsTotpLength < TOTP_LENGTH_MIN || kmsTotpLength > TOTP_LENGTH_MAX) {
+        if (totpLength < TOTP_LENGTH_MIN || totpLength > TOTP_LENGTH_MAX) {
             log.warn("TOTP length out of bounds ({} <= {} <= {}), forcing to default ({})",
-                    TOTP_LENGTH_MIN, kmsTotpLength, TOTP_LENGTH_MAX, TOTP_LENGTH_DEFAULT);
-            kmsTotpLength = TOTP_LENGTH_DEFAULT;
+                    TOTP_LENGTH_MIN, totpLength, TOTP_LENGTH_MAX, TOTP_LENGTH_DEFAULT);
+            totpLength = TOTP_LENGTH_DEFAULT;
         }
     }
 }

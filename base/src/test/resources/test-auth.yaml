@@ -1,11 +1,1 @@
-fraho:
-  crypt:
-    rounds: 100
-  jwt:
-    token:
-      expiration: 2 seconds
-      algorithm: HS256
-      hmac: build/hmac-hs256.key
-    refresh:
-      expiration: 5 seconds
-      deviceIdLength: 10
+fraho.jwt.refresh.cache.impl: eu.fraho.spring.securityJwt.spring.MockTokenStore

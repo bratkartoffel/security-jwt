@@ -1,3 +1,9 @@
+/*
+ * MIT Licence
+ * Copyright (c) 2017 Simon Frankenberger
+ *
+ * Please see LICENCE.md for complete licence text.
+ */
 package eu.fraho.spring.securityJwt.tokenService;
 
 import eu.fraho.spring.securityJwt.AbstractTest;
@@ -19,7 +25,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 @Getter
-@Setter(AccessLevel.NONE)
 @Slf4j
 @SpringBootTest(properties = "spring.config.location=classpath:test-hmac.yaml",
         classes = TestApiApplication.class)

@@ -9,10 +9,10 @@ package eu.fraho.spring.securityJwt.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
+import lombok.Getter;
 import net.jcip.annotations.Immutable;
 
-@Value
+@Getter
 @Immutable
 @EqualsAndHashCode(callSuper = true)
 public class RefreshToken extends Token {

@@ -19,32 +19,6 @@ import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.Random;
 
-/**
- * This service provides a {@link PasswordEncoder} to generate and validate Unix-Crypt compatible passwords.
- * The generated passwords use the configured algorithm and (if supported) count of rounds.
- * <h3>Used properties from configuration file:</h3>
- * <table border="1" summary="list of configuration properties">
- * <tr>
- * <th>Property</th>
- * <th>Default value</th>
- * <th>Description</th>
- * </tr>
- * <tr>
- * <td>fraho.crypt.rounds</td>
- * <td>{@value #ROUNDS_DEFAULT}</td>
- * <td>Defines the &quot;strength&quot; of the hashing function. The more rounds used, the more secure the generated hash.
- * But beware that more rounds mean more cpu-load and longer computation times!</td>
- * </tr>
- * <tr>
- * <td>fraho.crypt.algorithm</td>
- * <td>{@value #ALGORITHM_DEFAULT}</td>
- * <td>Configured the used crypt algorithm. For a list of possible values see {@link CryptAlgorithm}</td>
- * </tr>
- * </table>
- *
- * @see #encode(CharSequence)
- * @see #matches(CharSequence, String)
- */
 @Component
 @Slf4j
 public class CryptPasswordEncoder implements PasswordEncoder, InitializingBean {
@@ -98,7 +72,7 @@ public class CryptPasswordEncoder implements PasswordEncoder, InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         if (rounds < ROUNDS_MIN || rounds > ROUNDS_MAX) {
             log.warn("Encryption rounds out of bounds ({} <= {} <= {}), forcing to default ({})",
                     ROUNDS_MIN, rounds, ROUNDS_MAX, ROUNDS_DEFAULT);

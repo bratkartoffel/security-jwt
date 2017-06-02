@@ -1,3 +1,9 @@
+/*
+ * MIT Licence
+ * Copyright (c) 2017 Simon Frankenberger
+ *
+ * Please see LICENCE.md for complete licence text.
+ */
 package eu.fraho.spring.securityJwt.spring;
 
 import eu.fraho.spring.securityJwt.dto.JwtUser;
@@ -9,8 +15,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class UserDetailsServiceTestImpl implements UserDetailsService {
@@ -18,6 +25,8 @@ public class UserDetailsServiceTestImpl implements UserDetailsService {
 
     @Autowired
     private PasswordEncoder passwordEncoder = null;
+
+    private AtomicInteger noRefreshCheckCount = new AtomicInteger(0);
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -28,8 +37,18 @@ public class UserDetailsServiceTestImpl implements UserDetailsService {
         user.setAccountNonLocked(true);
         user.setCredentialsNonExpired(true);
         user.setEnabled(true);
-        user.setAuthorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
-        user.setApiAccessAllowed(true);
+        if (username.equals("admin")) {
+            user.setAuthorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN")));
+            user.setAuthority("ROLE_ADMIN");
+        } else {
+            user.setAuthorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
+            user.setAuthority("ROLE_USER");
+        }
+        if (username.equals("noRefresh")) {
+            user.setApiAccessAllowed(noRefreshCheckCount.getAndIncrement() % 2 == 1);
+        } else {
+            user.setApiAccessAllowed(true);
+        }
 
         if (username.equals("user_totp")) {
             user.setTotpSecret(Optional.of(BASE32_TOTP));

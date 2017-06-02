@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
  * @see #day
  * @see #days
  */
+@SuppressWarnings("unused")
 enum PeriodWord {
     second(TimeUnit.SECONDS),
     seconds(TimeUnit.SECONDS),
@@ -32,17 +33,11 @@ enum PeriodWord {
 
     /**
      * The backing timeunit (used for conversion to seconds)
-     *
-     * @see #toSeconds(int)
      */
     private final TimeUnit timeUnit;
 
     PeriodWord(TimeUnit timeUnit) {
         this.timeUnit = timeUnit;
-    }
-
-    public int toSeconds(int value) {
-        return (int) timeUnit.toSeconds(value);
     }
 
     public TimeUnit getTimeUnit() {

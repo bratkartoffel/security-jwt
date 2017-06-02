@@ -1,3 +1,9 @@
+/*
+ * MIT Licence
+ * Copyright (c) 2017 Simon Frankenberger
+ *
+ * Please see LICENCE.md for complete licence text.
+ */
 package eu.fraho.spring.securityJwt.tokenService;
 
 import com.nimbusds.jose.jwk.ECKey;
@@ -18,7 +24,6 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 @Getter
-@Setter(AccessLevel.NONE)
 @Slf4j
 @SpringBootTest(properties = "spring.config.location=classpath:test-ecdsa.yaml",
         classes = TestApiApplication.class)

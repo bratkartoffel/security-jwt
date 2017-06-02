@@ -7,14 +7,6 @@
 package eu.fraho.spring.securityJwt.service;
 
 public interface TotpService {
-    int TOTP_LENGTH_MIN = 8;
-    int TOTP_LENGTH_DEFAULT = 16;
-    int TOTP_LENGTH_MAX = 32;
-
-    int TOTP_VARIANCE_MIN = 1;
-    int TOTP_VARIANCE_DEFAULT = 3;
-    int TOTP_VARIANCE_MAX = 10;
-
     /**
      * Verify the given code against the stored secret.
      *

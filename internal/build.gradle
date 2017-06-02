@@ -13,6 +13,7 @@ dependencyManagement {
 }
 dependencies {
     compile project(':base')
+    testCompile project(':base').sourceSets.test.output
 
     compile("net.jodah:expiringmap:${expiringMapVersion}")
 }
