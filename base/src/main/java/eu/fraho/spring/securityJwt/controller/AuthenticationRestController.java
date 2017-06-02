@@ -55,6 +55,10 @@ public class AuthenticationRestController {
     })
     public ResponseEntity<JwtAuthenticationResponse> refresh(@RequestBody JwtRefreshRequest refreshRequest)
             throws JOSEException, TimeoutException {
+        if (!jwtTokenUtil.isRefreshTokenSupported()) {
+            log.info("Refresh token support is disabled ({} asked)", refreshRequest.getUsername());
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         if (!jwtTokenUtil.useRefreshToken(refreshRequest.getUsername(), refreshRequest.getDeviceId().orElse(null), refreshRequest.getRefreshToken())) {
             log.info("Using refresh token failed for {}", refreshRequest.getUsername());
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
