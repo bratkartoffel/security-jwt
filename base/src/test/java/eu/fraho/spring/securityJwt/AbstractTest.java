@@ -8,9 +8,11 @@ package eu.fraho.spring.securityJwt;
 
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.service.JwtTokenServiceImpl;
+import eu.fraho.spring.securityJwt.service.TotpServiceImpl;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -35,6 +37,12 @@ public abstract class AbstractTest {
     @Autowired
     @Getter
     protected JwtTokenServiceImpl jwtTokenService = null;
+
+    @Autowired
+    protected CryptPasswordEncoder cryptPasswordEncoder = null;
+
+    @Autowired
+    protected TotpServiceImpl totpService = null;
 
     public static void beforeHmacClass() throws IOException {
         checkAndCreateOutDirs(OUT_KEY);
@@ -64,23 +72,34 @@ public abstract class AbstractTest {
         return user;
     }
 
-
-    protected void withTempField(String fieldname, Object value, Runnable callback) {
+    protected void withTempField(InitializingBean instance, String fieldname, Object value, Runnable callback) {
         try {
-            final Field field = JwtTokenServiceImpl.class.getDeclaredField(fieldname);
+            final Field field = instance.getClass().getDeclaredField(fieldname);
             field.setAccessible(true);
-            Object oldValue = field.get(jwtTokenService);
+            Object oldValue = field.get(instance);
             try {
-                field.set(jwtTokenService, value);
+                field.set(instance, value);
                 callback.run();
             } finally {
-                field.set(jwtTokenService, oldValue);
-                callback.run();
+                field.set(instance, oldValue);
+                instance.afterPropertiesSet();
             }
         } catch (RuntimeException rex) {
             throw rex;
         } catch (Exception ex) {
-            throw new IllegalStateException(ex);
+            throw new RuntimeException(ex);
         }
+    }
+
+    protected void withTempTokenServiceField(String fieldname, Object value, Runnable callback) {
+        withTempField(jwtTokenService, fieldname, value, callback);
+    }
+
+    protected void withTempCryptServiceField(String fieldname, Object value, Runnable callback) {
+        withTempField(cryptPasswordEncoder, fieldname, value, callback);
+    }
+
+    protected void withTempTotpServiceField(String fieldname, Object value, Runnable callback) {
+        withTempField(totpService, fieldname, value, callback);
     }
 }

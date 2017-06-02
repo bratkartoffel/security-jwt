@@ -6,6 +6,7 @@
  */
 package eu.fraho.spring.securityJwt.service;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base32;
 import org.springframework.beans.factory.InitializingBean;
@@ -35,16 +36,15 @@ public class TotpServiceImpl implements TotpService, InitializingBean {
     private final Random random = new SecureRandom();
 
     @Value("${fraho.totp.variance:" + TOTP_VARIANCE_DEFAULT + "}")
+    @Getter
     private Integer totpVariance = TOTP_VARIANCE_DEFAULT;
 
     @Value("${fraho.totp.length:" + TOTP_LENGTH_DEFAULT + "}")
+    @Getter
     private Integer totpLength = TOTP_LENGTH_DEFAULT;
 
+    // TODO remove / make package private
     public long getCurrentCodeForTesting(String secret) throws InvalidKeyException, NoSuchAlgorithmException {
-        if (System.getProperty("IN_TESTING") == null) {
-            throw new IllegalStateException("Not in testing mode!");
-        }
-
         return getCode(base32.decode(secret), System.currentTimeMillis() / 1000 / 30);
     }
 
@@ -92,7 +92,7 @@ public class TotpServiceImpl implements TotpService, InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         if (totpVariance < TOTP_VARIANCE_MIN || totpVariance > TOTP_VARIANCE_MAX) {
             log.warn("TOTP variance out of bounds ({} <= {} <= {}), forcing to default ({})",
                     TOTP_VARIANCE_MIN, totpVariance, TOTP_VARIANCE_MAX, TOTP_VARIANCE_DEFAULT);

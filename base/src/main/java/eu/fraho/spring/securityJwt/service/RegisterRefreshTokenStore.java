@@ -13,15 +13,12 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
 public class RegisterRefreshTokenStore implements InitializingBean {
     public static final String BEAN_NAME = "refreshTokenStore";
     private static final String DEFAULT_TOKEN_STORE = "eu.fraho.spring.securityJwt.service.NullTokenStore";
-    @Autowired
-    private ApplicationContext applicationContext = null;
 
     @Autowired
     private ConfigurableListableBeanFactory factory = null;

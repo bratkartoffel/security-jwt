@@ -30,6 +30,5 @@ public class TestApiApplication {
 
         log.info("Starting spring context");
         SpringApplication.run(TestApiApplication.class, args);
-
     }
 }

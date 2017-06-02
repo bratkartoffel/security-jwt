@@ -11,9 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.fraho.spring.securityJwt.dto.AccessToken;
 import eu.fraho.spring.securityJwt.dto.JwtAuthenticationResponse;
 import eu.fraho.spring.securityJwt.spring.TestApiApplication;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Before;
@@ -35,7 +33,6 @@ import javax.servlet.Filter;
 import java.io.IOException;
 
 @Getter
-@Setter(AccessLevel.NONE)
 @Slf4j
 @SpringBootTest(properties = "spring.config.location=classpath:test-auth.yaml",
         classes = TestApiApplication.class)

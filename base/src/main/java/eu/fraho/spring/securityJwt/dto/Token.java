@@ -7,8 +7,10 @@
 package eu.fraho.spring.securityJwt.dto;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import net.jcip.annotations.Immutable;
 
+@Getter
 @Immutable
 @EqualsAndHashCode(exclude = {"expiresIn"})
 public abstract class Token {
@@ -18,13 +20,5 @@ public abstract class Token {
     public Token(String token, int expiresIn) {
         this.token = token;
         this.expiresIn = expiresIn;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public int getExpiresIn() {
-        return expiresIn;
     }
 }

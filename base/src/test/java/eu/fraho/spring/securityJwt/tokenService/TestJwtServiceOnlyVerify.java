@@ -11,9 +11,7 @@ import com.nimbusds.jose.jwk.ECKey;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.exceptions.FeatureNotConfiguredException;
 import eu.fraho.spring.securityJwt.spring.TestApiApplication;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,7 +28,6 @@ import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 
 @Getter
-@Setter(AccessLevel.NONE)
 @Slf4j
 @SpringBootTest(properties = "spring.config.location=classpath:test-only-verify.yaml",
         classes = TestApiApplication.class)
