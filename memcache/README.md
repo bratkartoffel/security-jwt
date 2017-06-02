@@ -19,11 +19,12 @@ Please note that the memcache-plugin needs an external memcached server.
 
 This module also uses some additional application properties:
 
-| Property                                 | Default   | Description   |
-|------------------------------------------|-----------|---------------|
-| fraho.jwt.refresh.cache.memcache.host    | 127.0.0.1 | Hostname or IP Adress of memcache server|
-| fraho.jwt.refresh.cache.memcache.port    | 11211     | Port of memcache server|
-| fraho.jwt.refresh.cache.memcache.timeout | 5         | Timeout (in seconds) when talking to memcache server|
+| Property                                 | Default        | Description   |
+|------------------------------------------|----------------|---------------|
+| fraho.jwt.refresh.cache.prefix           | fraho-refresh  | Defines a common prefix for all saved refresh entries. The key is computed in the following way: "[prefix]:[username]:[deviceId]". If no deviceId was provided by the client, "__default" will be used instead|
+| fraho.jwt.refresh.cache.memcache.host    | 127.0.0.1      | Hostname or IP Adress of memcache server|
+| fraho.jwt.refresh.cache.memcache.port    | 11211          | Port of memcache server|
+| fraho.jwt.refresh.cache.memcache.timeout | 5              | Timeout (in seconds) when talking to memcache server|
 
 This module also puts a contraint on the ```fraho.jwt.refresh.expiration``` property.
 Due to protocol restrictions when communicating with the memcache server,
