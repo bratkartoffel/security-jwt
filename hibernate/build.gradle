@@ -2,9 +2,6 @@ buildscript {
     dependencies {
         classpath "io.spring.gradle:dependency-management-plugin:${springDependencyManagementVersion}"
     }
-    ext {
-        h2Version = '1.+'
-    }
 }
 
 apply plugin: 'io.spring.dependency-management'

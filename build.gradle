@@ -38,6 +38,7 @@ subprojects {
             bouncyCastleVersion = '[1.57,2.0['
             spyMemcachedVersion = '[2.12,3.0['
             expiringMapVersion = '[0.5,1.0['
+            h2Version = '[1.4,2.0['
         }
         repositories {
             mavenCentral()
