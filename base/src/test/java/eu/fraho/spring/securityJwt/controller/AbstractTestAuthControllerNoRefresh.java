@@ -40,8 +40,8 @@ public abstract class AbstractTestAuthControllerNoRefresh extends AbstractTestAu
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andReturn().getResponse().getContentAsString();
 
-        Assert.assertFalse("No refresh token generated", body.contains("\"refreshToken\":null"));
-        Assert.assertTrue("No refresh token generated", body.contains("\"refreshToken\":{\"token"));
+        Assert.assertTrue("No refresh token generated", body.contains("\"refreshToken\":null"));
+        Assert.assertFalse("No refresh token generated", body.contains("\"refreshToken\":{\"token"));
     }
 
     @Test

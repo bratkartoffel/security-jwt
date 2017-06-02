@@ -10,8 +10,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @Getter
 @Slf4j
-@SpringBootTest(properties = "spring.config.location=classpath:test-auth.yaml",
-        classes = TestApiApplication.class)
+@SpringBootTest(classes = TestApiApplication.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TestAuthController extends AbstractTestAuthControllerNoRefresh {
 }
