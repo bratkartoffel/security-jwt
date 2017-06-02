@@ -27,7 +27,7 @@ import java.io.IOException;
 @Getter
 @Setter(AccessLevel.NONE)
 @Slf4j
-@SpringBootTest(properties = "spring.config.location=classpath:hibernate-test-refresh.yaml",
+@SpringBootTest(properties = "spring.config.location=classpath:hibernate-test.yaml",
         classes = TestHibernateApiApplication.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TestJwtServiceRefreshHibernate extends AbstractRefreshTokenTest {

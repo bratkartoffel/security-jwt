@@ -6,6 +6,7 @@
  */
 package eu.fraho.spring.securityJwt;
 
+import eu.fraho.spring.securityJwt.controller.AbstractTestAuthControllerWithRefresh;
 import eu.fraho.spring.securityJwt.spring.TestHibernateApiApplication;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -18,8 +19,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @Getter
 @Setter(AccessLevel.NONE)
 @Slf4j
-@SpringBootTest(properties = "spring.config.location=classpath:hibernate-test-auth.yaml",
+@SpringBootTest(properties = "spring.config.location=classpath:hibernate-test.yaml",
         classes = TestHibernateApiApplication.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-public class TestAuthControllerHibernate extends TestAuthControllerRefresh {
+public class TestAuthControllerHibernate extends AbstractTestAuthControllerWithRefresh {
 }
