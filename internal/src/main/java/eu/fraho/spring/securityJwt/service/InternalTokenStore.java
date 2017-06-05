@@ -22,17 +22,20 @@ public class InternalTokenStore implements RefreshTokenStore {
     @Value("${fraho.jwt.refresh.expiration:" + JwtTokenServiceImpl.DEFAULT_REFRESH_EXPIRATION + "}")
     private TimeWithPeriod refreshExpiration = new TimeWithPeriod(JwtTokenServiceImpl.DEFAULT_REFRESH_EXPIRATION);
 
+    @Value("${fraho.jwt.refresh.delimiter:" + JwtTokenServiceImpl.DEFAULT_DELIMITER + "}")
+    private String delimiter = JwtTokenServiceImpl.DEFAULT_DELIMITER;
+
     private ExpiringMap<String, String> refreshTokenMap = null;
 
     @Override
     public void saveToken(String username, String deviceId, String token) {
-        String key = String.format("%s:%s", username, deviceId);
+        String key = username + delimiter + deviceId;
         refreshTokenMap.put(key, token);
     }
 
     @Override
     public boolean useToken(String username, String deviceId, String token) {
-        String key = String.format("%s:%s", username, deviceId);
+        String key = username + delimiter + deviceId;
         final byte[] stored = refreshTokenMap.getOrDefault(key, String.format("%64s", "0")).getBytes(StandardCharsets.UTF_8);
         final byte[] toCheck = token.getBytes(StandardCharsets.UTF_8);
 
@@ -42,20 +45,23 @@ public class InternalTokenStore implements RefreshTokenStore {
 
     @Override
     public List<RefreshToken> listTokens(String username) {
-        String filter = String.format("^%s:[^:]+$", Pattern.quote(username));
+        String filter = String.format("^%s%s[^%s]+$",
+                Pattern.quote(username), Pattern.quote(delimiter), Pattern.quote(delimiter));
         return listRefreshTokensByPrefix(filter).getOrDefault(username, Collections.emptyList());
     }
 
     @Override
     public Map<String, List<RefreshToken>> listTokens() {
-        return listRefreshTokensByPrefix("^[^:]+:[^:]+$");
+        final String filter = String.format("^[^%s]+%s[^%s]+$",
+                Pattern.quote(delimiter), Pattern.quote(delimiter), Pattern.quote(delimiter));
+        return listRefreshTokensByPrefix(filter);
     }
 
     private Map<String, List<RefreshToken>> listRefreshTokensByPrefix(String filter) {
         final Map<String, List<RefreshToken>> result = new HashMap<>();
         for (Map.Entry<String, String> entry : refreshTokenMap.entrySet()) {
             if (entry.getKey().matches(filter)) {
-                String[] parts = entry.getKey().split(":", 2);
+                String[] parts = entry.getKey().split(Pattern.quote(delimiter), 2);
                 String username = parts[0];
                 String deviceId = parts[1];
                 String token = entry.getValue();
@@ -81,9 +87,9 @@ public class InternalTokenStore implements RefreshTokenStore {
             refreshTokenMap.clear();
             return count;
         }
-        final String filter = String.format("%s:%s",
-                username.map(Pattern::quote).orElse("[^:]+"),
-                deviceId.map(Pattern::quote).orElse("[^:]+"));
+        final String filter = username.map(Pattern::quote).orElse("[^" + Pattern.quote(delimiter) + "]+") +
+                Pattern.quote(delimiter) +
+                deviceId.map(Pattern::quote).orElse("[^" + Pattern.quote(delimiter) + "]+");
         int count = 0;
         for (Iterator<Map.Entry<String, String>> iterator = refreshTokenMap.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry<String, String> entry = iterator.next();
