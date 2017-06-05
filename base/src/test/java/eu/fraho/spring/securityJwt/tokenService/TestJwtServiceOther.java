@@ -20,6 +20,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -28,6 +29,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Optional;
 
 @Slf4j
@@ -42,6 +44,11 @@ public class TestJwtServiceOther extends AbstractTest {
     @Test
     public void testParseUser() throws JOSEException {
         JwtUser userIn = getJwtUser();
+        userIn.setAuthorities(Arrays.asList(
+                new SimpleGrantedAuthority("ROLE_USER"),
+                new SimpleGrantedAuthority("ROLE_OTHER")
+        ));
+
         AccessToken token = jwtTokenService.generateToken(userIn);
         Assert.assertNotNull("No token generated", token.getToken());
 
@@ -55,8 +62,8 @@ public class TestJwtServiceOther extends AbstractTest {
         Assert.assertNotNull("Parsed user without username", userOut.getUsername());
         Assert.assertEquals("Parsed user with wrong username", userIn.getUsername(), userOut.getUsername());
 
-        Assert.assertNotNull("Parsed user without role", userOut.getAuthority());
-        Assert.assertEquals("Parsed user with wrong role", userIn.getAuthority(), userOut.getAuthority());
+        Assert.assertEquals("Parsed user not with all roles", 2, userOut.getAuthorities().size());
+        Assert.assertEquals("Parsed user with wrong role", userIn.getAuthorities(), userOut.getAuthorities());
     }
 
     @Test
@@ -148,7 +155,7 @@ public class TestJwtServiceOther extends AbstractTest {
 
         try {
             withTempTokenServiceField("pubKey", Paths.get(TestJwtServiceCreateTokenRsa.OUT_PUB_KEY), () ->
-                            withTempTokenServiceField("algorithm", "RS256", this::reloadTokenService)
+                    withTempTokenServiceField("algorithm", "RS256", this::reloadTokenService)
             );
         } catch (RuntimeException rex) {
             Assert.assertTrue(NoSuchFileException.class.isInstance(rex.getCause()));

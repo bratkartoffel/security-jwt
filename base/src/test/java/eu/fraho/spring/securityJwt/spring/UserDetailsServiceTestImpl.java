@@ -39,10 +39,8 @@ public class UserDetailsServiceTestImpl implements UserDetailsService {
         user.setEnabled(true);
         if (username.equals("admin")) {
             user.setAuthorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN")));
-            user.setAuthority("ROLE_ADMIN");
         } else {
             user.setAuthorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
-            user.setAuthority("ROLE_USER");
         }
         if (username.equals("noRefresh")) {
             user.setApiAccessAllowed(noRefreshCheckCount.getAndIncrement() % 2 == 1);

@@ -2,6 +2,9 @@ package eu.fraho.spring.securityJwt.dto;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.util.Collections;
 
 public class TestJwtUser {
     @Test
@@ -13,7 +16,7 @@ public class TestJwtUser {
         JwtUser b = new JwtUser();
         b.setId(13L);
         b.setUsername("foobar");
-        b.setAuthority("asdfg");
+        b.setAuthorities(Collections.singletonList(new SimpleGrantedAuthority("asdfg")));
         b.setAccountNonExpired(!a.isAccountNonExpired());
 
         JwtUser c = new JwtUser();
