@@ -1,5 +1,7 @@
 # Changelog
 
+### 0.8.1 (not yet released)
+
 ### 0.8.0 (2017-06-06)
 * Fix JwtTokenService.isRefreshTokenSupported() not working as expected (always returning true)
 * Add a changelog file (#13)
@@ -13,7 +15,7 @@
 * Huge refactoring of testcode, removed a lot of redundancy
 * First publication of abstract testclases for other modules
 
-### 0.6.0 ((2017-05-19)
+### 0.6.0 (2017-05-19)
 * Somehow messed up my git repository, so this release will be the base for all further releases
 * Many untracked changes (sorry)
 
