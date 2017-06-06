@@ -1,6 +1,6 @@
 # Changelog
 
-### 0.7.1 (not yet released)
+### 0.8.0 (2017-06-06)
 * Fix JwtTokenService.isRefreshTokenSupported() not working as expected (always returning true)
 * Add a changelog file (#13)
 * Support multiple roles for JwtUser (#2)
