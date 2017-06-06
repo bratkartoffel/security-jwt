@@ -55,6 +55,10 @@ public class AuthenticationRestController {
     })
     public ResponseEntity<JwtAuthenticationResponse> refresh(@RequestBody JwtRefreshRequest refreshRequest)
             throws JOSEException, TimeoutException {
+        if (!jwtTokenUtil.isRefreshTokenSupported()) {
+            log.info("Refresh token support is disabled ({} asked)", refreshRequest.getUsername());
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         if (!jwtTokenUtil.useRefreshToken(refreshRequest.getUsername(), refreshRequest.getDeviceId().orElse(null), refreshRequest.getRefreshToken())) {
             log.info("Using refresh token failed for {}", refreshRequest.getUsername());
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -68,12 +72,7 @@ public class AuthenticationRestController {
 
         log.debug("Generating tokens");
         final AccessToken accessToken = jwtTokenUtil.generateToken(userDetails);
-        final RefreshToken refreshToken;
-        if (jwtTokenUtil.isRefreshTokenSupported()) {
-            refreshToken = jwtTokenUtil.generateRefreshToken(refreshRequest.getUsername(), refreshRequest.getDeviceId().orElse(null));
-        } else {
-            refreshToken = null;
-        }
+        final RefreshToken refreshToken = jwtTokenUtil.generateRefreshToken(refreshRequest.getUsername(), refreshRequest.getDeviceId().orElse(null));
 
         // Return the token
         JwtAuthenticationResponse body = new JwtAuthenticationResponse(accessToken, refreshToken);

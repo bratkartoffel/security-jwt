@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -28,42 +29,48 @@ public class MemcacheTokenStore implements RefreshTokenStore {
     private static final String DEFAULT_MEMCACHE_HOST = "127.0.0.1";
     private static final int DEFAULT_MEMCACHE_PORT = 11211;
     private static final int DEFAULT_MEMCACHE_TIMEOUT = 5;
+    private static final String DEFAULT_CACHE_PREFIX = "fraho-refresh";
 
     @Value("${fraho.jwt.refresh.expiration:" + JwtTokenServiceImpl.DEFAULT_REFRESH_EXPIRATION + "}")
     private TimeWithPeriod refreshExpiration = new TimeWithPeriod(JwtTokenServiceImpl.DEFAULT_REFRESH_EXPIRATION);
-    @Value("${fraho.jwt.refresh.cache.prefix:" + JwtTokenServiceImpl.DEFAULT_CACHE_PREFIX + "}")
-    private String refreshCachePrefix = JwtTokenServiceImpl.DEFAULT_CACHE_PREFIX;
+    @Value("${fraho.jwt.refresh.cache.prefix:" + DEFAULT_CACHE_PREFIX + "}")
+    private String refreshCachePrefix = DEFAULT_CACHE_PREFIX;
     @Value("${fraho.jwt.refresh.cache.memcache.host:" + DEFAULT_MEMCACHE_HOST + "}")
     private String cacheHost = DEFAULT_MEMCACHE_HOST;
     @Value("${fraho.jwt.refresh.cache.memcache.port:" + DEFAULT_MEMCACHE_PORT + "}")
     private Integer cachePort = DEFAULT_MEMCACHE_PORT;
     @Value("${fraho.jwt.refresh.cache.memcache.timeout:" + DEFAULT_MEMCACHE_TIMEOUT + "}")
     private Integer cacheTimeout = DEFAULT_MEMCACHE_TIMEOUT;
+    @Value("${fraho.jwt.refresh.delimiter:" + JwtTokenServiceImpl.DEFAULT_DELIMITER + "}")
+    private String delimiter = JwtTokenServiceImpl.DEFAULT_DELIMITER;
 
     private MemcachedClient memcachedClient = null;
 
-    @Override
-    public void saveToken(String username, String deviceId, String token) {
-        String key = String.format("%s:%s:%s", refreshCachePrefix, username, deviceId);
+    private <T> T getAndWait(String message, Supplier<OperationFuture<T>> action) {
         try {
-            memcachedClient.set(key, refreshExpiration.toSeconds(), token).get(cacheTimeout, TimeUnit.SECONDS);
+            return action.get().get(cacheTimeout, TimeUnit.SECONDS);
         } catch (TimeoutException | InterruptedException | ExecutionException e) {
-            throw new JwtRefreshException("Error while saving refresh token on memcache server", e);
+            throw new JwtRefreshException(message, e);
         }
     }
 
     @Override
+    public void saveToken(String username, String deviceId, String token) {
+        String key = refreshCachePrefix + delimiter + username + delimiter + deviceId;
+
+        getAndWait("Error while saving refresh token on memcache server", () ->
+                memcachedClient.set(key, refreshExpiration.toSeconds(), token));
+    }
+
+    @Override
     public boolean useToken(String username, String deviceId, String token) {
-        String key = String.format("%s:%s:%s", refreshCachePrefix, username, deviceId);
+        String key = refreshCachePrefix + delimiter + username + delimiter + deviceId;
         final byte[] stored = String.valueOf(memcachedClient.get(key)).getBytes(StandardCharsets.UTF_8);
         final byte[] toCheck = token.getBytes(StandardCharsets.UTF_8);
 
         if (tokenEquals(stored, toCheck)) {
-            try {
-                return memcachedClient.delete(key).get(cacheTimeout, TimeUnit.SECONDS);
-            } catch (TimeoutException | InterruptedException | ExecutionException e) {
-                throw new JwtRefreshException("Error while deleting refresh token on memcache server", e);
-            }
+            return getAndWait("Error while deleting refresh token on memcache server", () ->
+                    memcachedClient.delete(key));
         }
 
         return false;
@@ -71,13 +78,17 @@ public class MemcacheTokenStore implements RefreshTokenStore {
 
     @Override
     public List<RefreshToken> listTokens(String username) {
-        String filter = String.format("^%s:%s:[^:]+$", Pattern.quote(refreshCachePrefix), Pattern.quote(username));
+        String filter = String.format("^%s%s%s%s[^%s]+$",
+                Pattern.quote(refreshCachePrefix), Pattern.quote(delimiter),
+                Pattern.quote(username), Pattern.quote(delimiter), Pattern.quote(delimiter));
         return listRefreshTokensByPrefix(filter).getOrDefault(username, Collections.emptyList());
     }
 
     @Override
     public Map<String, List<RefreshToken>> listTokens() {
-        String filter = String.format("^%s:[^:]+:[^:]+$", Pattern.quote(refreshCachePrefix));
+        String filter = String.format("^%s%s[^%s]+%s[^%s]+$",
+                Pattern.quote(refreshCachePrefix), Pattern.quote(delimiter), Pattern.quote(delimiter),
+                Pattern.quote(delimiter), Pattern.quote(delimiter));
         return listRefreshTokensByPrefix(filter);
     }
 
@@ -111,7 +122,7 @@ public class MemcacheTokenStore implements RefreshTokenStore {
         final Map<String, Object> entries = memcachedClient.getBulk(keys);
         for (Map.Entry<String, Object> entry : entries.entrySet()) {
             if (entry.getKey().matches(filter)) {
-                String[] parts = entry.getKey().split(":", 3);
+                String[] parts = entry.getKey().split(Pattern.quote(delimiter), 3);
                 String username = parts[1];
                 String deviceId = parts[2];
                 String token = String.valueOf(entry.getValue());
@@ -149,23 +160,21 @@ public class MemcacheTokenStore implements RefreshTokenStore {
     }
 
     private int revokeTokens(Optional<String> username, Optional<String> deviceId) {
-        final String filter = String.format("%s:%s:%s",
-                refreshCachePrefix,
-                username.map(Pattern::quote).orElse("[^:]+"),
-                deviceId.map(Pattern::quote).orElse("[^:]+"));
+        final String filter = refreshCachePrefix +
+                Pattern.quote(delimiter) +
+                username.map(Pattern::quote).orElse("[^" + Pattern.quote(delimiter) + "]+") +
+                Pattern.quote(delimiter) +
+                deviceId.map(Pattern::quote).orElse("[^" + Pattern.quote(delimiter) + "]+");
 
         final List<String> keys = listAllKeys(filter);
-        final List<OperationFuture> futures = new ArrayList<>();
+        final List<OperationFuture<Boolean>> futures = new ArrayList<>();
         for (String key : keys) {
             futures.add(memcachedClient.delete(key));
         }
 
         int count = keys.size();
-        for (OperationFuture future : futures) {
-            try {
-                future.get(cacheTimeout, TimeUnit.SECONDS);
-            } catch (TimeoutException | InterruptedException | ExecutionException e) {
-                log.error("Error while deleting refresh token on memcache server", e);
+        for (OperationFuture<Boolean> future : futures) {
+            if (!getAndWait("Error while saving refresh token on memcache server", () -> future)) {
                 count--;
             }
         }

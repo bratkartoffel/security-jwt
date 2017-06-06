@@ -9,7 +9,7 @@ Please note that the memcache-plugin needs an external memcached server.
 <dependency>
     <groupId>eu.fraho.spring</groupId>
     <artifactId>security-jwt-memcache</artifactId>
-    <version>0.7.0</version>
+    <version>0.8.0</version>
 </dependency>
 ```
 
@@ -21,7 +21,8 @@ This module also uses some additional application properties:
 
 | Property                                 | Default        | Description   |
 |------------------------------------------|----------------|---------------|
-| fraho.jwt.refresh.cache.prefix           | fraho-refresh  | Defines a common prefix for all saved refresh entries. The key is computed in the following way: "[prefix]:[username]:[deviceId]". If no deviceId was provided by the client, "__default" will be used instead|
+| fraho.jwt.refresh.cache.delimiter        | :              | Use a custom delimiter for the refresh cache keys. The delimiter is used to separate the ```prefix```, ```username``` and ```deviceId```. These three values are taken for the primary key and forming an unique index. If no deviceId was provided by the client, "__default" will be used instead.|
+| fraho.jwt.refresh.cache.prefix           | fraho-refresh  | Defines a common prefix for all saved refresh entries. |
 | fraho.jwt.refresh.cache.memcache.host    | 127.0.0.1      | Hostname or IP Adress of memcache server|
 | fraho.jwt.refresh.cache.memcache.port    | 11211          | Port of memcache server|
 | fraho.jwt.refresh.cache.memcache.timeout | 5              | Timeout (in seconds) when talking to memcache server|

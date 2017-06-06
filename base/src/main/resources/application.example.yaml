@@ -14,6 +14,7 @@ fraho:
       expiration: 1 day   # minute(s), hour(s), day(s)
       length: 24          # bytes
       deviceIdLength: 32  # bytes
+      delimiter: ":"
       cache:
         impl: null
         # Implemenation of eu.fraho.spring.securityJwt.service.RefreshTokenStore, my implementations:

@@ -6,10 +6,7 @@
  */
 package eu.fraho.spring.securityJwt.dto;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -19,7 +16,9 @@ import java.time.ZonedDateTime;
 @Table(name = "jwt_refresh", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"username", "deviceId"})
 })
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode(of = {"username", "deviceId", "token"})
 @NoArgsConstructor
 public class RefreshTokenEntity {
     @Id

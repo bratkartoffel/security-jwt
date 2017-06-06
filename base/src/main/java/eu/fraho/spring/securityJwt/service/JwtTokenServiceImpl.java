@@ -49,7 +49,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     public static final String DEFAULT_EXPIRATION = "1 hour";
     public static final int DEFAULT_MAX_DEVICE_ID_LENGTH = 32;
     public static final String DEFAULT_REFRESH_EXPIRATION = "1 day";
-    public static final String DEFAULT_CACHE_PREFIX = "fraho-refresh";
+    public static final String DEFAULT_DELIMITER = ":";
 
     public static final int REFRESH_TOKEN_LEN_MIN = 12;
     public static final int REFRESH_TOKEN_LEN_DEFAULT = 24;
@@ -287,7 +287,12 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
 
     @Override
     public boolean isRefreshTokenSupported() {
-        return !NullTokenStore.class.isInstance(refreshTokenStore);
+        try {
+            refreshTokenStore.getRefreshExpiration();
+            return true;
+        } catch (FeatureNotConfiguredException fnce) {
+            return false;
+        }
     }
 
     @Override
