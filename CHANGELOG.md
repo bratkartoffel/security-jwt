@@ -4,6 +4,7 @@
 * Fix JwtTokenService.isRefreshTokenSupported() not working as expected (always returning true)
 * Add a changelog file (#13)
 * Support multiple roles for JwtUser (#2)
+* Delimiter for map keys are now configurable (#14)
 
 ### 0.7.0 (2017-06-02)
 * Add [hibernate](hibernate/) module (Support storage of refresh tokens in a jdbc database)
