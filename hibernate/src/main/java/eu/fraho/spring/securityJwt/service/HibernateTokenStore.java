@@ -45,8 +45,8 @@ public class HibernateTokenStore implements RefreshTokenStore {
     @Override
     @Transactional
     public boolean useToken(String username, String deviceId, String token) {
-        final Query query = em.createQuery("DELETE RefreshTokenEntity WHERE " +
-                "username = :username AND deviceId = :deviceId AND token = :token AND created >= :expiration");
+        final Query query = em.createQuery("DELETE FROM RefreshTokenEntity o WHERE " +
+                "o.username = :username AND o.deviceId = :deviceId AND o.token = :token AND o.created >= :expiration");
         query.setParameter("username", username);
         query.setParameter("deviceId", deviceId);
         query.setParameter("token", token);
@@ -59,7 +59,7 @@ public class HibernateTokenStore implements RefreshTokenStore {
     @Transactional(readOnly = true)
     public List<RefreshToken> listTokens(String username) {
         final TypedQuery<RefreshTokenEntity> query = em.createQuery("SELECT o FROM RefreshTokenEntity o WHERE " +
-                "username = :username AND created >= :expiration", RefreshTokenEntity.class);
+                "o.username = :username AND o.created >= :expiration", RefreshTokenEntity.class);
         query.setParameter("username", username);
         setExpiration(query);
 
@@ -80,7 +80,7 @@ public class HibernateTokenStore implements RefreshTokenStore {
     @Transactional(readOnly = true)
     public Map<String, List<RefreshToken>> listTokens() {
         final TypedQuery<RefreshTokenEntity> query = em.createQuery("SELECT o FROM RefreshTokenEntity o WHERE " +
-                "created >= :expiration", RefreshTokenEntity.class);
+                "o.created >= :expiration", RefreshTokenEntity.class);
         setExpiration(query);
 
         final List<RefreshTokenEntity> tokens = exceptionWrapper("Could not list refresh token", query::getResultList);
@@ -101,8 +101,8 @@ public class HibernateTokenStore implements RefreshTokenStore {
     @Override
     @Transactional
     public boolean revokeToken(String username, String deviceId) {
-        final Query query = em.createQuery("DELETE RefreshTokenEntity WHERE " +
-                "username = :username AND deviceId = :deviceId");
+        final Query query = em.createQuery("DELETE FROM RefreshTokenEntity o WHERE " +
+                "o.username = :username AND o.deviceId = :deviceId");
         query.setParameter("username", username);
         query.setParameter("deviceId", deviceId);
 
@@ -112,8 +112,8 @@ public class HibernateTokenStore implements RefreshTokenStore {
     @Override
     @Transactional
     public int revokeTokens(String username) {
-        final Query query = em.createQuery("DELETE RefreshTokenEntity WHERE " +
-                "username = :username");
+        final Query query = em.createQuery("DELETE FROM RefreshTokenEntity o WHERE " +
+                "o.username = :username");
         query.setParameter("username", username);
 
         return exceptionWrapper("Could not revoke refresh tokens", query::executeUpdate);
@@ -122,7 +122,7 @@ public class HibernateTokenStore implements RefreshTokenStore {
     @Override
     @Transactional
     public int revokeTokens() {
-        final Query query = em.createQuery("DELETE RefreshTokenEntity");
+        final Query query = em.createQuery("DELETE FROM RefreshTokenEntity o");
         return exceptionWrapper("Could not revoke refresh tokens", query::executeUpdate);
     }
 

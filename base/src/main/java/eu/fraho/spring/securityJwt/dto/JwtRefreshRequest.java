@@ -24,5 +24,9 @@ public final class JwtRefreshRequest {
     @NotNull
     @JsonProperty(required = true)
     private String refreshToken;
-    private Optional<String> deviceId;
+    private String deviceId;
+
+    public Optional<String> getDeviceId() {
+        return Optional.ofNullable(deviceId);
+    }
 }

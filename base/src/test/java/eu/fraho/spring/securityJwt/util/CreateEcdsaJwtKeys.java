@@ -42,7 +42,7 @@ public class CreateEcdsaJwtKeys {
         read();
     }
 
-    private static void checkAndCreateOutDirs(String path) throws NoSuchFileException {
+    public static void checkAndCreateOutDirs(String path) throws NoSuchFileException {
         final File parent = Paths.get(path).getParent().toFile();
         if (!parent.exists()) {
             log.info("Creating output directory: {}", parent.getAbsolutePath());

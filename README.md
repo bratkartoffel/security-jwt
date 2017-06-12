@@ -38,21 +38,23 @@ The default configuration should be sufficient for the most use cases.
 
 When you want to add refresh token support, then choose one of the following dependencies:
 ```xml
-<dependency>
-    <groupId>eu.fraho.spring</groupId>
-    <artifactId>security-jwt-internal</artifactId>
-    <version>0.8.0</version>
-</dependency>
-<dependency>
-    <groupId>eu.fraho.spring</groupId>
-    <artifactId>security-jwt-memcache</artifactId>
-    <version>0.8.0</version>
-</dependency>
-<dependency>
-    <groupId>eu.fraho.spring</groupId>
-    <artifactId>security-jwt-hibernate</artifactId>
-    <version>0.8.0</version>
-</dependency>
+<dependencies>
+    <dependency>
+        <groupId>eu.fraho.spring</groupId>
+        <artifactId>security-jwt-internal</artifactId>
+        <version>0.8.0</version>
+    </dependency>
+    <dependency>
+        <groupId>eu.fraho.spring</groupId>
+        <artifactId>security-jwt-memcache</artifactId>
+        <version>0.8.0</version>
+    </dependency>
+    <dependency>
+        <groupId>eu.fraho.spring</groupId>
+        <artifactId>security-jwt-hibernate</artifactId>
+        <version>0.8.0</version>
+    </dependency>
+</dependencies>
 ```
 For details on the usage of the plugins please see the README within the relevant module directories.
 

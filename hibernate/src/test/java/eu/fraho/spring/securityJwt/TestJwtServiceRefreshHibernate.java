@@ -10,9 +10,7 @@ import eu.fraho.spring.securityJwt.service.HibernateTokenStore;
 import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
 import eu.fraho.spring.securityJwt.spring.TestHibernateApiApplication;
 import eu.fraho.spring.securityJwt.tokenService.AbstractRefreshTokenTest;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -25,7 +23,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.io.IOException;
 
 @Getter
-@Setter(AccessLevel.NONE)
 @Slf4j
 @SpringBootTest(properties = "spring.config.location=classpath:hibernate-test.yaml",
         classes = TestHibernateApiApplication.class)

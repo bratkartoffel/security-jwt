@@ -73,10 +73,12 @@ public class CryptPasswordEncoder implements PasswordEncoder, InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        if (rounds < ROUNDS_MIN || rounds > ROUNDS_MAX) {
-            log.warn("Encryption rounds out of bounds ({} <= {} <= {}), forcing to default ({})",
-                    ROUNDS_MIN, rounds, ROUNDS_MAX, ROUNDS_DEFAULT);
-            rounds = ROUNDS_DEFAULT;
+        if (algorithm.isRoundsSupported()) {
+            if (rounds < ROUNDS_MIN || rounds > ROUNDS_MAX) {
+                log.warn("Encryption rounds out of bounds ({} <= {} <= {}), forcing to default ({})",
+                        ROUNDS_MIN, rounds, ROUNDS_MAX, ROUNDS_DEFAULT);
+                rounds = ROUNDS_DEFAULT;
+            }
         }
 
         if (algorithm.isInsecure()) {

@@ -19,8 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -56,10 +54,6 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     public static final int REFRESH_TOKEN_LEN_MAX = 48;
 
     private final SecureRandom random = new SecureRandom();
-    @Autowired
-    private ApplicationContext applicationContext = null;
-    @Autowired
-    private AutowireCapableBeanFactory autowireCapableBeanFactory = null;
     @Value("${fraho.jwt.token.algorithm:" + DEFAULT_ALGORITHM + "}")
     private String algorithm = DEFAULT_ALGORITHM;
     @Value("${fraho.jwt.token.issuer:" + DEFAULT_ISSUER + "}")

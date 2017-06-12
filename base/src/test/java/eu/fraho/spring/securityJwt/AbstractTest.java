@@ -9,6 +9,7 @@ package eu.fraho.spring.securityJwt;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.service.JwtTokenServiceImpl;
 import eu.fraho.spring.securityJwt.service.TotpServiceImpl;
+import eu.fraho.spring.securityJwt.util.CreateEcdsaJwtKeys;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -16,7 +17,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
@@ -54,14 +54,7 @@ public abstract class AbstractTest {
     }
 
     public static void checkAndCreateOutDirs(String path) throws NoSuchFileException {
-        final File parent = Paths.get(path).getParent().toFile();
-        if (!parent.exists()) {
-            log.info("Creating output directory: {}", parent.getAbsolutePath());
-            if (!parent.mkdirs()) {
-                log.error("Could not create directory");
-                throw new NoSuchFileException("Could not create directory: " + parent.getAbsolutePath());
-            }
-        }
+        CreateEcdsaJwtKeys.checkAndCreateOutDirs(path);
     }
 
     protected JwtUser getJwtUser() {

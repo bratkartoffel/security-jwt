@@ -141,30 +141,30 @@ public class MemcacheTokenStore implements RefreshTokenStore {
 
     @Override
     public boolean revokeToken(String username, RefreshToken token) {
-        return revokeTokens(Optional.of(username), Optional.of(token.getDeviceId())) != 0;
+        return revokeTokens(username, token.getDeviceId()) != 0;
     }
 
     @Override
     public int revokeTokens(String username) {
-        return revokeTokens(Optional.of(username), Optional.empty());
+        return revokeTokens(username, null);
     }
 
     @Override
     public boolean revokeToken(String username, String deviceId) {
-        return revokeTokens(Optional.of(username), Optional.of(deviceId)) != 0;
+        return revokeTokens(username, deviceId) != 0;
     }
 
     @Override
     public int revokeTokens() {
-        return revokeTokens(Optional.empty(), Optional.empty());
+        return revokeTokens(null, null);
     }
 
-    private int revokeTokens(Optional<String> username, Optional<String> deviceId) {
+    private int revokeTokens(String username, String deviceId) {
         final String filter = refreshCachePrefix +
                 Pattern.quote(delimiter) +
-                username.map(Pattern::quote).orElse("[^" + Pattern.quote(delimiter) + "]+") +
+                Optional.ofNullable(username).map(Pattern::quote).orElse("[^" + Pattern.quote(delimiter) + "]+") +
                 Pattern.quote(delimiter) +
-                deviceId.map(Pattern::quote).orElse("[^" + Pattern.quote(delimiter) + "]+");
+                Optional.ofNullable(deviceId).map(Pattern::quote).orElse("[^" + Pattern.quote(delimiter) + "]+");
 
         final List<String> keys = listAllKeys(filter);
         final List<OperationFuture<Boolean>> futures = new ArrayList<>();
