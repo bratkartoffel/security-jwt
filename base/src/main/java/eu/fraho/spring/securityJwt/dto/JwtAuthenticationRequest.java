@@ -24,6 +24,14 @@ public final class JwtAuthenticationRequest {
     @NotNull
     @JsonProperty(required = true)
     private String password;
-    private Optional<String> deviceId;
-    private Optional<Integer> totp;
+    private String deviceId;
+    private Integer totp;
+
+    public Optional<String> getDeviceId() {
+        return Optional.ofNullable(deviceId);
+    }
+
+    public Optional<Integer> getTotp() {
+        return Optional.ofNullable(totp);
+    }
 }

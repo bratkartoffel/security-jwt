@@ -1,6 +1,9 @@
 # Changelog
 
 ### 0.8.1 (not yet released)
+* (all) Some minor cleanup (code smells)
+* (hibernate) Ensure that "created" is a timestamp column
+* (doc) Add example schema to hibernate doc
 
 ### 0.8.0 (2017-06-06)
 * (base) Fix JwtTokenService.isRefreshTokenSupported() not working as expected (always returning true)

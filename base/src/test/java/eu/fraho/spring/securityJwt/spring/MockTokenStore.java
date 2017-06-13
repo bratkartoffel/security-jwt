@@ -19,17 +19,17 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class MockTokenStore implements RefreshTokenStore {
-    private Optional<String> activeToken = Optional.empty();
+    private String activeToken = null;
 
     @Override
     public void saveToken(String username, String deviceId, String token) {
-        activeToken = Optional.of(username + deviceId + token);
+        activeToken = username + deviceId + token;
     }
 
     @Override
     public boolean useToken(String username, String deviceId, String token) {
         String toCheck = username + deviceId + token;
-        return activeToken.map(toCheck::equals).orElse(false);
+        return Optional.ofNullable(activeToken).map(toCheck::equals).orElse(false);
     }
 
     @Override

@@ -78,18 +78,19 @@ public class InternalTokenStore implements RefreshTokenStore {
 
     @Override
     public boolean revokeToken(String username, RefreshToken token) {
-        return revokeTokens(Optional.of(username), Optional.of(token.getDeviceId())) != 0;
+        return revokeTokens(username, token.getDeviceId()) != 0;
     }
 
-    private int revokeTokens(Optional<String> username, Optional<String> deviceId) {
-        if (!username.isPresent() && !deviceId.isPresent()) {
+    private int revokeTokens(String username, String deviceId) {
+        if (username == null && deviceId == null) {
             final int count = refreshTokenMap.size();
             refreshTokenMap.clear();
             return count;
         }
-        final String filter = username.map(Pattern::quote).orElse("[^" + Pattern.quote(delimiter) + "]+") +
+
+        final String filter = Optional.ofNullable(username).map(Pattern::quote).orElse("[^" + Pattern.quote(delimiter) + "]+") +
                 Pattern.quote(delimiter) +
-                deviceId.map(Pattern::quote).orElse("[^" + Pattern.quote(delimiter) + "]+");
+                Optional.ofNullable(deviceId).map(Pattern::quote).orElse("[^" + Pattern.quote(delimiter) + "]+");
         int count = 0;
         for (Iterator<Map.Entry<String, String>> iterator = refreshTokenMap.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry<String, String> entry = iterator.next();
@@ -104,17 +105,17 @@ public class InternalTokenStore implements RefreshTokenStore {
 
     @Override
     public int revokeTokens(String username) {
-        return revokeTokens(Optional.of(username), Optional.empty());
+        return revokeTokens(username, null);
     }
 
     @Override
     public boolean revokeToken(String username, String deviceId) {
-        return revokeTokens(Optional.of(username), Optional.of(deviceId)) != 0;
+        return revokeTokens(username, deviceId) != 0;
     }
 
     @Override
     public int revokeTokens() {
-        return revokeTokens(Optional.empty(), Optional.empty());
+        return revokeTokens(null, null);
     }
 
     @Override

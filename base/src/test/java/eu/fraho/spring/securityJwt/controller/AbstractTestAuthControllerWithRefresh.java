@@ -6,11 +6,13 @@
  */
 package eu.fraho.spring.securityJwt.controller;
 
+import eu.fraho.spring.securityJwt.spring.UserDetailsServiceTestImpl;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -22,6 +24,9 @@ import java.util.Map;
 @Getter
 @Slf4j
 public abstract class AbstractTestAuthControllerWithRefresh extends AbstractTestAuthController {
+    @Autowired
+    private UserDetailsServiceTestImpl userDetailsServiceTest;
+
     @BeforeClass
     public static void beforeClass() throws IOException {
         AbstractTestAuthController.beforeClass();
@@ -67,15 +72,21 @@ public abstract class AbstractTestAuthControllerWithRefresh extends AbstractTest
     public void testRefreshDisabledAccount() throws Exception {
         MockHttpServletRequestBuilder req;
 
-        String token = getRefreshTokenU("noRefresh");
+        final String token = getRefreshTokenU("noRefresh");
+
         req = MockMvcRequestBuilders.post(AUTH_REFRESH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"username\":\"noRefresh\",\"refreshToken\":\"" + token + "\"}")
                 .accept(MediaType.APPLICATION_JSON);
 
-        mockMvc.perform(req)
-                .andExpect(MockMvcResultMatchers.status().isUnauthorized())
-                .andReturn();
+        try {
+            userDetailsServiceTest.apiAccessAllowed.set(false);
+            mockMvc.perform(req)
+                    .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+                    .andReturn();
+        } finally {
+            userDetailsServiceTest.apiAccessAllowed.set(true);
+        }
     }
 
     @Test

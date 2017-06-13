@@ -7,13 +7,9 @@
 package eu.fraho.spring.securityJwt.service;
 
 import eu.fraho.spring.securityJwt.AbstractTest;
-import eu.fraho.spring.securityJwt.service.InternalTokenStore;
-import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
 import eu.fraho.spring.securityJwt.spring.TestApiApplication;
 import eu.fraho.spring.securityJwt.tokenService.AbstractRefreshTokenTest;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.BeforeClass;

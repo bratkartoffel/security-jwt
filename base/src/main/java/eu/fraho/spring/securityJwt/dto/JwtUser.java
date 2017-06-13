@@ -8,10 +8,7 @@ package eu.fraho.spring.securityJwt.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nimbusds.jwt.JWTClaimsSet;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,6 +22,7 @@ import java.util.Optional;
 @Getter
 @Setter
 @EqualsAndHashCode(of = {"id", "username"})
+@ToString(of = {"id", "username", "apiAccessAllowed", "authorities"})
 @NoArgsConstructor
 public class JwtUser implements UserDetails, CredentialsContainer {
     private Long id = -1L;
@@ -32,27 +30,16 @@ public class JwtUser implements UserDetails, CredentialsContainer {
     @JsonIgnore
     private String password = null;
     @JsonIgnore
-    private Optional<String> totpSecret = Optional.empty();
+    private String totpSecret = null;
     private boolean accountNonExpired = false;
     private boolean accountNonLocked = false;
     private boolean credentialsNonExpired = false;
     private boolean enabled = false;
     @JsonIgnore
     private List<GrantedAuthority> authorities = new ArrayList<>();
-    @Deprecated
-    private String authority = "NONE";
     private boolean apiAccessAllowed = false;
 
-    @Deprecated
-    public String getAuthority() {
-        return authorities.isEmpty() ? null : authorities.get(0).toString();
-    }
-
-    @Deprecated
-    public void setAuthority(String authority) {
-        this.authorities.add(new SimpleGrantedAuthority(authority));
-    }
-
+    @SuppressWarnings("unchecked")
     public static JwtUser fromClaims(JWTClaimsSet claims) {
         JwtUser user = new JwtUser();
         user.setUsername(claims.getSubject());
@@ -71,6 +58,16 @@ public class JwtUser implements UserDetails, CredentialsContainer {
         return user;
     }
 
+    @Deprecated
+    public String getAuthority() {
+        return authorities.isEmpty() ? null : authorities.get(0).toString();
+    }
+
+    @Deprecated
+    public void setAuthority(String authority) {
+        this.authorities.add(new SimpleGrantedAuthority(authority));
+    }
+
     @Override
     public void eraseCredentials() {
         password = null;
@@ -87,5 +84,9 @@ public class JwtUser implements UserDetails, CredentialsContainer {
                 .subject(getUsername())
                 .claim("uid", getId())
                 .claim("authorities", authorities);
+    }
+
+    public Optional<String> getTotpSecret() {
+        return Optional.ofNullable(totpSecret);
     }
 }
