@@ -39,6 +39,7 @@ subprojects {
             spyMemcachedVersion = '[2.12,3.0['
             expiringMapVersion = '[0.5,1.0['
             h2Version = '[1.4,2.0['
+            jetbrainsAnnotationsVersion = '[15.0,16.0['
         }
         repositories {
             mavenCentral()
@@ -46,6 +47,7 @@ subprojects {
     }
     dependencies {
         compile("org.projectlombok:lombok:${lombokVersion}")
+        compile("org.jetbrains:annotations:${jetbrainsAnnotationsVersion}")
 
         testCompile('org.springframework.boot:spring-boot-starter-test')
         testCompile('org.springframework:spring-aspects')

@@ -11,6 +11,8 @@ import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 import lombok.extern.slf4j.Slf4j;
 import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.nio.charset.StandardCharsets;
@@ -28,13 +30,13 @@ public class InternalTokenStore implements RefreshTokenStore {
     private ExpiringMap<String, String> refreshTokenMap = null;
 
     @Override
-    public void saveToken(String username, String deviceId, String token) {
+    public void saveToken(@NotNull String username, @NotNull String deviceId, @NotNull String token) {
         String key = username + delimiter + deviceId;
         refreshTokenMap.put(key, token);
     }
 
     @Override
-    public boolean useToken(String username, String deviceId, String token) {
+    public boolean useToken(@NotNull String username, @NotNull String deviceId, @NotNull String token) {
         String key = username + delimiter + deviceId;
         final byte[] stored = refreshTokenMap.getOrDefault(key, String.format("%64s", "0")).getBytes(StandardCharsets.UTF_8);
         final byte[] toCheck = token.getBytes(StandardCharsets.UTF_8);
@@ -43,13 +45,15 @@ public class InternalTokenStore implements RefreshTokenStore {
                 && refreshTokenMap.remove(key) != null;
     }
 
+    @NotNull
     @Override
-    public List<RefreshToken> listTokens(String username) {
+    public List<RefreshToken> listTokens(@NotNull String username) {
         String filter = String.format("^%s%s[^%s]+$",
                 Pattern.quote(username), Pattern.quote(delimiter), Pattern.quote(delimiter));
         return listRefreshTokensByPrefix(filter).getOrDefault(username, Collections.emptyList());
     }
 
+    @NotNull
     @Override
     public Map<String, List<RefreshToken>> listTokens() {
         final String filter = String.format("^[^%s]+%s[^%s]+$",
@@ -57,7 +61,8 @@ public class InternalTokenStore implements RefreshTokenStore {
         return listRefreshTokensByPrefix(filter);
     }
 
-    private Map<String, List<RefreshToken>> listRefreshTokensByPrefix(String filter) {
+    @NotNull
+    private Map<String, List<RefreshToken>> listRefreshTokensByPrefix(@NotNull String filter) {
         final Map<String, List<RefreshToken>> result = new HashMap<>();
         for (Map.Entry<String, String> entry : refreshTokenMap.entrySet()) {
             if (entry.getKey().matches(filter)) {
@@ -77,11 +82,13 @@ public class InternalTokenStore implements RefreshTokenStore {
     }
 
     @Override
-    public boolean revokeToken(String username, RefreshToken token) {
+    public boolean revokeToken(@NotNull String username, @NotNull RefreshToken token) {
+        Objects.requireNonNull(username, "username may not be null");
+        Objects.requireNonNull(token, "token may not be null");
         return revokeTokens(username, token.getDeviceId()) != 0;
     }
 
-    private int revokeTokens(String username, String deviceId) {
+    private int revokeTokens(@Nullable String username, @Nullable String deviceId) {
         if (username == null && deviceId == null) {
             final int count = refreshTokenMap.size();
             refreshTokenMap.clear();
@@ -104,12 +111,15 @@ public class InternalTokenStore implements RefreshTokenStore {
     }
 
     @Override
-    public int revokeTokens(String username) {
+    public int revokeTokens(@NotNull String username) {
+        Objects.requireNonNull(username, "username may not be null");
         return revokeTokens(username, null);
     }
 
     @Override
-    public boolean revokeToken(String username, String deviceId) {
+    public boolean revokeToken(@NotNull String username, @NotNull String deviceId) {
+        Objects.requireNonNull(username, "username may not be null");
+        Objects.requireNonNull(deviceId, "deviceId may not be null");
         return revokeTokens(username, deviceId) != 0;
     }
 
@@ -119,7 +129,7 @@ public class InternalTokenStore implements RefreshTokenStore {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         log.debug("Creating in-memory expiring map");
         refreshTokenMap = ExpiringMap.builder()
                 .expirationPolicy(ExpirationPolicy.CREATED)
@@ -127,6 +137,7 @@ public class InternalTokenStore implements RefreshTokenStore {
                 .build();
     }
 
+    @NotNull
     @Override
     public TimeWithPeriod getRefreshExpiration() {
         return refreshExpiration;

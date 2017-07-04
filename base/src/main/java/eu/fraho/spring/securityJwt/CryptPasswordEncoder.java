@@ -9,6 +9,7 @@ package eu.fraho.spring.securityJwt;
 import eu.fraho.spring.securityJwt.dto.CryptAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.Crypt;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,7 +36,7 @@ public class CryptPasswordEncoder implements PasswordEncoder, InitializingBean {
     @Value("${fraho.crypt.algorithm:" + ALGORITHM_DEFAULT + "}")
     private CryptAlgorithm algorithm = CryptAlgorithm.valueOf(ALGORITHM_DEFAULT);
 
-    private static boolean slowEquals(CharSequence a, CharSequence b) {
+    private static boolean slowEquals(@NotNull CharSequence a, @NotNull CharSequence b) {
         int diff = a.length() ^ b.length();
         for (int i = 0; i < a.length() && i < b.length(); i++) {
             diff |= a.charAt(i) ^ b.charAt(i);
@@ -44,7 +45,7 @@ public class CryptPasswordEncoder implements PasswordEncoder, InitializingBean {
     }
 
     @Override
-    public String encode(CharSequence rawPassword) {
+    public String encode(@NotNull CharSequence rawPassword) {
         final String cryptParam;
         if (algorithm.isRoundsSupported()) {
             cryptParam = String.format("%srounds=%d$%s$", algorithm.getPrefix(), rounds, generateSalt());
@@ -59,10 +60,11 @@ public class CryptPasswordEncoder implements PasswordEncoder, InitializingBean {
     }
 
     @Override
-    public boolean matches(CharSequence rawPassword, String encodedPassword) {
+    public boolean matches(@NotNull CharSequence rawPassword, @NotNull String encodedPassword) {
         return slowEquals(encodedPassword, Crypt.crypt(rawPassword.toString(), encodedPassword));
     }
 
+    @NotNull
     protected String generateSalt() {
         final byte[] bytes = new byte[algorithm.getSaltLength() * 2];
         random.nextBytes(bytes);

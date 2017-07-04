@@ -9,6 +9,7 @@ package eu.fraho.spring.securityJwt.service;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 import eu.fraho.spring.securityJwt.exceptions.JwtRefreshException;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.InitializingBean;
 
 import java.util.List;
@@ -16,22 +17,25 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 public interface RefreshTokenStore extends InitializingBean {
-    void saveToken(String username, String deviceId, String token);
+    void saveToken(@NotNull  String username, @NotNull String deviceId, @NotNull String token);
 
-    boolean useToken(String username, String deviceId, String token);
+    boolean useToken(@NotNull String username, @NotNull String deviceId, @NotNull String token);
 
-    List<RefreshToken> listTokens(String username);
+    @NotNull
+    List<RefreshToken> listTokens(@NotNull String username);
 
+    @NotNull
     Map<String, List<RefreshToken>> listTokens();
 
-    boolean revokeToken(String username, RefreshToken token);
+    boolean revokeToken(@NotNull String username, @NotNull RefreshToken token);
 
-    boolean revokeToken(String username, String deviceId);
+    boolean revokeToken(@NotNull String username, @NotNull String deviceId);
 
-    int revokeTokens(String username);
+    int revokeTokens(@NotNull String username);
 
     int revokeTokens();
 
+    @NotNull
     TimeWithPeriod getRefreshExpiration();
 
     /**

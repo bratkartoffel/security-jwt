@@ -10,6 +10,7 @@ import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 import eu.fraho.spring.securityJwt.exceptions.FeatureNotConfiguredException;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -17,37 +18,39 @@ import java.util.Map;
 @Slf4j
 class NullTokenStore implements RefreshTokenStore {
     @Override
-    public void saveToken(String username, String deviceId, String token) {
+    public void saveToken(@NotNull String username, @NotNull String deviceId, @NotNull String token) {
         throw new FeatureNotConfiguredException("No implementation configured");
     }
 
     @Override
-    public boolean useToken(String username, String deviceId, String token) {
+    public boolean useToken(@NotNull String username, @NotNull String deviceId, @NotNull String token) {
         throw new FeatureNotConfiguredException("No implementation configured");
     }
 
+    @NotNull
     @Override
-    public List<RefreshToken> listTokens(String username) {
+    public List<RefreshToken> listTokens(@NotNull String username) {
         throw new FeatureNotConfiguredException("No implementation configured");
     }
 
+    @NotNull
     @Override
     public Map<String, List<RefreshToken>> listTokens() {
         throw new FeatureNotConfiguredException("No implementation configured");
     }
 
     @Override
-    public boolean revokeToken(String username, RefreshToken token) {
+    public boolean revokeToken(@NotNull String username, @NotNull RefreshToken token) {
         throw new FeatureNotConfiguredException("No implementation configured");
     }
 
     @Override
-    public int revokeTokens(String username) {
+    public int revokeTokens(@NotNull String username) {
         throw new FeatureNotConfiguredException("No implementation configured");
     }
 
     @Override
-    public boolean revokeToken(String username, String deviceId) {
+    public boolean revokeToken(@NotNull String username, @NotNull String deviceId) {
         throw new FeatureNotConfiguredException("No implementation configured");
     }
 
@@ -56,6 +59,7 @@ class NullTokenStore implements RefreshTokenStore {
         throw new FeatureNotConfiguredException("No implementation configured");
     }
 
+    @NotNull
     public TimeWithPeriod getRefreshExpiration() {
         throw new FeatureNotConfiguredException("No implementation configured");
     }

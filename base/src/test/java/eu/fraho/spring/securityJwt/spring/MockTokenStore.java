@@ -10,6 +10,7 @@ import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,38 +23,40 @@ public class MockTokenStore implements RefreshTokenStore {
     private String activeToken = null;
 
     @Override
-    public void saveToken(String username, String deviceId, String token) {
+    public void saveToken(@NotNull String username, @NotNull String deviceId, @NotNull String token) {
         activeToken = username + deviceId + token;
     }
 
     @Override
-    public boolean useToken(String username, String deviceId, String token) {
+    public boolean useToken(@NotNull String username, @NotNull String deviceId, @NotNull String token) {
         String toCheck = username + deviceId + token;
         return Optional.ofNullable(activeToken).map(toCheck::equals).orElse(false);
     }
 
+    @NotNull
     @Override
-    public List<RefreshToken> listTokens(String username) {
+    public List<RefreshToken> listTokens(@NotNull String username) {
         return Collections.emptyList();
     }
 
+    @NotNull
     @Override
     public Map<String, List<RefreshToken>> listTokens() {
         return Collections.emptyMap();
     }
 
     @Override
-    public boolean revokeToken(String username, RefreshToken token) {
+    public boolean revokeToken(@NotNull String username, @NotNull RefreshToken token) {
         return false;
     }
 
     @Override
-    public int revokeTokens(String username) {
+    public int revokeTokens(@NotNull String username) {
         return 0;
     }
 
     @Override
-    public boolean revokeToken(String username, String deviceId) {
+    public boolean revokeToken(@NotNull String username, @NotNull String deviceId) {
         return false;
     }
 
@@ -62,6 +65,7 @@ public class MockTokenStore implements RefreshTokenStore {
         return 0;
     }
 
+    @NotNull
     public TimeWithPeriod getRefreshExpiration() {
         return new TimeWithPeriod(0, TimeUnit.SECONDS);
     }
