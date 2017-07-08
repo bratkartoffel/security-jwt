@@ -4,6 +4,7 @@
 * (all) Some minor cleanup (code smells)
 * (hibernate) Ensure that "created" is a timestamp column
 * (doc) Add example schema to hibernate doc
+* (all) Add Jetbrains Annotations for Nullable and NotNull constraints
 
 ### 0.8.0 (2017-06-06)
 * (base) Fix JwtTokenService.isRefreshTokenSupported() not working as expected (always returning true)
