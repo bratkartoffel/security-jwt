@@ -98,7 +98,8 @@ public class JwtUser implements UserDetails, CredentialsContainer {
      * Please use {@link #setTotpSecret(String)} instead
      */
     @Deprecated
-    public void setTotpSecret(Optional<String> totpSecret) {
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    public void setTotpSecret( Optional<String> totpSecret) {
         this.totpSecret = totpSecret.orElse(null);
     }
 }

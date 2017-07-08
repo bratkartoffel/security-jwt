@@ -12,6 +12,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
 
+@SuppressWarnings("JpaDataSourceORMInspection")
 @Entity
 @Table(name = "jwt_refresh", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"username", "deviceId"})

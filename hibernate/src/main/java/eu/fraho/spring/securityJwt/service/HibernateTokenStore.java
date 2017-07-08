@@ -10,6 +10,7 @@ import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.dto.RefreshTokenEntity;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +33,7 @@ public class HibernateTokenStore implements RefreshTokenStore {
 
     @Override
     @Transactional
-    public void saveToken(String username, String deviceId, String token) {
+    public void saveToken(@NotNull String username, @NotNull String deviceId, @NotNull String token) {
         revokeToken(username, deviceId);
         RefreshTokenEntity entity = new RefreshTokenEntity(username, deviceId, token);
 
@@ -44,7 +45,7 @@ public class HibernateTokenStore implements RefreshTokenStore {
 
     @Override
     @Transactional
-    public boolean useToken(String username, String deviceId, String token) {
+    public boolean useToken(@NotNull String username, @NotNull String deviceId, @NotNull String token) {
         final Query query = em.createQuery("DELETE FROM RefreshTokenEntity o WHERE " +
                 "o.username = :username AND o.deviceId = :deviceId AND o.token = :token AND o.created >= :expiration");
         query.setParameter("username", username);
@@ -55,9 +56,10 @@ public class HibernateTokenStore implements RefreshTokenStore {
         return exceptionWrapper("Could not use refresh token", query::executeUpdate) != 0;
     }
 
+    @NotNull
     @Override
     @Transactional(readOnly = true)
-    public List<RefreshToken> listTokens(String username) {
+    public List<RefreshToken> listTokens(@NotNull String username) {
         final TypedQuery<RefreshTokenEntity> query = em.createQuery("SELECT o FROM RefreshTokenEntity o WHERE " +
                 "o.username = :username AND o.created >= :expiration", RefreshTokenEntity.class);
         query.setParameter("username", username);
@@ -76,6 +78,7 @@ public class HibernateTokenStore implements RefreshTokenStore {
         query.setParameter("expiration", expiration);
     }
 
+    @NotNull
     @Override
     @Transactional(readOnly = true)
     public Map<String, List<RefreshToken>> listTokens() {
@@ -94,13 +97,17 @@ public class HibernateTokenStore implements RefreshTokenStore {
 
     @Override
     @Transactional
-    public boolean revokeToken(String username, RefreshToken token) {
+    public boolean revokeToken(@NotNull String username, @NotNull RefreshToken token) {
+        Objects.requireNonNull(username, "username may not be null");
+        Objects.requireNonNull(token, "token may not be null");
         return revokeToken(username, token.getDeviceId());
     }
 
     @Override
     @Transactional
-    public boolean revokeToken(String username, String deviceId) {
+    public boolean revokeToken(@NotNull String username, @NotNull String deviceId) {
+        Objects.requireNonNull(username, "username may not be null");
+        Objects.requireNonNull(deviceId, "deviceId may not be null");
         final Query query = em.createQuery("DELETE FROM RefreshTokenEntity o WHERE " +
                 "o.username = :username AND o.deviceId = :deviceId");
         query.setParameter("username", username);
@@ -111,7 +118,8 @@ public class HibernateTokenStore implements RefreshTokenStore {
 
     @Override
     @Transactional
-    public int revokeTokens(String username) {
+    public int revokeTokens(@NotNull String username) {
+        Objects.requireNonNull(username, "username may not be null");
         final Query query = em.createQuery("DELETE FROM RefreshTokenEntity o WHERE " +
                 "o.username = :username");
         query.setParameter("username", username);
@@ -127,10 +135,11 @@ public class HibernateTokenStore implements RefreshTokenStore {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         // nothing to do here
     }
 
+    @NotNull
     @Override
     public TimeWithPeriod getRefreshExpiration() {
         return refreshExpiration;
