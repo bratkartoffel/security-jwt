@@ -118,7 +118,12 @@ gradlew.bat assemble
 ./gradlew -Prelease check uploadArchives
 ```
 
-# Client dataflow example
+# JWT Flow
+## Graphical
+[![Build Status](doc/login.png)](doc/login.png)
+[![Build Status](doc/refresh.png)](doc/refresh.png)
+
+## HTTP-Requests
 Request a token (login):
 ```
 > POST /auth/login HTTP/1.1
