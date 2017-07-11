@@ -118,8 +118,8 @@ gradlew.bat assemble
 ./gradlew -Prelease check uploadArchives
 ```
 
-# JWT Flow
-## Graphical
+# JWT Request Flow
+## UML
 [![Build Status](doc/login.png)](doc/login.png)
 [![Build Status](doc/refresh.png)](doc/refresh.png)
 
