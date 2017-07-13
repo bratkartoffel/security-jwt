@@ -72,7 +72,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     private Integer maxDeviceIdLength = DEFAULT_MAX_DEVICE_ID_LENGTH;
     @Autowired
     @Lazy
-    private RefreshTokenStore refreshTokenStore = null;
+    private RefreshTokenStore refreshTokenStore;
     private transient volatile JWSSigner signer = null;
     private JWSVerifier verifier;
     private JWSAlgorithm signatureAlgorithm;

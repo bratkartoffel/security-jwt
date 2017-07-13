@@ -7,6 +7,7 @@
 * (all) Add Jetbrains Annotations for Nullable and NotNull constraints
 * (doc) Add UML showing the graphical flow of requests (Thanks to Hans-Peter Keilhofer)
 * (base) Fix NPE in PasswordEncoder
+* (all) Prefer constructor based autowiring over field injection
 
 ### 0.8.0 (2017-06-06)
 * (base) Fix JwtTokenService.isRefreshTokenSupported() not working as expected (always returning true)
