@@ -60,8 +60,9 @@ public class CryptPasswordEncoder implements PasswordEncoder, InitializingBean {
     }
 
     @Override
-    public boolean matches(@NotNull CharSequence rawPassword, @NotNull String encodedPassword) {
-        return slowEquals(encodedPassword, Crypt.crypt(rawPassword.toString(), encodedPassword));
+    public boolean matches(CharSequence rawPassword, String encodedPassword) {
+        return rawPassword != null && encodedPassword != null
+                && slowEquals(encodedPassword, Crypt.crypt(rawPassword.toString(), encodedPassword));
     }
 
     @NotNull
