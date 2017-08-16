@@ -32,7 +32,7 @@ subprojects {
             springBootVersion = '[1.5,2.0['
             springDependencyManagementVersion = '[1.0,2.0['
             lombokVersion = '[1.16,2.0['
-            springfoxVersion = '[2.6,3.0['
+            swaggerAnnotationsVersion = '[1.5,2.0['
             nimbusJwtVersion = '[4.37,5.0['
             commonsCodecVersion = '[1.10,2.0['
             bouncyCastleVersion = '[1.57,2.0['
