@@ -83,8 +83,6 @@ public class InternalTokenStore implements RefreshTokenStore {
 
     @Override
     public boolean revokeToken(@NotNull String username, @NotNull RefreshToken token) {
-        Objects.requireNonNull(username, "username may not be null");
-        Objects.requireNonNull(token, "token may not be null");
         return revokeTokens(username, token.getDeviceId()) != 0;
     }
 
@@ -95,9 +93,7 @@ public class InternalTokenStore implements RefreshTokenStore {
             return count;
         }
 
-        final String filter = Optional.ofNullable(username).map(Pattern::quote).orElse("[^" + Pattern.quote(delimiter) + "]+") +
-                Pattern.quote(delimiter) +
-                Optional.ofNullable(deviceId).map(Pattern::quote).orElse("[^" + Pattern.quote(delimiter) + "]+");
+        final String filter = getFilterPatternPart(username) + Pattern.quote(delimiter) + getFilterPatternPart(deviceId);
         int count = 0;
         for (Iterator<Map.Entry<String, String>> iterator = refreshTokenMap.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry<String, String> entry = iterator.next();
@@ -110,16 +106,18 @@ public class InternalTokenStore implements RefreshTokenStore {
         return count;
     }
 
+    @NotNull
+    private String getFilterPatternPart(@Nullable String string) {
+        return Optional.ofNullable(string).map(Pattern::quote).orElse("[^" + Pattern.quote(delimiter) + "]+");
+    }
+
     @Override
     public int revokeTokens(@NotNull String username) {
-        Objects.requireNonNull(username, "username may not be null");
         return revokeTokens(username, null);
     }
 
     @Override
     public boolean revokeToken(@NotNull String username, @NotNull String deviceId) {
-        Objects.requireNonNull(username, "username may not be null");
-        Objects.requireNonNull(deviceId, "deviceId may not be null");
         return revokeTokens(username, deviceId) != 0;
     }
 

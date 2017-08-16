@@ -60,7 +60,6 @@ public class MemcacheTokenStore implements RefreshTokenStore {
     @Override
     public void saveToken(@NotNull String username, @NotNull String deviceId, @NotNull String token) {
         String key = refreshCachePrefix + delimiter + username + delimiter + deviceId;
-
         getAndWait("Error while saving refresh token on memcache server", () ->
                 memcachedClient.set(key, refreshExpiration.toSeconds(), token));
     }
@@ -148,21 +147,16 @@ public class MemcacheTokenStore implements RefreshTokenStore {
 
     @Override
     public boolean revokeToken(@NotNull String username, @NotNull RefreshToken token) {
-        Objects.requireNonNull(username, "username may not be null");
-        Objects.requireNonNull(token, "token may not be null");
         return revokeTokens(username, token.getDeviceId()) != 0;
     }
 
     @Override
     public int revokeTokens(@NotNull String username) {
-        Objects.requireNonNull(username, "username may not be null");
         return revokeTokens(username, null);
     }
 
     @Override
     public boolean revokeToken(@NotNull String username, @NotNull String deviceId) {
-        Objects.requireNonNull(username, "username may not be null");
-        Objects.requireNonNull(deviceId, "deviceId may not be null");
         return revokeTokens(username, deviceId) != 0;
     }
 

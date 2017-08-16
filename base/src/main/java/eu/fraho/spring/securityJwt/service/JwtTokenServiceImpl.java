@@ -78,9 +78,11 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     private JWSAlgorithm signatureAlgorithm;
 
     private String truncateDeviceId(String str) {
-        final String trimmedId = str == null ? DEFAULT_DEVICE_ID : str.trim();
-        final String deviceId = trimmedId.isEmpty() ? DEFAULT_DEVICE_ID : trimmedId;
-        return deviceId.substring(0, Math.min(deviceId.length(), maxDeviceIdLength));
+        return Optional.ofNullable(str)
+                .map(String::trim)
+                .filter(e -> !e.isEmpty())
+                .map(e -> e.substring(0, Math.min(e.length(), maxDeviceIdLength)))
+                .orElse(DEFAULT_DEVICE_ID);
     }
 
     @Override
@@ -162,7 +164,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
             verifier = new RSASSAVerifier((RSAPublicKey) publicKey);
         } else {
             log.info("Using HMAC based JWT signature");
-            if (hmacSecret == null || hmacSecret.length == 0) {
+            if (hmacSecret.length == 0) {
                 throw new IllegalArgumentException("No secret key configured.");
             }
             verifier = new MACVerifier(hmacSecret);
@@ -174,8 +176,8 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
         }
     }
 
-    private void assertKeyPresent(byte[] publicKeyBytes) {
-        if (publicKeyBytes.length == 0) {
+    private void assertKeyPresent(byte[] key) {
+        if (key.length == 0) {
             throw new IllegalArgumentException("No public key configured.");
         }
     }
@@ -185,6 +187,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
         try {
             return Optional.of(JwtUser.fromClaims(SignedJWT.parse(token).getJWTClaimsSet()));
         } catch (ParseException e) {
+            log.debug("Unable to parse token", e);
             return Optional.empty();
         }
     }

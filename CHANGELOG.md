@@ -2,13 +2,14 @@
 
 ### 0.8.1 (not yet released)
 * (all) Some minor cleanup (code smells)
-* (hibernate) Ensure that "created" is a timestamp column
-* (doc) Add example schema to hibernate doc
 * (all) Add Jetbrains Annotations for Nullable and NotNull constraints
-* (doc) Add UML showing the graphical flow of requests (Thanks to Hans-Peter Keilhofer)
-* (base) Fix NPE in PasswordEncoder
 * (all) Prefer constructor based autowiring over field injection
+* (base) Fix NPE in PasswordEncoder
 * (base) Use swagger-annotations instead of full springfox (#6)
+* (doc) Add example schema to hibernate doc
+* (doc) Add UML showing the graphical flow of requests (Thanks to Hans-Peter Keilhofer)
+* (hibernate) Ensure that "created" is a timestamp column
+* (hibernate) Do not register DateTime-Converter globally
 
 ### 0.8.0 (2017-06-06)
 * (base) Fix JwtTokenService.isRefreshTokenSupported() not working as expected (always returning true)

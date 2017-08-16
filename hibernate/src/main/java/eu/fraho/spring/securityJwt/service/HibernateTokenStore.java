@@ -66,14 +66,16 @@ public class HibernateTokenStore implements RefreshTokenStore {
         setExpiration(query);
 
         List<RefreshTokenEntity> result = exceptionWrapper("Could not list refresh token", query::getResultList);
-        return result.stream().map(e -> new RefreshToken(e.getToken(), calculateExpiration(e.getCreated()), e.getDeviceId())).collect(Collectors.toList());
+        return result.stream()
+                .map(e -> new RefreshToken(e.getToken(), calculateExpiration(e.getCreated()), e.getDeviceId()))
+                .collect(Collectors.toList());
     }
 
-    private int calculateExpiration(ZonedDateTime created) {
+    private int calculateExpiration(@NotNull ZonedDateTime created) {
         return (int) ChronoUnit.SECONDS.between(created, ZonedDateTime.now());
     }
 
-    private void setExpiration(Query query) {
+    private void setExpiration(@NotNull Query query) {
         final ZonedDateTime expiration = ZonedDateTime.now().minusSeconds(refreshExpiration.toSeconds());
         query.setParameter("expiration", expiration);
     }
@@ -89,8 +91,9 @@ public class HibernateTokenStore implements RefreshTokenStore {
         final List<RefreshTokenEntity> tokens = exceptionWrapper("Could not list refresh token", query::getResultList);
         final Map<String, List<RefreshToken>> result = new HashMap<>();
 
-        tokens.forEach(e -> result.computeIfAbsent(e.getUsername(), s -> new ArrayList<>())
-                .add(new RefreshToken(e.getToken(), calculateExpiration(e.getCreated()), e.getDeviceId())));
+        tokens.forEach(e ->
+                result.computeIfAbsent(e.getUsername(), s -> new ArrayList<>())
+                        .add(new RefreshToken(e.getToken(), calculateExpiration(e.getCreated()), e.getDeviceId())));
         result.replaceAll((s, t) -> Collections.unmodifiableList(t));
         return Collections.unmodifiableMap(result);
     }
@@ -98,16 +101,12 @@ public class HibernateTokenStore implements RefreshTokenStore {
     @Override
     @Transactional
     public boolean revokeToken(@NotNull String username, @NotNull RefreshToken token) {
-        Objects.requireNonNull(username, "username may not be null");
-        Objects.requireNonNull(token, "token may not be null");
         return revokeToken(username, token.getDeviceId());
     }
 
     @Override
     @Transactional
     public boolean revokeToken(@NotNull String username, @NotNull String deviceId) {
-        Objects.requireNonNull(username, "username may not be null");
-        Objects.requireNonNull(deviceId, "deviceId may not be null");
         final Query query = em.createQuery("DELETE FROM RefreshTokenEntity o WHERE " +
                 "o.username = :username AND o.deviceId = :deviceId");
         query.setParameter("username", username);
@@ -119,7 +118,6 @@ public class HibernateTokenStore implements RefreshTokenStore {
     @Override
     @Transactional
     public int revokeTokens(@NotNull String username) {
-        Objects.requireNonNull(username, "username may not be null");
         final Query query = em.createQuery("DELETE FROM RefreshTokenEntity o WHERE " +
                 "o.username = :username");
         query.setParameter("username", username);
