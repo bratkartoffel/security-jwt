@@ -7,7 +7,7 @@ This module adds support for storing refresh tokens within an in-memory storage.
 <dependency>
     <groupId>eu.fraho.spring</groupId>
     <artifactId>security-jwt-internal</artifactId>
-    <version>0.8.0</version>
+    <version>0.8.1</version>
 </dependency>
 ```
 
