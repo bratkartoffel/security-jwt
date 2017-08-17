@@ -7,7 +7,6 @@ import eu.fraho.spring.securityJwt.service.TotpServiceImpl;
 import eu.fraho.spring.securityJwt.spring.UserDetailsServiceTestImpl;
 import lombok.Getter;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

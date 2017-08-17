@@ -12,6 +12,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
 
+@SuppressWarnings("JpaDataSourceORMInspection")
 @Entity
 @Table(name = "jwt_refresh", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"username", "deviceId"})
@@ -19,6 +20,7 @@ import java.time.ZonedDateTime;
 @Getter
 @Setter
 @EqualsAndHashCode(of = {"username", "deviceId", "token"})
+@ToString(of = {"id", "username", "deviceId"})
 @NoArgsConstructor
 public class RefreshTokenEntity {
     @Id
@@ -29,6 +31,7 @@ public class RefreshTokenEntity {
     @NotNull
     @Column(updatable = false)
     @Setter(AccessLevel.NONE)
+    @Convert(converter = ZonedDateTimeConverter.class)
     private ZonedDateTime created = ZonedDateTime.now();
 
     @NotNull

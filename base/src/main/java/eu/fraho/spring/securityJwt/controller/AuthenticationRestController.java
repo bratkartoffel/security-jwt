@@ -13,6 +13,8 @@ import eu.fraho.spring.securityJwt.service.TotpService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,18 +35,19 @@ import java.util.concurrent.TimeoutException;
 @RestController
 @RequestMapping(value = "/auth", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AuthenticationRestController {
-    @Autowired
-    private AuthenticationManager authenticationManager = null;
+    @NonNull
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    private JwtTokenService jwtTokenUtil = null;
+    @NonNull
+    private final JwtTokenService jwtTokenUtil;
 
-    @Autowired
-    private UserDetailsService userDetailsService = null;
+    @NonNull
+    private final UserDetailsService userDetailsService;
 
-    @Autowired
-    private TotpService totpService = null;
+    @NonNull
+    private final TotpService totpService ;
 
     @RequestMapping("/refresh")
     @ApiOperation("Use a previously fetched refresh token to create a new access token")

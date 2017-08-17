@@ -19,8 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -56,10 +54,6 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     public static final int REFRESH_TOKEN_LEN_MAX = 48;
 
     private final SecureRandom random = new SecureRandom();
-    @Autowired
-    private ApplicationContext applicationContext = null;
-    @Autowired
-    private AutowireCapableBeanFactory autowireCapableBeanFactory = null;
     @Value("${fraho.jwt.token.algorithm:" + DEFAULT_ALGORITHM + "}")
     private String algorithm = DEFAULT_ALGORITHM;
     @Value("${fraho.jwt.token.issuer:" + DEFAULT_ISSUER + "}")
@@ -78,15 +72,17 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     private Integer maxDeviceIdLength = DEFAULT_MAX_DEVICE_ID_LENGTH;
     @Autowired
     @Lazy
-    private RefreshTokenStore refreshTokenStore = null;
+    private RefreshTokenStore refreshTokenStore;
     private transient volatile JWSSigner signer = null;
     private JWSVerifier verifier;
     private JWSAlgorithm signatureAlgorithm;
 
     private String truncateDeviceId(String str) {
-        final String trimmedId = str == null ? DEFAULT_DEVICE_ID : str.trim();
-        final String deviceId = trimmedId.isEmpty() ? DEFAULT_DEVICE_ID : trimmedId;
-        return deviceId.substring(0, Math.min(deviceId.length(), maxDeviceIdLength));
+        return Optional.ofNullable(str)
+                .map(String::trim)
+                .filter(e -> !e.isEmpty())
+                .map(e -> e.substring(0, Math.min(e.length(), maxDeviceIdLength)))
+                .orElse(DEFAULT_DEVICE_ID);
     }
 
     @Override
@@ -168,7 +164,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
             verifier = new RSASSAVerifier((RSAPublicKey) publicKey);
         } else {
             log.info("Using HMAC based JWT signature");
-            if (hmacSecret == null || hmacSecret.length == 0) {
+            if (hmacSecret.length == 0) {
                 throw new IllegalArgumentException("No secret key configured.");
             }
             verifier = new MACVerifier(hmacSecret);
@@ -180,8 +176,8 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
         }
     }
 
-    private void assertKeyPresent(byte[] publicKeyBytes) {
-        if (publicKeyBytes.length == 0) {
+    private void assertKeyPresent(byte[] key) {
+        if (key.length == 0) {
             throw new IllegalArgumentException("No public key configured.");
         }
     }
@@ -191,6 +187,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
         try {
             return Optional.of(JwtUser.fromClaims(SignedJWT.parse(token).getJWTClaimsSet()));
         } catch (ParseException e) {
+            log.debug("Unable to parse token", e);
             return Optional.empty();
         }
     }

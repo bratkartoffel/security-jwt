@@ -12,8 +12,11 @@ import eu.fraho.spring.securityJwt.exceptions.JwtRefreshException;
 import lombok.extern.slf4j.Slf4j;
 import net.spy.memcached.MemcachedClient;
 import net.spy.memcached.internal.OperationFuture;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -46,7 +49,7 @@ public class MemcacheTokenStore implements RefreshTokenStore {
 
     private MemcachedClient memcachedClient = null;
 
-    private <T> T getAndWait(String message, Supplier<OperationFuture<T>> action) {
+    private <T> T getAndWait(@NotNull String message, @NotNull Supplier<OperationFuture<T>> action) {
         try {
             return action.get().get(cacheTimeout, TimeUnit.SECONDS);
         } catch (TimeoutException | InterruptedException | ExecutionException e) {
@@ -55,15 +58,14 @@ public class MemcacheTokenStore implements RefreshTokenStore {
     }
 
     @Override
-    public void saveToken(String username, String deviceId, String token) {
+    public void saveToken(@NotNull String username, @NotNull String deviceId, @NotNull String token) {
         String key = refreshCachePrefix + delimiter + username + delimiter + deviceId;
-
         getAndWait("Error while saving refresh token on memcache server", () ->
                 memcachedClient.set(key, refreshExpiration.toSeconds(), token));
     }
 
     @Override
-    public boolean useToken(String username, String deviceId, String token) {
+    public boolean useToken(@NotNull String username, @NotNull String deviceId, @NotNull String token) {
         String key = refreshCachePrefix + delimiter + username + delimiter + deviceId;
         final byte[] stored = String.valueOf(memcachedClient.get(key)).getBytes(StandardCharsets.UTF_8);
         final byte[] toCheck = token.getBytes(StandardCharsets.UTF_8);
@@ -76,14 +78,16 @@ public class MemcacheTokenStore implements RefreshTokenStore {
         return false;
     }
 
+    @NotNull
     @Override
-    public List<RefreshToken> listTokens(String username) {
+    public List<RefreshToken> listTokens(@NotNull String username) {
         String filter = String.format("^%s%s%s%s[^%s]+$",
                 Pattern.quote(refreshCachePrefix), Pattern.quote(delimiter),
                 Pattern.quote(username), Pattern.quote(delimiter), Pattern.quote(delimiter));
         return listRefreshTokensByPrefix(filter).getOrDefault(username, Collections.emptyList());
     }
 
+    @NotNull
     @Override
     public Map<String, List<RefreshToken>> listTokens() {
         String filter = String.format("^%s%s[^%s]+%s[^%s]+$",
@@ -92,7 +96,8 @@ public class MemcacheTokenStore implements RefreshTokenStore {
         return listRefreshTokensByPrefix(filter);
     }
 
-    private List<String> listAllKeys(String filter) {
+    @NotNull
+    private List<String> listAllKeys(@NotNull String filter) {
         final List<String> result = new ArrayList<>();
         final Set<Integer> slabs = memcachedClient.getStats("items")
                 .entrySet().iterator().next()
@@ -116,7 +121,8 @@ public class MemcacheTokenStore implements RefreshTokenStore {
         return Collections.unmodifiableList(result);
     }
 
-    private Map<String, List<RefreshToken>> listRefreshTokensByPrefix(String filter) {
+    @NotNull
+    private Map<String, List<RefreshToken>> listRefreshTokensByPrefix(@NotNull String filter) {
         final Map<String, List<RefreshToken>> result = new HashMap<>();
         final List<String> keys = listAllKeys(filter);
         final Map<String, Object> entries = memcachedClient.getBulk(keys);
@@ -140,31 +146,31 @@ public class MemcacheTokenStore implements RefreshTokenStore {
 
 
     @Override
-    public boolean revokeToken(String username, RefreshToken token) {
-        return revokeTokens(Optional.of(username), Optional.of(token.getDeviceId())) != 0;
+    public boolean revokeToken(@NotNull String username, @NotNull RefreshToken token) {
+        return revokeTokens(username, token.getDeviceId()) != 0;
     }
 
     @Override
-    public int revokeTokens(String username) {
-        return revokeTokens(Optional.of(username), Optional.empty());
+    public int revokeTokens(@NotNull String username) {
+        return revokeTokens(username, null);
     }
 
     @Override
-    public boolean revokeToken(String username, String deviceId) {
-        return revokeTokens(Optional.of(username), Optional.of(deviceId)) != 0;
+    public boolean revokeToken(@NotNull String username, @NotNull String deviceId) {
+        return revokeTokens(username, deviceId) != 0;
     }
 
     @Override
     public int revokeTokens() {
-        return revokeTokens(Optional.empty(), Optional.empty());
+        return revokeTokens(null, null);
     }
 
-    private int revokeTokens(Optional<String> username, Optional<String> deviceId) {
+    private int revokeTokens(@Nullable String username, @Nullable String deviceId) {
         final String filter = refreshCachePrefix +
                 Pattern.quote(delimiter) +
-                username.map(Pattern::quote).orElse("[^" + Pattern.quote(delimiter) + "]+") +
+                Optional.ofNullable(username).map(Pattern::quote).orElse("[^" + Pattern.quote(delimiter) + "]+") +
                 Pattern.quote(delimiter) +
-                deviceId.map(Pattern::quote).orElse("[^" + Pattern.quote(delimiter) + "]+");
+                Optional.ofNullable(deviceId).map(Pattern::quote).orElse("[^" + Pattern.quote(delimiter) + "]+");
 
         final List<String> keys = listAllKeys(filter);
         final List<OperationFuture<Boolean>> futures = new ArrayList<>();
@@ -183,7 +189,7 @@ public class MemcacheTokenStore implements RefreshTokenStore {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() throws IOException {
         if (refreshExpiration.toSeconds() > 2_592_000) {
             throw new IllegalStateException("Refresh expiration may not exceed 30 days when using memcached");
         }
@@ -192,11 +198,13 @@ public class MemcacheTokenStore implements RefreshTokenStore {
         memcachedClient = new MemcachedClient(new InetSocketAddress(cacheHost, cachePort));
     }
 
+    @NotNull
     @Override
     public TimeWithPeriod getRefreshExpiration() {
         return refreshExpiration;
     }
 
+    @NotNull
     MemcachedClient getMemcachedClient() {
         return memcachedClient;
     }

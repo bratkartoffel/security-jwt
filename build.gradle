@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        projectVersion = '0.8.0'
+        projectVersion = '0.8.1'
     }
     repositories {
         mavenCentral()
@@ -32,13 +32,14 @@ subprojects {
             springBootVersion = '[1.5,2.0['
             springDependencyManagementVersion = '[1.0,2.0['
             lombokVersion = '[1.16,2.0['
-            springfoxVersion = '[2.6,3.0['
+            swaggerAnnotationsVersion = '[1.5,2.0['
             nimbusJwtVersion = '[4.37,5.0['
             commonsCodecVersion = '[1.10,2.0['
             bouncyCastleVersion = '[1.57,2.0['
             spyMemcachedVersion = '[2.12,3.0['
             expiringMapVersion = '[0.5,1.0['
             h2Version = '[1.4,2.0['
+            jetbrainsAnnotationsVersion = '[15.0,16.0['
         }
         repositories {
             mavenCentral()
@@ -46,6 +47,7 @@ subprojects {
     }
     dependencies {
         compile("org.projectlombok:lombok:${lombokVersion}")
+        compile("org.jetbrains:annotations:${jetbrainsAnnotationsVersion}")
 
         testCompile('org.springframework.boot:spring-boot-starter-test')
         testCompile('org.springframework:spring-aspects')

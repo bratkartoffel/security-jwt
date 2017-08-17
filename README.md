@@ -32,27 +32,29 @@ The default configuration should be sufficient for the most use cases.
 <dependency>
     <groupId>eu.fraho.spring</groupId>
     <artifactId>security-jwt-base</artifactId>
-    <version>0.8.0</version>
+    <version>0.8.1</version>
 </dependency>
 ```
 
 When you want to add refresh token support, then choose one of the following dependencies:
 ```xml
-<dependency>
-    <groupId>eu.fraho.spring</groupId>
-    <artifactId>security-jwt-internal</artifactId>
-    <version>0.8.0</version>
-</dependency>
-<dependency>
-    <groupId>eu.fraho.spring</groupId>
-    <artifactId>security-jwt-memcache</artifactId>
-    <version>0.8.0</version>
-</dependency>
-<dependency>
-    <groupId>eu.fraho.spring</groupId>
-    <artifactId>security-jwt-hibernate</artifactId>
-    <version>0.8.0</version>
-</dependency>
+<dependencies>
+    <dependency>
+        <groupId>eu.fraho.spring</groupId>
+        <artifactId>security-jwt-internal</artifactId>
+        <version>0.8.1</version>
+    </dependency>
+    <dependency>
+        <groupId>eu.fraho.spring</groupId>
+        <artifactId>security-jwt-memcache</artifactId>
+        <version>0.8.1</version>
+    </dependency>
+    <dependency>
+        <groupId>eu.fraho.spring</groupId>
+        <artifactId>security-jwt-hibernate</artifactId>
+        <version>0.8.1</version>
+    </dependency>
+</dependencies>
 ```
 For details on the usage of the plugins please see the README within the relevant module directories.
 
@@ -106,7 +108,7 @@ gradlew.bat assemble
 * Changes are welcome, but please use pull requests with separate branches
 * TravisCI has to pass before merging
 * Code coverage should stay about the same level (please write tests for new features!)
-* When writing new modules please use my abstract testclasses which provide a great base (see [internal](internal/src/test/eu/fraho/securityJwt) for an example)
+* When writing new modules please use my abstract testclasses which provide a great base (see [internal](internal/src/test/java/eu/fraho/spring/securityJwt/service) for an example)
 
 # Releasing
 ```bash
@@ -116,7 +118,12 @@ gradlew.bat assemble
 ./gradlew -Prelease check uploadArchives
 ```
 
-# Client dataflow example
+# JWT Request Flow
+## UML
+[![Build Status](doc/login.png)](doc/login.png)
+[![Build Status](doc/refresh.png)](doc/refresh.png)
+
+## HTTP-Requests
 Request a token (login):
 ```
 > POST /auth/login HTTP/1.1

@@ -6,6 +6,8 @@
  */
 package eu.fraho.spring.securityJwt.service;
 
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,12 +18,13 @@ import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RegisterRefreshTokenStore implements InitializingBean {
     public static final String BEAN_NAME = "refreshTokenStore";
     private static final String DEFAULT_TOKEN_STORE = "eu.fraho.spring.securityJwt.service.NullTokenStore";
 
-    @Autowired
-    private ConfigurableListableBeanFactory factory = null;
+    @NonNull
+    private final ConfigurableListableBeanFactory factory;
 
     @Value("${fraho.jwt.refresh.cache.impl:" + DEFAULT_TOKEN_STORE + "}")
     private Class<? extends RefreshTokenStore> refreshTokenStoreImpl = null;

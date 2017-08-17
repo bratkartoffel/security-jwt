@@ -35,12 +35,12 @@ public final class TimeWithPeriod {
     /**
      * Quantity of the {@link #timeUnit}
      */
-    private int quantity;
+    private final int quantity;
 
     /**
      * The timeUnit to use
      */
-    private TimeUnit timeUnit;
+    private final TimeUnit timeUnit;
 
     /**
      * Parse the given configuration value and extract the {@link #quantity} and {@link #timeUnit}.<br>
@@ -83,6 +83,7 @@ public final class TimeWithPeriod {
         return toSeconds();
     }
 
+    @SuppressWarnings("SimplifiableIfStatement")
     public boolean equals(Object o) {
         if (o == null || !(o instanceof TimeWithPeriod)) {
             return false;
