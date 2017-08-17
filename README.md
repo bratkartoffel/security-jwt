@@ -32,7 +32,7 @@ The default configuration should be sufficient for the most use cases.
 <dependency>
     <groupId>eu.fraho.spring</groupId>
     <artifactId>security-jwt-base</artifactId>
-    <version>0.8.0</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 
@@ -42,17 +42,17 @@ When you want to add refresh token support, then choose one of the following dep
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-internal</artifactId>
-        <version>0.8.0</version>
+        <version>1.0.0</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-memcache</artifactId>
-        <version>0.8.0</version>
+        <version>1.0.0</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-hibernate</artifactId>
-        <version>0.8.0</version>
+        <version>1.0.0</version>
     </dependency>
 </dependencies>
 ```
@@ -78,22 +78,24 @@ or you change the used algorithm to HMAC and specify a secret keyfile.
 
 This library is customizable by the following properties:
 
-| Property                         | Default        | Description   |
-|----------------------------------|----------------|---------------|
-| fraho.jwt.token.algorithm        | ES256          | The signature algorithm used for the tokens. For a list of valid algorithms please see either the [JWT spec](https://tools.ietf.org/html/rfc7518#section-3) or [JWSAlgorithm](https://bitbucket.org/connect2id/nimbus-jose-jwt/src/master/src/main/java/com/nimbusds/jose/JWSAlgorithm.java)|
-| fraho.jwt.token.issuer           | fraho-security | Sets the issuer of the token. The issuer is used in the tokens ```iss``` field|
-| fraho.jwt.token.pub              | null           | Defines the public key file when using a public / private key signature method|
-| fraho.jwt.token.priv             | null           | Defines the private key file when using a public / private key signature method. May be null if this service should only verify, but not issue tokens. In this case, any calls to ```generateToken``` or ```generateRefreshToken``` will throw an FeatureNotConfiguredException. To the caller, it will be shown as a UNAUTHORIZED Http StatusCode.|
-| fraho.jwt.token.hmac             | null           | Defines the key file when using a hmac signature method|
-| fraho.jwt.token.expiration       | 1 hour         | The validity period of issued tokens. For details on how this field has to specified see [TimeWithPeriod](base/src/main/java/eu/fraho/spring/securityJwt/dto/TimeWithPeriod.java)|
-| fraho.jwt.refresh.expiration     | 1 day          | How long are refresh tokens valid? For details on how this field has to specified see [TimeWithPeriod](base/src/main/java/eu/fraho/spring/securityJwt/dto/TimeWithPeriod.java)|
-| fraho.jwt.refresh.length         | 24             | Defines the length of refresh tokens in bytes, without the base64 encoding|
-| fraho.jwt.refresh.deviceIdLength | 32             | Maximum length of device ids for refresh tokens. Any longer strings will be truncated to this length.|
-| fraho.jwt.refresh.cache.impl     | null           | Defines the implemenation for refresh token storage. The specified class has to implement the [RefreshTokenStore](base/src/main/java/eu/fraho/spring/securityJwt/service/RefreshTokenStore.java) Interface. To disable the refresh tokens at all use null as value.<br>You have to add at least one of the optional dependencies below to add refresh token support.<br>Please see module READMEs for valid values.|
-| fraho.totp.variance              | 3              | Defines the allowed variance / validity of TOTP pins. The number defines how many "old / expired" pins will be considered valid. A value of "3" is the official suggestion for TOTP. This value is used to consider small clock-differences between the client and server.|
-| fraho.totp.length                | 16             | Defines the length of the generated TOTP secrets|
-| fraho.crypt.rounds               | 10,000         | Defines the "strength" of the hashing function. The more rounds used, the more secure the generated hash. But beware that more rounds mean more cpu-load and longer computation times!|
-| fraho.crypt.algorithm            | SHA512         | Configure the used crypt algorithm. For a list of possible values see [CryptAlgorithm](base/src/main/java/eu/fraho/spring/securityJwt/dto/CryptAlgorithm.java)|
+| Property                          | Default        | Description   |
+|-----------------------------------|----------------|---------------|
+| fraho.jwt.token.algorithm         | ES256          | The signature algorithm used for the tokens. For a list of valid algorithms please see either the [JWT spec](https://tools.ietf.org/html/rfc7518#section-3) or [JWSAlgorithm](https://bitbucket.org/connect2id/nimbus-jose-jwt/src/master/src/main/java/com/nimbusds/jose/JWSAlgorithm.java)|
+| fraho.jwt.token.issuer            | fraho-security | Sets the issuer of the token. The issuer is used in the tokens ```iss``` field|
+| fraho.jwt.token.pub               | null           | Defines the public key file when using a public / private key signature method|
+| fraho.jwt.token.priv              | null           | Defines the private key file when using a public / private key signature method. May be null if this service should only verify, but not issue tokens. In this case, any calls to ```generateToken``` or ```generateRefreshToken``` will throw an FeatureNotConfiguredException. To the caller, it will be shown as a UNAUTHORIZED Http StatusCode.|
+| fraho.jwt.token.hmac              | null           | Defines the key file when using a hmac signature method|
+| fraho.jwt.token.expiration        | 1 hour         | The validity period of issued tokens. For details on how this field has to specified see [TimeWithPeriod](base/src/main/java/eu/fraho/spring/securityJwt/dto/TimeWithPeriod.java)|
+| fraho.jwt.refresh.expiration      | 1 day          | How long are refresh tokens valid? For details on how this field has to specified see [TimeWithPeriod](base/src/main/java/eu/fraho/spring/securityJwt/dto/TimeWithPeriod.java)|
+| fraho.jwt.refresh.length          | 24             | Defines the length of refresh tokens in bytes, without the base64 encoding|
+| fraho.jwt.refresh.deviceIdLength  | 32             | Maximum length of device ids for refresh tokens. Any longer strings will be truncated to this length.|
+| fraho.jwt.refresh.delimiter       | ;              | TODO|
+| fraho.jwt.refresh.defaultDeviceId | __default      | TODO|
+| fraho.jwt.refresh.cacheImpl       | null           | Defines the implemenation for refresh token storage. The specified class has to implement the [RefreshTokenStore](base/src/main/java/eu/fraho/spring/securityJwt/service/RefreshTokenStore.java) Interface. To disable the refresh tokens at all use null as value.<br>You have to add at least one of the optional dependencies below to add refresh token support.<br>Please see module READMEs for valid values.|
+| fraho.totp.variance               | 3              | Defines the allowed variance / validity of TOTP pins. The number defines how many "old / expired" pins will be considered valid. A value of "3" is the official suggestion for TOTP. This value is used to consider small clock-differences between the client and server.|
+| fraho.totp.length                 | 16             | Defines the length of the generated TOTP secrets|
+| fraho.crypt.rounds                | 10,000         | Defines the "strength" of the hashing function. The more rounds used, the more secure the generated hash. But beware that more rounds mean more cpu-load and longer computation times!|
+| fraho.crypt.algorithm             | SHA512         | Configure the used crypt algorithm. For a list of possible values see [CryptAlgorithm](base/src/main/java/eu/fraho/spring/securityJwt/dto/CryptAlgorithm.java)|
 
 # Building
 ```bash
