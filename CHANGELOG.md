@@ -1,6 +1,6 @@
 # Changelog
 
-### 0.8.1 (not yet released)
+### 0.8.1 (2017-08-17)
 * (all) Some minor cleanup (code smells)
 * (all) Add Jetbrains Annotations for Nullable and NotNull constraints
 * (all) Prefer constructor based autowiring over field injection
