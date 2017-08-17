@@ -71,7 +71,7 @@ public class TestCryptPasswordEncoder extends AbstractTest {
 
     private void checkAlgorithm(CryptAlgorithm algorithm, Pattern hashMatcher) {
         withTempCryptServiceField("algorithm", algorithm, () -> {
-            cryptPasswordEncoder.afterPropertiesSet();
+            cryptConfiguration.afterPropertiesSet();
             String pwd = generatePassword();
             String password = cryptPasswordEncoder.encode(pwd);
             log.debug("Created hash: {}", password);

@@ -13,5 +13,3 @@ fraho:
     refresh:
       expiration: 2 seconds
       deviceIdLength: 10
-      cache:
-        impl: null

@@ -6,6 +6,10 @@
  */
 package eu.fraho.spring.securityJwt;
 
+import eu.fraho.spring.securityJwt.config.CryptConfiguration;
+import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
+import eu.fraho.spring.securityJwt.config.JwtTokenConfiguration;
+import eu.fraho.spring.securityJwt.config.TotpConfiguration;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.service.JwtTokenServiceImpl;
 import eu.fraho.spring.securityJwt.service.TotpServiceImpl;
@@ -44,6 +48,18 @@ public abstract class AbstractTest {
     @Autowired
     protected TotpServiceImpl totpService = null;
 
+    @Autowired
+    protected CryptConfiguration cryptConfiguration = null;
+
+    @Autowired
+    protected TotpConfiguration totpConfiguration = null;
+
+    @Autowired
+    protected JwtTokenConfiguration tokenConfiguration = null;
+
+    @Autowired
+    protected JwtRefreshConfiguration refreshConfiguration = null;
+
     public static void beforeHmacClass() throws IOException {
         checkAndCreateOutDirs(OUT_KEY);
 
@@ -65,7 +81,7 @@ public abstract class AbstractTest {
         return user;
     }
 
-    protected void withTempField(InitializingBean instance, String fieldname, Object value, Runnable callback) {
+    protected void withTempField(Object instance, String fieldname, Object value, Runnable callback) {
         try {
             final Field field = instance.getClass().getDeclaredField(fieldname);
             field.setAccessible(true);
@@ -75,7 +91,9 @@ public abstract class AbstractTest {
                 callback.run();
             } finally {
                 field.set(instance, oldValue);
-                instance.afterPropertiesSet();
+                if (instance instanceof InitializingBean) {
+                    ((InitializingBean) instance).afterPropertiesSet();
+                }
             }
         } catch (RuntimeException rex) {
             throw rex;
@@ -85,14 +103,14 @@ public abstract class AbstractTest {
     }
 
     protected void withTempTokenServiceField(String fieldname, Object value, Runnable callback) {
-        withTempField(jwtTokenService, fieldname, value, callback);
+        withTempField(tokenConfiguration, fieldname, value, callback);
+    }
+
+    protected void withTempRefreshServiceField(String fieldname, Object value, Runnable callback) {
+        withTempField(refreshConfiguration, fieldname, value, callback);
     }
 
     protected void withTempCryptServiceField(String fieldname, Object value, Runnable callback) {
-        withTempField(cryptPasswordEncoder, fieldname, value, callback);
-    }
-
-    protected void withTempTotpServiceField(String fieldname, Object value, Runnable callback) {
-        withTempField(totpService, fieldname, value, callback);
+        withTempField(cryptConfiguration, fieldname, value, callback);
     }
 }

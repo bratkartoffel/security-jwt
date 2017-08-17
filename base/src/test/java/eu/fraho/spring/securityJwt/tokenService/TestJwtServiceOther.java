@@ -12,7 +12,6 @@ import eu.fraho.spring.securityJwt.dto.AccessToken;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.exceptions.FeatureNotConfiguredException;
-import eu.fraho.spring.securityJwt.service.JwtTokenServiceImpl;
 import eu.fraho.spring.securityJwt.spring.TestApiApplication;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
@@ -115,7 +114,7 @@ public class TestJwtServiceOther extends AbstractTest {
         Files.write(Paths.get(TestJwtServiceCreateTokenEcdsa.OUT_PRIV_KEY), new byte[0]);
 
         withTempTokenServiceField("algorithm", "ES256", () ->
-                withTempTokenServiceField("privKey", Paths.get(TestJwtServiceCreateTokenEcdsa.OUT_PRIV_KEY), this::reloadTokenService));
+                withTempTokenServiceField("priv", Paths.get(TestJwtServiceCreateTokenEcdsa.OUT_PRIV_KEY), this::reloadTokenService));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -125,7 +124,7 @@ public class TestJwtServiceOther extends AbstractTest {
         Files.write(Paths.get(TestJwtServiceCreateTokenEcdsa.OUT_PUB_KEY), new byte[0]);
 
         withTempTokenServiceField("algorithm", "ES256", () ->
-                withTempTokenServiceField("pubKey", Paths.get(TestJwtServiceCreateTokenEcdsa.OUT_PUB_KEY), this::reloadTokenService));
+                withTempTokenServiceField("pub", Paths.get(TestJwtServiceCreateTokenEcdsa.OUT_PUB_KEY), this::reloadTokenService));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -135,7 +134,7 @@ public class TestJwtServiceOther extends AbstractTest {
         Files.write(Paths.get(TestJwtServiceCreateTokenRsa.OUT_PRIV_KEY), new byte[0]);
 
         withTempTokenServiceField("algorithm", "RS256", () ->
-                withTempTokenServiceField("privKey", Paths.get(TestJwtServiceCreateTokenRsa.OUT_PRIV_KEY), this::reloadTokenService));
+                withTempTokenServiceField("priv", Paths.get(TestJwtServiceCreateTokenRsa.OUT_PRIV_KEY), this::reloadTokenService));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -145,7 +144,7 @@ public class TestJwtServiceOther extends AbstractTest {
         Files.write(Paths.get(TestJwtServiceCreateTokenRsa.OUT_PUB_KEY), new byte[0]);
 
         withTempTokenServiceField("algorithm", "RS256", () ->
-                withTempTokenServiceField("pubKey", Paths.get(TestJwtServiceCreateTokenRsa.OUT_PUB_KEY), this::reloadTokenService));
+                withTempTokenServiceField("pub", Paths.get(TestJwtServiceCreateTokenRsa.OUT_PUB_KEY), this::reloadTokenService));
     }
 
     @Test
@@ -154,7 +153,7 @@ public class TestJwtServiceOther extends AbstractTest {
         Assert.assertTrue("Keyfile should be deleted", new File(TestJwtServiceCreateTokenRsa.OUT_PUB_KEY).delete());
 
         try {
-            withTempTokenServiceField("pubKey", Paths.get(TestJwtServiceCreateTokenRsa.OUT_PUB_KEY), () ->
+            withTempTokenServiceField("pub", Paths.get(TestJwtServiceCreateTokenRsa.OUT_PUB_KEY), () ->
                     withTempTokenServiceField("algorithm", "RS256", this::reloadTokenService)
             );
         } catch (RuntimeException rex) {
@@ -164,6 +163,8 @@ public class TestJwtServiceOther extends AbstractTest {
 
     private void reloadTokenService() {
         try {
+            tokenConfiguration.afterPropertiesSet();
+            refreshConfiguration.afterPropertiesSet();
             jwtTokenService.afterPropertiesSet();
         } catch (RuntimeException rex) {
             throw rex;
@@ -174,17 +175,17 @@ public class TestJwtServiceOther extends AbstractTest {
 
     private void checkRefreshLengthDefault() {
         reloadTokenService();
-        Assert.assertEquals((Integer) JwtTokenServiceImpl.REFRESH_TOKEN_LEN_DEFAULT, jwtTokenService.getRefreshLength());
+        Assert.assertEquals(Integer.valueOf(24), jwtTokenService.getRefreshLength());
     }
 
     @Test
     public void testRefreshTokenLengthTooSmall() throws Exception {
-        withTempTokenServiceField("refreshLength", -1, this::checkRefreshLengthDefault);
+        withTempRefreshServiceField("length", -1, this::checkRefreshLengthDefault);
     }
 
     @Test
     public void testRefreshTokenLengthTooLarge() throws Exception {
-        withTempTokenServiceField("refreshLength", 10000000, this::checkRefreshLengthDefault);
+        withTempRefreshServiceField("length", 10000000, this::checkRefreshLengthDefault);
     }
 
     @Test

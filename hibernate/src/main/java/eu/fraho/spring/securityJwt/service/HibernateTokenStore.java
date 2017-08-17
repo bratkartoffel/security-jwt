@@ -6,12 +6,15 @@
  */
 package eu.fraho.spring.securityJwt.service;
 
+import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.dto.RefreshTokenEntity;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -24,9 +27,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class HibernateTokenStore implements RefreshTokenStore {
-    @Value("${fraho.jwt.refresh.expiration:" + JwtTokenServiceImpl.DEFAULT_REFRESH_EXPIRATION + "}")
-    private TimeWithPeriod refreshExpiration = new TimeWithPeriod(JwtTokenServiceImpl.DEFAULT_REFRESH_EXPIRATION);
+    @NonNull
+    private final JwtRefreshConfiguration refreshConfig;
 
     @PersistenceContext
     private EntityManager em = null;
@@ -76,7 +80,7 @@ public class HibernateTokenStore implements RefreshTokenStore {
     }
 
     private void setExpiration(@NotNull Query query) {
-        final ZonedDateTime expiration = ZonedDateTime.now().minusSeconds(refreshExpiration.toSeconds());
+        final ZonedDateTime expiration = ZonedDateTime.now().minusSeconds(refreshConfig.getExpiration().toSeconds());
         query.setParameter("expiration", expiration);
     }
 
@@ -140,6 +144,6 @@ public class HibernateTokenStore implements RefreshTokenStore {
     @NotNull
     @Override
     public TimeWithPeriod getRefreshExpiration() {
-        return refreshExpiration;
+        return refreshConfig.getExpiration();
     }
 }

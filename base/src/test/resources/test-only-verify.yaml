@@ -3,4 +3,3 @@ fraho:
     token:
       algorithm: ES256
       pub: build/ecdsa.pub
-      priv: null

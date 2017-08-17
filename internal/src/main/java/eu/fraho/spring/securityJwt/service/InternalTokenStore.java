@@ -6,38 +6,39 @@
  */
 package eu.fraho.spring.securityJwt.service;
 
+import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Pattern;
 
 @Slf4j
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class InternalTokenStore implements RefreshTokenStore {
-    @Value("${fraho.jwt.refresh.expiration:" + JwtTokenServiceImpl.DEFAULT_REFRESH_EXPIRATION + "}")
-    private TimeWithPeriod refreshExpiration = new TimeWithPeriod(JwtTokenServiceImpl.DEFAULT_REFRESH_EXPIRATION);
-
-    @Value("${fraho.jwt.refresh.delimiter:" + JwtTokenServiceImpl.DEFAULT_DELIMITER + "}")
-    private String delimiter = JwtTokenServiceImpl.DEFAULT_DELIMITER;
+    @NonNull
+    private final JwtRefreshConfiguration refreshConfig;
 
     private ExpiringMap<String, String> refreshTokenMap = null;
 
     @Override
     public void saveToken(@NotNull String username, @NotNull String deviceId, @NotNull String token) {
-        String key = username + delimiter + deviceId;
+        String key = username + refreshConfig.getDelimiter() + deviceId;
         refreshTokenMap.put(key, token);
     }
 
     @Override
     public boolean useToken(@NotNull String username, @NotNull String deviceId, @NotNull String token) {
-        String key = username + delimiter + deviceId;
+        String key = username + refreshConfig.getDelimiter() + deviceId;
         final byte[] stored = refreshTokenMap.getOrDefault(key, String.format("%64s", "0")).getBytes(StandardCharsets.UTF_8);
         final byte[] toCheck = token.getBytes(StandardCharsets.UTF_8);
 
@@ -49,7 +50,7 @@ public class InternalTokenStore implements RefreshTokenStore {
     @Override
     public List<RefreshToken> listTokens(@NotNull String username) {
         String filter = String.format("^%s%s[^%s]+$",
-                Pattern.quote(username), Pattern.quote(delimiter), Pattern.quote(delimiter));
+                Pattern.quote(username), Pattern.quote(refreshConfig.getDelimiter()), Pattern.quote(refreshConfig.getDelimiter()));
         return listRefreshTokensByPrefix(filter).getOrDefault(username, Collections.emptyList());
     }
 
@@ -57,7 +58,7 @@ public class InternalTokenStore implements RefreshTokenStore {
     @Override
     public Map<String, List<RefreshToken>> listTokens() {
         final String filter = String.format("^[^%s]+%s[^%s]+$",
-                Pattern.quote(delimiter), Pattern.quote(delimiter), Pattern.quote(delimiter));
+                Pattern.quote(refreshConfig.getDelimiter()), Pattern.quote(refreshConfig.getDelimiter()), Pattern.quote(refreshConfig.getDelimiter()));
         return listRefreshTokensByPrefix(filter);
     }
 
@@ -66,7 +67,7 @@ public class InternalTokenStore implements RefreshTokenStore {
         final Map<String, List<RefreshToken>> result = new HashMap<>();
         for (Map.Entry<String, String> entry : refreshTokenMap.entrySet()) {
             if (entry.getKey().matches(filter)) {
-                String[] parts = entry.getKey().split(Pattern.quote(delimiter), 2);
+                String[] parts = entry.getKey().split(Pattern.quote(refreshConfig.getDelimiter()), 2);
                 String username = parts[0];
                 String deviceId = parts[1];
                 String token = entry.getValue();
@@ -93,7 +94,7 @@ public class InternalTokenStore implements RefreshTokenStore {
             return count;
         }
 
-        final String filter = getFilterPatternPart(username) + Pattern.quote(delimiter) + getFilterPatternPart(deviceId);
+        final String filter = getFilterPatternPart(username) + Pattern.quote(refreshConfig.getDelimiter()) + getFilterPatternPart(deviceId);
         int count = 0;
         for (Iterator<Map.Entry<String, String>> iterator = refreshTokenMap.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry<String, String> entry = iterator.next();
@@ -108,7 +109,7 @@ public class InternalTokenStore implements RefreshTokenStore {
 
     @NotNull
     private String getFilterPatternPart(@Nullable String string) {
-        return Optional.ofNullable(string).map(Pattern::quote).orElse("[^" + Pattern.quote(delimiter) + "]+");
+        return Optional.ofNullable(string).map(Pattern::quote).orElse("[^" + Pattern.quote(refreshConfig.getDelimiter()) + "]+");
     }
 
     @Override
@@ -131,13 +132,13 @@ public class InternalTokenStore implements RefreshTokenStore {
         log.debug("Creating in-memory expiring map");
         refreshTokenMap = ExpiringMap.builder()
                 .expirationPolicy(ExpirationPolicy.CREATED)
-                .expiration(refreshExpiration.getQuantity(), refreshExpiration.getTimeUnit())
+                .expiration(refreshConfig.getExpiration().getQuantity(), refreshConfig.getExpiration().getTimeUnit())
                 .build();
     }
 
     @NotNull
     @Override
     public TimeWithPeriod getRefreshExpiration() {
-        return refreshExpiration;
+        return refreshConfig.getExpiration();
     }
 }

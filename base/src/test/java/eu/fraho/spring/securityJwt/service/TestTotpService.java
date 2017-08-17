@@ -41,36 +41,4 @@ public class TestTotpService extends AbstractTest {
         String secret = totpService.generateSecret();
         Assert.assertFalse("Empty token used", totpService.verifyCode(secret, 0));
     }
-
-    @Test
-    public void testVarianceLowerBounds() throws Exception {
-        withTempTotpServiceField("totpVariance", 0, () -> {
-            totpService.afterPropertiesSet();
-            Assert.assertEquals("Value should be default", Integer.valueOf(3), totpService.getTotpVariance());
-        });
-    }
-
-    @Test
-    public void testVarianceUpperBounds() throws Exception {
-        withTempTotpServiceField("totpVariance", 100, () -> {
-            totpService.afterPropertiesSet();
-            Assert.assertEquals("Value should be default", Integer.valueOf(3), totpService.getTotpVariance());
-        });
-    }
-
-    @Test
-    public void testLengthLowerBounds() throws Exception {
-        withTempTotpServiceField("totpLength", 3, () -> {
-            totpService.afterPropertiesSet();
-            Assert.assertEquals("Value should be default", Integer.valueOf(16), totpService.getTotpLength());
-        });
-    }
-
-    @Test
-    public void testLengthUpperBounds() throws Exception {
-        withTempTotpServiceField("totpLength", 100, () -> {
-            totpService.afterPropertiesSet();
-            Assert.assertEquals("Value should be default", Integer.valueOf(16), totpService.getTotpLength());
-        });
-    }
 }

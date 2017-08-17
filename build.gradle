@@ -1,16 +1,27 @@
 buildscript {
     ext {
-        projectVersion = '0.8.1-SNAPSHOT'
+        projectVersion = '1.0.0-SNAPSHOT'
     }
     repositories {
         mavenCentral()
+        maven { url 'http://repo.spring.io/plugins-release' }
     }
     dependencies {
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.8.0"
+        classpath 'io.spring.gradle:propdeps-plugin:0.0.9.RELEASE'
     }
 }
 
 apply plugin: 'io.codearte.nexus-staging'
+
+
+configure(allprojects) {
+    apply plugin: 'propdeps'
+    apply plugin: 'propdeps-maven'
+    apply plugin: 'propdeps-idea'
+    apply plugin: 'propdeps-eclipse'
+}
+
 
 subprojects {
     apply plugin: 'java'
@@ -49,10 +60,15 @@ subprojects {
         compile("org.projectlombok:lombok:${lombokVersion}")
         compile("org.jetbrains:annotations:${jetbrainsAnnotationsVersion}")
 
+        optional "org.springframework.boot:spring-boot-configuration-processor"
+
         testCompile('org.springframework.boot:spring-boot-starter-test')
         testCompile('org.springframework:spring-aspects')
         testCompile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     }
+
+    // propdeps
+    compileJava.dependsOn(processResources)
 
     // release stuff
     apply plugin: 'maven'

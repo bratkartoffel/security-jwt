@@ -1,5 +1,11 @@
 # Changelog
 
+### 1.0.0 (not yet released)
+* (all) Renamed / moved some properties
+  * ```fraho.jwt.refresh.cache.impl``` => ```fraho.jwt.refresh.cacheImpl```
+  * ```fraho.jwt.refresh.cache.prefix``` => ```fraho.jwt.refresh.memcache.prefix```
+* (all) Provide configuration classes, enables content assis when writing appplication.yaml
+
 ### 0.8.1 (not yet released)
 * (all) Some minor cleanup (code smells)
 * (all) Add Jetbrains Annotations for Nullable and NotNull constraints

@@ -1,1 +1,1 @@
-fraho.jwt.refresh.cache.impl: eu.fraho.spring.securityJwt.spring.MockTokenStore
+fraho.jwt.refresh.cacheImpl: eu.fraho.spring.securityJwt.spring.MockTokenStore

@@ -7,6 +7,8 @@
 package eu.fraho.spring.securityJwt.service;
 
 import eu.fraho.spring.securityJwt.AbstractTest;
+import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
+import eu.fraho.spring.securityJwt.config.MemcacheConfiguration;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 import eu.fraho.spring.securityJwt.spring.TestApiApplication;
@@ -40,6 +42,9 @@ import java.util.stream.Collectors;
 public class TestJwtServiceRefreshMemcache extends AbstractRefreshTokenTest {
     @Autowired
     private RefreshTokenStore refreshTokenStore;
+
+    @Autowired
+    private MemcacheConfiguration memcacheConfiguration;
 
     @BeforeClass
     public static void beforeClass() throws IOException {
@@ -75,14 +80,14 @@ public class TestJwtServiceRefreshMemcache extends AbstractRefreshTokenTest {
 
     @Test(expected = IllegalStateException.class)
     public void testExpirationBounds() throws Exception {
-        Field expiration = refreshTokenStore.getClass().getDeclaredField("refreshExpiration");
+        Field expiration = JwtRefreshConfiguration.class.getDeclaredField("expiration");
         expiration.setAccessible(true);
-        Object oldValue = expiration.get(refreshTokenStore);
+        Object oldValue = expiration.get(refreshConfiguration);
         try {
-            expiration.set(refreshTokenStore, new TimeWithPeriod(31, TimeUnit.DAYS));
+            expiration.set(refreshConfiguration, new TimeWithPeriod(31, TimeUnit.DAYS));
             refreshTokenStore.afterPropertiesSet();
         } finally {
-            expiration.set(refreshTokenStore, oldValue);
+            expiration.set(refreshConfiguration, oldValue);
         }
     }
 }
