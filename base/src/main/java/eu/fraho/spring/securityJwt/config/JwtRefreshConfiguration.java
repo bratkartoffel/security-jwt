@@ -20,11 +20,40 @@ import org.springframework.stereotype.Component;
 @Data
 @Slf4j
 public class JwtRefreshConfiguration implements InitializingBean {
+    /**
+     * How long are refresh tokens valid? For details please on how to specifiy this value please see the
+     * documentation of the value class behind this field.
+     */
     private TimeWithPeriod expiration = new TimeWithPeriod("1 day");
+
+    /**
+     * Defines the length of refresh tokens in bytes, without the base64 encoding.<br>
+     * Has to be between 12 and 48 (inclusive).
+     */
     private int length = 24;
+
+    /**
+     * Maximum length of device ids for refresh tokens. Any longer strings will be truncated to this length.
+     */
     private int deviceIdLength = 32;
+
+    /**
+     * Specify the delimiter for refresh token stores that don't support multiple fields (like memcache or internal).
+     * This separator will be used to create a unique key, simply concatinating the username, deviceId and token
+     * using this delimiter.
+     */
     private String delimiter = ";";
+
+    /**
+     * Change the default deviceId used for storing and access refresh tokens when not specified by the client.
+     */
     private String defaultDeviceId = "__default";
+
+    /**
+     * Defines the implemenation for refresh token storage. The specified class has to implement the
+     * RefreshTokenStore Interface. To disable the refresh tokens just don't specify this field.
+     * You have to add at least one of the optional dependencies (see README) to add refresh token support.
+     */
     private Class<? extends RefreshTokenStore> cacheImpl = NullTokenStore.class;
 
     @Override

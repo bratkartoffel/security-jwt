@@ -2,7 +2,7 @@
 
 ### 1.0.0 (not yet released)
 * (all) Renamed / moved some properties
-  * ```fraho.jwt.refresh.cache.impl``` => ```fraho.jwt.refresh.cacheImpl```
+  * ```fraho.jwt.refresh.cache.impl``` => ```fraho.jwt.refresh.cache-impl```
   * ```fraho.jwt.refresh.cache.prefix``` => ```fraho.jwt.refresh.memcache.prefix```
 * (all) Provide configuration classes, enables content assis when writing appplication.yaml
 

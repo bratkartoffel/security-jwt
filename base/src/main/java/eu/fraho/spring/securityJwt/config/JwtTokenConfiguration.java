@@ -35,11 +35,40 @@ import java.security.spec.X509EncodedKeySpec;
 @Data
 @Slf4j
 public class JwtTokenConfiguration implements InitializingBean {
+    /**
+     * How long are access tokens valid? For details please on how to specifiy this value please see the
+     * documentation of the value class behind this field.
+     */
     private TimeWithPeriod expiration = new TimeWithPeriod("1 hour");
+
+    /**
+     * The signature algorithm used for the tokens. For a list of valid algorithms please see either the
+     * <a href="https://tools.ietf.org/html/rfc7518#section-3">JWT spec</a> or
+     * <a href="https://bitbucket.org/connect2id/nimbus-jose-jwt/src/master/src/main/java/com/nimbusds/jose/JWSAlgorithm.java">JWSAlgorithm</a>
+     */
     private String algorithm = "ES256";
+
+    /**
+     * Defines the public key file when using a public / private key signature method
+     */
     private Path pub = null;
+
+    /**
+     * Defines the private key file when using a public / private key signature method.
+     * May be null if this service should only verify, but not issue tokens.<br>
+     * In this case, any calls to generateToken or generateRefreshToken will throw an FeatureNotConfiguredException.
+     * To the caller, it will be shown as a UNAUTHORIZED Http StatusCode.
+     */
     private Path priv = null;
+
+    /**
+     * Defines the key file when using a hmac signature method
+     */
     private Path hmac = null;
+
+    /**
+     * Sets the issuer of the token. The issuer is used in the tokens iss field
+     */
     private String issuer = "fraho-security";
 
     @Setter(AccessLevel.NONE)

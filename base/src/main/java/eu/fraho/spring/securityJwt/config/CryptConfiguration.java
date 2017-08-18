@@ -18,7 +18,18 @@ import org.springframework.stereotype.Component;
 @Data
 @Slf4j
 public class CryptConfiguration implements InitializingBean {
+    /**
+     * Defines the "strength" of the hashing function. The more rounds used, the more secure the generated hash.
+     * But beware that more rounds mean more cpu-load and longer computation times!
+     * This parameter is only used if the specified algorithm supports hashing rounds.
+     */
     private int rounds = 10_000;
+
+    /**
+     * Configure the used crypt algorithm. Please be aware that changing this parameter has a major effect on the
+     * strength of the hashed password! Do not use insecure algorithms (as DES or MD5 as time of writing) unless
+     * you really know what you do!
+     */
     private CryptAlgorithm algorithm = CryptAlgorithm.valueOf("SHA512");
 
     @Override
