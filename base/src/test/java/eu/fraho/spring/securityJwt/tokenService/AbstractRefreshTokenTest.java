@@ -73,7 +73,7 @@ public abstract class AbstractRefreshTokenTest extends AbstractTest {
 
         RefreshToken tokenA = jwtTokenService.generateRefreshToken(jsmith);
         RefreshToken tokenB = jwtTokenService.generateRefreshToken(jsmith, "foobar");
-        RefreshToken tokenC = jwtTokenService.generateRefreshToken(xsmith);
+        RefreshToken tokenC = jwtTokenService.generateRefreshToken(xsmith, null);
 
         final Map<String, List<RefreshToken>> tokenMap = jwtTokenService.listRefreshTokens();
         Assert.assertEquals("User count don't match", 2, tokenMap.size());
@@ -118,6 +118,24 @@ public abstract class AbstractRefreshTokenTest extends AbstractTest {
         final List<RefreshToken> tokens2 = jwtTokenService.listRefreshTokens(jsmith);
         Assert.assertEquals("Token was not revoked", 1, tokens2.size());
         Assert.assertTrue("Wrong token revoked", tokens2.contains(tokenB));
+    }
+
+    @Test
+    public void testRemoveSingleTokenOtherWay() throws InterruptedException {
+        String jsmith = "jsmith";
+
+        RefreshToken tokenA = jwtTokenService.generateRefreshToken(jsmith, "foo");
+        RefreshToken tokenB = jwtTokenService.generateRefreshToken(jsmith);
+
+        final List<RefreshToken> tokens = jwtTokenService.listRefreshTokens(jsmith);
+        Assert.assertEquals("Token count don't match", 2, tokens.size());
+
+        Assert.assertTrue("Token should be revoked", jwtTokenService.revokeRefreshToken(jsmith, tokenA.getDeviceId()));
+        Assert.assertEquals("Token list is not immutable", 2, tokens.size());
+        final List<RefreshToken> tokens2 = jwtTokenService.listRefreshTokens(jsmith);
+        Assert.assertEquals("Token was not revoked", 1, tokens2.size());
+        Assert.assertTrue("Wrong token revoked", tokens2.contains(tokenB));
+        Assert.assertTrue("Token should be revoked", jwtTokenService.revokeRefreshToken(jsmith, tokenB.getDeviceId()));
     }
 
     @Test

@@ -113,4 +113,8 @@ public abstract class AbstractTest {
     protected void withTempCryptServiceField(String fieldname, Object value, Runnable callback) {
         withTempField(cryptConfiguration, fieldname, value, callback);
     }
+
+    protected void withTempTotpServiceField(String fieldname, Object value, Runnable callback) {
+        withTempField(totpConfiguration, fieldname, value, callback);
+    }
 }

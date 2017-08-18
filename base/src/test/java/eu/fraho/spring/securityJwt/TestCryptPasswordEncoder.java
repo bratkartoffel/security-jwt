@@ -65,6 +65,13 @@ public class TestCryptPasswordEncoder extends AbstractTest {
                 checkAlgorithm(CryptAlgorithm.SHA256, Pattern.compile("^\\$5\\$rounds=10000\\$[a-zA-Z0-9]{16}\\$.+$")));
     }
 
+    @Test
+    public void testNullsOk() {
+        Assert.assertFalse("NULL passwords did match", cryptPasswordEncoder.matches(null, null));
+        Assert.assertFalse("NULL passwords did match", cryptPasswordEncoder.matches("foo", null));
+        Assert.assertFalse("NULL passwords did match", cryptPasswordEncoder.matches(null, "bar"));
+    }
+
     private String generatePassword() {
         return "foobar_" + passwordNumber.getAndIncrement();
     }
