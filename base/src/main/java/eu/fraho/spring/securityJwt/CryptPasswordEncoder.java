@@ -27,6 +27,7 @@ import java.util.Random;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CryptPasswordEncoder implements PasswordEncoder {
     private final Random random = new SecureRandom();
+
     private final Encoder encoder = Base64.getUrlEncoder();
 
     @NonNull

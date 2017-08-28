@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Service
 public class UserDetailsServiceTestImpl implements UserDetailsService {
     public static final String BASE32_TOTP = "MZXW6YTBOI======";
+
     public final transient AtomicBoolean apiAccessAllowed = new AtomicBoolean(true);
 
     @Autowired

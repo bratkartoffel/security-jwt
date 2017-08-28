@@ -35,10 +35,14 @@ import java.util.*;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     private final SecureRandom random = new SecureRandom();
+
     @NonNull
     private final JwtTokenConfiguration tokenConfig;
+
     @NonNull
     private final JwtRefreshConfiguration refreshConfig;
+
+    @SuppressWarnings("SpringAutowiredFieldsWarningInspection") // not possible otherwise as this bean is lazy
     @Autowired
     @Lazy
     private RefreshTokenStore refreshTokenStore;

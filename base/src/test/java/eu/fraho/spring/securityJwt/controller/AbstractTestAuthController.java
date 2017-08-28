@@ -23,7 +23,9 @@ import java.io.IOException;
 @Getter
 public abstract class AbstractTestAuthController {
     public static final ObjectMapper mapper = new ObjectMapper();
+
     public static final String AUTH_LOGIN = "/auth/login";
+
     public static final String AUTH_REFRESH = "/auth/refresh";
 
     @Autowired
@@ -34,11 +36,11 @@ public abstract class AbstractTestAuthController {
 
     @Autowired
     protected TotpServiceImpl totpService;
+
     protected MockMvc mockMvc;
 
     public static void beforeClass() throws IOException {
         AbstractTest.beforeHmacClass();
-
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         mapper.findAndRegisterModules();
     }

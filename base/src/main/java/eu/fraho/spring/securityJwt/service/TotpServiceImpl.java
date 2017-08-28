@@ -27,6 +27,7 @@ import java.util.Random;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TotpServiceImpl implements TotpService {
     private final Base32 base32 = new Base32();
+
     private final Random random = new SecureRandom();
 
     @NonNull

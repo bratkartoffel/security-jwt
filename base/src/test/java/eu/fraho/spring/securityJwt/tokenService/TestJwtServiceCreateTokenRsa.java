@@ -27,6 +27,7 @@ import java.security.spec.X509EncodedKeySpec;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TestJwtServiceCreateTokenRsa extends AbstractCreateTokenTest {
     public static final String OUT_PUB_KEY = "build/rsa.pub";
+
     public static final String OUT_PRIV_KEY = "build/rsa.priv";
 
     @BeforeClass

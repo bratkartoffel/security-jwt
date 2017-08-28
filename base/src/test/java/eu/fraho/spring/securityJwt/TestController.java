@@ -39,21 +39,28 @@ import java.io.IOException;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TestController extends AbstractTest {
     public static final ObjectMapper mapper = new ObjectMapper();
+
     public static final String AUTH_LOGIN = "/auth/login";
+
     public static final String AUTH_REFRESH = "/auth/refresh";
+
     public static final String API_ADMIN = "/api/admin";
+
     public static final String API_USER = "/api/user";
+
     public static final String HELLO_WORLD = "Hello world!";
+
     @Autowired
     private WebApplicationContext context = null;
+
     @Autowired
     private Filter springSecurityFilterChain = null;
+
     private MockMvc mockMvc;
 
     @BeforeClass
     public static void beforeClass() throws IOException {
         AbstractTest.beforeHmacClass();
-
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         mapper.findAndRegisterModules();
 

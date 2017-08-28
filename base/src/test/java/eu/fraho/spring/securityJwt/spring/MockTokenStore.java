@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+@SuppressWarnings("unused")
 @Slf4j
 public class MockTokenStore implements RefreshTokenStore {
     private String activeToken = null;

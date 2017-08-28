@@ -26,9 +26,13 @@ import java.util.Base64;
 @Slf4j
 public class CreateEcdsaJwtKeys {
     private static final String OUT_PUB_KEY = "build/pub.key";
+
     private static final String OUT_PRIV_KEY = "build/priv.key";
+
     private static final String OUT_PUB_JWK = "build/jwk_pub.json";
+
     private static final String OUT_PRIV_JWK = "build/jwk_priv.json";
+
     private static final ECKey.Curve CURVE = ECKey.Curve.P_256;
 
     public static void main(String[] args) throws Throwable {

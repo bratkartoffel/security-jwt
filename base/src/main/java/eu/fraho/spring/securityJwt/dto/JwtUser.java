@@ -26,17 +26,26 @@ import java.util.Optional;
 @NoArgsConstructor
 public class JwtUser implements UserDetails, CredentialsContainer {
     private Long id = -1L;
+
     private String username = "anonymousUser";
+
     @JsonIgnore
     private String password = null;
+
     @JsonIgnore
     private String totpSecret = null;
+
     private boolean accountNonExpired = false;
+
     private boolean accountNonLocked = false;
+
     private boolean credentialsNonExpired = false;
+
     private boolean enabled = false;
+
     @JsonIgnore
     private List<GrantedAuthority> authorities = new ArrayList<>();
+
     private boolean apiAccessAllowed = false;
 
     @SuppressWarnings("unchecked")

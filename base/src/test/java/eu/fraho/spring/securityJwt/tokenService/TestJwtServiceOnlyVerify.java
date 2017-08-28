@@ -56,6 +56,7 @@ public class TestJwtServiceOnlyVerify extends AbstractCreateTokenTest {
         Files.write(Paths.get(OUT_PUB_KEY), publicKey.getEncoded());
     }
 
+    @SuppressWarnings("EmptyMethod") // is intended here as we expect an exception here
     @Test(expected = FeatureNotConfiguredException.class)
     public void testCreateToken() throws JOSEException {
         super.testCreateToken();

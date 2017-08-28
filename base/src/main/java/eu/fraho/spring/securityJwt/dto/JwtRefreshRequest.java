@@ -21,9 +21,11 @@ public final class JwtRefreshRequest {
     @NotNull
     @JsonProperty(required = true)
     private String username;
+
     @NotNull
     @JsonProperty(required = true)
     private String refreshToken;
+
     private String deviceId;
 
     public Optional<String> getDeviceId() {

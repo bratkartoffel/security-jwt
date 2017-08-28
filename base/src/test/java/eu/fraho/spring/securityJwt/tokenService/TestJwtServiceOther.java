@@ -12,6 +12,7 @@ import eu.fraho.spring.securityJwt.dto.AccessToken;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.exceptions.FeatureNotConfiguredException;
+import eu.fraho.spring.securityJwt.service.JwtTokenServiceImpl;
 import eu.fraho.spring.securityJwt.spring.TestApiApplication;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
@@ -165,7 +166,7 @@ public class TestJwtServiceOther extends AbstractTest {
         try {
             tokenConfiguration.afterPropertiesSet();
             refreshConfiguration.afterPropertiesSet();
-            jwtTokenService.afterPropertiesSet();
+            ((JwtTokenServiceImpl) jwtTokenService).afterPropertiesSet();
         } catch (RuntimeException rex) {
             throw rex;
         } catch (Exception e) {
@@ -213,7 +214,7 @@ public class TestJwtServiceOther extends AbstractTest {
 
     @Test(expected = FeatureNotConfiguredException.class)
     public void testUseRefreshToken() {
-        Assert.assertNull(jwtTokenService.useRefreshToken("bar", "foo"));
+        Assert.assertTrue(jwtTokenService.useRefreshToken("bar", "foo"));
         jwtTokenService.useRefreshToken("foo", "baz");
     }
 

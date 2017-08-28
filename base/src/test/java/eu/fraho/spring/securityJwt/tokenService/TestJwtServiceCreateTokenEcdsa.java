@@ -28,6 +28,7 @@ import java.security.spec.X509EncodedKeySpec;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TestJwtServiceCreateTokenEcdsa extends AbstractCreateTokenTest {
     public static final String OUT_PUB_KEY = "build/ecdsa.pub";
+
     public static final String OUT_PRIV_KEY = "build/ecdsa.priv";
 
     @BeforeClass

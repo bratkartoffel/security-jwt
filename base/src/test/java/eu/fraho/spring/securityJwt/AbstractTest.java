@@ -11,8 +11,8 @@ import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
 import eu.fraho.spring.securityJwt.config.JwtTokenConfiguration;
 import eu.fraho.spring.securityJwt.config.TotpConfiguration;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
-import eu.fraho.spring.securityJwt.service.JwtTokenServiceImpl;
-import eu.fraho.spring.securityJwt.service.TotpServiceImpl;
+import eu.fraho.spring.securityJwt.service.JwtTokenService;
+import eu.fraho.spring.securityJwt.service.TotpService;
 import eu.fraho.spring.securityJwt.util.CreateEcdsaJwtKeys;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -40,13 +40,13 @@ public abstract class AbstractTest {
 
     @Autowired
     @Getter
-    protected JwtTokenServiceImpl jwtTokenService = null;
+    protected JwtTokenService jwtTokenService = null;
 
     @Autowired
     protected CryptPasswordEncoder cryptPasswordEncoder = null;
 
     @Autowired
-    protected TotpServiceImpl totpService = null;
+    protected TotpService totpService = null;
 
     @Autowired
     protected CryptConfiguration cryptConfiguration = null;
@@ -106,6 +106,7 @@ public abstract class AbstractTest {
         withTempField(tokenConfiguration, fieldname, value, callback);
     }
 
+    @SuppressWarnings("SameParameterValue")
     protected void withTempRefreshServiceField(String fieldname, Object value, Runnable callback) {
         withTempField(refreshConfiguration, fieldname, value, callback);
     }
