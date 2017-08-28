@@ -35,16 +35,13 @@ import java.util.*;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     private final SecureRandom random = new SecureRandom();
-
+    @NonNull
+    private final JwtTokenConfiguration tokenConfig;
+    @NonNull
+    private final JwtRefreshConfiguration refreshConfig;
     @Autowired
     @Lazy
     private RefreshTokenStore refreshTokenStore;
-
-    @NonNull
-    private final JwtTokenConfiguration tokenConfig;
-
-    @NonNull
-    private final JwtRefreshConfiguration refreshConfig;
 
     private String truncateDeviceId(String str) {
         return Optional.ofNullable(str)

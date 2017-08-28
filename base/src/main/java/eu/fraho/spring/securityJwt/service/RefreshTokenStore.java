@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 public interface RefreshTokenStore extends InitializingBean {
-    void saveToken(@NotNull  String username, @NotNull String deviceId, @NotNull String token);
+    void saveToken(@NotNull String username, @NotNull String deviceId, @NotNull String token);
 
     boolean useToken(@NotNull String username, @NotNull String deviceId, @NotNull String token);
 

@@ -90,16 +90,16 @@ public class JwtUser implements UserDetails, CredentialsContainer {
         return Optional.ofNullable(totpSecret);
     }
 
-    public void setTotpSecret(String totpSecret) {
-        this.totpSecret = totpSecret;
-    }
-
     /**
      * Please use {@link #setTotpSecret(String)} instead
      */
     @Deprecated
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    public void setTotpSecret( Optional<String> totpSecret) {
+    public void setTotpSecret(Optional<String> totpSecret) {
         this.totpSecret = totpSecret.orElse(null);
+    }
+
+    public void setTotpSecret(String totpSecret) {
+        this.totpSecret = totpSecret;
     }
 }

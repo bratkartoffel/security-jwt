@@ -9,7 +9,6 @@ package eu.fraho.spring.securityJwt.config;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -18,9 +17,24 @@ import org.springframework.stereotype.Component;
 @Data
 @Slf4j
 public class MemcacheConfiguration implements InitializingBean {
+    /**
+     * Defines a common prefix for all saved refresh entries.
+     */
     private String prefix = "fraho-refresh";
+
+    /**
+     * Hostname or IP Adress of memcache server
+     */
     private String host = "127.0.0.1";
+
+    /**
+     * Port of memcache server
+     */
     private Integer port = 11211;
+
+    /**
+     * Timeout (in seconds) when talking to memcache server
+     */
     private Integer timeout = 5;
 
     @Override
