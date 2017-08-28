@@ -7,6 +7,7 @@
   * ```fraho.jwt.refresh.cache.prefix``` => ```fraho.jwt.refresh.memcache.prefix```
 * (all) Provide configuration classes, enables content assis when writing appplication.yaml
 * (base) Remove deprecated JwtUser.setTotpSecret(Optional)
+* (base) Add log output with running library version on startup
 
 ### 0.8.1 (2017-08-17)
 * (all) Some minor cleanup (code smells)
