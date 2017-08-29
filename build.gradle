@@ -39,6 +39,10 @@ subprojects {
 
     jar {
         version = "${project.version}"
+        manifest {
+            attributes("Implementation-Title": "Gradle",
+                    "Implementation-Version": version)
+        }
     }
     buildscript {
         ext {
