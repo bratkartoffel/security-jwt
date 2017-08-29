@@ -183,6 +183,7 @@ public class MemcacheTokenStore implements RefreshTokenStore {
 
     @Override
     public void afterPropertiesSet() throws IOException {
+        log.info("Using memcache implementation to handle refresh tokens");
         if (refreshConfig.getExpiration().toSeconds() > 2_592_000) {
             throw new IllegalStateException("Refresh expiration may not exceed 30 days when using memcached");
         }

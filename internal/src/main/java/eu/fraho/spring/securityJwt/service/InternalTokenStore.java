@@ -129,7 +129,7 @@ public class InternalTokenStore implements RefreshTokenStore {
 
     @Override
     public void afterPropertiesSet() {
-        log.debug("Creating in-memory expiring map");
+        log.info("Using in-memory implementation to handle refresh tokens");
         refreshTokenMap = ExpiringMap.builder()
                 .expirationPolicy(ExpirationPolicy.CREATED)
                 .expiration(refreshConfig.getExpiration().getQuantity(), refreshConfig.getExpiration().getTimeUnit())

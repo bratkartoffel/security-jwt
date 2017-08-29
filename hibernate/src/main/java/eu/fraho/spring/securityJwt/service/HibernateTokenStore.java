@@ -138,7 +138,7 @@ public class HibernateTokenStore implements RefreshTokenStore {
 
     @Override
     public void afterPropertiesSet() {
-        // nothing to do here
+        log.info("Using hibernate implementation to handle refresh tokens");
     }
 
     @NotNull
