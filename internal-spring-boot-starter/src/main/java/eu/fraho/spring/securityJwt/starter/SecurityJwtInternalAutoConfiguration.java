@@ -11,6 +11,7 @@ import eu.fraho.spring.securityJwt.service.InternalTokenStore;
 import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +21,8 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureBefore(SecurityJwtNoRefreshStoreAutoConfiguration.class)
 public class SecurityJwtInternalAutoConfiguration {
     @Bean
-    public RefreshTokenStore internalTokenStore(final JwtRefreshConfiguration jwtRefreshConfiguration) {
+    @ConditionalOnMissingBean
+    public RefreshTokenStore refreshTokenStore(final JwtRefreshConfiguration jwtRefreshConfiguration) {
         return new InternalTokenStore(jwtRefreshConfiguration);
     }
 }

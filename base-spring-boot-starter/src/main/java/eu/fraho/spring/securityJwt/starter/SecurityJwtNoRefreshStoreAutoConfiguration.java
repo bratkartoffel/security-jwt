@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
 public class SecurityJwtNoRefreshStoreAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
-    public RefreshTokenStore defaultTokenStore() {
+    public RefreshTokenStore refreshTokenStore() {
         return new NullTokenStore();
     }
 }
