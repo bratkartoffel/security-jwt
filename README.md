@@ -64,6 +64,8 @@ Starting with version 1.0.0 there are two ways on how to use these libraries.
 The old way is by directly using the libraries as dependencies and doing some manual configuration.
 The newer way used spring boot autoconfiguration and reduced the needed configuration a lot.
 
+To see this library "in action", please take a look at [the examples](https://github.com/bratkartoffel/security-jwt-examples).
+
 ## Manual configuration:
 * Add the dependencies to your build script
 * Configure your boot application to pick up our components (add "eu.fraho.spring.securityJwt" to the scanBasePackages field of your ```@SpringBootApplication```)
