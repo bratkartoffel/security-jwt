@@ -5,10 +5,12 @@ buildscript {
     repositories {
         mavenCentral()
         maven { url 'http://repo.spring.io/plugins-release' }
+        maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.8.0"
         classpath 'io.spring.gradle:propdeps-plugin:0.0.9.RELEASE'
+        classpath "gradle.plugin.gradle-plugins:jartest:1.0.1"
     }
 }
 
@@ -69,6 +71,9 @@ subprojects {
 
     // propdeps
     compileJava.dependsOn(processResources)
+
+    // transitive dependencies for tests
+    apply plugin: 'com.github.hauner.jarTest'
 
     // release stuff
     apply plugin: 'maven'
