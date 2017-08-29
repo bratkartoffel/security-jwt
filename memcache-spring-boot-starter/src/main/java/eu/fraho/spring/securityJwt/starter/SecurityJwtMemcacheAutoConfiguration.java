@@ -10,6 +10,7 @@ import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
 import eu.fraho.spring.securityJwt.config.MemcacheConfiguration;
 import eu.fraho.spring.securityJwt.service.MemcacheTokenStore;
 import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -20,10 +21,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @AutoConfigureAfter(SecurityJwtBaseAutoConfiguration.class)
 @AutoConfigureBefore(SecurityJwtNoRefreshStoreAutoConfiguration.class)
+@Slf4j
 public class SecurityJwtMemcacheAutoConfiguration {
     @Bean
     @ConditionalOnBean(RefreshTokenStore.class)
     public MemcacheConfiguration memcacheConfiguration() {
+        log.debug("Register MemcacheConfiguration");
         return new MemcacheConfiguration();
     }
 
@@ -31,6 +34,7 @@ public class SecurityJwtMemcacheAutoConfiguration {
     @ConditionalOnMissingBean
     public RefreshTokenStore refreshTokenStore(final JwtRefreshConfiguration jwtRefreshConfiguration,
                                                final MemcacheConfiguration memcacheConfiguration) {
+        log.debug("Register MemcacheTokenStore");
         return new MemcacheTokenStore(jwtRefreshConfiguration, memcacheConfiguration);
     }
 }

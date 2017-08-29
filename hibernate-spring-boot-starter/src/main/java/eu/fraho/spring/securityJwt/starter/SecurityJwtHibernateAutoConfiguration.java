@@ -9,6 +9,7 @@ package eu.fraho.spring.securityJwt.starter;
 import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
 import eu.fraho.spring.securityJwt.service.HibernateTokenStore;
 import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -20,10 +21,12 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureAfter(SecurityJwtBaseAutoConfiguration.class)
 @AutoConfigureBefore(SecurityJwtNoRefreshStoreAutoConfiguration.class)
 @EntityScan(basePackages = "eu.fraho.spring.securityJwt.dto")
+@Slf4j
 public class SecurityJwtHibernateAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public RefreshTokenStore refreshTokenStore(final JwtRefreshConfiguration jwtRefreshConfiguration) {
+        log.debug("Register HibernateTokenStore");
         return new HibernateTokenStore(jwtRefreshConfiguration);
     }
 }
