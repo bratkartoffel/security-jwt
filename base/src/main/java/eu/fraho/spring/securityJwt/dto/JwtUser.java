@@ -68,11 +68,6 @@ public class JwtUser implements UserDetails, CredentialsContainer {
     }
 
     @Deprecated
-    public String getAuthority() {
-        return authorities.isEmpty() ? null : authorities.get(0).toString();
-    }
-
-    @Deprecated
     public void setAuthority(String authority) {
         this.authorities.add(new SimpleGrantedAuthority(authority));
     }

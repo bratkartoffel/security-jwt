@@ -9,6 +9,8 @@
 * (base) Remove deprecated JwtUser.setTotpSecret(Optional)
 * (base) Add log output with running library version on startup
 * (all) Add spring boot starter projects
+* (base) When using HMAC-based signatures and no keyfile was specified, then create a new (in memory) random one instead of raising an exception
+* (base) Change the default value for ```fraho.jwt.token.algorithm``` to ```HS256```
 
 ### 0.8.1 (2017-08-17)
 * (all) Some minor cleanup (code smells)

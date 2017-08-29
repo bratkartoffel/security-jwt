@@ -15,7 +15,7 @@ Please note that the memcache-plugin needs an external memcached server.
 
 # Usage
 * Add the dependency to your build script
-* Use ```eu.fraho.spring.securityJwt.service.MemcacheTokenStore``` as ```fraho.jwt.refresh.cache.impl``` configuration value
+* When not using the boot-starter: Use ```eu.fraho.spring.securityJwt.service.MemcacheTokenStore``` as ```fraho.jwt.refresh.cache-impl``` configuration value
 
 This module also uses some additional application properties:
 

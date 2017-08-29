@@ -64,21 +64,20 @@ Starting with version 1.0.0 there are two ways on how to use these libraries.
 The old way is by directly using the libraries as dependencies and doing some manual configuration.
 The newer way used spring boot autoconfiguration and reduced the needed configuration a lot.
 
-## Manual dependencies:
+## Manual configuration:
 * Add the dependencies to your build script
 * Configure your boot application to pick up our components (add "eu.fraho.spring.securityJwt" to the scanBasePackages field of your ```@SpringBootApplication```)
 * Add the BouncyCastle Provider (e.g. within the [main-Method](base/src/test/java/eu/fraho/spring/securityJwt/AbstractTest.java))
-* Create an implementation of UserDetailsService that returns an instance of [JwtUser](base/src/main/java/eu/fraho/spring/securityJwt/dto/JwtUser.java)
 * Optionally use my enhanced PasswordEncoder as a ```@Bean```
-* Configure at least the JWT secrets (public + private keys or a hmac keyfile) in your ```application.yml```
 
 ## Spring Boot Autoconfig:
 * Use any *-spring-boot-starter dependency you like
 * Bouncycastle will be automagically loaded if on classpath
 * My enhanced PasswordEncoder will be used as default
+
+## General steps for both methos:
 * Create an implementation of UserDetailsService that returns an instance of [JwtUser](base/src/main/java/eu/fraho/spring/securityJwt/dto/JwtUser.java)
-* Configure at least the JWT secrets (public + private keys or a hmac keyfile) in your ```application.yml```
-* Note: The property ```fraho.jwt.refresh.cache-impl``` will have no effect
+* By default, this service will create a random hmac secret for signatures on each startup. To stay consistent accress service restarts and not kicking clients out please either change the algorithm (recommended) or specifiy at least an hmac keyfile.
 
 # Usage for clients
 * Request new tokens by sending an authentication request to ```/auth/login```
@@ -94,7 +93,7 @@ This library is customizable by the following properties:
 
 | Property                          | Default        | Description   |
 |-----------------------------------|----------------|---------------|
-| fraho.jwt.token.algorithm         | ES256          | The signature algorithm used for the tokens. For a list of valid algorithms please see either the [JWT spec](https://tools.ietf.org/html/rfc7518#section-3) or [JWSAlgorithm](https://bitbucket.org/connect2id/nimbus-jose-jwt/src/master/src/main/java/com/nimbusds/jose/JWSAlgorithm.java)|
+| fraho.jwt.token.algorithm         | HS256          | The signature algorithm used for the tokens. For a list of valid algorithms please see either the [JWT spec](https://tools.ietf.org/html/rfc7518#section-3) or [JWSAlgorithm](https://bitbucket.org/connect2id/nimbus-jose-jwt/src/master/src/main/java/com/nimbusds/jose/JWSAlgorithm.java)|
 | fraho.jwt.token.issuer            | fraho-security | Sets the issuer of the token. The issuer is used in the tokens ```iss``` field|
 | fraho.jwt.token.pub               | null           | Defines the public key file when using a public / private key signature method|
 | fraho.jwt.token.priv              | null           | Defines the private key file when using a public / private key signature method. May be null if this service should only verify, but not issue tokens. In this case, any calls to ```generateToken``` or ```generateRefreshToken``` will throw an FeatureNotConfiguredException. To the caller, it will be shown as a UNAUTHORIZED Http StatusCode.|

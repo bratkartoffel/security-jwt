@@ -24,6 +24,7 @@ import java.nio.file.Path;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.SecureRandom;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPublicKey;
@@ -46,7 +47,7 @@ public class JwtTokenConfiguration implements InitializingBean {
      * <a href="https://tools.ietf.org/html/rfc7518#section-3">JWT spec</a> or
      * <a href="https://bitbucket.org/connect2id/nimbus-jose-jwt/src/master/src/main/java/com/nimbusds/jose/JWSAlgorithm.java">JWSAlgorithm</a>
      */
-    private String algorithm = "ES256";
+    private String algorithm = "HS256";
 
     /**
      * Defines the public key file when using a public / private key signature method
@@ -136,7 +137,10 @@ public class JwtTokenConfiguration implements InitializingBean {
         } else {
             log.info("Using HMAC based JWT signature");
             if (hmacSecret.length == 0) {
-                throw new IllegalArgumentException("No secret key configured.");
+                log.warn("No secret keyfile has been specified, creating a new random one");
+                SecureRandom random = new SecureRandom();
+                hmacSecret = new byte[48];
+                random.nextBytes(hmacSecret);
             }
             verifier = new MACVerifier(hmacSecret);
             signer = new MACSigner(hmacSecret);
