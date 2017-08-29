@@ -59,12 +59,26 @@ When you want to add refresh token support, then choose one of the following dep
 For details on the usage of the plugins please see the README within the relevant module directories.
 
 # Usage
+Starting with version 1.0.0 there are two ways on how to use these libraries.
+
+The old way is by directly using the libraries as dependencies and doing some manual configuration.
+The newer way used spring boot autoconfiguration and reduced the needed configuration a lot.
+
+## Manual dependencies:
 * Add the dependencies to your build script
 * Configure your boot application to pick up our components (add "eu.fraho.spring.securityJwt" to the scanBasePackages field of your ```@SpringBootApplication```)
 * Add the BouncyCastle Provider (e.g. within the [main-Method](base/src/test/java/eu/fraho/spring/securityJwt/AbstractTest.java))
 * Create an implementation of UserDetailsService that returns an instance of [JwtUser](base/src/main/java/eu/fraho/spring/securityJwt/dto/JwtUser.java)
 * Optionally use my enhanced PasswordEncoder as a ```@Bean```
 * Configure at least the JWT secrets (public + private keys or a hmac keyfile) in your ```application.yml```
+
+## Spring Boot Autoconfig:
+* Use any *-spring-boot-starter dependency you like
+* Bouncycastle will be automagically loaded if on classpath
+* My enhanced PasswordEncoder will be used as default
+* Create an implementation of UserDetailsService that returns an instance of [JwtUser](base/src/main/java/eu/fraho/spring/securityJwt/dto/JwtUser.java)
+* Configure at least the JWT secrets (public + private keys or a hmac keyfile) in your ```application.yml```
+* Note: The property ```fraho.jwt.refresh.cache-impl``` will have no effect
 
 # Usage for clients
 * Request new tokens by sending an authentication request to ```/auth/login```

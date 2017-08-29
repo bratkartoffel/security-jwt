@@ -53,6 +53,8 @@ public class JwtRefreshConfiguration implements InitializingBean {
      * Defines the implemenation for refresh token storage. The specified class has to implement the
      * RefreshTokenStore Interface. To disable the refresh tokens just don't specify this field.
      * You have to add at least one of the optional dependencies (see README) to add refresh token support.
+     * <p>
+     * This field has only to be set if you are not using the provided starters.
      */
     private Class<? extends RefreshTokenStore> cacheImpl = NullTokenStore.class;
 

@@ -1,0 +1,21 @@
+buildscript {
+    dependencies {
+        classpath "io.spring.gradle:dependency-management-plugin:${springDependencyManagementVersion}"
+    }
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-starter-parent:${springBootVersion}"
+    }
+}
+dependencies {
+    compile project(':base')
+    compile project(':base-spring-boot-starter')
+    compile project(':hibernate')
+
+    testCompile project(path: ':base', configuration: 'testArchives')
+    testCompile project(path: ':hibernate', configuration: 'testArchives')
+}

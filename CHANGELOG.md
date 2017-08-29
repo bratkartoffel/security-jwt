@@ -8,6 +8,7 @@
 * (all) Provide configuration classes, enables content assis when writing appplication.yaml
 * (base) Remove deprecated JwtUser.setTotpSecret(Optional)
 * (base) Add log output with running library version on startup
+* (all) Add spring boot starter projects
 
 ### 0.8.1 (2017-08-17)
 * (all) Some minor cleanup (code smells)
