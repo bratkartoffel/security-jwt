@@ -33,12 +33,6 @@ import java.security.Security;
 @AutoConfigureBefore(SecurityAutoConfiguration.class)
 @Slf4j
 public class SecurityJwtBaseAutoConfiguration {
-//    @Bean
-//    public JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter() {
-//        log.debug("Register JwtAuthenticationTokenFilter");
-//        return new JwtAuthenticationTokenFilter(jwtTokenService());
-//    }
-
     @Bean
     public TotpConfiguration totpConfig() {
         log.debug("Register TotpConfiguration");
