@@ -100,12 +100,25 @@ public class TestJwtServiceOther extends AbstractTest {
         withTempTokenServiceField("algorithm", "Foobar", this::reloadTokenService);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testHmacNoKey() throws Throwable {
         checkAndCreateOutDirs(OUT_KEY);
         Files.write(Paths.get(OUT_KEY), new byte[0]);
 
-        withTempTokenServiceField("algorithm", "HS256", this::reloadTokenService);
+        withTempTokenServiceField("algorithm", "HS256", this::testHmacAlgorithmAutoKey);
+    }
+
+    private void testHmacAlgorithmAutoKey() {
+        reloadTokenService(); // generate the key
+
+        AccessToken token;
+        try {
+            token = jwtTokenService.generateToken(getJwtUser());
+        } catch (JOSEException e) {
+            throw new IllegalStateException(e);
+        }
+        Assert.assertNotNull("No token generated", token.getToken());
+        Assert.assertTrue("Token expired", jwtTokenService.validateToken(token));
     }
 
     @Test(expected = IllegalArgumentException.class)
