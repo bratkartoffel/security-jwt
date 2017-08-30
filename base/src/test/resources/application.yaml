@@ -13,3 +13,6 @@ fraho:
     refresh:
       expiration: 2 seconds
       deviceIdLength: 10
+
+spring.main.banner-mode: "off"
+logging.level.eu.fraho.spring.securityJwt: DEBUG
