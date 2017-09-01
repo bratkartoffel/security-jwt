@@ -6,6 +6,8 @@
  */
 package eu.fraho.spring.securityJwt.service;
 
+import org.jetbrains.annotations.NotNull;
+
 public interface TotpService {
     /**
      * Verify the given code against the stored secret.
@@ -15,7 +17,7 @@ public interface TotpService {
      * @return {@code true} if the given code is within the configured variance bounds.
      * @throws NullPointerException if secret is null
      */
-    boolean verifyCode(String secret, int code);
+    boolean verifyCode(@NotNull String secret, int code);
 
     /**
      * Generate a new shared secret.

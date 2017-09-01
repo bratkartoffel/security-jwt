@@ -11,6 +11,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base32;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -33,12 +34,7 @@ public class TotpServiceImpl implements TotpService {
     @NonNull
     private final TotpConfiguration configuration;
 
-    // TODO remove / make package private
-    public long getCurrentCodeForTesting(String secret) throws InvalidKeyException, NoSuchAlgorithmException {
-        return getCode(base32.decode(secret), System.currentTimeMillis() / 1000 / 30);
-    }
-
-    private long getCode(byte[] secret, long timeIndex) throws NoSuchAlgorithmException, InvalidKeyException {
+    private int getCode(byte[] secret, long timeIndex) throws NoSuchAlgorithmException, InvalidKeyException {
         final SecretKeySpec signKey = new SecretKeySpec(secret, "HmacSHA1");
         final ByteBuffer buffer = ByteBuffer.allocate(8).putLong(timeIndex);
         final byte[] timeBytes = buffer.array();
@@ -53,11 +49,11 @@ public class TotpServiceImpl implements TotpService {
             truncatedHash <<= 8;
             truncatedHash |= hash[offset + i] & 0xff;
         }
-        return truncatedHash % 1000000;
+        return (int) (truncatedHash % 1000000);
     }
 
     @Override
-    public boolean verifyCode(String secret, int code) {
+    public boolean verifyCode(@NotNull String secret, int code) {
         final long timeIndex = System.currentTimeMillis() / 1000 / 30;
         final byte[] secretBytes = base32.decode(secret);
         boolean result = false;
@@ -68,7 +64,7 @@ public class TotpServiceImpl implements TotpService {
                     break;
                 }
             }
-        } catch (NoSuchAlgorithmException | InvalidKeyException ike) {
+        } catch (NoSuchAlgorithmException | InvalidKeyException | IllegalArgumentException ike) {
             log.error("Error checking totp pin", ike);
         }
         return result;
