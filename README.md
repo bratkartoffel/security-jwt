@@ -69,13 +69,14 @@ To see this library "in action", please take a look at [the examples](https://gi
 ## Manual configuration:
 * Add the dependencies to your build script
 * Configure your boot application to pick up our components (add "eu.fraho.spring.securityJwt" to the scanBasePackages field of your ```@SpringBootApplication```)
-* Add the BouncyCastle Provider (e.g. within the [main-Method](base/src/test/java/eu/fraho/spring/securityJwt/AbstractTest.java))
+* Optionally add the BouncyCastle Provider (e.g. within the [main-Method](base/src/test/java/eu/fraho/spring/securityJwt/AbstractTest.java))
+  * **Hint:** This is required if you would like to use the ECDSA signature algorithm!
 * Optionally use my enhanced PasswordEncoder as a ```@Bean```
 * Optionally choose a refresh token store implementation and set it as ```fraho.jwt.refresh.cache-impl```
 
 ## Spring Boot Autoconfig:
 * Use any *-spring-boot-starter dependency you like
-* Bouncycastle will be automagically loaded if on classpath
+* Bouncycastle will be automagically loaded and installed if on classpath
 * My enhanced PasswordEncoder will be used as default
 
 ## General steps for both methos:
