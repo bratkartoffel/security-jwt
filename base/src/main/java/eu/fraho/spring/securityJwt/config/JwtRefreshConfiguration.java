@@ -66,6 +66,12 @@ public class JwtRefreshConfiguration implements InitializingBean {
                     12, length, 48, 24);
             length = 24;
         }
+        // check default deviceId length
+        if (deviceIdLength < defaultDeviceId.length()) {
+            int length = defaultDeviceId.length();
+            log.warn("Maximum deviceId length is smaller than length of default! Adjusting maximum length to {}", length);
+            deviceIdLength = length;
+        }
         if (cacheImpl == null) {
             cacheImpl = NullTokenStore.class;
         }
