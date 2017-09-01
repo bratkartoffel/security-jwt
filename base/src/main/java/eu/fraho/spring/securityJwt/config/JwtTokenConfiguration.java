@@ -6,6 +6,7 @@
  */
 package eu.fraho.spring.securityJwt.config;
 
+import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.JWSVerifier;
@@ -15,19 +16,19 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.KeyFactory;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.SecureRandom;
+import java.security.*;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
@@ -81,6 +82,84 @@ public class JwtTokenConfiguration implements InitializingBean {
     @Setter(AccessLevel.NONE)
     private JWSVerifier verifier;
 
+    private void tryLoadHmac() throws IOException, JOSEException {
+        byte[] hmacSecret = new byte[0];
+        if (hmac != null) {
+            log.debug("Loading hmac secret from: {}", hmac);
+            hmacSecret = Files.readAllBytes(hmac);
+        }
+        log.info("Using HMAC based JWT signature");
+        if (hmacSecret.length == 0) {
+            log.warn("No secret keyfile has been specified, creating a new random one. Tokens will not be valid accross server restarts!");
+            SecureRandom random = new SecureRandom();
+            hmacSecret = new byte[48];
+            random.nextBytes(hmacSecret);
+        }
+        verifier = new MACVerifier(hmacSecret);
+        signer = new MACSigner(hmacSecret);
+    }
+
+    private void tryLoadRsa() throws IOException, NoSuchProviderException, NoSuchAlgorithmException, InvalidKeySpecException {
+        byte[] publicKeyBytes = new byte[0];
+        byte[] privateKeyBytes = new byte[0];
+        if (pub != null) {
+            log.debug("Loading public key from: {}", pub);
+            publicKeyBytes = Files.readAllBytes(pub);
+        }
+        if (priv != null) {
+            log.debug("Loading private key from: {}", priv);
+            privateKeyBytes = Files.readAllBytes(priv);
+        }
+
+        log.info("Using RSA based JWT signature");
+        assertKeyPresent(publicKeyBytes);
+        KeyFactory keyFactory = getKeyFactory("RSA");
+
+        if (privateKeyBytes.length > 0) {
+            PrivateKey privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(privateKeyBytes));
+            signer = new RSASSASigner(privateKey);
+        }
+
+        PublicKey publicKey = keyFactory.generatePublic(new X509EncodedKeySpec(publicKeyBytes));
+        verifier = new RSASSAVerifier((RSAPublicKey) publicKey);
+    }
+
+    private void tryLoadEcdsa() throws IOException, NoSuchProviderException, NoSuchAlgorithmException, InvalidKeySpecException, JOSEException {
+        byte[] publicKeyBytes = new byte[0];
+        byte[] privateKeyBytes = new byte[0];
+        if (pub != null) {
+            log.debug("Loading public key from: {}", pub);
+            publicKeyBytes = Files.readAllBytes(pub);
+        }
+        if (priv != null) {
+            log.debug("Loading private key from: {}", priv);
+            privateKeyBytes = Files.readAllBytes(priv);
+        }
+        log.info("Using EC based JWT signature");
+        assertKeyPresent(publicKeyBytes);
+        KeyFactory keyFactory = getKeyFactory("ECDSA");
+
+        if (privateKeyBytes.length > 0) {
+            PrivateKey privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(privateKeyBytes));
+            signer = new ECDSASigner((ECPrivateKey) privateKey);
+        }
+
+        PublicKey publicKey = keyFactory.generatePublic(new X509EncodedKeySpec(publicKeyBytes));
+        verifier = new ECDSAVerifier((ECPublicKey) publicKey);
+    }
+
+    @NotNull
+    private KeyFactory getKeyFactory(@NotNull String algorithm) throws NoSuchAlgorithmException, NoSuchProviderException {
+        final KeyFactory keyFactory;
+        if (Security.getProvider("BC") == null) {
+            log.warn("BouncyCastle provider is not available, trying to use java builtin provider. ECDSA will not be available");
+            keyFactory = KeyFactory.getInstance(algorithm);
+        } else {
+            keyFactory = KeyFactory.getInstance(algorithm, "BC");
+        }
+        return keyFactory;
+    }
+
     @Override
     public void afterPropertiesSet() throws Exception {
         JWSAlgorithm jwsAlgorithm = JWSAlgorithm.parse(algorithm);
@@ -91,65 +170,24 @@ public class JwtTokenConfiguration implements InitializingBean {
         this.jwsAlgorithm = jwsAlgorithm;
 
         // load the keys
-        byte[] publicKeyBytes = new byte[0];
-        byte[] privateKeyBytes = new byte[0];
-        byte[] hmacSecret = new byte[0];
-        if (pub != null) {
-            log.debug("Loading public key from: {}", pub);
-            publicKeyBytes = Files.readAllBytes(pub);
-        }
-        if (priv != null) {
-            log.debug("Loading private key from: {}", priv);
-            privateKeyBytes = Files.readAllBytes(priv);
-        }
-        if (hmac != null) {
-            log.debug("Loading hmac secret from: {}", hmac);
-            hmacSecret = Files.readAllBytes(hmac);
-        }
-
-        // parse the keys
         signer = null;
         verifier = null;
         if (JWSAlgorithm.Family.EC.contains(jwsAlgorithm)) {
-            log.info("Using EC based JWT signature");
-            assertKeyPresent(publicKeyBytes);
-            KeyFactory keyFactory = KeyFactory.getInstance("ECDSA", "BC");
-
-            if (privateKeyBytes.length > 0) {
-                PrivateKey privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(privateKeyBytes));
-                signer = new ECDSASigner((ECPrivateKey) privateKey);
+            if (Security.getProvider("BC") == null) {
+                throw new IllegalArgumentException("Bouncycastle is not installed properly, ECDSA is not available!");
             }
 
-            PublicKey publicKey = keyFactory.generatePublic(new X509EncodedKeySpec(publicKeyBytes));
-            verifier = new ECDSAVerifier((ECPublicKey) publicKey);
+            tryLoadEcdsa();
         } else if (JWSAlgorithm.Family.RSA.contains(jwsAlgorithm)) {
-            log.info("Using RSA based JWT signature");
-            assertKeyPresent(publicKeyBytes);
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA", "BC");
-
-            if (privateKeyBytes.length > 0) {
-                PrivateKey privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(privateKeyBytes));
-                signer = new RSASSASigner(privateKey);
-            }
-
-            PublicKey publicKey = keyFactory.generatePublic(new X509EncodedKeySpec(publicKeyBytes));
-            verifier = new RSASSAVerifier((RSAPublicKey) publicKey);
+            tryLoadRsa();
         } else {
-            log.info("Using HMAC based JWT signature");
-            if (hmacSecret.length == 0) {
-                log.warn("No secret keyfile has been specified, creating a new random one");
-                SecureRandom random = new SecureRandom();
-                hmacSecret = new byte[48];
-                random.nextBytes(hmacSecret);
-            }
-            verifier = new MACVerifier(hmacSecret);
-            signer = new MACSigner(hmacSecret);
+            tryLoadHmac();
         }
     }
 
     private void assertKeyPresent(byte[] key) {
         if (key.length == 0) {
-            throw new IllegalArgumentException("No public key configured.");
+            throw new IllegalArgumentException("No public key configured");
         }
     }
 }
