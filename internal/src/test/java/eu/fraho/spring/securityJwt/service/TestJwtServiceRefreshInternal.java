@@ -6,14 +6,11 @@
  */
 package eu.fraho.spring.securityJwt.service;
 
-import eu.fraho.spring.securityJwt.AbstractTest;
-import eu.fraho.spring.securityJwt.spring.TestApiApplication;
-import eu.fraho.spring.securityJwt.tokenService.AbstractRefreshTokenTest;
+import eu.fraho.spring.securityJwt.it.spring.TestApiApplication;
+import eu.fraho.spring.securityJwt.ut.service.AbstractTestJwtTokenServiceWithRefresh;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.jetbrains.annotations.NotNull;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,18 +23,16 @@ import java.io.IOException;
 @SpringBootTest(properties = "spring.config.location=classpath:internal-test.yaml",
         classes = TestApiApplication.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-public class TestJwtServiceRefreshInternal extends AbstractRefreshTokenTest {
+public class TestJwtServiceRefreshInternal extends AbstractTestJwtTokenServiceWithRefresh {
     @Autowired
     private RefreshTokenStore refreshTokenStore;
 
-    @BeforeClass
-    public static void beforeClass() throws IOException {
-        AbstractTest.beforeHmacClass();
+    public TestJwtServiceRefreshInternal() throws IOException {
     }
 
-    @Test
     @Override
-    public void checkCorrectImplementationInUse() {
-        Assert.assertEquals("Wrong implementation loaded", InternalTokenStore.class, refreshTokenStore.getClass());
+    @NotNull
+    protected RefreshTokenStore getRefreshStore() {
+        return refreshTokenStore;
     }
 }
