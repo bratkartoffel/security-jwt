@@ -13,6 +13,7 @@ dependencyManagement {
 }
 dependencies {
     compile project(':base')
+    optional("org.bouncycastle:bcprov-jdk15on:${bouncyCastleVersion}")
 
     testCompile project(path: ':base', configuration: 'testArchives')
 }

@@ -6,7 +6,7 @@
  */
 package eu.fraho.spring.securityJwt.starter;
 
-import eu.fraho.spring.securityJwt.CryptPasswordEncoder;
+import eu.fraho.spring.securityJwt.password.CryptPasswordEncoder;
 import eu.fraho.spring.securityJwt.JwtAuthenticationEntryPoint;
 import eu.fraho.spring.securityJwt.config.*;
 import eu.fraho.spring.securityJwt.controller.AuthenticationRestController;
