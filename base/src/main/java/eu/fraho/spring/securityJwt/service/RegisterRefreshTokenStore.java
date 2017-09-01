@@ -9,6 +9,7 @@ package eu.fraho.spring.securityJwt.service;
 import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -28,9 +29,12 @@ public class RegisterRefreshTokenStore implements InitializingBean {
     @NonNull
     private final JwtRefreshConfiguration refreshConfig;
 
+    @Setter
+    private BeanDefinitionRegistry registry;
+
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanDefinitionRegistry registry = ((BeanDefinitionRegistry) factory);
+        if (registry == null) registry = ((BeanDefinitionRegistry) factory);
 
         GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
         beanDefinition.setBeanClass(refreshConfig.getCacheImpl());
