@@ -18,7 +18,9 @@ import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.exceptions.FeatureNotConfiguredException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -45,6 +47,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     @SuppressWarnings("SpringAutowiredFieldsWarningInspection") // not possible otherwise as this bean is lazy
     @Autowired
     @Lazy
+    @Setter
     private RefreshTokenStore refreshTokenStore;
 
     private String truncateDeviceId(String str) {
@@ -61,19 +64,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     }
 
     @Override
-    public Integer getRefreshExpiration() {
-        return refreshTokenStore.getRefreshExpiration().toSeconds();
-    }
-
-    @Override
-    public Integer getRefreshLength() {
-        return refreshConfig.getLength();
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        log.debug("Initializing");
-
+    public void afterPropertiesSet() {
         if (tokenConfig.getSigner() == null) {
             log.warn("No private key specified. This service may neither issue new tokens nor use refresh tokens.");
         }
@@ -82,14 +73,20 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     @Override
     public Optional<JwtUser> parseUser(String token) {
         try {
-            return Optional.of(JwtUser.fromClaims(SignedJWT.parse(token).getJWTClaimsSet()));
+            JWTClaimsSet claims = SignedJWT.parse(token).getJWTClaimsSet();
+            if (validateToken(token)) {
+                return Optional.of(JwtUser.fromClaims(claims));
+            } else {
+                return Optional.empty();
+            }
         } catch (ParseException e) {
-            log.debug("Unable to parse token", e);
+            log.debug(e.getMessage(), e);
             return Optional.empty();
         }
     }
 
     @Override
+    @NotNull
     public AccessToken generateToken(JwtUser user) throws JOSEException {
         if (tokenConfig.getSigner() == null) {
             throw new FeatureNotConfiguredException("Access token signing is not enabled.");
@@ -112,39 +109,57 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
         return new AccessToken(token.serialize(), getExpiration());
     }
 
+    @NotNull
     private Date generateExpirationDate() {
         return Date.from(ZonedDateTime.now().plusSeconds(tokenConfig.getExpiration().toSeconds()).toInstant());
     }
 
+    private boolean validateClaims(JWTClaimsSet claims) {
+        boolean result;
+
+        Date now = new Date();
+        Date exp = claims.getExpirationTime();
+        Date nbf = claims.getNotBeforeTime();
+        Date iat = claims.getIssueTime();
+
+        if (exp == null) {
+            exp = new Date(0);
+        }
+        if (nbf == null) {
+            nbf = new Date(0);
+        }
+        if (iat == null) {
+            iat = new Date(0);
+        }
+        log.debug("Validating claims, now={}, exp={}, nbf={}, iat={}", now, exp, nbf, iat);
+
+        result = iat.before(now);
+        log.debug("After iat < now: {}", result);
+        result &= nbf.before(now);
+        log.debug("After nbf < now: {}", result);
+        result &= exp.after(now);
+        log.debug("After exp > now: {}", result);
+        return result;
+    }
+
     @Override
     public boolean validateToken(String token) {
+        log.debug("Validating {}", token);
+
         boolean result;
         try {
             SignedJWT parsedToken = SignedJWT.parse(token);
             JWTClaimsSet claims = parsedToken.getJWTClaimsSet();
-            Date now = new Date();
-            Date exp = claims.getExpirationTime();
-            Date nbf = claims.getNotBeforeTime();
-            Date iat = claims.getIssueTime();
-
-            if (exp == null) {
-                exp = new Date(0);
-            }
-            if (nbf == null) {
-                nbf = new Date(0);
-            }
-            if (iat == null) {
-                iat = new Date(0);
-            }
-
             result = parsedToken.verify(tokenConfig.getVerifier());
-            result &= iat.before(now);
-            result &= nbf.before(now);
-            result &= exp.after(now);
+            log.debug("After verify: {}", result);
+            result &= validateClaims(claims);
+            log.debug("After validateClaims: {}", result);
         } catch (ParseException | JOSEException e) {
+            log.debug(e.getMessage(), e);
             result = false;
         }
 
+        log.debug("Validate token returns {}", result);
         return result;
     }
 
@@ -159,11 +174,13 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     }
 
     @Override
+    @NotNull
     public RefreshToken generateRefreshToken(String user) {
         return generateRefreshToken(user, refreshConfig.getDefaultDeviceId());
     }
 
     @Override
+    @NotNull
     public RefreshToken generateRefreshToken(String user, String deviceId) {
         final String devId = truncateDeviceId(deviceId);
         byte[] data = new byte[refreshConfig.getLength()];
@@ -171,7 +188,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
         final String token = Base64.getEncoder().encodeToString(data);
 
         refreshTokenStore.saveToken(user, devId, token);
-        return new RefreshToken(token, getRefreshExpiration(), devId);
+        return new RefreshToken(token, refreshConfig.getExpiration().toSeconds(), devId);
     }
 
     @Override
@@ -181,12 +198,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
 
     @Override
     public boolean isRefreshTokenSupported() {
-        try {
-            refreshTokenStore.getRefreshExpiration();
-            return true;
-        } catch (FeatureNotConfiguredException fnce) {
-            return false;
-        }
+        return refreshTokenStore.isRefreshTokenSupported();
     }
 
     @Override
@@ -205,11 +217,13 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     }
 
     @Override
+    @NotNull
     public Map<String, List<RefreshToken>> listRefreshTokens() {
         return refreshTokenStore.listTokens();
     }
 
     @Override
+    @NotNull
     public List<RefreshToken> listRefreshTokens(String username) {
         return refreshTokenStore.listTokens(username);
     }
