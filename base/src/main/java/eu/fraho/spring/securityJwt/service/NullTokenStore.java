@@ -65,7 +65,12 @@ public class NullTokenStore implements RefreshTokenStore {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         log.info("Using null implementation to handle refresh tokens");
+    }
+
+    @Override
+    public boolean isRefreshTokenSupported() {
+        return false;
     }
 }

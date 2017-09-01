@@ -72,4 +72,13 @@ public interface RefreshTokenStore extends InitializingBean {
         }
     }
 
+    /**
+     * Ask this service if refresh token support is enabled
+     * by a third-party addon.
+     *
+     * @return {@code true} when refresh tokens are supported
+     */
+    default boolean isRefreshTokenSupported() {
+        return true;
+    }
 }
