@@ -15,7 +15,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,24 +51,14 @@ public class JwtUser implements UserDetails, CredentialsContainer {
     public static JwtUser fromClaims(JWTClaimsSet claims) {
         JwtUser user = new JwtUser();
         user.setUsername(claims.getSubject());
-        final Object oldAuthority = claims.getClaim("authority");
-        if (oldAuthority != null && oldAuthority instanceof String) {
-            user.setAuthorities(Collections.singletonList(new SimpleGrantedAuthority(String.valueOf(oldAuthority))));
-        } else {
-            final List<String> claimAuthorities = (List<String>) claims.getClaim("authorities");
-            final List<GrantedAuthority> newAuthorities = new ArrayList<>();
-            for (String authority : claimAuthorities) {
-                newAuthorities.add(new SimpleGrantedAuthority(authority));
-            }
-            user.setAuthorities(newAuthorities);
+        final List<String> claimAuthorities = (List<String>) claims.getClaim("authorities");
+        final List<GrantedAuthority> newAuthorities = new ArrayList<>();
+        for (String authority : claimAuthorities) {
+            newAuthorities.add(new SimpleGrantedAuthority(authority));
         }
+        user.setAuthorities(newAuthorities);
         user.setId(Long.valueOf(String.valueOf(claims.getClaim("uid"))));
         return user;
-    }
-
-    @Deprecated
-    public void setAuthority(String authority) {
-        this.authorities.add(new SimpleGrantedAuthority(authority));
     }
 
     @Override
