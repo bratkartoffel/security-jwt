@@ -6,16 +6,15 @@
  */
 package eu.fraho.spring.securityJwt.starter;
 
-import eu.fraho.spring.securityJwt.password.CryptPasswordEncoder;
 import eu.fraho.spring.securityJwt.JwtAuthenticationEntryPoint;
 import eu.fraho.spring.securityJwt.config.*;
 import eu.fraho.spring.securityJwt.controller.AuthenticationRestController;
+import eu.fraho.spring.securityJwt.password.CryptPasswordEncoder;
 import eu.fraho.spring.securityJwt.service.JwtTokenService;
 import eu.fraho.spring.securityJwt.service.JwtTokenServiceImpl;
 import eu.fraho.spring.securityJwt.service.TotpService;
 import eu.fraho.spring.securityJwt.service.TotpServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -26,6 +25,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.security.Provider;
 import java.security.Security;
 
 @Configuration
@@ -75,10 +75,10 @@ public class SecurityJwtBaseAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnClass(BouncyCastleProvider.class)
-    public BouncyCastleProvider bouncyCastleProvider() {
+    @ConditionalOnClass(name = "org.bouncycastle.jce.provider.BouncyCastleProvider")
+    public Provider bouncyCastleProvider() {
         log.debug("Register BouncyCastleProvider");
-        BouncyCastleProvider provider = new BouncyCastleProvider();
+        org.bouncycastle.jce.provider.BouncyCastleProvider provider = new org.bouncycastle.jce.provider.BouncyCastleProvider();
         Security.removeProvider(provider.getName());
         Security.addProvider(provider);
         return provider;
