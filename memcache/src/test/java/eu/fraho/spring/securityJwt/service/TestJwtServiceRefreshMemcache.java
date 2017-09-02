@@ -11,20 +11,15 @@ import eu.fraho.spring.securityJwt.config.JwtTokenConfiguration;
 import eu.fraho.spring.securityJwt.config.MemcacheConfiguration;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
-import eu.fraho.spring.securityJwt.it.spring.TestApiApplication;
 import eu.fraho.spring.securityJwt.ut.service.AbstractTestJwtTokenServiceWithRefresh;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.spy.memcached.MemcachedClient;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,22 +28,16 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-@Getter
 @Slf4j
-@SpringBootTest(properties = "spring.config.location=classpath:memcache-test.yaml",
-        classes = TestApiApplication.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TestJwtServiceRefreshMemcache extends AbstractTestJwtTokenServiceWithRefresh {
-    @Autowired
+    private JwtRefreshConfiguration refreshConfiguration;
     private RefreshTokenStore refreshTokenStore;
 
-    @Autowired
-    private MemcacheConfiguration memcacheConfiguration;
-
-    @Autowired
-    private JwtRefreshConfiguration refreshConfiguration;
-
-    public TestJwtServiceRefreshMemcache() throws IOException {
+    public TestJwtServiceRefreshMemcache() throws Exception {
+        refreshConfiguration = getRefreshConfig();
+        refreshTokenStore = new MemcacheTokenStore(refreshConfiguration, new MemcacheConfiguration());
+        refreshTokenStore.afterPropertiesSet();
     }
 
     @Override

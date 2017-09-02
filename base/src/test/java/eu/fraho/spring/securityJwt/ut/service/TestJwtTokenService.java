@@ -55,6 +55,13 @@ public class TestJwtTokenService {
         }
     }
 
+    @NotNull
+    public static String loadToken(@NotNull String name) throws IOException, URISyntaxException {
+        return new String(
+                Files.readAllBytes(Paths.get(TestJwtTokenService.class.getResource(name).toURI())),
+                StandardCharsets.US_ASCII);
+    }
+
     private void writeRsa() throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
         // initialize generator
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
@@ -69,13 +76,6 @@ public class TestJwtTokenService {
 
         // write the keys
         Files.write(tempPub.toPath(), publicKey.getEncoded());
-    }
-
-    @NotNull
-    protected String loadToken(@NotNull String name) throws IOException, URISyntaxException {
-        return new String(
-                Files.readAllBytes(Paths.get(TestJwtTokenService.class.getResource(name).toURI())),
-                StandardCharsets.US_ASCII);
     }
 
     @NotNull

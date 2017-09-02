@@ -16,6 +16,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 public class TestCryptPasswordEncoder {
+    private final AtomicInteger passwordNumber = new AtomicInteger();
+
     private CryptConfiguration getConfig() {
         return new CryptConfiguration();
     }
@@ -23,8 +25,6 @@ public class TestCryptPasswordEncoder {
     private CryptPasswordEncoder getNewInstance(CryptConfiguration config) {
         return new CryptPasswordEncoder(config);
     }
-
-    private final AtomicInteger passwordNumber = new AtomicInteger();
 
     @Test
     public void testEncodeDes() {

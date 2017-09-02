@@ -36,14 +36,14 @@ public class JwtTokenConfigurationTest {
      */
     private final File tempPublic;
 
-    private JwtTokenConfiguration getNewInstance() {
-        return new JwtTokenConfiguration();
-    }
-
     public JwtTokenConfigurationTest() throws IOException {
         super();
         tempPrivate = File.createTempFile("security-jwt-", ".tmp");
         tempPublic = File.createTempFile("security-jwt-", ".tmp");
+    }
+
+    private JwtTokenConfiguration getNewInstance() {
+        return new JwtTokenConfiguration();
     }
 
     @Test(expected = IllegalArgumentException.class)
