@@ -16,6 +16,7 @@ import eu.fraho.spring.securityJwt.it.spring.MockTokenStore;
 import eu.fraho.spring.securityJwt.service.JwtTokenService;
 import eu.fraho.spring.securityJwt.service.JwtTokenServiceImpl;
 import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
+import eu.fraho.spring.securityJwt.util.JwtTokens;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,10 +28,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
@@ -53,13 +52,6 @@ public class TestJwtTokenService {
         try (OutputStream os = new FileOutputStream(tempKey)) {
             os.write("Another stupid dummy value as a constant key".getBytes(StandardCharsets.US_ASCII));
         }
-    }
-
-    @NotNull
-    public static String loadToken(@NotNull String name) throws IOException, URISyntaxException {
-        return new String(
-                Files.readAllBytes(Paths.get(TestJwtTokenService.class.getResource(name).toURI())),
-                StandardCharsets.US_ASCII);
     }
 
     private void writeRsa() throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
@@ -137,7 +129,7 @@ public class TestJwtTokenService {
         RefreshTokenStore refreshTokenStore = getRefreshStore();
         JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
 
-        String token = loadToken("/token-valid.txt");
+        String token = JwtTokens.VALID;
         Optional<JwtUser> oUser = service.parseUser(token);
         Assert.assertTrue("User was not parsed from token", oUser.isPresent());
         JwtUser user = oUser.get();
@@ -154,11 +146,11 @@ public class TestJwtTokenService {
         RefreshTokenStore refreshTokenStore = getRefreshStore();
         JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
 
-        String tokenInvalidSignature = loadToken("/token-invalid-signature.txt");
+        String tokenInvalidSignature = JwtTokens.INVALID_SIGNATURE;
         Optional<JwtUser> oUser1 = service.parseUser(tokenInvalidSignature);
         Assert.assertFalse("User was parsed from token", oUser1.isPresent());
 
-        String tokenInvalidBody = loadToken("/token-invalid-body.txt");
+        String tokenInvalidBody = JwtTokens.INVALID_BODY;
         Optional<JwtUser> oUser2 = service.parseUser(tokenInvalidBody);
         Assert.assertFalse("User was parsed from token", oUser2.isPresent());
     }
@@ -174,19 +166,19 @@ public class TestJwtTokenService {
         // regular already handled by testParseUser
 
         // no iat
-        String noIat = loadToken("/token-no-iat.txt");
+        String noIat = JwtTokens.NO_IAT;
         Assert.assertTrue("Token is invalid", service.validateToken(noIat));
         // future iat (false)
-        String futureIat = loadToken("/token-future-iat.txt");
+        String futureIat = JwtTokens.FUTURE_IAT;
         Assert.assertFalse("Token is invalid", service.validateToken(futureIat));
         // no nbf
-        String noNbf = loadToken("/token-no-nbf.txt");
+        String noNbf = JwtTokens.NO_NBF;
         Assert.assertTrue("Token is invalid", service.validateToken(noNbf));
         // future nbf (false)
-        String futureNbf = loadToken("/token-future-nbf.txt");
+        String futureNbf = JwtTokens.FUTURE_NBF;
         Assert.assertFalse("Token is invalid", service.validateToken(futureNbf));
         // no exp (false)
-        AccessToken noExp = new AccessToken(loadToken("/token-no-exp.txt"), -1);
+        AccessToken noExp = new AccessToken(JwtTokens.NO_EXP, -1);
         Assert.assertFalse("Token is invalid", service.validateToken(noExp));
     }
 
@@ -197,7 +189,7 @@ public class TestJwtTokenService {
         RefreshTokenStore refreshTokenStore = getRefreshStore();
         JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
 
-        String token = loadToken("/token-invalid-body.txt");
+        String token = JwtTokens.INVALID_BODY;
         Assert.assertFalse("Token is invalid", service.validateToken(token));
     }
 

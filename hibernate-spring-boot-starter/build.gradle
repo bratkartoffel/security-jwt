@@ -12,7 +12,6 @@ dependencyManagement {
     }
 }
 dependencies {
-    compile project(':base')
     compile project(':base-spring-boot-starter')
     compile project(':hibernate')
 
