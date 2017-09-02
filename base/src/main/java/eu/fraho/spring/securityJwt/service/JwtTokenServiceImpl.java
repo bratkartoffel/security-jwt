@@ -144,7 +144,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
 
     @Override
     public boolean validateToken(String token) {
-        log.debug("Validating {}", token);
+        log.trace("Validating {}", token);
 
         boolean result;
         try {
