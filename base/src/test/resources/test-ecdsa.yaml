@@ -1,6 +1,0 @@
-fraho:
-  jwt:
-    token:
-      algorithm: ES256
-      pub: build/ecdsa.pub
-      priv: build/ecdsa.priv

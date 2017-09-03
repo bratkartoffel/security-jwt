@@ -6,11 +6,13 @@
  */
 package eu.fraho.spring.securityJwt.service;
 
-import lombok.Getter;
+import eu.fraho.spring.securityJwt.config.TotpConfiguration;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base32;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Value;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.Mac;
@@ -23,32 +25,16 @@ import java.util.Random;
 
 @Component
 @Slf4j
-public class TotpServiceImpl implements TotpService, InitializingBean {
-    public static final int TOTP_LENGTH_MIN = 8;
-    public static final int TOTP_LENGTH_DEFAULT = 16;
-    public static final int TOTP_LENGTH_MAX = 32;
-
-    public static final int TOTP_VARIANCE_MIN = 1;
-    public static final int TOTP_VARIANCE_DEFAULT = 3;
-    public static final int TOTP_VARIANCE_MAX = 10;
-
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+public class TotpServiceImpl implements TotpService {
     private final Base32 base32 = new Base32();
+
     private final Random random = new SecureRandom();
 
-    @Value("${fraho.totp.variance:" + TOTP_VARIANCE_DEFAULT + "}")
-    @Getter
-    private Integer totpVariance = TOTP_VARIANCE_DEFAULT;
+    @NonNull
+    private final TotpConfiguration configuration;
 
-    @Value("${fraho.totp.length:" + TOTP_LENGTH_DEFAULT + "}")
-    @Getter
-    private Integer totpLength = TOTP_LENGTH_DEFAULT;
-
-    // TODO remove / make package private
-    public long getCurrentCodeForTesting(String secret) throws InvalidKeyException, NoSuchAlgorithmException {
-        return getCode(base32.decode(secret), System.currentTimeMillis() / 1000 / 30);
-    }
-
-    private long getCode(byte[] secret, long timeIndex) throws NoSuchAlgorithmException, InvalidKeyException {
+    private int getCode(byte[] secret, long timeIndex) throws NoSuchAlgorithmException, InvalidKeyException {
         final SecretKeySpec signKey = new SecretKeySpec(secret, "HmacSHA1");
         final ByteBuffer buffer = ByteBuffer.allocate(8).putLong(timeIndex);
         final byte[] timeBytes = buffer.array();
@@ -63,22 +49,22 @@ public class TotpServiceImpl implements TotpService, InitializingBean {
             truncatedHash <<= 8;
             truncatedHash |= hash[offset + i] & 0xff;
         }
-        return truncatedHash % 1000000;
+        return (int) (truncatedHash % 1000000);
     }
 
     @Override
-    public boolean verifyCode(String secret, int code) {
+    public boolean verifyCode(@NotNull String secret, int code) {
         final long timeIndex = System.currentTimeMillis() / 1000 / 30;
         final byte[] secretBytes = base32.decode(secret);
         boolean result = false;
         try {
-            for (int i = -totpVariance; i <= totpVariance; i++) {
+            for (int i = -configuration.getVariance(); i <= configuration.getVariance(); i++) {
                 if (getCode(secretBytes, timeIndex + i) == code) {
                     result = true;
                     break;
                 }
             }
-        } catch (NoSuchAlgorithmException | InvalidKeyException ike) {
+        } catch (NoSuchAlgorithmException | InvalidKeyException | IllegalArgumentException ike) {
             log.error("Error checking totp pin", ike);
         }
         return result;
@@ -86,22 +72,8 @@ public class TotpServiceImpl implements TotpService, InitializingBean {
 
     @Override
     public String generateSecret() {
-        final byte[] secret = new byte[totpLength];
+        final byte[] secret = new byte[configuration.getLength()];
         random.nextBytes(secret);
         return base32.encodeToString(secret);
-    }
-
-    @Override
-    public void afterPropertiesSet() {
-        if (totpVariance < TOTP_VARIANCE_MIN || totpVariance > TOTP_VARIANCE_MAX) {
-            log.warn("TOTP variance out of bounds ({} <= {} <= {}), forcing to default ({})",
-                    TOTP_VARIANCE_MIN, totpVariance, TOTP_VARIANCE_MAX, TOTP_VARIANCE_DEFAULT);
-            totpVariance = TOTP_VARIANCE_DEFAULT;
-        }
-        if (totpLength < TOTP_LENGTH_MIN || totpLength > TOTP_LENGTH_MAX) {
-            log.warn("TOTP length out of bounds ({} <= {} <= {}), forcing to default ({})",
-                    TOTP_LENGTH_MIN, totpLength, TOTP_LENGTH_MAX, TOTP_LENGTH_DEFAULT);
-            totpLength = TOTP_LENGTH_DEFAULT;
-        }
     }
 }

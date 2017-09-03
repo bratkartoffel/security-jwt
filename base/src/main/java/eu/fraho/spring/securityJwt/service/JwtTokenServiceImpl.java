@@ -6,248 +6,160 @@
  */
 package eu.fraho.spring.securityJwt.service;
 
-import com.nimbusds.jose.*;
-import com.nimbusds.jose.crypto.*;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
+import eu.fraho.spring.securityJwt.config.JwtTokenConfiguration;
 import eu.fraho.spring.securityJwt.dto.AccessToken;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
-import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 import eu.fraho.spring.securityJwt.exceptions.FeatureNotConfiguredException;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.security.KeyFactory;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.SecureRandom;
-import java.security.interfaces.ECPrivateKey;
-import java.security.interfaces.ECPublicKey;
-import java.security.interfaces.RSAPublicKey;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
 import java.text.ParseException;
 import java.time.ZonedDateTime;
 import java.util.*;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
-    public static final String DEFAULT_DEVICE_ID = "__default";
-    public static final String DEFAULT_ALGORITHM = "ES256";
-    public static final String DEFAULT_ISSUER = "fraho-security";
-    public static final String DEFAULT_EXPIRATION = "1 hour";
-    public static final int DEFAULT_MAX_DEVICE_ID_LENGTH = 32;
-    public static final String DEFAULT_REFRESH_EXPIRATION = "1 day";
-    public static final String DEFAULT_DELIMITER = ":";
-
-    public static final int REFRESH_TOKEN_LEN_MIN = 12;
-    public static final int REFRESH_TOKEN_LEN_DEFAULT = 24;
-    public static final int REFRESH_TOKEN_LEN_MAX = 48;
-
     private final SecureRandom random = new SecureRandom();
-    @Value("${fraho.jwt.token.algorithm:" + DEFAULT_ALGORITHM + "}")
-    private String algorithm = DEFAULT_ALGORITHM;
-    @Value("${fraho.jwt.token.issuer:" + DEFAULT_ISSUER + "}")
-    private String issuer = null;
-    @Value("${fraho.jwt.token.pub:#{null}}")
-    private Path pubKey = null;
-    @Value("${fraho.jwt.token.priv:#{null}}")
-    private Path privKey = null;
-    @Value("${fraho.jwt.token.hmac:#{null}}")
-    private Path hmacKey = null;
-    @Value("${fraho.jwt.token.expiration:" + DEFAULT_EXPIRATION + "}")
-    private TimeWithPeriod tokenExpiration = new TimeWithPeriod(DEFAULT_EXPIRATION);
-    @Value("${fraho.jwt.refresh.length:" + REFRESH_TOKEN_LEN_DEFAULT + "}")
-    private Integer refreshLength = REFRESH_TOKEN_LEN_DEFAULT;
-    @Value("${fraho.jwt.refresh.deviceIdLength:" + DEFAULT_MAX_DEVICE_ID_LENGTH + "}")
-    private Integer maxDeviceIdLength = DEFAULT_MAX_DEVICE_ID_LENGTH;
+
+    @NonNull
+    private final JwtTokenConfiguration tokenConfig;
+
+    @NonNull
+    private final JwtRefreshConfiguration refreshConfig;
+
+    @SuppressWarnings("SpringAutowiredFieldsWarningInspection") // not possible otherwise as this bean is lazy
     @Autowired
     @Lazy
+    @Setter
     private RefreshTokenStore refreshTokenStore;
-    private transient volatile JWSSigner signer = null;
-    private JWSVerifier verifier;
-    private JWSAlgorithm signatureAlgorithm;
 
     private String truncateDeviceId(String str) {
         return Optional.ofNullable(str)
                 .map(String::trim)
                 .filter(e -> !e.isEmpty())
-                .map(e -> e.substring(0, Math.min(e.length(), maxDeviceIdLength)))
-                .orElse(DEFAULT_DEVICE_ID);
+                .map(e -> e.substring(0, Math.min(e.length(), refreshConfig.getDeviceIdLength())))
+                .orElse(refreshConfig.getDefaultDeviceId());
     }
 
     @Override
     public Integer getExpiration() {
-        return tokenExpiration.toSeconds();
+        return tokenConfig.getExpiration().toSeconds();
     }
 
     @Override
-    public Integer getRefreshExpiration() {
-        return refreshTokenStore.getRefreshExpiration().toSeconds();
-    }
-
-    @Override
-    public Integer getRefreshLength() {
-        return refreshLength;
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        log.debug("Initializing");
-        signer = null;
-        verifier = null;
-
-        // parse the signature algorithm
-        signatureAlgorithm = JWSAlgorithm.parse(algorithm);
-        if (signatureAlgorithm.getRequirement() == null) {
-            throw new IllegalArgumentException("Unknown signature algorithm configured: " + algorithm);
-        }
-        log.debug("Using signature algorithm: {}", algorithm);
-
-        // check refresh token length
-        if (refreshLength < REFRESH_TOKEN_LEN_MIN || refreshLength > REFRESH_TOKEN_LEN_MAX) {
-            log.warn("Refresh token length ({} <= {} <= {}), forcing to default ({})",
-                    REFRESH_TOKEN_LEN_MIN, refreshLength, REFRESH_TOKEN_LEN_MAX, REFRESH_TOKEN_LEN_DEFAULT);
-            refreshLength = REFRESH_TOKEN_LEN_DEFAULT;
-        }
-
-        // load the keys
-        byte[] publicKeyBytes = new byte[0];
-        byte[] privateKeyBytes = new byte[0];
-        byte[] hmacSecret = new byte[0];
-        if (pubKey != null) {
-            log.debug("Loading public key from: {}", pubKey);
-            publicKeyBytes = Files.readAllBytes(pubKey);
-        }
-        if (privKey != null) {
-            log.debug("Loading private key from: {}", privKey);
-            privateKeyBytes = Files.readAllBytes(privKey);
-        }
-        if (hmacKey != null) {
-            log.debug("Loading hmac secret from: {}", hmacKey);
-            hmacSecret = Files.readAllBytes(hmacKey);
-        }
-
-        // parse the keys
-        if (JWSAlgorithm.Family.EC.contains(signatureAlgorithm)) {
-            log.info("Using EC based JWT signature");
-            assertKeyPresent(publicKeyBytes);
-            KeyFactory keyFactory = KeyFactory.getInstance("ECDSA", "BC");
-
-            if (privateKeyBytes.length > 0) {
-                PrivateKey privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(privateKeyBytes));
-                signer = new ECDSASigner((ECPrivateKey) privateKey);
-            }
-
-            PublicKey publicKey = keyFactory.generatePublic(new X509EncodedKeySpec(publicKeyBytes));
-            verifier = new ECDSAVerifier((ECPublicKey) publicKey);
-        } else if (JWSAlgorithm.Family.RSA.contains(signatureAlgorithm)) {
-            log.info("Using RSA based JWT signature");
-            assertKeyPresent(publicKeyBytes);
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA", "BC");
-
-            if (privateKeyBytes.length > 0) {
-                PrivateKey privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(privateKeyBytes));
-                signer = new RSASSASigner(privateKey);
-            }
-
-            PublicKey publicKey = keyFactory.generatePublic(new X509EncodedKeySpec(publicKeyBytes));
-            verifier = new RSASSAVerifier((RSAPublicKey) publicKey);
-        } else {
-            log.info("Using HMAC based JWT signature");
-            if (hmacSecret.length == 0) {
-                throw new IllegalArgumentException("No secret key configured.");
-            }
-            verifier = new MACVerifier(hmacSecret);
-            signer = new MACSigner(hmacSecret);
-        }
-
-        if (signer == null) {
+    public void afterPropertiesSet() {
+        if (tokenConfig.getSigner() == null) {
             log.warn("No private key specified. This service may neither issue new tokens nor use refresh tokens.");
-        }
-    }
-
-    private void assertKeyPresent(byte[] key) {
-        if (key.length == 0) {
-            throw new IllegalArgumentException("No public key configured.");
         }
     }
 
     @Override
     public Optional<JwtUser> parseUser(String token) {
         try {
-            return Optional.of(JwtUser.fromClaims(SignedJWT.parse(token).getJWTClaimsSet()));
+            JWTClaimsSet claims = SignedJWT.parse(token).getJWTClaimsSet();
+            if (validateToken(token)) {
+                return Optional.of(JwtUser.fromClaims(claims));
+            } else {
+                return Optional.empty();
+            }
         } catch (ParseException e) {
-            log.debug("Unable to parse token", e);
+            log.debug(e.getMessage(), e);
             return Optional.empty();
         }
     }
 
     @Override
+    @NotNull
     public AccessToken generateToken(JwtUser user) throws JOSEException {
-        if (signer == null) {
+        if (tokenConfig.getSigner() == null) {
             throw new FeatureNotConfiguredException("Access token signing is not enabled.");
         }
 
         Date now = new Date();
         JWTClaimsSet claims = user.toClaims()
                 .jwtID(UUID.randomUUID().toString())
-                .issuer(issuer)
+                .issuer(tokenConfig.getIssuer())
                 .issueTime(now)
                 .notBeforeTime(now)
                 .expirationTime(generateExpirationDate())
                 .build();
 
         SignedJWT token = new SignedJWT(
-                new JWSHeader(signatureAlgorithm),
+                new JWSHeader(tokenConfig.getJwsAlgorithm()),
                 claims);
 
-        token.sign(signer);
+        token.sign(tokenConfig.getSigner());
         return new AccessToken(token.serialize(), getExpiration());
     }
 
+    @NotNull
     private Date generateExpirationDate() {
-        return Date.from(ZonedDateTime.now().plusSeconds(tokenExpiration.toSeconds()).toInstant());
+        return Date.from(ZonedDateTime.now().plusSeconds(tokenConfig.getExpiration().toSeconds()).toInstant());
+    }
+
+    private boolean validateClaims(JWTClaimsSet claims) {
+        boolean result;
+
+        Date now = new Date();
+        Date exp = claims.getExpirationTime();
+        Date nbf = claims.getNotBeforeTime();
+        Date iat = claims.getIssueTime();
+
+        if (exp == null) {
+            exp = new Date(0);
+        }
+        if (nbf == null) {
+            nbf = new Date(0);
+        }
+        if (iat == null) {
+            iat = new Date(0);
+        }
+        log.debug("Validating claims, now={}, exp={}, nbf={}, iat={}", now, exp, nbf, iat);
+
+        result = iat.before(now);
+        log.debug("After iat < now: {}", result);
+        result &= nbf.before(now);
+        log.debug("After nbf < now: {}", result);
+        result &= exp.after(now);
+        log.debug("After exp > now: {}", result);
+        return result;
     }
 
     @Override
     public boolean validateToken(String token) {
+        log.trace("Validating {}", token);
+
         boolean result;
         try {
             SignedJWT parsedToken = SignedJWT.parse(token);
             JWTClaimsSet claims = parsedToken.getJWTClaimsSet();
-            Date now = new Date();
-            Date exp = claims.getExpirationTime();
-            Date nbf = claims.getNotBeforeTime();
-            Date iat = claims.getIssueTime();
-
-            if (exp == null) {
-                exp = new Date(0);
-            }
-            if (nbf == null) {
-                nbf = new Date(0);
-            }
-            if (iat == null) {
-                iat = new Date(0);
-            }
-
-            result = parsedToken.verify(verifier);
-            result &= iat.before(now);
-            result &= nbf.before(now);
-            result &= exp.after(now);
+            result = parsedToken.verify(tokenConfig.getVerifier());
+            log.debug("After verify: {}", result);
+            result &= validateClaims(claims);
+            log.debug("After validateClaims: {}", result);
         } catch (ParseException | JOSEException e) {
+            log.debug(e.getMessage(), e);
             result = false;
         }
 
+        log.debug("Validate token returns {}", result);
         return result;
     }
 
@@ -262,34 +174,31 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     }
 
     @Override
+    @NotNull
     public RefreshToken generateRefreshToken(String user) {
-        return generateRefreshToken(user, DEFAULT_DEVICE_ID);
+        return generateRefreshToken(user, refreshConfig.getDefaultDeviceId());
     }
 
     @Override
+    @NotNull
     public RefreshToken generateRefreshToken(String user, String deviceId) {
         final String devId = truncateDeviceId(deviceId);
-        byte[] data = new byte[refreshLength];
+        byte[] data = new byte[refreshConfig.getLength()];
         random.nextBytes(data);
         final String token = Base64.getEncoder().encodeToString(data);
 
         refreshTokenStore.saveToken(user, devId, token);
-        return new RefreshToken(token, getRefreshExpiration(), devId);
+        return new RefreshToken(token, refreshConfig.getExpiration().toSeconds(), devId);
     }
 
     @Override
     public boolean useRefreshToken(String username, String refreshToken) {
-        return useRefreshToken(username, DEFAULT_DEVICE_ID, refreshToken);
+        return useRefreshToken(username, refreshConfig.getDefaultDeviceId(), refreshToken);
     }
 
     @Override
     public boolean isRefreshTokenSupported() {
-        try {
-            refreshTokenStore.getRefreshExpiration();
-            return true;
-        } catch (FeatureNotConfiguredException fnce) {
-            return false;
-        }
+        return refreshTokenStore.isRefreshTokenSupported();
     }
 
     @Override
@@ -299,7 +208,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
 
     @Override
     public boolean useRefreshToken(String username, String deviceId, String refreshToken) {
-        if (signer == null) {
+        if (tokenConfig.getSigner() == null) {
             throw new FeatureNotConfiguredException("Access token signing is not enabled.");
         }
 
@@ -308,11 +217,13 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     }
 
     @Override
+    @NotNull
     public Map<String, List<RefreshToken>> listRefreshTokens() {
         return refreshTokenStore.listTokens();
     }
 
     @Override
+    @NotNull
     public List<RefreshToken> listRefreshTokens(String username) {
         return refreshTokenStore.listTokens(username);
     }

@@ -47,7 +47,7 @@ public class AuthenticationRestController {
     private final UserDetailsService userDetailsService;
 
     @NonNull
-    private final TotpService totpService ;
+    private final TotpService totpService;
 
     @RequestMapping("/refresh")
     @ApiOperation("Use a previously fetched refresh token to create a new access token")

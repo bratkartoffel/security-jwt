@@ -13,7 +13,7 @@ dependencyManagement {
 }
 dependencies {
     compile project(':base')
-    testCompile project(':base').sourceSets.test.output
+    testCompile project(path: ':base', configuration: 'testArchives')
 
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
     testCompile("com.h2database:h2:${h2Version}")

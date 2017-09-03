@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 public interface RefreshTokenStore extends InitializingBean {
-    void saveToken(@NotNull  String username, @NotNull String deviceId, @NotNull String token);
+    void saveToken(@NotNull String username, @NotNull String deviceId, @NotNull String token);
 
     boolean useToken(@NotNull String username, @NotNull String deviceId, @NotNull String token);
 
@@ -72,4 +72,13 @@ public interface RefreshTokenStore extends InitializingBean {
         }
     }
 
+    /**
+     * Ask this service if refresh token support is enabled
+     * by a third-party addon.
+     *
+     * @return {@code true} when refresh tokens are supported
+     */
+    default boolean isRefreshTokenSupported() {
+        return true;
+    }
 }

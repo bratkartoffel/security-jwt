@@ -67,17 +67,6 @@ public interface JwtTokenService {
      */
     Integer getExpiration();
 
-
-    /**
-     * @return The validity of newly created refresh tokens in seconds
-     */
-    Integer getRefreshExpiration();
-
-    /**
-     * @return The length of the raw refresh tokens in bytes
-     */
-    Integer getRefreshLength();
-
     /**
      * Gracefully ask this service if refresh token support is enabled
      * by a third-party addon.

@@ -1,7 +1,16 @@
 # Changelog
 
-### 0.8.2 (not yet released)
-
+### 1.0.0 (not yet released)
+* (all) Add spring configuration properties support for IDE auto-completion
+* (all) Renamed / moved some properties
+  * ```fraho.jwt.refresh.cache.impl``` => ```fraho.jwt.refresh.cache-impl```
+  * ```fraho.jwt.refresh.cache.prefix``` => ```fraho.jwt.refresh.memcache.prefix```
+* (all) Provide configuration classes, enables content assis when writing appplication.yaml
+* (base) Remove deprecated JwtUser.setTotpSecret(Optional)
+* (base) Add log output with running library version on startup
+* (all) Add spring boot starter projects
+* (base) When using HMAC-based signatures and no keyfile was specified, then create a new (in memory) random one instead of raising an exception
+* (base) Change the default value for ```fraho.jwt.token.algorithm``` to ```HS256```
 
 ### 0.8.1 (2017-08-17)
 * (all) Some minor cleanup (code smells)

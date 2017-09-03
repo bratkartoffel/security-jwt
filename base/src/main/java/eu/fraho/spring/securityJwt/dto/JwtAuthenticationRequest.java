@@ -21,10 +21,13 @@ public final class JwtAuthenticationRequest {
     @NotNull
     @JsonProperty(required = true)
     private String username;
+
     @NotNull
     @JsonProperty(required = true)
     private String password;
+
     private String deviceId;
+
     private Integer totp;
 
     public Optional<String> getDeviceId() {

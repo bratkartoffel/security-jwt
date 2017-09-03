@@ -1,6 +1,0 @@
-fraho:
-  jwt:
-    token:
-      algorithm: RS256
-      pub: build/rsa.pub
-      priv: build/rsa.priv

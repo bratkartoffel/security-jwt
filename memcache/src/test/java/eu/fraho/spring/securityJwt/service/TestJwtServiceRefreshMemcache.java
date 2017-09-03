@@ -6,65 +6,64 @@
  */
 package eu.fraho.spring.securityJwt.service;
 
-import eu.fraho.spring.securityJwt.AbstractTest;
+import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
+import eu.fraho.spring.securityJwt.config.JwtTokenConfiguration;
+import eu.fraho.spring.securityJwt.config.MemcacheConfiguration;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
-import eu.fraho.spring.securityJwt.spring.TestApiApplication;
-import eu.fraho.spring.securityJwt.tokenService.AbstractRefreshTokenTest;
-import lombok.Getter;
+import eu.fraho.spring.securityJwt.ut.service.AbstractTestJwtTokenServiceWithRefresh;
 import lombok.extern.slf4j.Slf4j;
 import net.spy.memcached.MemcachedClient;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-@Getter
 @Slf4j
-@SpringBootTest(properties = "spring.config.location=classpath:memcache-test.yaml",
-        classes = TestApiApplication.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-public class TestJwtServiceRefreshMemcache extends AbstractRefreshTokenTest {
-    @Autowired
+public class TestJwtServiceRefreshMemcache extends AbstractTestJwtTokenServiceWithRefresh {
+    private JwtRefreshConfiguration refreshConfiguration;
     private RefreshTokenStore refreshTokenStore;
 
-    @BeforeClass
-    public static void beforeClass() throws IOException {
-        AbstractTest.beforeHmacClass();
+    public TestJwtServiceRefreshMemcache() throws Exception {
+        refreshConfiguration = getRefreshConfig();
+        refreshTokenStore = new MemcacheTokenStore(refreshConfiguration, new MemcacheConfiguration());
+        refreshTokenStore.afterPropertiesSet();
     }
 
-    @Test
     @Override
-    public void checkCorrectImplementationInUse() {
-        Assert.assertEquals("Wrong implementation loaded", MemcacheTokenStore.class, refreshTokenStore.getClass());
+    @NotNull
+    protected RefreshTokenStore getRefreshStore() {
+        return refreshTokenStore;
     }
 
     @Test(timeout = 10_000L)
-    public void testListRefreshTokensOtherEntries() throws InterruptedException, ExecutionException {
+    public void testListRefreshTokensOtherEntries() throws Exception {
+        JwtTokenConfiguration tokenConfiguration = getTokenConfig();
+        JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
+        RefreshTokenStore refreshTokenStore = getRefreshStore();
+        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
+
         String jsmith = "jsmith";
         String xsmith = "xsmith";
 
-        RefreshToken tokenA = jwtTokenService.generateRefreshToken(jsmith);
-        RefreshToken tokenB = jwtTokenService.generateRefreshToken(jsmith, "foobar");
-        RefreshToken tokenC = jwtTokenService.generateRefreshToken(xsmith);
+        RefreshToken tokenA = service.generateRefreshToken(jsmith);
+        RefreshToken tokenB = service.generateRefreshToken(jsmith, "foobar");
+        RefreshToken tokenC = service.generateRefreshToken(xsmith);
 
         MemcachedClient client = ((MemcacheTokenStore) refreshTokenStore).getMemcachedClient();
         client.set("foobar", 30, "hi").get();
 
-        final Map<String, List<RefreshToken>> tokenMap = jwtTokenService.listRefreshTokens();
+        final Map<String, List<RefreshToken>> tokenMap = service.listRefreshTokens();
         Assert.assertEquals("User count don't match", 2, tokenMap.size());
 
         final List<RefreshToken> allTokens = tokenMap.values().stream().flatMap(Collection::stream)
@@ -75,14 +74,14 @@ public class TestJwtServiceRefreshMemcache extends AbstractRefreshTokenTest {
 
     @Test(expected = IllegalStateException.class)
     public void testExpirationBounds() throws Exception {
-        Field expiration = refreshTokenStore.getClass().getDeclaredField("refreshExpiration");
+        Field expiration = JwtRefreshConfiguration.class.getDeclaredField("expiration");
         expiration.setAccessible(true);
-        Object oldValue = expiration.get(refreshTokenStore);
+        Object oldValue = expiration.get(refreshConfiguration);
         try {
-            expiration.set(refreshTokenStore, new TimeWithPeriod(31, TimeUnit.DAYS));
+            expiration.set(refreshConfiguration, new TimeWithPeriod(31, TimeUnit.DAYS));
             refreshTokenStore.afterPropertiesSet();
         } finally {
-            expiration.set(refreshTokenStore, oldValue);
+            expiration.set(refreshConfiguration, oldValue);
         }
     }
 }

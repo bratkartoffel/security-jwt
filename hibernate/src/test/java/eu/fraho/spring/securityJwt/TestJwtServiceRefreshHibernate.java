@@ -6,15 +6,12 @@
  */
 package eu.fraho.spring.securityJwt;
 
-import eu.fraho.spring.securityJwt.service.HibernateTokenStore;
 import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
 import eu.fraho.spring.securityJwt.spring.TestHibernateApiApplication;
-import eu.fraho.spring.securityJwt.tokenService.AbstractRefreshTokenTest;
+import eu.fraho.spring.securityJwt.ut.service.AbstractTestJwtTokenServiceWithRefresh;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.jetbrains.annotations.NotNull;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,20 +24,16 @@ import java.io.IOException;
 @SpringBootTest(properties = "spring.config.location=classpath:hibernate-test.yaml",
         classes = TestHibernateApiApplication.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-public class TestJwtServiceRefreshHibernate extends AbstractRefreshTokenTest {
+public class TestJwtServiceRefreshHibernate extends AbstractTestJwtTokenServiceWithRefresh {
     @Autowired
     private RefreshTokenStore refreshTokenStore;
 
-    @BeforeClass
-    public static void beforeClass() throws IOException {
-        AbstractTest.beforeHmacClass();
+    public TestJwtServiceRefreshHibernate() throws IOException {
     }
 
-    @Test
     @Override
-    public void checkCorrectImplementationInUse() {
-        final String name = refreshTokenStore.getClass().getName();
-        final String realName = name.substring(0, name.indexOf("$$")); // workaround for cglib proxy
-        Assert.assertEquals("Wrong implementation loaded", HibernateTokenStore.class.getName(), realName);
+    @NotNull
+    protected RefreshTokenStore getRefreshStore() {
+        return refreshTokenStore;
     }
 }

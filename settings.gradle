@@ -1,1 +1,2 @@
 include ":base", ":internal", ":memcache", ":hibernate"
+include ":base-spring-boot-starter", ":internal-spring-boot-starter", ":memcache-spring-boot-starter", ":hibernate-spring-boot-starter"

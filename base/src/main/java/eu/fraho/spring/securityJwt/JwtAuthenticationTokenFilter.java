@@ -44,7 +44,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 });
             } else {
-                log.debug("Provided token is invalid");
+                log.warn("Provided token by client is invalid");
             }
         });
 

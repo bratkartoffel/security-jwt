@@ -6,7 +6,8 @@
  */
 package eu.fraho.spring.securityJwt;
 
-import eu.fraho.spring.securityJwt.controller.AbstractTestAuthControllerWithRefresh;
+import eu.fraho.spring.securityJwt.it.AbstractTestAuthControllerWithRefresh;
+import eu.fraho.spring.securityJwt.it.spring.UserDetailsServiceTestImpl;
 import eu.fraho.spring.securityJwt.spring.TestHibernateApiApplication;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -23,4 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 //@Commit
 @Transactional
 public class TestAuthControllerHibernate extends AbstractTestAuthControllerWithRefresh {
+    public TestAuthControllerHibernate() {
+        super(new UserDetailsServiceTestImpl());
+    }
 }
