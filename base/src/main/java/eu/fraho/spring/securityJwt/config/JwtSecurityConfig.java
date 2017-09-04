@@ -6,7 +6,6 @@
  */
 package eu.fraho.spring.securityJwt.config;
 
-import eu.fraho.spring.securityJwt.JwtAuthenticationEntryPoint;
 import eu.fraho.spring.securityJwt.JwtAuthenticationTokenFilter;
 import eu.fraho.spring.securityJwt.service.JwtTokenService;
 import lombok.NonNull;
@@ -15,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,12 +28,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+@Order(90)
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    @NonNull
-    private final JwtAuthenticationEntryPoint unauthorizedHandler;
-
+public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
     @NonNull
     private final UserDetailsService userDetailsService;
 
@@ -59,19 +57,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-        log.info("Loading fraho security-jwt version {}", getClass().getPackage().getImplementationVersion());
+        log.info("Loading fraho security-jwt version {}", JwtSecurityConfig.class.getPackage().getImplementationVersion());
         log.debug("Configuring HttpSecurity");
 
         httpSecurity
                 // we don't need CSRF because our token is invulnerable
                 .csrf().disable()
-                // use our unauthorized handler
-                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
-                .and()
                 // don't create session
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 // Custom JWT based security filter
-                .addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class)
+//                .authorizeRequests()
+//                .anyRequest().authenticated()
+        ;
     }
 }

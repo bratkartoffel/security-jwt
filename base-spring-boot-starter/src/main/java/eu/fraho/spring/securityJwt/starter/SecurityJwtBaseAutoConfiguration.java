@@ -6,7 +6,6 @@
  */
 package eu.fraho.spring.securityJwt.starter;
 
-import eu.fraho.spring.securityJwt.JwtAuthenticationEntryPoint;
 import eu.fraho.spring.securityJwt.config.*;
 import eu.fraho.spring.securityJwt.controller.AuthenticationRestController;
 import eu.fraho.spring.securityJwt.password.CryptPasswordEncoder;
@@ -15,21 +14,21 @@ import eu.fraho.spring.securityJwt.service.JwtTokenServiceImpl;
 import eu.fraho.spring.securityJwt.service.TotpService;
 import eu.fraho.spring.securityJwt.service.TotpServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.security.Provider;
-import java.security.Security;
-
 @Configuration
-@AutoConfigureBefore(SecurityAutoConfiguration.class)
+@AutoConfigureAfter(SecurityAutoConfiguration.class)
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 @Slf4j
 public class SecurityJwtBaseAutoConfiguration {
     @Bean
@@ -69,22 +68,6 @@ public class SecurityJwtBaseAutoConfiguration {
     }
 
     @Bean
-    public JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint() {
-        log.debug("Register JwtAuthenticationEntryPoint");
-        return new JwtAuthenticationEntryPoint();
-    }
-
-    @Bean
-    @ConditionalOnClass(name = "org.bouncycastle.jce.provider.BouncyCastleProvider")
-    public Provider bouncyCastleProvider() {
-        log.debug("Register BouncyCastleProvider");
-        org.bouncycastle.jce.provider.BouncyCastleProvider provider = new org.bouncycastle.jce.provider.BouncyCastleProvider();
-        Security.removeProvider(provider.getName());
-        Security.addProvider(provider);
-        return provider;
-    }
-
-    @Bean
     @ConditionalOnMissingBean
     public PasswordEncoder passwordEncoder() {
         log.debug("Register CryptPasswordEncoder");
@@ -108,11 +91,10 @@ public class SecurityJwtBaseAutoConfiguration {
     }
 
     @Bean
-    public WebSecurityConfig webSecurityConfig(final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
-                                               final UserDetailsService userDetailsService,
+    public JwtSecurityConfig webSecurityConfig(final UserDetailsService userDetailsService,
                                                final PasswordEncoder passwordEncoder,
                                                final JwtTokenService jwtTokenService) {
-        log.debug("Register WebSecurityConfig");
-        return new WebSecurityConfig(jwtAuthenticationEntryPoint, userDetailsService, passwordEncoder, jwtTokenService);
+        log.debug("Register JwtSecurityConfig");
+        return new JwtSecurityConfig(userDetailsService, passwordEncoder, jwtTokenService);
     }
 }

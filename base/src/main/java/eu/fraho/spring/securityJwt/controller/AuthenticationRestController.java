@@ -30,8 +30,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.concurrent.TimeoutException;
-
 @RestController
 @RequestMapping(value = "/auth", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
@@ -53,14 +51,13 @@ public class AuthenticationRestController {
     @ApiOperation("Use a previously fetched refresh token to create a new access token")
     @ApiResponses({
             @ApiResponse(code = 200, message = "Generated token"),
-            @ApiResponse(code = 400, message = "Missing a required field in the request"),
+            @ApiResponse(code = 400, message = "Missing a required field in the request or refresh tokens not supported"),
             @ApiResponse(code = 401, message = "Either the token expired, or the user has no longer access to this api"),
     })
-    public ResponseEntity<JwtAuthenticationResponse> refresh(@RequestBody JwtRefreshRequest refreshRequest)
-            throws JOSEException, TimeoutException {
+    public ResponseEntity<JwtAuthenticationResponse> refresh(@RequestBody JwtRefreshRequest refreshRequest) throws JOSEException {
         if (!jwtTokenUtil.isRefreshTokenSupported()) {
             log.info("Refresh token support is disabled ({} asked)", refreshRequest.getUsername());
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         if (!jwtTokenUtil.useRefreshToken(refreshRequest.getUsername(), refreshRequest.getDeviceId().orElse(null), refreshRequest.getRefreshToken())) {
             log.info("Using refresh token failed for {}", refreshRequest.getUsername());
@@ -90,8 +87,7 @@ public class AuthenticationRestController {
             @ApiResponse(code = 400, message = "Missing a required field in the request"),
             @ApiResponse(code = 401, message = "Either the credentials are wrong or the user has no access to this api"),
     })
-    public ResponseEntity<JwtAuthenticationResponse> login(@RequestBody JwtAuthenticationRequest authenticationRequest)
-            throws JOSEException, TimeoutException {
+    public ResponseEntity<JwtAuthenticationResponse> login(@RequestBody JwtAuthenticationRequest authenticationRequest) throws JOSEException {
         // Perform the security
         final Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

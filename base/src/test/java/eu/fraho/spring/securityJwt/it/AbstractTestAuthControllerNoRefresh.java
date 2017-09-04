@@ -41,6 +41,6 @@ public abstract class AbstractTestAuthControllerNoRefresh extends AbstractTestAu
                 .accept(MediaType.APPLICATION_JSON);
 
         getMockMvc().perform(req)
-                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 }
