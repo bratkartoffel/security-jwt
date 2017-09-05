@@ -18,7 +18,7 @@ The default configuration should be sufficient for the most use cases.
 # Contents
 * base:
   * JWT Integration into Spring Security (including a [REST-Controller](base/src/main/java/eu/fraho/spring/securityJwt/controller/AuthenticationRestController.java) to authenticate against)
-  * A [CryptPasswordEncoder](base/src/main/java/eu/fraho/spring/securityJwt/CryptPasswordEncoder.java) to generate / use linux system crypt(1)-hashes (supporting new $5$ and $6$ hashes and rounds)
+  * A [CryptPasswordEncoder](base/src/main/java/eu/fraho/spring/securityJwt/password/CryptPasswordEncoder.java) to generate / use linux system crypt(1)-hashes (supporting new $5$ and $6$ hashes and rounds)
   * Full support for [Swagger 2](https://github.com/springfox/springfox) documentation (REST Controller and DTO are annotated and described)
 * module [internal](internal/):
   * Refresh token support through an internal, in-memory map
@@ -32,7 +32,7 @@ The default configuration should be sufficient for the most use cases.
 <dependency>
     <groupId>eu.fraho.spring</groupId>
     <artifactId>security-jwt-base</artifactId>
-    <version>0.8.1</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 
@@ -42,17 +42,17 @@ When you want to add refresh token support, then choose one of the following dep
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-internal</artifactId>
-        <version>0.8.1</version>
+        <version>1.0.0</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-memcache</artifactId>
-        <version>0.8.1</version>
+        <version>1.0.0</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-hibernate</artifactId>
-        <version>0.8.1</version>
+        <version>1.0.0</version>
     </dependency>
 </dependencies>
 ```
@@ -66,18 +66,18 @@ The newer way used spring boot autoconfiguration and reduced the needed configur
 
 To see this library "in action", please take a look at [the examples](https://github.com/bratkartoffel/security-jwt-examples).
 
-## Manual configuration:
-* Add the dependencies to your build script
-* Configure your boot application to pick up our components (add "eu.fraho.spring.securityJwt" to the scanBasePackages field of your ```@SpringBootApplication```)
-* Optionally add the BouncyCastle Provider (e.g. within the [main-Method](base/src/test/java/eu/fraho/spring/securityJwt/AbstractTest.java))
-  * **Hint:** This is required if you would like to use the ECDSA signature algorithm!
-* Optionally use my enhanced PasswordEncoder as a ```@Bean```
-* Optionally choose a refresh token store implementation and set it as ```fraho.jwt.refresh.cache-impl```
-
-## Spring Boot Autoconfig:
+## Spring Boot Autoconfig (recommended):
 * Use any *-spring-boot-starter dependency you like
 * Bouncycastle will be automagically loaded and installed if on classpath
 * My enhanced PasswordEncoder will be used as default
+
+## Manual configuration (legacy):
+* Add the dependencies to your build script
+* Configure your boot application to pick up our components (add "eu.fraho.spring.securityJwt" to the scanBasePackages field of your ```@SpringBootApplication```)
+* Optionally add the BouncyCastle Provider (e.g. within the [main-Method](base/src/test/java/eu/fraho/spring/securityJwt/util/CreateEcdsaJwtKeys.java))
+  * **Hint:** This is required if you would like to use the ECDSA signature algorithm!
+* Optionally use my enhanced PasswordEncoder as a ```@Bean```
+* Optionally choose a refresh token store implementation and set it as ```fraho.jwt.refresh.cache-impl```
 
 ## General steps for both methos:
 * Create an implementation of UserDetailsService that returns an instance of [JwtUser](base/src/main/java/eu/fraho/spring/securityJwt/dto/JwtUser.java)

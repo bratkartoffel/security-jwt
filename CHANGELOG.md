@@ -1,6 +1,6 @@
 # Changelog
 
-### 1.0.0 (not yet released)
+### 1.0.0 (2017-09-05)
 * (all) Add spring configuration properties support for IDE auto-completion
 * (all) Renamed / moved some properties
   * ```fraho.jwt.refresh.cache.impl``` to ```fraho.jwt.refresh.cache-impl```
