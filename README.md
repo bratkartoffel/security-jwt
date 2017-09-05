@@ -18,7 +18,7 @@ The default configuration should be sufficient for the most use cases.
 # Contents
 * base:
   * JWT Integration into Spring Security (including a [REST-Controller](base/src/main/java/eu/fraho/spring/securityJwt/controller/AuthenticationRestController.java) to authenticate against)
-  * A [CryptPasswordEncoder](base/src/main/java/eu/fraho/spring/securityJwt/CryptPasswordEncoder.java) to generate / use linux system crypt(1)-hashes (supporting new $5$ and $6$ hashes and rounds)
+  * A [CryptPasswordEncoder](base/src/main/java/eu/fraho/spring/securityJwt/password/CryptPasswordEncoder.java) to generate / use linux system crypt(1)-hashes (supporting new $5$ and $6$ hashes and rounds)
   * Full support for [Swagger 2](https://github.com/springfox/springfox) documentation (REST Controller and DTO are annotated and described)
 * module [internal](internal/):
   * Refresh token support through an internal, in-memory map
@@ -74,7 +74,7 @@ To see this library "in action", please take a look at [the examples](https://gi
 ## Manual configuration (legacy):
 * Add the dependencies to your build script
 * Configure your boot application to pick up our components (add "eu.fraho.spring.securityJwt" to the scanBasePackages field of your ```@SpringBootApplication```)
-* Optionally add the BouncyCastle Provider (e.g. within the [main-Method](base/src/test/java/eu/fraho/spring/securityJwt/AbstractTest.java))
+* Optionally add the BouncyCastle Provider (e.g. within the [main-Method](base/src/test/java/eu/fraho/spring/securityJwt/util/CreateEcdsaJwtKeys.java))
   * **Hint:** This is required if you would like to use the ECDSA signature algorithm!
 * Optionally use my enhanced PasswordEncoder as a ```@Bean```
 * Optionally choose a refresh token store implementation and set it as ```fraho.jwt.refresh.cache-impl```
