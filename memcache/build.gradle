@@ -13,7 +13,7 @@ dependencyManagement {
 }
 dependencies {
     compile project(':base')
-    testCompile project(':base').sourceSets.test.output
+    testCompile project(path: ':base', configuration: 'testArchives')
 
     compile("net.spy:spymemcached:${spyMemcachedVersion}")
 }

@@ -1,5 +1,19 @@
 # Changelog
 
+### 1.0.0 (2017-09-05)
+* (all) Add spring configuration properties support for IDE auto-completion
+* (all) Renamed / moved some properties
+  * ```fraho.jwt.refresh.cache.impl``` to ```fraho.jwt.refresh.cache-impl```
+  * ```fraho.jwt.refresh.cache.prefix``` to ```fraho.jwt.refresh.memcache.prefix```
+* (all) Provide configuration classes, enables content assis when writing appplication.yaml
+* (base) Remove deprecated JwtUser.setTotpSecret(Optional)
+* (base) Add log output with running library version on startup
+* (all) Add spring boot starter projects
+* (base) When using HMAC-based signatures and no keyfile was specified, then create a new (in memory) random one instead of raising an exception
+* (base) Change the default value for ```fraho.jwt.token.algorithm``` to ```HS256```
+* (base) Rename ```WebSecurityConfig``` to ```JwtSecurityConfig```
+* (base) Delete ```JwtAuthenticationEntryPoint```
+
 ### 0.8.1 (2017-08-17)
 * (all) Some minor cleanup (code smells)
 * (all) Add Jetbrains Annotations for Nullable and NotNull constraints
@@ -18,9 +32,9 @@
 * (memcache, internal) Delimiter for map keys are now configurable (#14)
 
 ### 0.7.0 (2017-06-02)
-* (hibernate) Add [hibernate](hibernate/) module (Support storage of refresh tokens in a jdbc database)
+* (hibernate) Add hibernate module (Support storage of refresh tokens in a jdbc database)
 * (base) Add jackson java8 module to compile path (#1)
-* (base) Add [Insomnia](https://insomnia.rest/) project as an example on how to interact with login / refresh
+* (base) Add Insomnia project as an example on how to interact with login / refresh
 * (test) Huge refactoring of testcode, removed a lot of redundancy
 * (test)First publication of abstract testclases for other modules
 

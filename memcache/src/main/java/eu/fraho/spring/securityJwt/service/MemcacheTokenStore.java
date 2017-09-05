@@ -6,15 +6,19 @@
  */
 package eu.fraho.spring.securityJwt.service;
 
+import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
+import eu.fraho.spring.securityJwt.config.MemcacheConfiguration;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 import eu.fraho.spring.securityJwt.exceptions.JwtRefreshException;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.spy.memcached.MemcachedClient;
 import net.spy.memcached.internal.OperationFuture;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -28,30 +32,19 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MemcacheTokenStore implements RefreshTokenStore {
-    private static final String DEFAULT_MEMCACHE_HOST = "127.0.0.1";
-    private static final int DEFAULT_MEMCACHE_PORT = 11211;
-    private static final int DEFAULT_MEMCACHE_TIMEOUT = 5;
-    private static final String DEFAULT_CACHE_PREFIX = "fraho-refresh";
+    @NonNull
+    private final JwtRefreshConfiguration refreshConfig;
 
-    @Value("${fraho.jwt.refresh.expiration:" + JwtTokenServiceImpl.DEFAULT_REFRESH_EXPIRATION + "}")
-    private TimeWithPeriod refreshExpiration = new TimeWithPeriod(JwtTokenServiceImpl.DEFAULT_REFRESH_EXPIRATION);
-    @Value("${fraho.jwt.refresh.cache.prefix:" + DEFAULT_CACHE_PREFIX + "}")
-    private String refreshCachePrefix = DEFAULT_CACHE_PREFIX;
-    @Value("${fraho.jwt.refresh.cache.memcache.host:" + DEFAULT_MEMCACHE_HOST + "}")
-    private String cacheHost = DEFAULT_MEMCACHE_HOST;
-    @Value("${fraho.jwt.refresh.cache.memcache.port:" + DEFAULT_MEMCACHE_PORT + "}")
-    private Integer cachePort = DEFAULT_MEMCACHE_PORT;
-    @Value("${fraho.jwt.refresh.cache.memcache.timeout:" + DEFAULT_MEMCACHE_TIMEOUT + "}")
-    private Integer cacheTimeout = DEFAULT_MEMCACHE_TIMEOUT;
-    @Value("${fraho.jwt.refresh.delimiter:" + JwtTokenServiceImpl.DEFAULT_DELIMITER + "}")
-    private String delimiter = JwtTokenServiceImpl.DEFAULT_DELIMITER;
+    @NonNull
+    private final MemcacheConfiguration memcacheConfig;
 
     private MemcachedClient memcachedClient = null;
 
     private <T> T getAndWait(@NotNull String message, @NotNull Supplier<OperationFuture<T>> action) {
         try {
-            return action.get().get(cacheTimeout, TimeUnit.SECONDS);
+            return action.get().get(memcacheConfig.getTimeout(), TimeUnit.SECONDS);
         } catch (TimeoutException | InterruptedException | ExecutionException e) {
             throw new JwtRefreshException(message, e);
         }
@@ -59,14 +52,14 @@ public class MemcacheTokenStore implements RefreshTokenStore {
 
     @Override
     public void saveToken(@NotNull String username, @NotNull String deviceId, @NotNull String token) {
-        String key = refreshCachePrefix + delimiter + username + delimiter + deviceId;
+        String key = memcacheConfig.getPrefix() + refreshConfig.getDelimiter() + username + refreshConfig.getDelimiter() + deviceId;
         getAndWait("Error while saving refresh token on memcache server", () ->
-                memcachedClient.set(key, refreshExpiration.toSeconds(), token));
+                memcachedClient.set(key, refreshConfig.getExpiration().toSeconds(), token));
     }
 
     @Override
     public boolean useToken(@NotNull String username, @NotNull String deviceId, @NotNull String token) {
-        String key = refreshCachePrefix + delimiter + username + delimiter + deviceId;
+        String key = memcacheConfig.getPrefix() + refreshConfig.getDelimiter() + username + refreshConfig.getDelimiter() + deviceId;
         final byte[] stored = String.valueOf(memcachedClient.get(key)).getBytes(StandardCharsets.UTF_8);
         final byte[] toCheck = token.getBytes(StandardCharsets.UTF_8);
 
@@ -82,8 +75,8 @@ public class MemcacheTokenStore implements RefreshTokenStore {
     @Override
     public List<RefreshToken> listTokens(@NotNull String username) {
         String filter = String.format("^%s%s%s%s[^%s]+$",
-                Pattern.quote(refreshCachePrefix), Pattern.quote(delimiter),
-                Pattern.quote(username), Pattern.quote(delimiter), Pattern.quote(delimiter));
+                Pattern.quote(memcacheConfig.getPrefix()), Pattern.quote(refreshConfig.getDelimiter()),
+                Pattern.quote(username), Pattern.quote(refreshConfig.getDelimiter()), Pattern.quote(refreshConfig.getDelimiter()));
         return listRefreshTokensByPrefix(filter).getOrDefault(username, Collections.emptyList());
     }
 
@@ -91,8 +84,8 @@ public class MemcacheTokenStore implements RefreshTokenStore {
     @Override
     public Map<String, List<RefreshToken>> listTokens() {
         String filter = String.format("^%s%s[^%s]+%s[^%s]+$",
-                Pattern.quote(refreshCachePrefix), Pattern.quote(delimiter), Pattern.quote(delimiter),
-                Pattern.quote(delimiter), Pattern.quote(delimiter));
+                Pattern.quote(memcacheConfig.getPrefix()), Pattern.quote(refreshConfig.getDelimiter()), Pattern.quote(refreshConfig.getDelimiter()),
+                Pattern.quote(refreshConfig.getDelimiter()), Pattern.quote(refreshConfig.getDelimiter()));
         return listRefreshTokensByPrefix(filter);
     }
 
@@ -128,7 +121,7 @@ public class MemcacheTokenStore implements RefreshTokenStore {
         final Map<String, Object> entries = memcachedClient.getBulk(keys);
         for (Map.Entry<String, Object> entry : entries.entrySet()) {
             if (entry.getKey().matches(filter)) {
-                String[] parts = entry.getKey().split(Pattern.quote(delimiter), 3);
+                String[] parts = entry.getKey().split(Pattern.quote(refreshConfig.getDelimiter()), 3);
                 String username = parts[1];
                 String deviceId = parts[2];
                 String token = String.valueOf(entry.getValue());
@@ -166,11 +159,11 @@ public class MemcacheTokenStore implements RefreshTokenStore {
     }
 
     private int revokeTokens(@Nullable String username, @Nullable String deviceId) {
-        final String filter = refreshCachePrefix +
-                Pattern.quote(delimiter) +
-                Optional.ofNullable(username).map(Pattern::quote).orElse("[^" + Pattern.quote(delimiter) + "]+") +
-                Pattern.quote(delimiter) +
-                Optional.ofNullable(deviceId).map(Pattern::quote).orElse("[^" + Pattern.quote(delimiter) + "]+");
+        final String filter = memcacheConfig.getPrefix() +
+                Pattern.quote(refreshConfig.getDelimiter()) +
+                Optional.ofNullable(username).map(Pattern::quote).orElse("[^" + Pattern.quote(refreshConfig.getDelimiter()) + "]+") +
+                Pattern.quote(refreshConfig.getDelimiter()) +
+                Optional.ofNullable(deviceId).map(Pattern::quote).orElse("[^" + Pattern.quote(refreshConfig.getDelimiter()) + "]+");
 
         final List<String> keys = listAllKeys(filter);
         final List<OperationFuture<Boolean>> futures = new ArrayList<>();
@@ -190,18 +183,19 @@ public class MemcacheTokenStore implements RefreshTokenStore {
 
     @Override
     public void afterPropertiesSet() throws IOException {
-        if (refreshExpiration.toSeconds() > 2_592_000) {
+        log.info("Using memcache implementation to handle refresh tokens");
+        if (refreshConfig.getExpiration().toSeconds() > 2_592_000) {
             throw new IllegalStateException("Refresh expiration may not exceed 30 days when using memcached");
         }
 
-        log.info("Starting memcache connection to {}:{}", cacheHost, cachePort);
-        memcachedClient = new MemcachedClient(new InetSocketAddress(cacheHost, cachePort));
+        log.info("Starting memcache connection to {}:{}", memcacheConfig.getHost(), memcacheConfig.getPort());
+        memcachedClient = new MemcachedClient(new InetSocketAddress(memcacheConfig.getHost(), memcacheConfig.getPort()));
     }
 
     @NotNull
     @Override
     public TimeWithPeriod getRefreshExpiration() {
-        return refreshExpiration;
+        return refreshConfig.getExpiration();
     }
 
     @NotNull

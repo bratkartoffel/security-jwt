@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-class NullTokenStore implements RefreshTokenStore {
+public class NullTokenStore implements RefreshTokenStore {
     @Override
     public void saveToken(@NotNull String username, @NotNull String deviceId, @NotNull String token) {
         throw new FeatureNotConfiguredException("No implementation configured");
@@ -65,7 +65,12 @@ class NullTokenStore implements RefreshTokenStore {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         log.info("Using null implementation to handle refresh tokens");
+    }
+
+    @Override
+    public boolean isRefreshTokenSupported() {
+        return false;
     }
 }

@@ -32,7 +32,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         Optional<String> authToken = jwtTokenUtil.getToken(request);
-        SecurityContextHolder.getContext().setAuthentication(null);
 
         authToken.ifPresent(token -> {
             if (jwtTokenUtil.validateToken(token)) {
@@ -44,7 +43,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 });
             } else {
-                log.debug("Provided token is invalid");
+                log.warn("Provided token by client is invalid");
             }
         });
 

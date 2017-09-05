@@ -15,7 +15,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,46 +25,40 @@ import java.util.Optional;
 @NoArgsConstructor
 public class JwtUser implements UserDetails, CredentialsContainer {
     private Long id = -1L;
+
     private String username = "anonymousUser";
+
     @JsonIgnore
     private String password = null;
+
     @JsonIgnore
     private String totpSecret = null;
+
     private boolean accountNonExpired = false;
+
     private boolean accountNonLocked = false;
+
     private boolean credentialsNonExpired = false;
+
     private boolean enabled = false;
+
     @JsonIgnore
     private List<GrantedAuthority> authorities = new ArrayList<>();
+
     private boolean apiAccessAllowed = false;
 
     @SuppressWarnings("unchecked")
     public static JwtUser fromClaims(JWTClaimsSet claims) {
         JwtUser user = new JwtUser();
         user.setUsername(claims.getSubject());
-        final Object oldAuthority = claims.getClaim("authority");
-        if (oldAuthority != null && oldAuthority instanceof String) {
-            user.setAuthorities(Collections.singletonList(new SimpleGrantedAuthority(String.valueOf(oldAuthority))));
-        } else {
-            final List<String> claimAuthorities = (List<String>) claims.getClaim("authorities");
-            final List<GrantedAuthority> newAuthorities = new ArrayList<>();
-            for (String authority : claimAuthorities) {
-                newAuthorities.add(new SimpleGrantedAuthority(authority));
-            }
-            user.setAuthorities(newAuthorities);
+        final List<String> claimAuthorities = (List<String>) claims.getClaim("authorities");
+        final List<GrantedAuthority> newAuthorities = new ArrayList<>();
+        for (String authority : claimAuthorities) {
+            newAuthorities.add(new SimpleGrantedAuthority(authority));
         }
+        user.setAuthorities(newAuthorities);
         user.setId(Long.valueOf(String.valueOf(claims.getClaim("uid"))));
         return user;
-    }
-
-    @Deprecated
-    public String getAuthority() {
-        return authorities.isEmpty() ? null : authorities.get(0).toString();
-    }
-
-    @Deprecated
-    public void setAuthority(String authority) {
-        this.authorities.add(new SimpleGrantedAuthority(authority));
     }
 
     @Override
@@ -92,14 +85,5 @@ public class JwtUser implements UserDetails, CredentialsContainer {
 
     public void setTotpSecret(String totpSecret) {
         this.totpSecret = totpSecret;
-    }
-
-    /**
-     * Please use {@link #setTotpSecret(String)} instead
-     */
-    @Deprecated
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    public void setTotpSecret( Optional<String> totpSecret) {
-        this.totpSecret = totpSecret.orElse(null);
     }
 }

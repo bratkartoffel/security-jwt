@@ -9,9 +9,9 @@ fraho:
     token:
       expiration: 2 seconds
       algorithm: HS256
-      hmac: build/hmac-hs256.key
     refresh:
       expiration: 2 seconds
       deviceIdLength: 10
-      cache:
-        impl: null
+
+spring.main.banner-mode: "off"
+logging.level.eu.fraho.spring.securityJwt: DEBUG
