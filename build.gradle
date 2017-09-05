@@ -14,9 +14,6 @@ buildscript {
     }
 }
 
-apply plugin: 'io.codearte.nexus-staging'
-
-
 configure(allprojects) {
     apply plugin: 'propdeps'
     apply plugin: 'propdeps-maven'
@@ -114,6 +111,8 @@ subprojects {
 }
 
 if (project.hasProperty('release')) {
+    apply plugin: 'io.codearte.nexus-staging'
+
     subprojects {
         apply plugin: 'signing'
 
