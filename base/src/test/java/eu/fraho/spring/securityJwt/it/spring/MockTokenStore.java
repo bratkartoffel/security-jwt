@@ -67,6 +67,7 @@ public class MockTokenStore implements RefreshTokenStore {
     }
 
     @NotNull
+    @Deprecated
     public TimeWithPeriod getRefreshExpiration() {
         return new TimeWithPeriod(0, TimeUnit.SECONDS);
     }

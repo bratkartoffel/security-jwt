@@ -36,6 +36,7 @@ public interface RefreshTokenStore extends InitializingBean {
     int revokeTokens();
 
     @NotNull
+    @Deprecated
     TimeWithPeriod getRefreshExpiration();
 
     /**

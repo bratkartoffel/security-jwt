@@ -60,6 +60,7 @@ public class NullTokenStore implements RefreshTokenStore {
     }
 
     @NotNull
+    @Deprecated
     public TimeWithPeriod getRefreshExpiration() {
         throw new FeatureNotConfiguredException("No implementation configured");
     }

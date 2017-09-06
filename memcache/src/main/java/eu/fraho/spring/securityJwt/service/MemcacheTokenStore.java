@@ -194,6 +194,7 @@ public class MemcacheTokenStore implements RefreshTokenStore {
 
     @NotNull
     @Override
+    @Deprecated
     public TimeWithPeriod getRefreshExpiration() {
         return refreshConfig.getExpiration();
     }
