@@ -35,13 +35,13 @@ public class UserDetailsServiceTestImpl implements UserDetailsService {
         user.setAccountNonLocked(true);
         user.setCredentialsNonExpired(true);
         user.setEnabled(true);
-        if (username.equals("admin")) {
+        if ("admin".equals(username)) {
             user.setAuthorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN")));
         } else {
             user.setAuthorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
         }
         user.setApiAccessAllowed(true);
-        if (username.equals("noRefresh")) {
+        if ("noRefresh".equals(username)) {
             noRefreshAccessCount++;
             if (noRefreshAccessCount % 3 == 0) {
                 // login 2 times, refresh should fail
@@ -51,7 +51,7 @@ public class UserDetailsServiceTestImpl implements UserDetailsService {
             noRefreshAccessCount = 0;
         }
 
-        if (username.equals("user_totp")) {
+        if ("user_totp".equals(username)) {
             user.setTotpSecret(BASE32_TOTP);
         }
 

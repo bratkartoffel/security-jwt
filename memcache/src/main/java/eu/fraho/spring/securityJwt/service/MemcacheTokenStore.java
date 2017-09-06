@@ -198,9 +198,4 @@ public class MemcacheTokenStore implements RefreshTokenStore {
     public TimeWithPeriod getRefreshExpiration() {
         return refreshConfig.getExpiration();
     }
-
-    @NotNull
-    MemcachedClient getMemcachedClient() {
-        return memcachedClient;
-    }
 }

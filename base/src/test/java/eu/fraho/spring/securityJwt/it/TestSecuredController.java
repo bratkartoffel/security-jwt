@@ -55,7 +55,7 @@ public class TestSecuredController {
     private MockMvc mockMvc;
 
     @Before
-    public void setup() {
+    public void setUp() {
         if (mockMvc == null) {
             mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilter(springSecurityFilterChain).build();
         }

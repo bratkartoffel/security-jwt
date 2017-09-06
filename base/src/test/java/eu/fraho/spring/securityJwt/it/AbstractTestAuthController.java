@@ -43,7 +43,7 @@ abstract class AbstractTestAuthController {
     private MockMvc mockMvc;
 
     @Before
-    public void setup() throws Exception {
+    public void setUp() throws Exception {
         if (mockMvc == null) {
             synchronized (this) {
                 if (mockMvc == null) {

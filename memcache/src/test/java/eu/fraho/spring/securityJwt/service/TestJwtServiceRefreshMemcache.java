@@ -60,7 +60,7 @@ public class TestJwtServiceRefreshMemcache extends AbstractTestJwtTokenServiceWi
         RefreshToken tokenB = service.generateRefreshToken(jsmith, "foobar");
         RefreshToken tokenC = service.generateRefreshToken(xsmith);
 
-        MemcachedClient client = ((MemcacheTokenStore) refreshTokenStore).getMemcachedClient();
+        MemcachedClient client = getMemcachedClient();
         client.set("foobar", 30, "hi").get();
 
         final Map<String, List<RefreshToken>> tokenMap = service.listRefreshTokens();
@@ -70,6 +70,12 @@ public class TestJwtServiceRefreshMemcache extends AbstractTestJwtTokenServiceWi
                 .collect(Collectors.toList());
         Assert.assertEquals("Token count don't match", 3, allTokens.size());
         Assert.assertTrue("Not all tokens returned", allTokens.containsAll(Arrays.asList(tokenA, tokenB, tokenC)));
+    }
+
+    private MemcachedClient getMemcachedClient() throws Exception {
+        Field memcachedClient = MemcacheTokenStore.class.getDeclaredField("memcachedClient");
+        memcachedClient.setAccessible(true);
+        return (MemcachedClient) memcachedClient.get(refreshTokenStore);
     }
 
     @Test(expected = IllegalStateException.class)
