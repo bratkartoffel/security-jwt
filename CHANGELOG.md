@@ -1,5 +1,8 @@
 # Changelog
 
+### 1.0.1 (not yet released)
+* (base) Make rest endpoints configurable (#19)
+
 ### 1.0.0 (2017-09-05)
 * (all) Add spring configuration properties support for IDE auto-completion
 * (all) Renamed / moved some properties
