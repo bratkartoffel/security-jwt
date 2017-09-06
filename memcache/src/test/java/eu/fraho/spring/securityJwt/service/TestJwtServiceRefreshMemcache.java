@@ -9,6 +9,7 @@ package eu.fraho.spring.securityJwt.service;
 import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
 import eu.fraho.spring.securityJwt.config.JwtTokenConfiguration;
 import eu.fraho.spring.securityJwt.config.MemcacheConfiguration;
+import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 import eu.fraho.spring.securityJwt.ut.service.AbstractTestJwtTokenServiceWithRefresh;
@@ -51,7 +52,7 @@ public class TestJwtServiceRefreshMemcache extends AbstractTestJwtTokenServiceWi
         JwtTokenConfiguration tokenConfiguration = getTokenConfig();
         JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
         RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
+        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
 
         String jsmith = "jsmith";
         String xsmith = "xsmith";

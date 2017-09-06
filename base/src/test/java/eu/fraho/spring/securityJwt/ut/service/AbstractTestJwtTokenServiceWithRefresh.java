@@ -8,6 +8,7 @@ package eu.fraho.spring.securityJwt.ut.service;
 
 import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
 import eu.fraho.spring.securityJwt.config.JwtTokenConfiguration;
+import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.exceptions.FeatureNotConfiguredException;
 import eu.fraho.spring.securityJwt.service.JwtTokenService;
@@ -44,7 +45,7 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
         JwtTokenConfiguration tokenConfiguration = getTokenConfig();
         JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
         RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
+        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
 
         RefreshToken token1 = service.generateRefreshToken("foo");
         Assert.assertNotNull("No token generated", token1.getToken());
@@ -60,7 +61,7 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
         JwtTokenConfiguration tokenConfiguration = getTokenConfig();
         JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
         RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
+        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
 
         Assert.assertTrue("Refresh tokens not supported", refreshTokenStore.isRefreshTokenSupported());
         Assert.assertTrue("Refresh tokens not supported", service.isRefreshTokenSupported());
@@ -71,7 +72,7 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
         JwtTokenConfiguration tokenConfiguration = getTokenConfig();
         JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
         RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
+        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
 
         String jsmith = "jsmith";
         String xsmith = "xsmith";
@@ -94,7 +95,7 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
         JwtTokenConfiguration tokenConfiguration = getTokenConfig();
         JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
         RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
+        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
 
         String jsmith = "jsmith";
         RefreshToken token = service.generateRefreshToken(jsmith);
@@ -108,7 +109,7 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
         JwtTokenConfiguration tokenConfiguration = getTokenConfig();
         JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
         RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
+        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
 
         String jsmith = "jsmith";
         String xsmith = "xsmith";
@@ -131,7 +132,7 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
         JwtTokenConfiguration tokenConfiguration = getTokenConfig();
         JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
         RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
+        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
 
         String jsmith = "jsmith";
         String xsmith = "xsmith";
@@ -155,7 +156,7 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
         JwtTokenConfiguration tokenConfiguration = getTokenConfig();
         JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
         RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
+        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
 
         String jsmith = "jsmith";
 
@@ -177,7 +178,7 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
         JwtTokenConfiguration tokenConfiguration = getTokenConfig();
         JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
         RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
+        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
 
         String jsmith = "jsmith";
 
@@ -200,7 +201,7 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
         JwtTokenConfiguration tokenConfiguration = getTokenConfig();
         JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
         RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
+        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
 
         String jsmith = "jsmith";
 
@@ -221,7 +222,7 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
         JwtTokenConfiguration tokenConfiguration = getTokenConfig();
         JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
         RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
+        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
 
         String jsmith = "jsmith";
 
@@ -242,7 +243,7 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
         JwtTokenConfiguration tokenConfiguration = getTokenConfig();
         JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
         RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
+        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
 
         String jsmith = "jsmith";
         String xsmith = "xsmith";
@@ -267,7 +268,7 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
         JwtTokenConfiguration tokenConfiguration = getTokenConfig();
         JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
         RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
+        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
 
         String jsmith = "jsmith";
 
@@ -289,7 +290,7 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
         JwtTokenConfiguration tokenConfiguration = getTokenConfig();
         JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
         RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
+        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
 
         String jsmith = "jsmith";
 
@@ -311,7 +312,7 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
         JwtTokenConfiguration tokenConfiguration = getTokenConfig();
         JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
         RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
+        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
 
         String jsmith = "jsmith";
 
@@ -330,7 +331,7 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
         JwtTokenConfiguration tokenConfiguration = getTokenConfig();
         JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
         RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
+        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
 
         Assert.assertFalse("Unknown token used", service.useRefreshToken("foo", "bar", "baz"));
     }
@@ -340,7 +341,7 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
         JwtTokenConfiguration tokenConfiguration = getRsaTokenConfig();
         JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
         RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
+        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
 
         try {
             service.useRefreshToken("foo", "bar", "baz");

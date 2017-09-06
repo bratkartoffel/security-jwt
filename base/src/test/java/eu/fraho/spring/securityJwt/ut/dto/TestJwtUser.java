@@ -60,8 +60,9 @@ public class TestJwtUser {
     public void testToAndFromClaims() throws ParseException {
         JwtUser user = newInstance();
         JWTClaimsSet claims1 = user.toClaims().build();
-        JwtUser user2 = JwtUser.fromClaims(claims1);
-        Assert.assertEquals("", user, user2);
+        JwtUser user2 = new JwtUser();
+        user2.applyClaims(claims1);
+        Assert.assertEquals("toClaims and fromClaims should work both ways", user, user2);
     }
 
     @Test

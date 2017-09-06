@@ -17,6 +17,7 @@ import eu.fraho.spring.securityJwt.service.JwtTokenService;
 import eu.fraho.spring.securityJwt.service.JwtTokenServiceImpl;
 import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
 import eu.fraho.spring.securityJwt.util.JwtTokens;
+import eu.fraho.spring.securityJwt.util.MyJwtUser;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
@@ -99,8 +100,9 @@ public class TestJwtTokenService {
     @NotNull
     protected JwtTokenService getService(@NotNull JwtTokenConfiguration tokenConfiguration,
                                          @NotNull JwtRefreshConfiguration refreshConfiguration,
-                                         @NotNull RefreshTokenStore refreshTokenStore) {
-        JwtTokenServiceImpl tokenService = new JwtTokenServiceImpl(tokenConfiguration, refreshConfiguration);
+                                         @NotNull RefreshTokenStore refreshTokenStore,
+                                         @NotNull JwtUser jwtUser) {
+        JwtTokenServiceImpl tokenService = new JwtTokenServiceImpl(tokenConfiguration, refreshConfiguration, () -> jwtUser);
         tokenService.afterPropertiesSet();
         tokenService.setRefreshTokenStore(refreshTokenStore);
         return tokenService;
@@ -122,12 +124,22 @@ public class TestJwtTokenService {
         return user;
     }
 
+    @NotNull
+    protected MyJwtUser getMyJwtUser() {
+        MyJwtUser user = new MyJwtUser();
+        user.setId(13_42L);
+        user.setUsername("John Snow");
+        user.setAuthorities(Collections.singletonList(new SimpleGrantedAuthority("HOUSE_STARK")));
+        user.setFoobar("this is just a simple custom field for demonstration");
+        return user;
+    }
+
     @Test
     public void testParseUser() throws Exception {
         JwtTokenConfiguration tokenConfiguration = getTokenConfig();
         JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
         RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
+        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
 
         String token = JwtTokens.VALID;
         Optional<JwtUser> oUser = service.parseUser(token);
@@ -144,7 +156,7 @@ public class TestJwtTokenService {
         JwtTokenConfiguration tokenConfiguration = getTokenConfig();
         JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
         RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
+        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
 
         String tokenInvalidSignature = JwtTokens.INVALID_SIGNATURE;
         Optional<JwtUser> oUser1 = service.parseUser(tokenInvalidSignature);
@@ -161,7 +173,7 @@ public class TestJwtTokenService {
         JwtTokenConfiguration tokenConfiguration = getTokenConfig();
         JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
         RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
+        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
 
         // regular already handled by testParseUser
 
@@ -187,7 +199,7 @@ public class TestJwtTokenService {
         JwtTokenConfiguration tokenConfiguration = getTokenConfig();
         JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
         RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
+        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
 
         String token = JwtTokens.INVALID_BODY;
         Assert.assertFalse("Token is invalid", service.validateToken(token));
@@ -198,7 +210,7 @@ public class TestJwtTokenService {
         JwtTokenConfiguration tokenConfiguration = getTokenConfig();
         JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
         RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
+        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
 
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getHeader("Authorization")).thenReturn("Bearer foobar", "foobar", null);
@@ -213,7 +225,7 @@ public class TestJwtTokenService {
         JwtTokenConfiguration tokenConfiguration = getTokenConfig();
         JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
         RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
+        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
         JwtUser user = getJwtUser();
 
         AccessToken token = service.generateToken(user);
@@ -225,7 +237,7 @@ public class TestJwtTokenService {
         JwtTokenConfiguration tokenConfiguration = getRsaTokenConfig();
         JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
         RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore);
+        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
         JwtUser user = getJwtUser();
 
         try {
@@ -234,5 +246,21 @@ public class TestJwtTokenService {
             Assert.assertEquals("Wrong error message", "Access token signing is not enabled.", fnce.getMessage());
             throw fnce;
         }
+    }
+
+    @Test
+    public void testGenerateAndParseTokenCustomize() throws Exception {
+        JwtTokenConfiguration tokenConfiguration = getTokenConfig();
+        JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
+        RefreshTokenStore refreshTokenStore = getRefreshStore();
+        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new MyJwtUser());
+        MyJwtUser user = getMyJwtUser();
+
+        AccessToken token = service.generateToken(user);
+        Assert.assertNotNull("No token generated", token.getToken());
+
+        Optional<MyJwtUser> user1 = service.parseUser(token.getToken());
+        Assert.assertTrue("User should be parsed", user1.isPresent());
+        Assert.assertEquals("Custom claim should be present", user.getFoobar(), user1.get().getFoobar());
     }
 }
