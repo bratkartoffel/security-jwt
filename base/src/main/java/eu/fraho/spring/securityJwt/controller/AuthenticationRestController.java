@@ -47,7 +47,7 @@ public class AuthenticationRestController {
     @NonNull
     private final TotpService totpService;
 
-    @RequestMapping("${fraho.jwt.refresh.path}")
+    @RequestMapping("${fraho.jwt.refresh.path:/auth/refresh}")
     @ApiOperation("Use a previously fetched refresh token to create a new access token")
     @ApiResponses({
             @ApiResponse(code = 200, message = "Generated token"),
@@ -80,7 +80,7 @@ public class AuthenticationRestController {
         return ResponseEntity.ok(body);
     }
 
-    @RequestMapping("${fraho.jwt.token.path}")
+    @RequestMapping("${fraho.jwt.token.path:/auth/login}")
     @ApiOperation("Create a new token using the supplied credentials")
     @ApiResponses({
             @ApiResponse(code = 200, message = "Generated token"),
