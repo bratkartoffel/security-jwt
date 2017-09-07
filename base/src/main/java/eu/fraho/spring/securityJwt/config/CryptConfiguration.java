@@ -34,12 +34,10 @@ public class CryptConfiguration implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        if (algorithm.isRoundsSupported()) {
-            if (rounds < 100 || rounds > 500_000) {
-                log.warn("Encryption rounds out of bounds ({} <= {} <= {}), forcing to default ({})",
-                        100, rounds, 500_000, 10_000);
-                rounds = 10_000;
-            }
+        if (algorithm.isRoundsSupported() && (rounds < 100 || rounds > 500_000)) {
+            log.warn("Encryption rounds out of bounds ({} <= {} <= {}), forcing to default ({})",
+                    100, rounds, 500_000, 10_000);
+            rounds = 10_000;
         }
         if (algorithm.isInsecure()) {
             log.warn("Using insecure crypt variant {}. Consider upgrading to a stronger one.", algorithm);

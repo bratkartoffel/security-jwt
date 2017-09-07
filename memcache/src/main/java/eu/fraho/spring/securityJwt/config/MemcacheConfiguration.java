@@ -39,5 +39,6 @@ public class MemcacheConfiguration implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
+        // nothing to check here
     }
 }
