@@ -15,6 +15,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 @Configuration
 @AutoConfigureAfter(SecurityJwtBaseAutoConfiguration.class)
@@ -23,8 +24,9 @@ import org.springframework.context.annotation.Configuration;
 public class SecurityJwtInternalAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
-    public RefreshTokenStore refreshTokenStore(final JwtRefreshConfiguration jwtRefreshConfiguration) {
+    public RefreshTokenStore refreshTokenStore(final JwtRefreshConfiguration jwtRefreshConfiguration,
+                                               final UserDetailsService userDetailsService) {
         log.debug("Register InternalTokenStore");
-        return new InternalTokenStore(jwtRefreshConfiguration);
+        return new InternalTokenStore(jwtRefreshConfiguration, userDetailsService);
     }
 }

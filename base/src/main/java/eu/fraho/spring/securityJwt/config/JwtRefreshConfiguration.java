@@ -33,23 +33,6 @@ public class JwtRefreshConfiguration implements InitializingBean {
     private int length = 24;
 
     /**
-     * Maximum length of device ids for refresh tokens. Any longer strings will be truncated to this length.
-     */
-    private int deviceIdLength = 32;
-
-    /**
-     * Specify the delimiter for refresh token stores that don't support multiple fields (like memcache or internal).
-     * This separator will be used to create a unique key, simply concatinating the username, deviceId and token
-     * using this delimiter.
-     */
-    private String delimiter = ";";
-
-    /**
-     * Change the default deviceId used for storing and access refresh tokens when not specified by the client.
-     */
-    private String defaultDeviceId = "__default";
-
-    /**
      * Defines the implemenation for refresh token storage. The specified class has to implement the
      * RefreshTokenStore Interface. To disable the refresh tokens just don't specify this field.
      * You have to add at least one of the optional dependencies (see README) to add refresh token support.
@@ -70,12 +53,6 @@ public class JwtRefreshConfiguration implements InitializingBean {
             log.warn("Refresh token length ({} <= {} <= {}), forcing to default ({})",
                     12, length, 48, 24);
             length = 24;
-        }
-        // check default deviceId length
-        if (deviceIdLength < defaultDeviceId.length()) {
-            int length = defaultDeviceId.length();
-            log.warn("Maximum deviceId length is smaller than length of default! Adjusting maximum length to {}", length);
-            deviceIdLength = length;
         }
         if (cacheImpl == null) {
             cacheImpl = NullTokenStore.class;

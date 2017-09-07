@@ -6,6 +6,7 @@
  */
 package eu.fraho.spring.securityJwt.service;
 
+import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.it.AbstractTestAuthControllerWithRefresh;
 import eu.fraho.spring.securityJwt.it.spring.TestApiApplication;
 import eu.fraho.spring.securityJwt.it.spring.UserDetailsServiceTestImpl;
@@ -13,6 +14,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.StandardPasswordEncoder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @Getter
@@ -22,6 +24,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TestAuthControllerInternal extends AbstractTestAuthControllerWithRefresh {
     public TestAuthControllerInternal() {
-        super(new UserDetailsServiceTestImpl());
+        super(new UserDetailsServiceTestImpl(new StandardPasswordEncoder(), JwtUser::new));
     }
 }

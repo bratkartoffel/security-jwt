@@ -6,6 +6,7 @@
  */
 package eu.fraho.spring.securityJwt.it;
 
+import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.it.spring.TestApiApplication;
 import eu.fraho.spring.securityJwt.it.spring.UserDetailsServiceTestImpl;
 import lombok.Getter;
@@ -14,6 +15,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.StandardPasswordEncoder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @Getter
@@ -23,13 +25,13 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TestAuthControllerMockRefresh extends AbstractTestAuthControllerWithRefresh {
     public TestAuthControllerMockRefresh() {
-        super(new UserDetailsServiceTestImpl());
+        super(new UserDetailsServiceTestImpl(new StandardPasswordEncoder(), JwtUser::new));
     }
 
     @Test
     @Override
     @Ignore
-    public void testRefreshWithMultipleDeviceIds() {
+    public void testMultipleRefreshTokens() {
         // not working with mock storage
     }
 }

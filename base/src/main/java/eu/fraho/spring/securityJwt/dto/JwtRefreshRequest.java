@@ -12,7 +12,6 @@ import lombok.Getter;
 import net.jcip.annotations.Immutable;
 
 import javax.validation.constraints.NotNull;
-import java.util.Optional;
 
 @Immutable
 @Getter
@@ -20,15 +19,5 @@ import java.util.Optional;
 public final class JwtRefreshRequest {
     @NotNull
     @JsonProperty(required = true)
-    private String username;
-
-    @NotNull
-    @JsonProperty(required = true)
     private String refreshToken;
-
-    private String deviceId;
-
-    public Optional<String> getDeviceId() {
-        return Optional.ofNullable(deviceId);
-    }
 }

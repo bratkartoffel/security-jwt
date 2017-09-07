@@ -47,7 +47,8 @@ abstract class AbstractTestAuthController {
         if (mockMvc == null) {
             synchronized (this) {
                 if (mockMvc == null) {
-                    mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).addFilter(springSecurityFilterChain).build();
+                    mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
+                            .addFilter(springSecurityFilterChain).build();
                 }
             }
         }

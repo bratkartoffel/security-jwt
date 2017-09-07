@@ -6,6 +6,7 @@
  */
 package eu.fraho.spring.securityJwt.service;
 
+import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 import eu.fraho.spring.securityJwt.exceptions.FeatureNotConfiguredException;
@@ -14,43 +15,38 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 public class NullTokenStore implements RefreshTokenStore {
     @Override
-    public void saveToken(@NotNull String username, @NotNull String deviceId, @NotNull String token) {
+    public void saveToken(@NotNull JwtUser user, @NotNull String token) {
         throw new FeatureNotConfiguredException("No implementation configured");
     }
 
     @Override
-    public boolean useToken(@NotNull String username, @NotNull String deviceId, @NotNull String token) {
+    public <T extends JwtUser> Optional<T> useToken(@NotNull String token) {
+        throw new FeatureNotConfiguredException("No implementation configured");
+    }
+
+    @Override
+    public @NotNull List<RefreshToken> listTokens(@NotNull JwtUser user) {
         throw new FeatureNotConfiguredException("No implementation configured");
     }
 
     @NotNull
     @Override
-    public List<RefreshToken> listTokens(@NotNull String username) {
-        throw new FeatureNotConfiguredException("No implementation configured");
-    }
-
-    @NotNull
-    @Override
-    public Map<String, List<RefreshToken>> listTokens() {
+    public Map<Long, List<RefreshToken>> listTokens() {
         throw new FeatureNotConfiguredException("No implementation configured");
     }
 
     @Override
-    public boolean revokeToken(@NotNull String username, @NotNull RefreshToken token) {
+    public boolean revokeToken(@NotNull String token) {
         throw new FeatureNotConfiguredException("No implementation configured");
     }
 
     @Override
-    public int revokeTokens(@NotNull String username) {
-        throw new FeatureNotConfiguredException("No implementation configured");
-    }
-
-    @Override
-    public boolean revokeToken(@NotNull String username, @NotNull String deviceId) {
+    public int revokeTokens(@NotNull JwtUser user) {
         throw new FeatureNotConfiguredException("No implementation configured");
     }
 

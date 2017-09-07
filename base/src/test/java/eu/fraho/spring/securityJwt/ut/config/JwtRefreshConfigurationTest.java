@@ -30,21 +30,6 @@ public class JwtRefreshConfigurationTest {
     }
 
     @Test
-    public void testLengthDeviceId() {
-        JwtRefreshConfiguration conf = getNewInstance();
-
-        conf.setDeviceIdLength(1);
-        conf.setDefaultDeviceId("foo");
-        conf.afterPropertiesSet();
-        Assert.assertEquals("Length did not reset to default", 3, conf.getDeviceIdLength());
-
-        conf.setDeviceIdLength(5);
-        conf.setDefaultDeviceId("foo");
-        conf.afterPropertiesSet();
-        Assert.assertEquals("Length did reset to default", 5, conf.getDeviceIdLength());
-    }
-
-    @Test
     public void testNullImpl() {
         JwtRefreshConfiguration conf = getNewInstance();
         conf.setCacheImpl(null);

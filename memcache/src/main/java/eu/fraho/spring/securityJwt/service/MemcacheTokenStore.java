@@ -8,8 +8,9 @@ package eu.fraho.spring.securityJwt.service;
 
 import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
 import eu.fraho.spring.securityJwt.config.MemcacheConfiguration;
+import eu.fraho.spring.securityJwt.dto.JwtUser;
+import eu.fraho.spring.securityJwt.dto.MemcacheEntry;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
-import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 import eu.fraho.spring.securityJwt.exceptions.JwtRefreshException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -17,18 +18,16 @@ import lombok.extern.slf4j.Slf4j;
 import net.spy.memcached.MemcachedClient;
 import net.spy.memcached.internal.OperationFuture;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -39,6 +38,9 @@ public class MemcacheTokenStore implements RefreshTokenStore {
 
     @NonNull
     private final MemcacheConfiguration memcacheConfig;
+
+    @NonNull
+    private UserDetailsService userDetailsService;
 
     private MemcachedClient memcachedClient = null;
 
@@ -51,46 +53,91 @@ public class MemcacheTokenStore implements RefreshTokenStore {
     }
 
     @Override
-    public void saveToken(@NotNull String username, @NotNull String deviceId, @NotNull String token) {
-        String key = memcacheConfig.getPrefix() + refreshConfig.getDelimiter() + username + refreshConfig.getDelimiter() + deviceId;
+    public void saveToken(@NotNull JwtUser user, @NotNull String token) {
+        String key = memcacheConfig.getPrefix() + token;
+        String entry = MemcacheEntry.from(user).toString();
         getAndWait("Error while saving refresh token on memcache server", () ->
-                memcachedClient.set(key, refreshConfig.getExpiration().toSeconds(), token));
+                memcachedClient.set(key, refreshConfig.getExpiration().toSeconds(), entry)
+        );
     }
 
     @Override
-    public boolean useToken(@NotNull String username, @NotNull String deviceId, @NotNull String token) {
-        String key = memcacheConfig.getPrefix() + refreshConfig.getDelimiter() + username + refreshConfig.getDelimiter() + deviceId;
-        final byte[] stored = String.valueOf(memcachedClient.get(key)).getBytes(StandardCharsets.UTF_8);
-        final byte[] toCheck = token.getBytes(StandardCharsets.UTF_8);
+    @SuppressWarnings("unchecked")
+    public <T extends JwtUser> Optional<T> useToken(@NotNull String token) {
+        String key = memcacheConfig.getPrefix() + token;
+        // will be "null" if invalid token
+        final Object found = memcachedClient.get(key);
 
-        if (tokenEquals(stored, toCheck)) {
-            return getAndWait("Error while deleting refresh token on memcache server", () ->
-                    memcachedClient.delete(key));
+        Optional<T> result = Optional.empty();
+        if (found != null) {
+            String username = MemcacheEntry.from((String) found).getUsername();
+            result = Optional.ofNullable((T) userDetailsService.loadUserByUsername(username));
+        }
+        if (!getAndWait("Error while deleting refresh token on memcache server", () -> memcachedClient.delete(key))) {
+            result = Optional.empty();
         }
 
-        return false;
+        return result;
     }
 
     @NotNull
     @Override
-    public List<RefreshToken> listTokens(@NotNull String username) {
-        String filter = String.format("^%s%s%s%s[^%s]+$",
-                Pattern.quote(memcacheConfig.getPrefix()), Pattern.quote(refreshConfig.getDelimiter()),
-                Pattern.quote(username), Pattern.quote(refreshConfig.getDelimiter()), Pattern.quote(refreshConfig.getDelimiter()));
-        return listRefreshTokensByPrefix(filter).getOrDefault(username, Collections.emptyList());
+    public List<RefreshToken> listTokens(@NotNull JwtUser user) {
+        return listTokens().getOrDefault(user.getId(), Collections.emptyList());
     }
 
     @NotNull
     @Override
-    public Map<String, List<RefreshToken>> listTokens() {
-        String filter = String.format("^%s%s[^%s]+%s[^%s]+$",
-                Pattern.quote(memcacheConfig.getPrefix()), Pattern.quote(refreshConfig.getDelimiter()), Pattern.quote(refreshConfig.getDelimiter()),
-                Pattern.quote(refreshConfig.getDelimiter()), Pattern.quote(refreshConfig.getDelimiter()));
-        return listRefreshTokensByPrefix(filter);
+    public Map<Long, List<RefreshToken>> listTokens() {
+        final Map<Long, List<RefreshToken>> result = new HashMap<>();
+        final List<String> keys = listAllKeys();
+        final Map<String, Object> entries = memcachedClient.getBulk(keys);
+        final int prefixLen = memcacheConfig.getPrefix().length();
+        for (Map.Entry<String, Object> entry : entries.entrySet()) {
+            MemcacheEntry dto = MemcacheEntry.from((String) entry.getValue());
+            int expiresIn = -1;
+
+            result.computeIfAbsent(dto.getId(), s -> new ArrayList<>()).add(
+                    new RefreshToken(entry.getKey().substring(prefixLen), expiresIn)
+            );
+        }
+
+        result.replaceAll((s, t) -> Collections.unmodifiableList(t));
+        return Collections.unmodifiableMap(result);
+    }
+
+    @Override
+    public boolean revokeToken(@NotNull String token) {
+        String key = memcacheConfig.getPrefix() + token;
+        return getAndWait("Error while deleting refresh token on memcache server", () ->
+                memcachedClient.delete(key));
+    }
+
+    @Override
+    public int revokeTokens(@NotNull JwtUser user) {
+        List<String> allKeys = listAllKeys();
+        final Map<String, Object> entries = memcachedClient.getBulk(allKeys);
+
+        final List<OperationFuture<Boolean>> futures = new ArrayList<>();
+        for (Map.Entry<String, Object> entry : entries.entrySet()) {
+            MemcacheEntry dto = MemcacheEntry.from((String) entry.getValue());
+            if (Objects.equals(dto.getId(), user.getId())) {
+                futures.add(memcachedClient.delete(entry.getKey()));
+            }
+        }
+
+        int count = allKeys.size();
+        for (OperationFuture<Boolean> future : futures) {
+            if (!getAndWait("Error while saving refresh token on memcache server", () -> future)) {
+                count--;
+            }
+        }
+
+        return count;
     }
 
     @NotNull
-    private List<String> listAllKeys(@NotNull String filter) {
+    private List<String> listAllKeys() {
         final List<String> result = new ArrayList<>();
         final Set<Integer> slabs = memcachedClient.getStats("items")
                 .entrySet().iterator().next()
@@ -107,65 +154,18 @@ public class MemcacheTokenStore implements RefreshTokenStore {
                             .getValue().get(slab + ":used_chunks"));
 
             final Set<String> entries = memcachedClient.getStats("cachedump " + slab + " " + used_chunks)
-                    .entrySet().iterator().next().getValue().keySet();
+                    .entrySet().iterator().next().getValue().keySet()
+                    .stream().filter(e -> e.startsWith(memcacheConfig.getPrefix()))
+                    .collect(Collectors.toSet());
 
-            entries.stream().filter(e -> e.matches(filter)).forEach(result::add);
+            result.addAll(entries);
         }
         return Collections.unmodifiableList(result);
     }
 
-    @NotNull
-    private Map<String, List<RefreshToken>> listRefreshTokensByPrefix(@NotNull String filter) {
-        final Map<String, List<RefreshToken>> result = new HashMap<>();
-        final List<String> keys = listAllKeys(filter);
-        final Map<String, Object> entries = memcachedClient.getBulk(keys);
-        for (Map.Entry<String, Object> entry : entries.entrySet()) {
-            if (entry.getKey().matches(filter)) {
-                String[] parts = entry.getKey().split(Pattern.quote(refreshConfig.getDelimiter()), 3);
-                String username = parts[1];
-                String deviceId = parts[2];
-                String token = String.valueOf(entry.getValue());
-                int expiresIn = -1;
-
-                result.computeIfAbsent(username, s -> new ArrayList<>()).add(
-                        new RefreshToken(token, expiresIn, deviceId)
-                );
-            }
-        }
-
-        result.replaceAll((s, t) -> Collections.unmodifiableList(t));
-        return Collections.unmodifiableMap(result);
-    }
-
-
-    @Override
-    public boolean revokeToken(@NotNull String username, @NotNull RefreshToken token) {
-        return revokeTokens(username, token.getDeviceId()) != 0;
-    }
-
-    @Override
-    public int revokeTokens(@NotNull String username) {
-        return revokeTokens(username, null);
-    }
-
-    @Override
-    public boolean revokeToken(@NotNull String username, @NotNull String deviceId) {
-        return revokeTokens(username, deviceId) != 0;
-    }
-
     @Override
     public int revokeTokens() {
-        return revokeTokens(null, null);
-    }
-
-    private int revokeTokens(@Nullable String username, @Nullable String deviceId) {
-        final String filter = memcacheConfig.getPrefix() +
-                Pattern.quote(refreshConfig.getDelimiter()) +
-                Optional.ofNullable(username).map(Pattern::quote).orElse("[^" + Pattern.quote(refreshConfig.getDelimiter()) + "]+") +
-                Pattern.quote(refreshConfig.getDelimiter()) +
-                Optional.ofNullable(deviceId).map(Pattern::quote).orElse("[^" + Pattern.quote(refreshConfig.getDelimiter()) + "]+");
-
-        final List<String> keys = listAllKeys(filter);
+        final List<String> keys = listAllKeys();
         final List<OperationFuture<Boolean>> futures = new ArrayList<>();
         for (String key : keys) {
             futures.add(memcachedClient.delete(key));
@@ -190,12 +190,5 @@ public class MemcacheTokenStore implements RefreshTokenStore {
 
         log.info("Starting memcache connection to {}:{}", memcacheConfig.getHost(), memcacheConfig.getPort());
         memcachedClient = new MemcachedClient(new InetSocketAddress(memcacheConfig.getHost(), memcacheConfig.getPort()));
-    }
-
-    @NotNull
-    @Override
-    @Deprecated
-    public TimeWithPeriod getRefreshExpiration() {
-        return refreshConfig.getExpiration();
     }
 }

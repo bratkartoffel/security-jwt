@@ -37,7 +37,7 @@ public class TestJwtServiceRefreshMemcache extends AbstractTestJwtTokenServiceWi
 
     public TestJwtServiceRefreshMemcache() throws Exception {
         refreshConfiguration = getRefreshConfig();
-        refreshTokenStore = new MemcacheTokenStore(refreshConfiguration, new MemcacheConfiguration());
+        refreshTokenStore = new MemcacheTokenStore(refreshConfiguration, new MemcacheConfiguration(), getUserdetailsService());
         refreshTokenStore.afterPropertiesSet();
     }
 
@@ -54,17 +54,19 @@ public class TestJwtServiceRefreshMemcache extends AbstractTestJwtTokenServiceWi
         RefreshTokenStore refreshTokenStore = getRefreshStore();
         JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
 
-        String jsmith = "jsmith";
-        String xsmith = "xsmith";
+        JwtUser jsmith = getJwtUser();
+        jsmith.setUsername("jsmith");
+        JwtUser xsmith = getJwtUser();
+        xsmith.setUsername("xsmith");
 
         RefreshToken tokenA = service.generateRefreshToken(jsmith);
-        RefreshToken tokenB = service.generateRefreshToken(jsmith, "foobar");
+        RefreshToken tokenB = service.generateRefreshToken(jsmith);
         RefreshToken tokenC = service.generateRefreshToken(xsmith);
 
         MemcachedClient client = getMemcachedClient();
         client.set("foobar", 30, "hi").get();
 
-        final Map<String, List<RefreshToken>> tokenMap = service.listRefreshTokens();
+        final Map<Long, List<RefreshToken>> tokenMap = service.listRefreshTokens();
         Assert.assertEquals("User count don't match", 2, tokenMap.size());
 
         final List<RefreshToken> allTokens = tokenMap.values().stream().flatMap(Collection::stream)

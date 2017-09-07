@@ -105,9 +105,6 @@ This library is customizable by the following properties:
 | fraho.jwt.token.priv              | null           | Defines the private key file when using a public / private key signature method. May be null if this service should only verify, but not issue tokens. In this case, any calls to ```generateToken``` or ```generateRefreshToken``` will throw an FeatureNotConfiguredException. To the caller, it will be shown as a UNAUTHORIZED Http StatusCode.|
 | fraho.jwt.token.pub               | null           | Defines the public key file when using a public / private key signature method|
 | fraho.jwt.refresh.cache-impl      | null           | Defines the implemenation for refresh token storage. The specified class has to implement the [RefreshTokenStore](base/src/main/java/eu/fraho/spring/securityJwt/service/RefreshTokenStore.java) Interface. To disable the refresh tokens at all use null as value.<br>You have to add at least one of the optional dependencies below to add refresh token support.<br>Please see module READMEs for valid values.|
-| fraho.jwt.refresh.defaultDeviceId | __default      | Change the default deviceId used for storing and access refresh tokens when not specified by the client.|
-| fraho.jwt.refresh.delimiter       | ;              | Specify the delimiter for refresh token stores that don't support multiple fields (like memcache or internal). This separator will be used to create a unique key, simply concatinating the username, deviceId and token using this delimiter.|
-| fraho.jwt.refresh.deviceIdLength  | 32             | Maximum length of device ids for refresh tokens. Any longer strings will be truncated to this length.|
 | fraho.jwt.refresh.expiration      | 1 day          | How long are refresh tokens valid? For details on how this field has to specified see [TimeWithPeriod](base/src/main/java/eu/fraho/spring/securityJwt/dto/TimeWithPeriod.java)|
 | fraho.jwt.refresh.length          | 24             | Defines the length of refresh tokens in bytes, without the base64 encoding|
 | fraho.totp.length                 | 16             | Defines the length of the generated TOTP secrets|
@@ -179,8 +176,7 @@ Request a token (login):
 <   },
 <   "refreshToken": {
 <     "token": "5bYNdXEGQRzz6xD4yFmw2wNPjXAh+wMc",
-<     "expiresIn": 604800,
-<     "deviceId": "__default"
+<     "expiresIn": 604800
 <   }
 < }
 ```
@@ -244,8 +240,7 @@ Use refresh token when token expired:
 <   },
 <   "refreshToken": {
 <     "token": "U3LFL8dVZAeAp8Js6db2zrHGPfGslIeQ",
-<     "expiresIn": 604800,
-<     "deviceId": "__default"
+<     "expiresIn": 604800
 <   }
 < }
 ```
