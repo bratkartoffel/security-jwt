@@ -2,6 +2,7 @@
 
 ### 1.1.0 (not yet released)
 * (base) Make JwtUser extendable (#20)
+* (base) Make rest endpoints configurable (#19)
 
 ### 1.0.0 (2017-09-05)
 * (all) Add spring configuration properties support for IDE auto-completion

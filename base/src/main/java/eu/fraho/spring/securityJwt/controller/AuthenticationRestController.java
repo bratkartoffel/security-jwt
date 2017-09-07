@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/auth", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AuthenticationRestController {
@@ -47,7 +47,7 @@ public class AuthenticationRestController {
     @NonNull
     private final TotpService totpService;
 
-    @RequestMapping("/refresh")
+    @RequestMapping("${fraho.jwt.refresh.path:/auth/refresh}")
     @ApiOperation("Use a previously fetched refresh token to create a new access token")
     @ApiResponses({
             @ApiResponse(code = 200, message = "Generated token"),
@@ -80,7 +80,7 @@ public class AuthenticationRestController {
         return ResponseEntity.ok(body);
     }
 
-    @RequestMapping("/login")
+    @RequestMapping("${fraho.jwt.token.path:/auth/login}")
     @ApiOperation("Create a new token using the supplied credentials")
     @ApiResponses({
             @ApiResponse(code = 200, message = "Generated token"),

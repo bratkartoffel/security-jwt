@@ -58,6 +58,11 @@ public class JwtRefreshConfiguration implements InitializingBean {
      */
     private Class<? extends RefreshTokenStore> cacheImpl = NullTokenStore.class;
 
+    /**
+     * Sets the path for the RestController, defining the endpoint for refresh requests.
+     */
+    private String path = "/auth/refresh";
+
     @Override
     public void afterPropertiesSet() {
         // check refresh token length

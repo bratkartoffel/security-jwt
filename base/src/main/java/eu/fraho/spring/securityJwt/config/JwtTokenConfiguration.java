@@ -73,6 +73,11 @@ public class JwtTokenConfiguration implements InitializingBean {
      */
     private String issuer = "fraho-security";
 
+    /**
+     * Sets the path for the RestController, defining the endpoint for login requests.
+     */
+    private String path = "/auth/login";
+
     @Setter(AccessLevel.NONE)
     private JWSAlgorithm jwsAlgorithm;
 
