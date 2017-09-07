@@ -7,6 +7,7 @@
 package eu.fraho.spring.securityJwt.it.spring;
 
 import eu.fraho.spring.securityJwt.dto.JwtUser;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,11 +25,14 @@ public class UserDetailsServiceTestImpl implements UserDetailsService {
     private int noRefreshAccessCount = 0;
 
     @Autowired
-    private PasswordEncoder passwordEncoder = null;
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private ObjectFactory<JwtUser> jwtUser;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        JwtUser user = new JwtUser();
+        JwtUser user = jwtUser.getObject();
         user.setUsername(username);
         user.setPassword(passwordEncoder.encode(username));
         user.setAccountNonExpired(true);

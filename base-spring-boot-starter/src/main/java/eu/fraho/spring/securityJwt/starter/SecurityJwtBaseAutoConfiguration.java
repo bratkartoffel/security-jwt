@@ -8,17 +8,20 @@ package eu.fraho.spring.securityJwt.starter;
 
 import eu.fraho.spring.securityJwt.config.*;
 import eu.fraho.spring.securityJwt.controller.AuthenticationRestController;
+import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.password.CryptPasswordEncoder;
 import eu.fraho.spring.securityJwt.service.JwtTokenService;
 import eu.fraho.spring.securityJwt.service.JwtTokenServiceImpl;
 import eu.fraho.spring.securityJwt.service.TotpService;
 import eu.fraho.spring.securityJwt.service.TotpServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -64,7 +67,7 @@ public class SecurityJwtBaseAutoConfiguration {
     @Bean
     public JwtTokenService jwtTokenService() {
         log.debug("Register JwtTokenService");
-        return new JwtTokenServiceImpl(jwtTokenConfiguration(), jwtRefreshConfiguration());
+        return new JwtTokenServiceImpl(jwtTokenConfiguration(), jwtRefreshConfiguration(), this::jwtUser);
     }
 
     @Bean
@@ -72,6 +75,14 @@ public class SecurityJwtBaseAutoConfiguration {
     public PasswordEncoder passwordEncoder() {
         log.debug("Register CryptPasswordEncoder");
         return new CryptPasswordEncoder(cryptConfiguration());
+    }
+
+    @Bean
+    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
+    @ConditionalOnMissingBean
+    public JwtUser jwtUser() {
+        log.debug("Register JwtUser");
+        return new JwtUser();
     }
 
     @Bean

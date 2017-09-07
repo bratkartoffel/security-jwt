@@ -1,6 +1,7 @@
 # Changelog
 
-### 1.0.1 (not yet released)
+### 1.1.0 (not yet released)
+* (base) Make JwtUser extendable (#20)
 * (base) Make rest endpoints configurable (#19)
 
 ### 1.0.0 (2017-09-05)

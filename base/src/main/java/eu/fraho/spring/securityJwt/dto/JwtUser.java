@@ -9,20 +9,27 @@ package eu.fraho.spring.securityJwt.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Component
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Getter
 @Setter
 @EqualsAndHashCode(of = {"id", "username"})
 @ToString(of = {"id", "username", "apiAccessAllowed", "authorities"})
 @NoArgsConstructor
+@Slf4j
 public class JwtUser implements UserDetails, CredentialsContainer {
     private Long id = -1L;
 
@@ -47,20 +54,6 @@ public class JwtUser implements UserDetails, CredentialsContainer {
 
     private boolean apiAccessAllowed = false;
 
-    @SuppressWarnings("unchecked")
-    public static JwtUser fromClaims(JWTClaimsSet claims) {
-        JwtUser user = new JwtUser();
-        user.setUsername(claims.getSubject());
-        final List<String> claimAuthorities = (List<String>) claims.getClaim("authorities");
-        final List<GrantedAuthority> newAuthorities = new ArrayList<>();
-        for (String authority : claimAuthorities) {
-            newAuthorities.add(new SimpleGrantedAuthority(authority));
-        }
-        user.setAuthorities(newAuthorities);
-        user.setId(Long.valueOf(String.valueOf(claims.getClaim("uid"))));
-        return user;
-    }
-
     @Override
     public void eraseCredentials() {
         password = null;
@@ -77,6 +70,18 @@ public class JwtUser implements UserDetails, CredentialsContainer {
                 .subject(getUsername())
                 .claim("uid", getId())
                 .claim("authorities", authorities);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void applyClaims(JWTClaimsSet claims) {
+        setUsername(claims.getSubject());
+        final List<String> claimAuthorities = (List<String>) claims.getClaim("authorities");
+        final List<GrantedAuthority> newAuthorities = new ArrayList<>();
+        for (String authority : claimAuthorities) {
+            newAuthorities.add(new SimpleGrantedAuthority(authority));
+        }
+        setAuthorities(newAuthorities);
+        setId(Long.valueOf(String.valueOf(claims.getClaim("uid"))));
     }
 
     public Optional<String> getTotpSecret() {
