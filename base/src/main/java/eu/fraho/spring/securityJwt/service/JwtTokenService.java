@@ -68,6 +68,7 @@ public interface JwtTokenService {
      * @return The validity of newly created access tokens in seconds
      */
     @NotNull
+    @Deprecated
     Integer getExpiration();
 
     /**

@@ -66,6 +66,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
 
     @Override
     @NotNull
+    @Deprecated
     public Integer getExpiration() {
         return tokenConfig.getExpiration().toSeconds();
     }
@@ -116,7 +117,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
                 claims);
 
         token.sign(tokenConfig.getSigner());
-        return new AccessToken(token.serialize(), getExpiration());
+        return new AccessToken(token.serialize(), tokenConfig.getExpiration().toSeconds());
     }
 
     @NotNull

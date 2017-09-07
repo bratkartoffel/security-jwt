@@ -61,6 +61,7 @@ public class NullTokenStoreTest {
     }
 
     @Test(expected = FeatureNotConfiguredException.class)
+    @Deprecated
     public void testGetRefreshExpiration() throws Exception {
         getNewInstance().getRefreshExpiration();
     }
