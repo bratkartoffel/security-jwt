@@ -6,59 +6,59 @@
  */
 package eu.fraho.spring.securityJwt.it.spring;
 
+import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("unused")
 @Slf4j
 public class MockTokenStore implements RefreshTokenStore {
     private String activeToken = null;
+    private JwtUser activeUser = null;
 
     @Override
-    public void saveToken(@NotNull String username, @NotNull String deviceId, @NotNull String token) {
-        activeToken = username + deviceId + token;
+    public void saveToken(@NotNull JwtUser user, @NotNull String token) {
+        activeToken = token;
+        activeUser = user;
     }
 
     @Override
-    public boolean useToken(@NotNull String username, @NotNull String deviceId, @NotNull String token) {
-        String toCheck = username + deviceId + token;
-        return Optional.ofNullable(activeToken).map(toCheck::equals).orElse(false);
+    @SuppressWarnings("unchecked")
+    public <T extends JwtUser> Optional<T> useToken(@NotNull String token) {
+        Optional<T> result = Optional.empty();
+        if (Objects.equals(token, activeToken)) {
+            result = Optional.ofNullable((T) activeUser);
+            activeToken = null;
+            activeUser = null;
+        }
+        return result;
     }
 
-    @NotNull
     @Override
-    public List<RefreshToken> listTokens(@NotNull String username) {
+    public @NotNull List<RefreshToken> listTokens(@NotNull JwtUser user) {
         return Collections.emptyList();
     }
 
     @NotNull
     @Override
-    public Map<String, List<RefreshToken>> listTokens() {
+    public Map<Long, List<RefreshToken>> listTokens() {
         return Collections.emptyMap();
     }
 
     @Override
-    public boolean revokeToken(@NotNull String username, @NotNull RefreshToken token) {
+    public boolean revokeToken(@NotNull String token) {
         return false;
     }
 
     @Override
-    public int revokeTokens(@NotNull String username) {
+    public int revokeTokens(@NotNull JwtUser user) {
         return 0;
-    }
-
-    @Override
-    public boolean revokeToken(@NotNull String username, @NotNull String deviceId) {
-        return false;
     }
 
     @Override

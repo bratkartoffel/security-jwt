@@ -14,13 +14,11 @@ import java.time.ZonedDateTime;
 
 @SuppressWarnings("JpaDataSourceORMInspection")
 @Entity
-@Table(name = "jwt_refresh", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"username", "deviceId"})
-})
+@Table(name = "jwt_refresh")
 @Getter
 @Setter
-@EqualsAndHashCode(of = {"username", "deviceId", "token"})
-@ToString(of = {"id", "username", "deviceId"})
+@EqualsAndHashCode(of = {"userId", "username", "token"})
+@ToString(of = {"id", "userId", "username", "token"})
 @NoArgsConstructor
 public class RefreshTokenEntity {
     @Id
@@ -35,17 +33,18 @@ public class RefreshTokenEntity {
     private ZonedDateTime created = ZonedDateTime.now();
 
     @NotNull
+    private Long userId;
+
+    @NotNull
     private String username;
 
     @NotNull
-    private String deviceId;
-
-    @NotNull
+    @Column(unique = true)
     private String token;
 
-    public RefreshTokenEntity(String username, String deviceId, String token) {
+    public RefreshTokenEntity(Long userId, String username, String token) {
+        this.userId = userId;
         this.username = username;
-        this.deviceId = deviceId;
         this.token = token;
     }
 }

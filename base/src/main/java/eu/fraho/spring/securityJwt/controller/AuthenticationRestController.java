@@ -30,6 +30,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
@@ -56,23 +58,25 @@ public class AuthenticationRestController {
     })
     public ResponseEntity<JwtAuthenticationResponse> refresh(@RequestBody JwtRefreshRequest refreshRequest) throws JOSEException {
         if (!jwtTokenUtil.isRefreshTokenSupported()) {
-            log.info("Refresh token support is disabled ({} asked)", refreshRequest.getUsername());
+            log.info("Refresh token support is disabled");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        if (!jwtTokenUtil.useRefreshToken(refreshRequest.getUsername(), refreshRequest.getDeviceId().orElse(null), refreshRequest.getRefreshToken())) {
-            log.info("Using refresh token failed for {}", refreshRequest.getUsername());
+        Optional<JwtUser> jwtUser = jwtTokenUtil.useRefreshToken(refreshRequest.getRefreshToken());
+        if (!jwtUser.isPresent()) {
+            log.info("Using refresh token failed");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
+        final JwtUser userDetails = jwtUser.get();
+        log.debug("User {} successfully used refresh token, checking database", userDetails.getUsername());
 
-        final JwtUser userDetails = (JwtUser) userDetailsService.loadUserByUsername(refreshRequest.getUsername());
         if (!userDetails.isApiAccessAllowed()) {
-            log.info("User {} may no longer access api", refreshRequest.getUsername());
+            log.info("User {} may no longer access api", userDetails.getUsername());
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        log.debug("Generating tokens");
+        log.debug("Generating new tokens for {}", userDetails.getUsername());
         final AccessToken accessToken = jwtTokenUtil.generateToken(userDetails);
-        final RefreshToken refreshToken = jwtTokenUtil.generateRefreshToken(refreshRequest.getUsername(), refreshRequest.getDeviceId().orElse(null));
+        final RefreshToken refreshToken = jwtTokenUtil.generateRefreshToken(userDetails);
 
         // Return the token
         JwtAuthenticationResponse body = new JwtAuthenticationResponse(accessToken, refreshToken);
@@ -111,7 +115,7 @@ public class AuthenticationRestController {
         final AccessToken accessToken = jwtTokenUtil.generateToken(userDetails);
         final RefreshToken refreshToken;
         if (jwtTokenUtil.isRefreshTokenSupported()) {
-            refreshToken = jwtTokenUtil.generateRefreshToken(authenticationRequest.getUsername(), authenticationRequest.getDeviceId().orElse(null));
+            refreshToken = jwtTokenUtil.generateRefreshToken(userDetails);
         } else {
             refreshToken = null;
         }

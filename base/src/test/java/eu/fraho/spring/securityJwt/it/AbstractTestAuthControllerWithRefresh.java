@@ -11,7 +11,6 @@ import eu.fraho.spring.securityJwt.it.spring.UserDetailsServiceTestImpl;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -52,7 +51,7 @@ public abstract class AbstractTestAuthControllerWithRefresh extends AbstractTest
         String token = getRefreshToken();
         req = MockMvcRequestBuilders.post(AUTH_REFRESH)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"username\":\"user\",\"refreshToken\":\"" + token + "\"}")
+                .content("{\"refreshToken\":\"" + token + "\"}")
                 .accept(MediaType.APPLICATION_JSON);
 
         getMockMvc().perform(req)
@@ -74,7 +73,7 @@ public abstract class AbstractTestAuthControllerWithRefresh extends AbstractTest
 
         req = MockMvcRequestBuilders.post(AUTH_REFRESH)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"username\":\"noRefresh\",\"refreshToken\":\"" + token + "\"}")
+                .content("{\"refreshToken\":\"" + token + "\"}")
                 .accept(MediaType.APPLICATION_JSON);
 
         getMockMvc().perform(req)
@@ -83,81 +82,16 @@ public abstract class AbstractTestAuthControllerWithRefresh extends AbstractTest
     }
 
     @Test
-    public void testRefreshWithWrongDeviceId() throws Exception {
+    public void testMultipleRefreshTokens() throws Exception {
         MockHttpServletRequestBuilder req;
 
-        String token = getRefreshToken();
-        req = MockMvcRequestBuilders.post(AUTH_REFRESH)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"username\":\"user\",\"refreshToken\":\"" + token + "\",\"deviceId\":\"foobar\"}")
-                .accept(MediaType.APPLICATION_JSON);
-
-        getMockMvc().perform(req)
-                .andExpect(MockMvcResultMatchers.status().isUnauthorized())
-                .andReturn();
-    }
-
-    @Test
-    public void testRefreshWithLongDeviceId() throws Exception {
-        MockHttpServletRequestBuilder req;
-
-        final String deviceId = "01234567891234567890";
-        String token = getRefreshToken(deviceId);
-        req = MockMvcRequestBuilders.post(AUTH_REFRESH)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"username\":\"user\",\"refreshToken\":\"" + token + "\",\"deviceId\":\"" + deviceId + "\"}")
-                .accept(MediaType.APPLICATION_JSON);
-
-        Assert.assertTrue("DeviceID not truncated", getMockMvc().perform(req)
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andReturn().getResponse().getContentAsString().contains("\"0123456789\""));
-    }
-
-    @Test
-    public void testRefreshWithEmptyDeviceId() throws Exception {
-        MockHttpServletRequestBuilder req;
-
-        final String deviceId = "";
-        String token = getRefreshToken(deviceId);
-        req = MockMvcRequestBuilders.post(AUTH_REFRESH)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"username\":\"user\",\"refreshToken\":\"" + token + "\",\"deviceId\":\"" + deviceId + "\"}")
-                .accept(MediaType.APPLICATION_JSON);
-
-        Assert.assertTrue("DeviceID not default", getMockMvc().perform(req)
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andReturn().getResponse().getContentAsString().contains("\"__default\""));
-    }
-
-    @Test
-    public void testRefreshWithCustomDeviceId() throws Exception {
-        MockHttpServletRequestBuilder req;
-
-        String token = getRefreshToken("foobar");
-        req = MockMvcRequestBuilders.post(AUTH_REFRESH)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"username\":\"user\",\"refreshToken\":\"" + token + "\",\"deviceId\":\"foobar\"}")
-                .accept(MediaType.APPLICATION_JSON);
-
-        getMockMvc().perform(req)
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andReturn();
-    }
-
-    @Test
-    public void testRefreshWithMultipleDeviceIds() throws Exception {
-        MockHttpServletRequestBuilder req;
-
-        String token1 = getRefreshToken("baz");
+        String token1 = getRefreshToken();
         String token2 = getRefreshToken();
 
         // use first token
         req = MockMvcRequestBuilders.post(AUTH_REFRESH)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"username\":\"user\",\"refreshToken\":\"" + token1 + "\",\"deviceId\":\"baz\"}")
+                .content("{\"refreshToken\":\"" + token1 + "\"}")
                 .accept(MediaType.APPLICATION_JSON);
 
         getMockMvc().perform(req)
@@ -168,7 +102,7 @@ public abstract class AbstractTestAuthControllerWithRefresh extends AbstractTest
         // use second token
         req = MockMvcRequestBuilders.post(AUTH_REFRESH)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"username\":\"user\",\"refreshToken\":\"" + token2 + "\"}")
+                .content("{\"refreshToken\":\"" + token2 + "\"}")
                 .accept(MediaType.APPLICATION_JSON);
 
         getMockMvc().perform(req)
@@ -183,7 +117,7 @@ public abstract class AbstractTestAuthControllerWithRefresh extends AbstractTest
 
         req = MockMvcRequestBuilders.post(AUTH_REFRESH)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"username\":\"user\",\"refreshToken\":\"foobar\"}")
+                .content("{\"refreshToken\":\"foobar\"}")
                 .accept(MediaType.APPLICATION_JSON);
 
         getMockMvc().perform(req)
@@ -197,7 +131,7 @@ public abstract class AbstractTestAuthControllerWithRefresh extends AbstractTest
 
         req = MockMvcRequestBuilders.post(AUTH_REFRESH)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"username\":\"userX\",\"refreshToken\":\"foobar\"}")
+                .content("{\"refreshToken\":\"foobar\"}")
                 .accept(MediaType.APPLICATION_JSON);
 
         getMockMvc().perform(req)
@@ -219,10 +153,6 @@ public abstract class AbstractTestAuthControllerWithRefresh extends AbstractTest
                 .getContentAsByteArray();
 
         return String.valueOf(((Map) objectMapper.readValue(body, Map.class).get("refreshToken")).get("token"));
-    }
-
-    protected String getRefreshToken(String deviceId) throws Exception {
-        return getRefreshTokenInternal("{\"username\":\"user\",\"password\":\"user\",\"deviceId\":\"" + deviceId + "\"}");
     }
 
     protected String getRefreshToken() throws Exception {

@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,22 +53,6 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     @Lazy
     @Setter
     private RefreshTokenStore refreshTokenStore;
-
-    @NotNull
-    private String truncateDeviceId(@Nullable String str) {
-        return Optional.ofNullable(str)
-                .map(String::trim)
-                .filter(e -> !e.isEmpty())
-                .map(e -> e.substring(0, Math.min(e.length(), refreshConfig.getDeviceIdLength())))
-                .orElse(refreshConfig.getDefaultDeviceId());
-    }
-
-    @Override
-    @NotNull
-    @Deprecated
-    public Integer getExpiration() {
-        return tokenConfig.getExpiration().toSeconds();
-    }
 
     @Override
     public void afterPropertiesSet() {
@@ -186,25 +169,13 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
 
     @Override
     @NotNull
-    public RefreshToken generateRefreshToken(@NotNull String user) {
-        return generateRefreshToken(user, refreshConfig.getDefaultDeviceId());
-    }
-
-    @Override
-    @NotNull
-    public RefreshToken generateRefreshToken(@NotNull String user, @Nullable String deviceId) {
-        final String devId = truncateDeviceId(deviceId);
+    public RefreshToken generateRefreshToken(JwtUser user) {
         byte[] data = new byte[refreshConfig.getLength()];
         random.nextBytes(data);
         final String token = Base64.getEncoder().encodeToString(data);
 
-        refreshTokenStore.saveToken(user, devId, token);
-        return new RefreshToken(token, refreshConfig.getExpiration().toSeconds(), devId);
-    }
-
-    @Override
-    public boolean useRefreshToken(@NotNull String username, @NotNull String refreshToken) {
-        return useRefreshToken(username, refreshConfig.getDefaultDeviceId(), refreshToken);
+        refreshTokenStore.saveToken(user, token);
+        return new RefreshToken(token, refreshConfig.getExpiration().toSeconds());
     }
 
     @Override
@@ -213,45 +184,44 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     }
 
     @Override
-    public boolean useRefreshToken(@NotNull String username, @NotNull RefreshToken token) {
-        return useRefreshToken(username, token.getDeviceId(), token.getToken());
+    public <T extends JwtUser> Optional<T> useRefreshToken(@NotNull RefreshToken token) {
+        return useRefreshToken(token.getToken());
     }
 
     @Override
-    public boolean useRefreshToken(@NotNull String username, @Nullable String deviceId, @NotNull String refreshToken) {
+    public <T extends JwtUser> Optional<T> useRefreshToken(@NotNull String token) {
         if (tokenConfig.getSigner() == null) {
             throw new FeatureNotConfiguredException("Access token signing is not enabled.");
         }
 
-        final String devId = truncateDeviceId(deviceId);
-        return refreshTokenStore.useToken(username, devId, refreshToken);
+        return refreshTokenStore.useToken(token);
     }
 
     @Override
     @NotNull
-    public Map<String, List<RefreshToken>> listRefreshTokens() {
+    public Map<Long, List<RefreshToken>> listRefreshTokens() {
         return refreshTokenStore.listTokens();
     }
 
     @Override
     @NotNull
-    public List<RefreshToken> listRefreshTokens(@NotNull String username) {
-        return refreshTokenStore.listTokens(username);
+    public List<RefreshToken> listRefreshTokens(@NotNull JwtUser user) {
+        return refreshTokenStore.listTokens(user);
     }
 
     @Override
-    public boolean revokeRefreshToken(@NotNull String username, @NotNull RefreshToken token) {
-        return refreshTokenStore.revokeToken(username, token);
+    public boolean revokeRefreshToken(@NotNull RefreshToken token) {
+        return refreshTokenStore.revokeToken(token.getToken());
     }
 
     @Override
-    public boolean revokeRefreshToken(@NotNull String username, @Nullable String deviceId) {
-        return refreshTokenStore.revokeToken(username, truncateDeviceId(deviceId));
+    public boolean revokeRefreshToken(@NotNull String token) {
+        return refreshTokenStore.revokeToken(token);
     }
 
     @Override
-    public int revokeRefreshTokens(@NotNull String username) {
-        return refreshTokenStore.revokeTokens(username);
+    public int revokeRefreshTokens(@NotNull JwtUser user) {
+        return refreshTokenStore.revokeTokens(user);
     }
 
     @Override

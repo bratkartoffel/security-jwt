@@ -26,13 +26,10 @@ public class TestToken {
 
     @Test
     public void testRefreshToken() {
-        RefreshToken a = new RefreshToken("foobar", 9_999, "none");
-        RefreshToken b = new RefreshToken("foobar", 1_000, "none");
-        RefreshToken c = new RefreshToken("foobar", 1_000, "baz");
+        RefreshToken a = new RefreshToken("foobar", 9_999);
+        RefreshToken b = new RefreshToken("foobar", 1_000);
 
         Assert.assertEquals("ExpiresIn should not matter in equal", a, b);
-        Assert.assertNotEquals("DeviceID should matter in equal", a, c);
         Assert.assertEquals("ExpiresIn should not matter in hashCode", a.hashCode(), b.hashCode());
-        Assert.assertNotEquals("DeviceID should matter in hashCode", a.hashCode(), c.hashCode());
     }
 }

@@ -1,5 +1,16 @@
 # Changelog
 
+### 2.0.0 (not yet released)
+* (base) Another great refactoring:
+  * Remove deviceId from everywhere
+    * Clients do no longer need any deviceId for refresh tokens
+    * Getting new tokens with refresh now works solely with refreshToken
+  * Remove ```fraho.jwt.refresh.delimiter```, not needed any more
+  * Remove deprecated JwtTokenService.getExpiration
+  * Remove deprecated RefreshTokenStore.getRefreshExpiration
+  * Reworked RefreshTokenStore interface (use JwtUser instance instead of username)
+  * Reworked JwtTokenService (use JwtUser instance instead of username)
+
 ### 1.1.0 (not yet released)
 * (base) Make JwtUser extendable (#20)
 * (base) Make rest endpoints configurable (#19)

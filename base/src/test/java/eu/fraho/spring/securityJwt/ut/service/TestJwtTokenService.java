@@ -6,6 +6,7 @@
  */
 package eu.fraho.spring.securityJwt.ut.service;
 
+import eu.fraho.spring.securityJwt.config.CryptConfiguration;
 import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
 import eu.fraho.spring.securityJwt.config.JwtTokenConfiguration;
 import eu.fraho.spring.securityJwt.dto.AccessToken;
@@ -13,6 +14,8 @@ import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 import eu.fraho.spring.securityJwt.exceptions.FeatureNotConfiguredException;
 import eu.fraho.spring.securityJwt.it.spring.MockTokenStore;
+import eu.fraho.spring.securityJwt.it.spring.UserDetailsServiceTestImpl;
+import eu.fraho.spring.securityJwt.password.CryptPasswordEncoder;
 import eu.fraho.spring.securityJwt.service.JwtTokenService;
 import eu.fraho.spring.securityJwt.service.JwtTokenServiceImpl;
 import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
@@ -23,6 +26,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -36,6 +41,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 public class TestJwtTokenService {
@@ -116,9 +122,24 @@ public class TestJwtTokenService {
     }
 
     @NotNull
+    protected CryptConfiguration getCryptConfiguration() {
+        return new CryptConfiguration();
+    }
+
+    @NotNull
+    protected PasswordEncoder getPasswordEncoder() {
+        return new CryptPasswordEncoder(getCryptConfiguration());
+    }
+
+    @NotNull
+    protected UserDetailsService getUserdetailsService() {
+        return new UserDetailsServiceTestImpl(getPasswordEncoder(), JwtUser::new);
+    }
+
+    @NotNull
     protected JwtUser getJwtUser() {
         JwtUser user = new JwtUser();
-        user.setId(13_42L);
+        user.setId(ThreadLocalRandom.current().nextLong());
         user.setUsername("John Snow");
         user.setAuthorities(Collections.singletonList(new SimpleGrantedAuthority("HOUSE_STARK")));
         return user;
