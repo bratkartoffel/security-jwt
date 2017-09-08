@@ -7,7 +7,6 @@
 package eu.fraho.spring.security.base;
 
 import eu.fraho.spring.security.base.config.*;
-import eu.fraho.spring.securityJwt.config.*;
 import eu.fraho.spring.security.base.controller.AuthenticationRestController;
 import eu.fraho.spring.security.base.dto.JwtUser;
 import eu.fraho.spring.security.base.password.CryptPasswordEncoder;

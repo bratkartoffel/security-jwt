@@ -10,8 +10,6 @@ import com.nimbusds.jose.JOSEException;
 import eu.fraho.spring.security.base.dto.*;
 import eu.fraho.spring.security.base.service.JwtTokenService;
 import eu.fraho.spring.security.base.service.TotpService;
-import eu.fraho.spring.securityJwt.dto.*;
-import eu.fraho.spring.security_jwt.dto.*;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
