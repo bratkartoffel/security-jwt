@@ -10,17 +10,25 @@ import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("unused")
 @Slf4j
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MockTokenStore implements RefreshTokenStore {
     private String activeToken = null;
     private JwtUser activeUser = null;
+
+    @NonNull
+    private UserDetailsService userDetailsService;
 
     @Override
     public void saveToken(@NotNull JwtUser user, @NotNull String token) {
@@ -30,10 +38,13 @@ public class MockTokenStore implements RefreshTokenStore {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends JwtUser> Optional<T> useToken(@NotNull String token) {
-        Optional<T> result = Optional.empty();
+    public Optional<JwtUser> useToken(@NotNull String token) {
+        Optional<JwtUser> result = Optional.empty();
         if (Objects.equals(token, activeToken)) {
-            result = Optional.ofNullable((T) activeUser);
+            result = Optional.ofNullable(activeUser)
+                    .map(JwtUser::getUsername)
+                    .map(userDetailsService::loadUserByUsername)
+                    .map(JwtUser.class::cast);
             activeToken = null;
             activeUser = null;
         }
@@ -41,7 +52,8 @@ public class MockTokenStore implements RefreshTokenStore {
     }
 
     @Override
-    public @NotNull List<RefreshToken> listTokens(@NotNull JwtUser user) {
+    @NotNull
+    public List<RefreshToken> listTokens(@NotNull JwtUser user) {
         return Collections.emptyList();
     }
 

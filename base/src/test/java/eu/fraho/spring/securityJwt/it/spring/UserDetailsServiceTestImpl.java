@@ -19,13 +19,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UserDetailsServiceTestImpl implements UserDetailsService {
     public static final String BASE32_TOTP = "MZXW6YTBOI======";
 
-    private int noRefreshAccessCount = 0;
+    private AtomicBoolean apiAccessAllowed = new AtomicBoolean(true);
 
     @NonNull
     private PasswordEncoder passwordEncoder;
@@ -49,13 +50,7 @@ public class UserDetailsServiceTestImpl implements UserDetailsService {
         }
         user.setApiAccessAllowed(true);
         if ("noRefresh".equals(username)) {
-            noRefreshAccessCount++;
-            if (noRefreshAccessCount % 3 == 0) {
-                // login 2 times, refresh should fail
-                user.setApiAccessAllowed(false);
-            }
-        } else {
-            noRefreshAccessCount = 0;
+            user.setApiAccessAllowed(apiAccessAllowed.get());
         }
 
         if ("user_totp".equals(username)) {
@@ -63,5 +58,9 @@ public class UserDetailsServiceTestImpl implements UserDetailsService {
         }
 
         return user;
+    }
+
+    public void setApiAccessAllowed(boolean b) {
+        apiAccessAllowed.set(b);
     }
 }

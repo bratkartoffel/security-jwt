@@ -116,7 +116,7 @@ public class TestJwtTokenService {
 
     @NotNull
     protected RefreshTokenStore getRefreshStore() {
-        MockTokenStore tokenStore = new MockTokenStore();
+        MockTokenStore tokenStore = new MockTokenStore(getUserdetailsService());
         tokenStore.afterPropertiesSet();
         return tokenStore;
     }

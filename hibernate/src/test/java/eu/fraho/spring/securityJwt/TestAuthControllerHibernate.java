@@ -6,15 +6,12 @@
  */
 package eu.fraho.spring.securityJwt;
 
-import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.it.AbstractTestAuthControllerWithRefresh;
-import eu.fraho.spring.securityJwt.it.spring.UserDetailsServiceTestImpl;
 import eu.fraho.spring.securityJwt.spring.TestHibernateApiApplication;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.password.StandardPasswordEncoder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +23,4 @@ import org.springframework.transaction.annotation.Transactional;
 //@Commit
 @Transactional
 public class TestAuthControllerHibernate extends AbstractTestAuthControllerWithRefresh {
-    public TestAuthControllerHibernate() {
-        super(new UserDetailsServiceTestImpl(new StandardPasswordEncoder(), JwtUser::new));
-    }
 }
