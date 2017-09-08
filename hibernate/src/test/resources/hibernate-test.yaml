@@ -10,4 +10,4 @@ spring:
     password:
     driver-class-name: org.h2.Driver
 
-fraho.jwt.refresh.cache-impl: eu.fraho.spring.securityJwt.service.HibernateTokenStore
+fraho.jwt.refresh.cache-impl: eu.fraho.spring.security.hibernate.HibernateTokenStore

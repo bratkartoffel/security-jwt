@@ -10,6 +10,9 @@
   * Remove deprecated RefreshTokenStore.getRefreshExpiration
   * Reworked RefreshTokenStore interface (use JwtUser instance instead of username)
   * Reworked JwtTokenService (use JwtUser instance instead of username)
+  * Renamed the ```securityJwt``` package to ```security```
+  * Moved every module into a separate package accoring to name
+    * e.g.: ```eu.fraho.spring.securityJwt.HibernateTokenStore``` to ```eu.fraho.spring.security.hibernate.HibernateTokenStore```
 
 ### 1.1.0 (not yet released)
 * (base) Make JwtUser extendable (#20)

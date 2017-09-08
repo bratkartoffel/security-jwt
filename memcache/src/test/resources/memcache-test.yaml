@@ -1,3 +1,1 @@
-fraho.jwt.refresh:
-  cache-impl: eu.fraho.spring.securityJwt.service.MemcacheTokenStore
-  delimiter: "+:~~[@#°§^"
+fraho.jwt.refresh.cache-impl: eu.fraho.spring.security.memcache.MemcacheTokenStore
