@@ -4,7 +4,7 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.security_jwt.starter;
+package eu.fraho.spring.security.base;
 
 import eu.fraho.spring.security.base.service.NullTokenStore;
 import eu.fraho.spring.security.base.service.RefreshTokenStore;

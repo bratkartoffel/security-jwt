@@ -8,8 +8,8 @@ package eu.fraho.spring.security.internal;
 
 import eu.fraho.spring.security.base.config.JwtRefreshConfiguration;
 import eu.fraho.spring.security.base.service.RefreshTokenStore;
-import eu.fraho.spring.security_jwt.starter.SecurityJwtBaseAutoConfiguration;
-import eu.fraho.spring.security_jwt.starter.SecurityJwtNoRefreshStoreAutoConfiguration;
+import eu.fraho.spring.security.base.SecurityJwtBaseAutoConfiguration;
+import eu.fraho.spring.security.base.SecurityJwtNoRefreshStoreAutoConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;

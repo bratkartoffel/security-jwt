@@ -4,7 +4,7 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.security_jwt.starter;
+package eu.fraho.spring.security.base;
 
 import eu.fraho.spring.security.base.config.*;
 import eu.fraho.spring.securityJwt.config.*;
