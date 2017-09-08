@@ -70,6 +70,11 @@ subprojects {
         testCompile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     }
 
+    // do not abort on test failures
+    test {
+        ignoreFailures = true
+    }
+
     // propdeps
     compileJava.dependsOn(processResources)
 
@@ -114,6 +119,11 @@ if (project.hasProperty('release')) {
     apply plugin: 'io.codearte.nexus-staging'
 
     subprojects {
+        // abort on test failures on releasing
+        test {
+            ignoreFailures = false
+        }
+
         apply plugin: 'signing'
 
         // Signature of artifacts

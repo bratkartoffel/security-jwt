@@ -8,7 +8,6 @@ package eu.fraho.spring.securityJwt.it;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.fraho.spring.securityJwt.it.spring.UserDetailsServiceTestImpl;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -24,10 +23,10 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public abstract class AbstractTestAuthControllerWithRefresh extends AbstractTestAuthController {
-    @NonNull
-    private final UserDetailsServiceTestImpl userDetailsService;
-
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Autowired
+    private UserDetailsServiceTestImpl userDetailsService;
 
     @Test
     public void testLoginSuccess() throws Exception {
@@ -69,7 +68,9 @@ public abstract class AbstractTestAuthControllerWithRefresh extends AbstractTest
     public void testRefreshDisabledAccount() throws Exception {
         MockHttpServletRequestBuilder req;
 
+        userDetailsService.setApiAccessAllowed(true);
         final String token = getRefreshTokenU("noRefresh");
+        userDetailsService.setApiAccessAllowed(false);
 
         req = MockMvcRequestBuilders.post(AUTH_REFRESH)
                 .contentType(MediaType.APPLICATION_JSON)
