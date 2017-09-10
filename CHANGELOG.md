@@ -5,6 +5,7 @@
 * (base) Make rest endpoints configurable (#19)
 * (base) Mark JwtTokenService.getExpiration as deprecated
 * (base) Mark RefreshTokenStore.getRefreshExpiration as deprecated
+* (doc) Create a plantuml sequence diagram for README
 
 ### 1.0.0 (2017-09-05)
 * (all) Add spring configuration properties support for IDE auto-completion

@@ -140,8 +140,7 @@ gradlew.bat assemble
 
 # JWT Request Flow
 ## UML
-[![Build Status](doc/login.png)](doc/login.png)
-[![Build Status](doc/refresh.png)](doc/refresh.png)
+[![Sequence diagram](doc/sequence.png)](doc/sequence.png)
 
 ## HTTP-Requests
 Request a token (login):
