@@ -1,0 +1,69 @@
+@startuml
+
+actor "User" as u
+participant "Microservice" as ms
+participant "JWT Library" as jwtl
+database "JDBC\nDatabase" as db
+database "RefreshTokenStore\nmodule" as rstore
+
+== Fetching tokens ==
+activate u
+u -> ms: POST /auth/login\n(username, password)
+activate ms
+ms -> jwtl: validate credentials
+activate jwtl
+jwtl -> db: validate credentials\nwith JDBC
+activate db
+db --> jwtl: user details
+jwtl -> jwtl: create tokens
+deactivate db
+
+alt refresh-module
+jwtl -> rstore: store refresh token
+jwtl --> u: 200 Ok\n(AccessToken, RefreshToken)
+else no-module
+jwtl --> u: 200 Ok\n(AccessToken)
+end
+deactivate ms
+deactivate jwtl
+
+
+== Using tokens ==
+u -> ms: GET /foobar\nAuthorization: AccessToken
+activate ms
+ms -> jwtl: Check authorization
+activate jwtl
+jwtl -> jwtl: Parse token
+jwtl -> jwtl: Validate claims\n(alg, iat, nbf, exp)
+jwtl -> jwtl: Validate signature
+jwtl --> ms: OK
+deactivate jwtl
+ms -> ms: Some business logic
+ms --> u: Result of call
+deactivate jwtl
+deactivate ms
+
+== Using refresh token ==
+u -> ms: POST /auth/refresh\n(RefreshToken)
+activate ms
+ms -> jwtl: use token
+activate jwtl
+jwtl -> rstore: validate token
+activate rstore
+rstore -> rstore: convert token to userdetails
+rstore -> rstore: delete token
+rstore --> jwtl: userdetails
+deactivate rstore
+jwtl -> db: validate userdetails\nwith JDBC
+activate db
+db --> jwtl: ok
+deactivate db
+jwtl -> jwtl: create tokens
+jwtl -> rstore: store refresh token
+jwtl --> u: 200 Ok\n(AccessToken, RefreshToken)
+
+deactivate ms
+deactivate jwtl
+deactivate u
+
+@enduml
