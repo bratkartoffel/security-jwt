@@ -64,9 +64,14 @@ public class JwtRefreshConfiguration implements InitializingBean {
             cacheImpl = NullTokenStore.class;
         }
 
+        // cookie path may not be empty (required for controller)
+        if (path == null || path.isEmpty()) {
+            throw new IllegalArgumentException("The path for refresh cookies may not be empty");
+        }
+
         // cookie refresh path has to be different to normal path
         if (Objects.equals(path, cookie.getPath())) {
-            throw new IllegalArgumentException("The paths for regular refresh and cookie refresh have to be different!");
+            throw new IllegalArgumentException("The paths for regular refresh and cookie refresh have to be different");
         }
     }
 }

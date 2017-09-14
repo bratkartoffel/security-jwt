@@ -201,6 +201,8 @@ public class JwtTokenConfiguration implements InitializingBean {
             } else {
                 tryLoadHmac();
             }
+        } catch (IllegalArgumentException iae) {
+            throw iae;
         } catch (Exception ex) {
             throw new IllegalArgumentException("Unable to load keys", ex);
         }

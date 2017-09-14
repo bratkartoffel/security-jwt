@@ -163,6 +163,7 @@ public class AuthenticationRestController {
             cookie.setHttpOnly(configuration.isHttpOnly());
             cookie.setMaxAge(token.getExpiresIn());
             response.addCookie(cookie);
+            log.debug("Sending cookie: name={}, secure={}, path={}, httponly={}", cookie.getName(), cookie.getSecure(), cookie.getPath(), cookie.isHttpOnly());
         }
     }
 }

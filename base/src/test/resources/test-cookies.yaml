@@ -1,0 +1,9 @@
+fraho.jwt:
+  refresh:
+    cache-impl: eu.fraho.spring.securityJwt.it.spring.MockTokenStore
+    cookie.enabled: true
+    cookie.names: refresh
+  token:
+    header.enabled: false
+    cookie.enabled: true
+    cookie.names: access

@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.fraho.spring.securityJwt.it.spring.UserDetailsServiceTestImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -37,10 +38,12 @@ public abstract class AbstractTestAuthControllerWithRefresh extends AbstractTest
                 .content("{\"username\":\"user\",\"password\":\"user\"}")
                 .accept(MediaType.APPLICATION_JSON);
 
-        getMockMvc().perform(req)
+        String body = getMockMvc().perform(req)
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andReturn();
+                .andReturn().getResponse().getContentAsString();
+
+        Assert.assertTrue("Refresh token was not generated", body.contains("\"refreshToken\":{\""));
     }
 
     @Test
