@@ -8,7 +8,6 @@ package eu.fraho.spring.securityJwt.service;
 
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
-import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 import eu.fraho.spring.securityJwt.exceptions.FeatureNotConfiguredException;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -52,12 +51,6 @@ public class NullTokenStore implements RefreshTokenStore {
 
     @Override
     public int revokeTokens() {
-        throw new FeatureNotConfiguredException("No implementation configured");
-    }
-
-    @NotNull
-    @Deprecated
-    public TimeWithPeriod getRefreshExpiration() {
         throw new FeatureNotConfiguredException("No implementation configured");
     }
 
