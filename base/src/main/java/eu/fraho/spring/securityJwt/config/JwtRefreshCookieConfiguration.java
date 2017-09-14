@@ -20,7 +20,7 @@ public class JwtRefreshCookieConfiguration implements CookieConfiguration {
     /**
      * Enables support for tokens sent as a cookie.
      * <p>
-     * Please not that tokens sent as headers always take precedence.
+     * Please note that tokens sent as headers always take precedence.
      */
     private boolean enabled = false;
 
