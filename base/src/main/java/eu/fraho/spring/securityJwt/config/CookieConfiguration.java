@@ -26,16 +26,16 @@ public interface CookieConfiguration extends InitializingBean {
 
     default void afterPropertiesSet() {
         if (isEnabled() && getNames().length == 0) {
-            throw new IllegalArgumentException("You have to specify at least one cookie name to enable this feature!");
+            throw new IllegalArgumentException("You have to specify at least one cookie name to enable this feature");
         }
 
         if (isEnabled()) {
             getLog().info("Enabling authorization support via cookies");
             if (!isHttpOnly()) {
-                getLog().warn("Disabling httpOnly flag for cookies, this is not recommended.");
+                getLog().warn("Disabling httpOnly flag for cookies, this is not recommended");
             }
             if (!isSecure()) {
-                getLog().warn("Disabling secure flag for cookies, this is not recommended.");
+                getLog().warn("Disabling secure flag for cookies, this is not recommended");
             }
         }
     }

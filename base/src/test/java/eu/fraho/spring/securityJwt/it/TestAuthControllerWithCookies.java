@@ -128,6 +128,27 @@ public class TestAuthControllerWithCookies {
 
         String body = getMockMvc().perform(req)
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+                .andExpect(MockMvcResultMatchers.cookie().doesNotExist("access"))
+                .andExpect(MockMvcResultMatchers.cookie().doesNotExist("refresh"))
+                .andReturn().getResponse().getContentAsString();
+
+        Assert.assertTrue("Body was generated", body.isEmpty());
+    }
+
+    @Test
+    public void testRefreshInvalidCookie() throws Exception {
+        MockHttpServletRequestBuilder req;
+        Map<String, Cookie> cookies = getCookies();
+
+        Cookie cookie = cookies.get("refresh");
+        cookie.setValue("foobar");
+        req = MockMvcRequestBuilders.get(AUTH_REFRESH_COOKIES)
+                .cookie(cookie);
+
+        String body = getMockMvc().perform(req)
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+                .andExpect(MockMvcResultMatchers.cookie().doesNotExist("access"))
+                .andExpect(MockMvcResultMatchers.cookie().doesNotExist("refresh"))
                 .andReturn().getResponse().getContentAsString();
 
         Assert.assertTrue("Body was generated", body.isEmpty());
@@ -146,8 +167,6 @@ public class TestAuthControllerWithCookies {
                 .accept(MediaType.APPLICATION_JSON);
 
         return Arrays.stream(getMockMvc().perform(req)
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andReturn()
                 .getResponse()
                 .getCookies()).collect(Collectors.toMap(Cookie::getName, c -> c));

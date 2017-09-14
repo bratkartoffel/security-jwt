@@ -51,7 +51,7 @@ public class JwtRefreshConfigurationTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testEmptyPath() {
         JwtRefreshConfiguration conf = getNewInstance();
         conf.setPath("");
@@ -60,7 +60,34 @@ public class JwtRefreshConfigurationTest {
         } catch (IllegalArgumentException iae) {
             Assert.assertEquals("Wrong message text",
                     "The path for refresh cookies may not be empty", iae.getMessage());
-            throw iae;
+        }
+
+        conf.setPath(null);
+        try {
+            conf.afterPropertiesSet();
+        } catch (IllegalArgumentException iae) {
+            Assert.assertEquals("Wrong message text",
+                    "The path for refresh cookies may not be empty", iae.getMessage());
+        }
+    }
+
+    @Test
+    public void testEmptyNames() {
+        JwtRefreshConfiguration conf = getNewInstance();
+        conf.getCookie().setNames(new String[0]);
+        try {
+            conf.afterPropertiesSet();
+        } catch (IllegalArgumentException iae) {
+            Assert.assertEquals("Wrong message text",
+                    "The path for refresh cookies may not be empty", iae.getMessage());
+        }
+
+        conf.setPath(null);
+        try {
+            conf.afterPropertiesSet();
+        } catch (IllegalArgumentException iae) {
+            Assert.assertEquals("Wrong message text",
+                    "The path for refresh cookies may not be empty", iae.getMessage());
         }
     }
 }
