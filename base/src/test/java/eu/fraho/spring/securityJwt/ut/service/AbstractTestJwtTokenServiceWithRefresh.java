@@ -7,7 +7,7 @@
 package eu.fraho.spring.securityJwt.ut.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.fraho.spring.securityJwt.config.*;
+import eu.fraho.spring.securityJwt.config.JwtTokenConfiguration;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.exceptions.FeatureNotConfiguredException;

@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +47,6 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     private final JwtRefreshConfiguration refreshConfig;
 
     @NonNull
-    private ObjectFactory<JwtUser> jwtUser;
-
-    @NonNull
     private final JwtTokenCookieConfiguration tokenCookieConfiguration;
 
     @NonNull
@@ -56,6 +54,9 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
 
     @NonNull
     private final JwtRefreshCookieConfiguration refreshCookieConfiguration;
+
+    @NonNull
+    private ObjectFactory<JwtUser> jwtUser;
 
     @SuppressWarnings("SpringAutowiredFieldsWarningInspection") // not possible otherwise as this bean is lazy
     @Autowired
@@ -166,21 +167,9 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     public Optional<String> getToken(@NotNull HttpServletRequest request) {
         Optional<String> token = Optional.empty();
         if (tokenHeaderConfiguration.isEnabled()) {
-            token = Arrays.stream(tokenHeaderConfiguration.getNames())
-                    .map(request::getHeader)
-                    .filter(Objects::nonNull)
-                    .findFirst()
-                    .map(e -> e.startsWith("Bearer ") ? e.substring(7) : e);
-        }
-
-        if (!token.isPresent() && tokenCookieConfiguration.isEnabled()) {
-            Cookie[] cookies = request.getCookies();
-            if (cookies != null) {
-                token = Arrays.stream(tokenCookieConfiguration.getNames())
-                        .flatMap(name -> Arrays.stream(cookies).filter(c -> c.getName().equals(name)))
-                        .findFirst()
-                        .map(Cookie::getValue);
-            }
+            token = extractHeaderToken(tokenHeaderConfiguration.getNames(), request);
+        } else if (tokenCookieConfiguration.isEnabled()) {
+            token = extractCookieToken(tokenCookieConfiguration.getNames(), request.getCookies());
         }
         return token;
     }
@@ -189,15 +178,28 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     public Optional<String> getRefreshToken(@NotNull HttpServletRequest request) {
         Optional<String> token = Optional.empty();
         if (refreshCookieConfiguration.isEnabled()) {
-            Cookie[] cookies = request.getCookies();
-            if (cookies != null) {
-                token = Arrays.stream(refreshCookieConfiguration.getNames())
-                        .flatMap(name -> Arrays.stream(cookies).filter(c -> c.getName().equals(name)))
-                        .findFirst()
-                        .map(Cookie::getValue);
-            }
+            token = extractCookieToken(refreshCookieConfiguration.getNames(), request.getCookies());
         }
         return token;
+    }
+
+    private Optional<String> extractHeaderToken(@NotNull String[] names, @NotNull HttpServletRequest request) {
+        return Arrays.stream(names)
+                .map(request::getHeader)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .map(e -> e.startsWith("Bearer ") ? e.substring(7) : e);
+    }
+
+    private Optional<String> extractCookieToken(@NotNull String[] names, @Nullable Cookie[] cookies) {
+        if (cookies == null) {
+            return Optional.empty();
+        }
+        return Arrays.stream(names)
+                .map(String::toLowerCase)
+                .flatMap(name -> Arrays.stream(cookies).filter(c -> Objects.equals(c.getName().toLowerCase(), name)))
+                .findFirst()
+                .map(Cookie::getValue);
     }
 
     @Override
@@ -206,7 +208,6 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
         byte[] data = new byte[refreshConfig.getLength()];
         random.nextBytes(data);
         final String token = Base64.getEncoder().encodeToString(data);
-
         refreshTokenStore.saveToken(user, token);
         return new RefreshToken(token, refreshConfig.getExpiration().toSeconds());
     }
