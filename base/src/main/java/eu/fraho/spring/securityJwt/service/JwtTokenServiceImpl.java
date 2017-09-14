@@ -10,8 +10,7 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
-import eu.fraho.spring.securityJwt.config.JwtTokenConfiguration;
+import eu.fraho.spring.securityJwt.config.*;
 import eu.fraho.spring.securityJwt.dto.AccessToken;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
@@ -27,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.security.SecureRandom;
 import java.text.ParseException;
@@ -47,6 +47,15 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
 
     @NonNull
     private ObjectFactory<JwtUser> jwtUser;
+
+    @NonNull
+    private final JwtTokenCookieConfiguration tokenCookieConfiguration;
+
+    @NonNull
+    private final JwtTokenHeaderConfiguration tokenHeaderConfiguration;
+
+    @NonNull
+    private final JwtRefreshCookieConfiguration refreshCookieConfiguration;
 
     @SuppressWarnings("SpringAutowiredFieldsWarningInspection") // not possible otherwise as this bean is lazy
     @Autowired
@@ -112,19 +121,10 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
         boolean result;
 
         Date now = new Date();
-        Date exp = claims.getExpirationTime();
-        Date nbf = claims.getNotBeforeTime();
-        Date iat = claims.getIssueTime();
+        Date exp = Optional.ofNullable(claims.getExpirationTime()).orElse(new Date(0));
+        Date nbf = Optional.ofNullable(claims.getNotBeforeTime()).orElse(new Date(0));
+        Date iat = Optional.ofNullable(claims.getIssueTime()).orElse(new Date(0));
 
-        if (exp == null) {
-            exp = new Date(0);
-        }
-        if (nbf == null) {
-            nbf = new Date(0);
-        }
-        if (iat == null) {
-            iat = new Date(0);
-        }
         log.debug("Validating claims, now={}, exp={}, nbf={}, iat={}", now, exp, nbf, iat);
 
         result = iat.before(now);
@@ -164,7 +164,40 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
 
     @Override
     public Optional<String> getToken(@NotNull HttpServletRequest request) {
-        return Optional.ofNullable(request.getHeader("Authorization")).map(e -> e.startsWith("Bearer ") ? e.substring("Bearer".length() + 1) : e);
+        Optional<String> token = Optional.empty();
+        if (tokenHeaderConfiguration.isEnabled()) {
+            token = Arrays.stream(tokenHeaderConfiguration.getNames())
+                    .map(request::getHeader)
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .map(e -> e.startsWith("Bearer ") ? e.substring(7) : e);
+        }
+
+        if (!token.isPresent() && tokenCookieConfiguration.isEnabled()) {
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                token = Arrays.stream(tokenCookieConfiguration.getNames())
+                        .flatMap(name -> Arrays.stream(cookies).filter(c -> c.getName().equals(name)))
+                        .findFirst()
+                        .map(Cookie::getValue);
+            }
+        }
+        return token;
+    }
+
+    @Override
+    public Optional<String> getRefreshToken(@NotNull HttpServletRequest request) {
+        Optional<String> token = Optional.empty();
+        if (refreshCookieConfiguration.isEnabled()) {
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                token = Arrays.stream(refreshCookieConfiguration.getNames())
+                        .flatMap(name -> Arrays.stream(cookies).filter(c -> c.getName().equals(name)))
+                        .findFirst()
+                        .map(Cookie::getValue);
+            }
+        }
+        return token;
     }
 
     @Override

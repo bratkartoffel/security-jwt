@@ -7,8 +7,7 @@
 package eu.fraho.spring.securityJwt.ut.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
-import eu.fraho.spring.securityJwt.config.JwtTokenConfiguration;
+import eu.fraho.spring.securityJwt.config.*;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.exceptions.FeatureNotConfiguredException;
@@ -50,15 +49,12 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
 
     @Test
     public void testGenerateRefreshToken() throws Exception {
-        JwtTokenConfiguration tokenConfiguration = getTokenConfig();
-        JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
-        RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
+        JwtTokenService service = getService();
         JwtUser user = getJwtUser();
 
         RefreshToken token1 = service.generateRefreshToken(user);
         Assert.assertNotNull("No token generated", token1.getToken());
-        Assert.assertEquals("Wrong expiresIn", refreshConfiguration.getExpiration().toSeconds(), token1.getExpiresIn());
+        Assert.assertEquals("Wrong expiresIn", getRefreshConfig().getExpiration().toSeconds(), token1.getExpiresIn());
 
         RefreshToken token2 = service.generateRefreshToken(user);
         Assert.assertNotNull("No token generated", token2.getToken());
@@ -67,21 +63,15 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
 
     @Test
     public void testRefreshTokenSupported() throws Exception {
-        JwtTokenConfiguration tokenConfiguration = getTokenConfig();
-        JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
-        RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
+        JwtTokenService service = getService();
 
-        Assert.assertTrue("Refresh tokens not supported", refreshTokenStore.isRefreshTokenSupported());
+        Assert.assertTrue("Refresh tokens not supported", getRefreshStore().isRefreshTokenSupported());
         Assert.assertTrue("Refresh tokens not supported", service.isRefreshTokenSupported());
     }
 
     @Test
     public void testListRefreshTokensForUser() throws Exception {
-        JwtTokenConfiguration tokenConfiguration = getTokenConfig();
-        JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
-        RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
+        JwtTokenService service = getService();
 
         JwtUser jsmith = getJwtUser();
         jsmith.setUsername("jsmith");
@@ -103,24 +93,18 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
 
     @Test(timeout = 10_000L)
     public void testExpireRefreshToken() throws Exception {
-        JwtTokenConfiguration tokenConfiguration = getTokenConfig();
-        JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
-        RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
+        JwtTokenService service = getService();
         JwtUser user = getJwtUser();
 
         RefreshToken token = service.generateRefreshToken(user);
         Assert.assertNotNull("No token generated", token.getToken());
-        Thread.sleep(refreshConfiguration.getExpiration().toSeconds() * 1000 + 100);
+        Thread.sleep(getRefreshConfig().getExpiration().toSeconds() * 1000 + 100);
         Assert.assertFalse("Token didn't expire", service.useRefreshToken(token.getToken()).isPresent());
     }
 
     @Test
     public void testListRefreshTokens() throws Exception {
-        JwtTokenConfiguration tokenConfiguration = getTokenConfig();
-        JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
-        RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
+        JwtTokenService service = getService();
 
         JwtUser jsmith = getJwtUser();
         jsmith.setUsername("jsmith");
@@ -142,10 +126,7 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
 
     @Test(timeout = 10_000L)
     public void testListRefreshTokensExpiration() throws Exception {
-        JwtTokenConfiguration tokenConfiguration = getTokenConfig();
-        JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
-        RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
+        JwtTokenService service = getService();
 
         JwtUser jsmith = getJwtUser();
         jsmith.setUsername("jsmith");
@@ -156,7 +137,7 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
         service.generateRefreshToken(jsmith);
         service.generateRefreshToken(xsmith);
 
-        Thread.sleep(refreshConfiguration.getExpiration().toSeconds() * 1000 + 100);
+        Thread.sleep(getRefreshConfig().getExpiration().toSeconds() * 1000 + 100);
 
         final Map<Long, List<RefreshToken>> tokenMap = service.listRefreshTokens();
         Assert.assertEquals("User count don't match", 0, tokenMap.size());
@@ -168,10 +149,7 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
 
     @Test
     public void testRemoveSingleToken() throws Exception {
-        JwtTokenConfiguration tokenConfiguration = getTokenConfig();
-        JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
-        RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
+        JwtTokenService service = getService();
         JwtUser user = getJwtUser();
 
         RefreshToken tokenA = service.generateRefreshToken(user);
@@ -189,10 +167,7 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
 
     @Test
     public void testRemoveSingleTokenTwice() throws Exception {
-        JwtTokenConfiguration tokenConfiguration = getTokenConfig();
-        JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
-        RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
+        JwtTokenService service = getService();
         JwtUser jsmith = getJwtUser();
 
         RefreshToken tokenA = service.generateRefreshToken(jsmith);
@@ -209,10 +184,7 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
 
     @Test
     public void testRemoveAllTokensForUser() throws Exception {
-        JwtTokenConfiguration tokenConfiguration = getTokenConfig();
-        JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
-        RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
+        JwtTokenService service = getService();
         JwtUser jsmith = getJwtUser();
 
         service.generateRefreshToken(jsmith);
@@ -229,10 +201,7 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
 
     @Test
     public void testRemoveAllTokens() throws Exception {
-        JwtTokenConfiguration tokenConfiguration = getTokenConfig();
-        JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
-        RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
+        JwtTokenService service = getService();
 
         JwtUser jsmith = getJwtUser();
         jsmith.setUsername("jsmith");
@@ -256,10 +225,7 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
 
     @Test
     public void testUseRefreshTokenOnlyStrings() throws Exception {
-        JwtTokenConfiguration tokenConfiguration = getTokenConfig();
-        JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
-        RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
+        JwtTokenService service = getService();
         JwtUser jsmith = getJwtUser();
 
         RefreshToken tokenA = service.generateRefreshToken(jsmith);
@@ -274,10 +240,7 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
 
     @Test
     public void testUseRefreshToken() throws Exception {
-        JwtTokenConfiguration tokenConfiguration = getTokenConfig();
-        JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
-        RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
+        JwtTokenService service = getService();
 
         Assert.assertFalse("Unknown token used", service.useRefreshToken("baz").isPresent());
     }
@@ -285,11 +248,10 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
     @Test(expected = FeatureNotConfiguredException.class)
     public void testUseTokenNoPrivateKey() throws Exception {
         JwtTokenConfiguration tokenConfiguration = getRsaTokenConfig();
-        JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
-        RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
+        JwtTokenService service = getService(tokenConfiguration);
 
         try {
+            Assert.assertEquals("RSA config should be in use", "RS256", tokenConfiguration.getAlgorithm());
             service.useRefreshToken("baz");
         } catch (FeatureNotConfiguredException fnce) {
             Assert.assertEquals("Wrong error message", "Access token signing is not enabled.", fnce.getMessage());

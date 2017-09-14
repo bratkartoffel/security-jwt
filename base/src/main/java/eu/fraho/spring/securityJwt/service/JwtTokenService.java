@@ -58,12 +58,20 @@ public interface JwtTokenService {
     boolean validateToken(@NotNull AccessToken token);
 
     /**
-     * Helper method to extract the token from a requests headers.
+     * Helper method to extract the token from the requests headers or cookies.
      *
      * @param request the request
      * @return optional token
      */
     Optional<String> getToken(@NotNull HttpServletRequest request);
+
+    /**
+     * Helper method to extract the refresh token from the requests headers or cookies.
+     *
+     * @param request the request
+     * @return optional token
+     */
+    Optional<String> getRefreshToken(@NotNull HttpServletRequest request);
 
     /**
      * Gracefully ask this service if refresh token support is enabled

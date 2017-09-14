@@ -13,7 +13,7 @@ import net.jcip.annotations.Immutable;
 @Getter
 @Immutable
 @EqualsAndHashCode(exclude = {"expiresIn"})
-abstract class Token {
+public abstract class Token {
     private final String token;
 
     private final int expiresIn;

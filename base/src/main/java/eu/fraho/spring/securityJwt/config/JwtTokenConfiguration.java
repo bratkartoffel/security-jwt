@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -86,6 +87,12 @@ public class JwtTokenConfiguration implements InitializingBean {
 
     @Setter(AccessLevel.NONE)
     private JWSVerifier verifier;
+
+    @NestedConfigurationProperty
+    private JwtTokenHeaderConfiguration header = new JwtTokenHeaderConfiguration();
+
+    @NestedConfigurationProperty
+    private JwtTokenCookieConfiguration cookie = new JwtTokenCookieConfiguration();
 
     private void tryLoadHmac() throws IOException, JOSEException {
         byte[] hmacSecret = new byte[0];
@@ -166,7 +173,7 @@ public class JwtTokenConfiguration implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         JWSAlgorithm jwsAlgorithm = JWSAlgorithm.parse(algorithm);
         if (jwsAlgorithm.getRequirement() == null) {
             throw new IllegalArgumentException("Unknown signature algorithm configured: " + algorithm);
@@ -174,19 +181,28 @@ public class JwtTokenConfiguration implements InitializingBean {
         log.debug("Using signature algorithm: {}", jwsAlgorithm);
         this.jwsAlgorithm = jwsAlgorithm;
 
+        // check if at least one of cookie or header authentication is enabled
+        if (!header.isEnabled() && !cookie.isEnabled()) {
+            throw new IllegalArgumentException("Please enable at least one of header or cookie authentication.");
+        }
+
         // load the keys
         signer = null;
         verifier = null;
-        if (JWSAlgorithm.Family.EC.contains(jwsAlgorithm)) {
-            if (Security.getProvider("BC") == null) {
-                throw new IllegalArgumentException("Bouncycastle is not installed properly, ECDSA is not available!");
-            }
+        try {
+            if (JWSAlgorithm.Family.EC.contains(jwsAlgorithm)) {
+                if (Security.getProvider("BC") == null) {
+                    throw new IllegalArgumentException("Bouncycastle is not installed properly, ECDSA is not available!");
+                }
 
-            tryLoadEcdsa();
-        } else if (JWSAlgorithm.Family.RSA.contains(jwsAlgorithm)) {
-            tryLoadRsa();
-        } else {
-            tryLoadHmac();
+                tryLoadEcdsa();
+            } else if (JWSAlgorithm.Family.RSA.contains(jwsAlgorithm)) {
+                tryLoadRsa();
+            } else {
+                tryLoadHmac();
+            }
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Unable to load keys", ex);
         }
     }
 
