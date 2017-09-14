@@ -150,10 +150,10 @@ public class TestJwtTokenService {
                                          @NotNull JwtRefreshCookieConfiguration refreshCookieConfiguration) {
         JwtTokenServiceImpl tokenService = new JwtTokenServiceImpl(tokenConfiguration,
                 refreshConfiguration,
-                () -> jwtUser,
                 tokenCookieConfiguration,
                 tokenHeaderConfiguration,
-                refreshCookieConfiguration);
+                refreshCookieConfiguration,
+                () -> jwtUser);
         tokenService.afterPropertiesSet();
         tokenService.setRefreshTokenStore(refreshTokenStore);
         return tokenService;

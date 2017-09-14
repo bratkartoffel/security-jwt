@@ -69,8 +69,9 @@ public class SecurityJwtBaseAutoConfiguration {
     @Bean
     public JwtTokenService jwtTokenService() {
         log.debug("Register JwtTokenService");
-        return new JwtTokenServiceImpl(jwtTokenConfiguration(), jwtRefreshConfiguration(), this::jwtUser,
-                jwtTokenCookieConfiguration(), jwtTokenHeaderConfiguration(), jwtRefreshCookieConfiguration());
+        return new JwtTokenServiceImpl(jwtTokenConfiguration(), jwtRefreshConfiguration(),
+                jwtTokenCookieConfiguration(), jwtTokenHeaderConfiguration(), jwtRefreshCookieConfiguration(),
+                this::jwtUser);
     }
 
     @Bean
