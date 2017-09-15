@@ -81,13 +81,17 @@ public class JwtTokenConfigurationTest {
     }
 
     @Test(expected = KeyLengthException.class)
-    public void testHmacSmallKeyfile() throws Exception {
+    public void testHmacSmallKeyfile() throws Throwable {
         try (OutputStream os = new FileOutputStream(tempPrivate)) {
             os.write(42);
         }
         JwtTokenConfiguration conf = getNewInstance();
         conf.setHmac(tempPrivate.toPath());
-        conf.afterPropertiesSet();
+        try {
+            conf.afterPropertiesSet();
+        } catch (IllegalArgumentException iae) {
+            throw iae.getCause();
+        }
     }
 
     @Test
@@ -210,6 +214,20 @@ public class JwtTokenConfigurationTest {
             }
         } finally {
             Security.removeProvider(BouncyCastleProvider.PROVIDER_NAME);
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNeitherHeaderNorCookieEnabled() throws Exception {
+        JwtTokenConfiguration conf = getNewInstance();
+        conf.getCookie().setEnabled(false);
+        conf.getHeader().setEnabled(false);
+        try {
+            conf.afterPropertiesSet();
+        } catch (IllegalArgumentException iae) {
+            Assert.assertEquals("Wrong exception text",
+                    "Please enable at least one of header or cookie authentication.", iae.getMessage());
+            throw iae;
         }
     }
 

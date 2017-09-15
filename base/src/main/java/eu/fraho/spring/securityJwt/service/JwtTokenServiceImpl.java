@@ -10,8 +10,7 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
-import eu.fraho.spring.securityJwt.config.JwtTokenConfiguration;
+import eu.fraho.spring.securityJwt.config.*;
 import eu.fraho.spring.securityJwt.dto.AccessToken;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
@@ -21,12 +20,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.security.SecureRandom;
 import java.text.ParseException;
@@ -44,6 +45,15 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
 
     @NonNull
     private final JwtRefreshConfiguration refreshConfig;
+
+    @NonNull
+    private final JwtTokenCookieConfiguration tokenCookieConfiguration;
+
+    @NonNull
+    private final JwtTokenHeaderConfiguration tokenHeaderConfiguration;
+
+    @NonNull
+    private final JwtRefreshCookieConfiguration refreshCookieConfiguration;
 
     @NonNull
     private ObjectFactory<JwtUser> jwtUser;
@@ -112,19 +122,10 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
         boolean result;
 
         Date now = new Date();
-        Date exp = claims.getExpirationTime();
-        Date nbf = claims.getNotBeforeTime();
-        Date iat = claims.getIssueTime();
+        Date exp = Optional.ofNullable(claims.getExpirationTime()).orElse(new Date(0));
+        Date nbf = Optional.ofNullable(claims.getNotBeforeTime()).orElse(new Date(0));
+        Date iat = Optional.ofNullable(claims.getIssueTime()).orElse(new Date(0));
 
-        if (exp == null) {
-            exp = new Date(0);
-        }
-        if (nbf == null) {
-            nbf = new Date(0);
-        }
-        if (iat == null) {
-            iat = new Date(0);
-        }
         log.debug("Validating claims, now={}, exp={}, nbf={}, iat={}", now, exp, nbf, iat);
 
         result = iat.before(now);
@@ -164,7 +165,41 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
 
     @Override
     public Optional<String> getToken(@NotNull HttpServletRequest request) {
-        return Optional.ofNullable(request.getHeader("Authorization")).map(e -> e.startsWith("Bearer ") ? e.substring("Bearer".length() + 1) : e);
+        Optional<String> token = Optional.empty();
+        if (tokenHeaderConfiguration.isEnabled()) {
+            token = extractHeaderToken(tokenHeaderConfiguration.getNames(), request);
+        } else if (tokenCookieConfiguration.isEnabled()) {
+            token = extractCookieToken(tokenCookieConfiguration.getNames(), request.getCookies());
+        }
+        return token;
+    }
+
+    @Override
+    public Optional<String> getRefreshToken(@NotNull HttpServletRequest request) {
+        Optional<String> token = Optional.empty();
+        if (refreshCookieConfiguration.isEnabled()) {
+            token = extractCookieToken(refreshCookieConfiguration.getNames(), request.getCookies());
+        }
+        return token;
+    }
+
+    private Optional<String> extractHeaderToken(@NotNull String[] names, @NotNull HttpServletRequest request) {
+        return Arrays.stream(names)
+                .map(request::getHeader)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .map(e -> e.startsWith("Bearer ") ? e.substring(7) : e);
+    }
+
+    private Optional<String> extractCookieToken(@NotNull String[] names, @Nullable Cookie[] cookies) {
+        if (cookies == null) {
+            return Optional.empty();
+        }
+        return Arrays.stream(names)
+                .map(String::toLowerCase)
+                .flatMap(name -> Arrays.stream(cookies).filter(c -> Objects.equals(c.getName().toLowerCase(), name)))
+                .findFirst()
+                .map(Cookie::getValue);
     }
 
     @Override
@@ -173,7 +208,6 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
         byte[] data = new byte[refreshConfig.getLength()];
         random.nextBytes(data);
         final String token = Base64.getEncoder().encodeToString(data);
-
         refreshTokenStore.saveToken(user, token);
         return new RefreshToken(token, refreshConfig.getExpiration().toSeconds());
     }

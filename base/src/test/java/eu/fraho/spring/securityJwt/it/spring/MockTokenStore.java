@@ -8,7 +8,6 @@ package eu.fraho.spring.securityJwt.it.spring;
 
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
-import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("unused")
 @Slf4j
@@ -76,12 +74,6 @@ public class MockTokenStore implements RefreshTokenStore {
     @Override
     public int revokeTokens() {
         return 0;
-    }
-
-    @NotNull
-    @Deprecated
-    public TimeWithPeriod getRefreshExpiration() {
-        return new TimeWithPeriod(0, TimeUnit.SECONDS);
     }
 
     @Override

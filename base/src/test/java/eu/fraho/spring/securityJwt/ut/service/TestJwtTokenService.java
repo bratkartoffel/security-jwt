@@ -6,9 +6,7 @@
  */
 package eu.fraho.spring.securityJwt.ut.service;
 
-import eu.fraho.spring.securityJwt.config.CryptConfiguration;
-import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
-import eu.fraho.spring.securityJwt.config.JwtTokenConfiguration;
+import eu.fraho.spring.securityJwt.config.*;
 import eu.fraho.spring.securityJwt.dto.AccessToken;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
@@ -36,8 +34,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.security.*;
-import java.security.spec.InvalidKeySpecException;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Collections;
 import java.util.Optional;
@@ -61,24 +61,28 @@ public class TestJwtTokenService {
         }
     }
 
-    private void writeRsa() throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
-        // initialize generator
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        keyPairGenerator.initialize(512);
+    private void writeRsa() {
+        try {
+            // initialize generator
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+            keyPairGenerator.initialize(512);
 
-        // generate the key pair
-        KeyPair keyPair = keyPairGenerator.genKeyPair();
+            // generate the key pair
+            KeyPair keyPair = keyPairGenerator.genKeyPair();
 
-        // create KeyFactory and RSA Keys Specs
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        PublicKey publicKey = keyFactory.generatePublic(new X509EncodedKeySpec(keyPair.getPublic().getEncoded()));
+            // create KeyFactory and RSA Keys Specs
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            PublicKey publicKey = keyFactory.generatePublic(new X509EncodedKeySpec(keyPair.getPublic().getEncoded()));
 
-        // write the keys
-        Files.write(tempPub.toPath(), publicKey.getEncoded());
+            // write the keys
+            Files.write(tempPub.toPath(), publicKey.getEncoded());
+        } catch (Exception ex) {
+            throw new IllegalStateException("Unable to write RSA keys", ex);
+        }
     }
 
     @NotNull
-    protected JwtTokenConfiguration getTokenConfig() throws Exception {
+    protected JwtTokenConfiguration getTokenConfig() {
         JwtTokenConfiguration configuration = new JwtTokenConfiguration();
         configuration.setHmac(tempKey.toPath());
         configuration.afterPropertiesSet();
@@ -86,7 +90,7 @@ public class TestJwtTokenService {
     }
 
     @NotNull
-    protected JwtTokenConfiguration getRsaTokenConfig() throws Exception {
+    protected JwtTokenConfiguration getRsaTokenConfig() {
         JwtTokenConfiguration tokenConfiguration = getTokenConfig();
         tokenConfiguration.setAlgorithm("RS256");
         tokenConfiguration.setPub(tempPub.toPath());
@@ -104,11 +108,52 @@ public class TestJwtTokenService {
     }
 
     @NotNull
+    protected JwtTokenCookieConfiguration getTokenCookieConfig() {
+        return new JwtTokenCookieConfiguration();
+    }
+
+    @NotNull
+    protected JwtTokenHeaderConfiguration getTokenHeaderConfig() {
+        return new JwtTokenHeaderConfiguration();
+    }
+
+    @NotNull
+    protected JwtRefreshCookieConfiguration getRefreshCookieConfig() {
+        return new JwtRefreshCookieConfiguration();
+    }
+
+    @NotNull
+    protected JwtTokenService getService() {
+        return getService(getTokenConfig(), getRefreshConfig(), getRefreshStore(), new JwtUser(),
+                getTokenCookieConfig(), getTokenHeaderConfig(), getRefreshCookieConfig());
+    }
+
+    @NotNull
+    protected JwtTokenService getService(@NotNull JwtTokenConfiguration tokenConfiguration) {
+        return getService(tokenConfiguration, getRefreshConfig(), getRefreshStore(), new JwtUser(),
+                getTokenCookieConfig(), getTokenHeaderConfig(), getRefreshCookieConfig());
+    }
+
+    @NotNull
+    protected JwtTokenService getService(@NotNull JwtUser jwtUser) {
+        return getService(getTokenConfig(), getRefreshConfig(), getRefreshStore(), jwtUser,
+                getTokenCookieConfig(), getTokenHeaderConfig(), getRefreshCookieConfig());
+    }
+
+    @NotNull
     protected JwtTokenService getService(@NotNull JwtTokenConfiguration tokenConfiguration,
                                          @NotNull JwtRefreshConfiguration refreshConfiguration,
                                          @NotNull RefreshTokenStore refreshTokenStore,
-                                         @NotNull JwtUser jwtUser) {
-        JwtTokenServiceImpl tokenService = new JwtTokenServiceImpl(tokenConfiguration, refreshConfiguration, () -> jwtUser);
+                                         @NotNull JwtUser jwtUser,
+                                         @NotNull JwtTokenCookieConfiguration tokenCookieConfiguration,
+                                         @NotNull JwtTokenHeaderConfiguration tokenHeaderConfiguration,
+                                         @NotNull JwtRefreshCookieConfiguration refreshCookieConfiguration) {
+        JwtTokenServiceImpl tokenService = new JwtTokenServiceImpl(tokenConfiguration,
+                refreshConfiguration,
+                tokenCookieConfiguration,
+                tokenHeaderConfiguration,
+                refreshCookieConfiguration,
+                () -> jwtUser);
         tokenService.afterPropertiesSet();
         tokenService.setRefreshTokenStore(refreshTokenStore);
         return tokenService;
@@ -157,10 +202,7 @@ public class TestJwtTokenService {
 
     @Test
     public void testParseUser() throws Exception {
-        JwtTokenConfiguration tokenConfiguration = getTokenConfig();
-        JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
-        RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
+        JwtTokenService service = getService();
 
         String token = JwtTokens.VALID;
         Optional<JwtUser> oUser = service.parseUser(token);
@@ -174,10 +216,7 @@ public class TestJwtTokenService {
 
     @Test
     public void testParseUserInvalid() throws Exception {
-        JwtTokenConfiguration tokenConfiguration = getTokenConfig();
-        JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
-        RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
+        JwtTokenService service = getService();
 
         String tokenInvalidSignature = JwtTokens.INVALID_SIGNATURE;
         Optional<JwtUser> oUser1 = service.parseUser(tokenInvalidSignature);
@@ -191,10 +230,7 @@ public class TestJwtTokenService {
 
     @Test
     public void testValidateToken() throws Exception {
-        JwtTokenConfiguration tokenConfiguration = getTokenConfig();
-        JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
-        RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
+        JwtTokenService service = getService();
 
         // regular already handled by testParseUser
 
@@ -217,10 +253,7 @@ public class TestJwtTokenService {
 
     @Test
     public void testValidateTokenInvalid() throws Exception {
-        JwtTokenConfiguration tokenConfiguration = getTokenConfig();
-        JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
-        RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
+        JwtTokenService service = getService();
 
         String token = JwtTokens.INVALID_BODY;
         Assert.assertFalse("Token is invalid", service.validateToken(token));
@@ -228,10 +261,7 @@ public class TestJwtTokenService {
 
     @Test
     public void testGetToken() throws Exception {
-        JwtTokenConfiguration tokenConfiguration = getTokenConfig();
-        JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
-        RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
+        JwtTokenService service = getService();
 
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getHeader("Authorization")).thenReturn("Bearer foobar", "foobar", null);
@@ -243,10 +273,7 @@ public class TestJwtTokenService {
 
     @Test
     public void testGenerateToken() throws Exception {
-        JwtTokenConfiguration tokenConfiguration = getTokenConfig();
-        JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
-        RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
+        JwtTokenService service = getService();
         JwtUser user = getJwtUser();
 
         AccessToken token = service.generateToken(user);
@@ -256,9 +283,7 @@ public class TestJwtTokenService {
     @Test(expected = FeatureNotConfiguredException.class)
     public void testGenerateTokenNoPrivateKey() throws Exception {
         JwtTokenConfiguration tokenConfiguration = getRsaTokenConfig();
-        JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
-        RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new JwtUser());
+        JwtTokenService service = getService(tokenConfiguration);
         JwtUser user = getJwtUser();
 
         try {
@@ -271,10 +296,7 @@ public class TestJwtTokenService {
 
     @Test
     public void testGenerateAndParseTokenCustomize() throws Exception {
-        JwtTokenConfiguration tokenConfiguration = getTokenConfig();
-        JwtRefreshConfiguration refreshConfiguration = getRefreshConfig();
-        RefreshTokenStore refreshTokenStore = getRefreshStore();
-        JwtTokenService service = getService(tokenConfiguration, refreshConfiguration, refreshTokenStore, new MyJwtUser());
+        JwtTokenService service = getService(new MyJwtUser());
         MyJwtUser user = getMyJwtUser();
 
         AccessToken token = service.generateToken(user);

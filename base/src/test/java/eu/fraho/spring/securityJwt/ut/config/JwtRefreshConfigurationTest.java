@@ -36,4 +36,58 @@ public class JwtRefreshConfigurationTest {
         conf.afterPropertiesSet();
         Assert.assertEquals("CacheImapl may not be null", NullTokenStore.class, conf.getCacheImpl());
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSamePaths() {
+        JwtRefreshConfiguration conf = getNewInstance();
+        conf.setPath("/foobar");
+        conf.getCookie().setPath("/foobar");
+        try {
+            conf.afterPropertiesSet();
+        } catch (IllegalArgumentException iae) {
+            Assert.assertEquals("Wrong message text",
+                    "The paths for regular refresh and cookie refresh have to be different", iae.getMessage());
+            throw iae;
+        }
+    }
+
+    @Test
+    public void testEmptyPath() {
+        JwtRefreshConfiguration conf = getNewInstance();
+        conf.setPath("");
+        try {
+            conf.afterPropertiesSet();
+        } catch (IllegalArgumentException iae) {
+            Assert.assertEquals("Wrong message text",
+                    "The path for refresh cookies may not be empty", iae.getMessage());
+        }
+
+        conf.setPath(null);
+        try {
+            conf.afterPropertiesSet();
+        } catch (IllegalArgumentException iae) {
+            Assert.assertEquals("Wrong message text",
+                    "The path for refresh cookies may not be empty", iae.getMessage());
+        }
+    }
+
+    @Test
+    public void testEmptyNames() {
+        JwtRefreshConfiguration conf = getNewInstance();
+        conf.getCookie().setNames(new String[0]);
+        try {
+            conf.afterPropertiesSet();
+        } catch (IllegalArgumentException iae) {
+            Assert.assertEquals("Wrong message text",
+                    "The path for refresh cookies may not be empty", iae.getMessage());
+        }
+
+        conf.setPath(null);
+        try {
+            conf.afterPropertiesSet();
+        } catch (IllegalArgumentException iae) {
+            Assert.assertEquals("Wrong message text",
+                    "The path for refresh cookies may not be empty", iae.getMessage());
+        }
+    }
 }

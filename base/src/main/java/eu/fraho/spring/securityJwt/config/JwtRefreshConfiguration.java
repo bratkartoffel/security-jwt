@@ -13,7 +13,10 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 
 @ConfigurationProperties(prefix = "fraho.jwt.refresh")
 @Component
@@ -46,6 +49,9 @@ public class JwtRefreshConfiguration implements InitializingBean {
      */
     private String path = "/auth/refresh";
 
+    @NestedConfigurationProperty
+    private JwtRefreshCookieConfiguration cookie = new JwtRefreshCookieConfiguration();
+
     @Override
     public void afterPropertiesSet() {
         // check refresh token length
@@ -56,6 +62,16 @@ public class JwtRefreshConfiguration implements InitializingBean {
         }
         if (cacheImpl == null) {
             cacheImpl = NullTokenStore.class;
+        }
+
+        // cookie path may not be empty (required for controller)
+        if (path == null || path.isEmpty()) {
+            throw new IllegalArgumentException("The path for refresh cookies may not be empty");
+        }
+
+        // cookie refresh path has to be different to normal path
+        if (Objects.equals(path, cookie.getPath())) {
+            throw new IllegalArgumentException("The paths for regular refresh and cookie refresh have to be different");
         }
     }
 }

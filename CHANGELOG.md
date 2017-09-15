@@ -10,6 +10,7 @@
   * Remove deprecated RefreshTokenStore.getRefreshExpiration
   * Reworked RefreshTokenStore interface (use JwtUser instance instead of username)
   * Reworked JwtTokenService (use JwtUser instance instead of username)
+* (base) Add support for tokens sent as cookies (both access and refresh)
 
 ### 1.1.0 (not yet released)
 * (base) Make JwtUser extendable (#20)

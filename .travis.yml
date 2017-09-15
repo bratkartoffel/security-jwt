@@ -11,7 +11,8 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 branches:
-  except:
+  only:
     - master
+    - develop
 after_success:
   - bash <(curl -s https://codecov.io/bash)
