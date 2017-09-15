@@ -1,0 +1,57 @@
+@startuml
+
+actor "User" as u
+participant "Microservice" as ms
+participant "JWT Library" as jwtl
+
+== Fetching tokens ==
+activate u
+u -> ms: POST /auth/login\n(username, password)
+activate ms
+ms -> jwtl: validate credentials
+activate jwtl
+
+alt refresh-module
+jwtl --> u: 200 Ok\n(AccessToken, RefreshToken)\nCookie JWT-ACCESSTOKEN\nCookie JWT-REFRESHTOKEN
+else no-module
+jwtl --> u: 200 Ok\n(AccessToken)\nCookie JWT-ACCESSTOKEN
+deactivate jwtl
+deactivate ms
+end
+
+
+== Using tokens ==
+u -> ms: GET /foobar\nCookie JWT-ACCESSTOKEN
+activate ms
+ms -> jwtl: Check authorization
+activate jwtl
+jwtl --> ms: OK
+deactivate jwtl
+ms -> ms: Some business logic
+ms --> u: Result of call
+deactivate jwtl
+deactivate ms
+
+== Using refresh token ==
+u -> ms: //<Any Method>// /foobar/action\nCookie JWT-ACCESSTOKEN
+activate ms
+ms -> jwtl: Check authorization
+activate jwtl
+jwtl --> ms: Token expired
+deactivate jwtl
+
+ms --> u: 307 Redirect\nLocation: /auth/refreshCookie
+deactivate ms
+u -> ms: //<Any Method>// /auth/refreshCokie\nCookie JWT-REFRESHTOKEN
+activate ms
+ms -> jwtl: use token
+activate jwtl
+jwtl --> u: 307 Location: /foobar/action\nCookie JWT-ACCESSTOKEN\nCookie JWT-REFRESHTOKEN
+deactivate jwtl
+u -> ms: //<Any Method>// /foobar/action\nCookie JWT-ACCESSTOKEN
+ms -> ms: Some business logic
+ms --> u: Result of call
+deactivate ms
+deactivate u
+
+@enduml

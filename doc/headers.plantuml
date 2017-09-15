@@ -15,11 +15,14 @@ activate jwtl
 jwtl -> db: validate credentials\nwith JDBC
 activate db
 db --> jwtl: user details
-jwtl -> jwtl: create tokens
 deactivate db
+jwtl -> jwtl: create tokens
 
 alt refresh-module
 jwtl -> rstore: store refresh token
+activate rstore
+rstore --> jwtl: OK
+deactivate rstore
 jwtl --> u: 200 Ok\n(AccessToken, RefreshToken)
 else no-module
 jwtl --> u: 200 Ok\n(AccessToken)
@@ -34,8 +37,7 @@ activate ms
 ms -> jwtl: Check authorization
 activate jwtl
 jwtl -> jwtl: Parse token
-jwtl -> jwtl: Validate claims\n(alg, iat, nbf, exp)
-jwtl -> jwtl: Validate signature
+jwtl -> jwtl: Validate token
 jwtl --> ms: OK
 deactivate jwtl
 ms -> ms: Some business logic
@@ -44,15 +46,14 @@ deactivate jwtl
 deactivate ms
 
 == Using refresh token ==
+alt refresh-module
 u -> ms: POST /auth/refresh\n(RefreshToken)
 activate ms
 ms -> jwtl: use token
 activate jwtl
-jwtl -> rstore: validate token
+jwtl -> rstore: validate and delete token
 activate rstore
-rstore -> rstore: convert token to userdetails
-rstore -> rstore: delete token
-rstore --> jwtl: userdetails
+rstore --> jwtl: OK
 deactivate rstore
 jwtl -> db: validate userdetails\nwith JDBC
 activate db
@@ -60,10 +61,13 @@ db --> jwtl: ok
 deactivate db
 jwtl -> jwtl: create tokens
 jwtl -> rstore: store refresh token
+activate rstore
+rstore --> jwtl: OK
+deactivate rstore
 jwtl --> u: 200 Ok\n(AccessToken, RefreshToken)
-
 deactivate ms
 deactivate jwtl
+end
 deactivate u
 
 @enduml
