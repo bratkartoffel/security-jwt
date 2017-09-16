@@ -23,7 +23,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 @Configuration
 @AutoConfigureAfter(SecurityJwtBaseAutoConfiguration.class)
 @AutoConfigureBefore(SecurityJwtNoRefreshStoreAutoConfiguration.class)
-@EntityScan(basePackages = "eu.fraho.spring.securityJwt.dto")
+@EntityScan(basePackages = "eu.fraho.spring.securityJwt.hibernate.dto")
 @Slf4j
 public class SecurityJwtHibernateAutoConfiguration {
     @Bean
