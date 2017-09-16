@@ -4,11 +4,13 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.securityJwt.starter;
+package eu.fraho.spring.securityJwt.starter.internal;
 
 import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
-import eu.fraho.spring.securityJwt.service.InternalTokenStore;
+import eu.fraho.spring.securityJwt.service.internal.InternalTokenStore;
 import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
+import eu.fraho.spring.securityJwt.starter.SecurityJwtBaseAutoConfiguration;
+import eu.fraho.spring.securityJwt.starter.SecurityJwtNoRefreshStoreAutoConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;

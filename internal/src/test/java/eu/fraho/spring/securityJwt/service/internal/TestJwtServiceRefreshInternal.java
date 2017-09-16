@@ -4,8 +4,9 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.securityJwt.service;
+package eu.fraho.spring.securityJwt.service.internal;
 
+import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
 import eu.fraho.spring.securityJwt.ut.service.AbstractTestJwtTokenServiceWithRefresh;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;

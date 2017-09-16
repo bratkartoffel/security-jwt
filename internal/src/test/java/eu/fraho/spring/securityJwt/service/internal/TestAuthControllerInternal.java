@@ -4,7 +4,7 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.securityJwt.service;
+package eu.fraho.spring.securityJwt.service.internal;
 
 import eu.fraho.spring.securityJwt.it.AbstractTestAuthControllerWithRefresh;
 import eu.fraho.spring.securityJwt.it.spring.TestApiApplication;
