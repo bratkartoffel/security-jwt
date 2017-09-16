@@ -22,6 +22,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
@@ -82,12 +83,8 @@ public class JwtUser implements UserDetails, CredentialsContainer {
             log.error("Unable to parse uid claim", e);
         }
         try {
-            final List<String> claimAuthorities = claims.getStringListClaim("authorities");
-            final List<GrantedAuthority> newAuthorities = new ArrayList<>();
-            for (String authority : claimAuthorities) {
-                newAuthorities.add(new SimpleGrantedAuthority(authority));
-            }
-            setAuthorities(newAuthorities);
+            Optional.ofNullable(claims.getStringListClaim("authorities"))
+                    .ifPresent(a -> setAuthorities(a.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList())));
         } catch (ParseException e) {
             log.error("Unable to parse authorities", e);
         }
