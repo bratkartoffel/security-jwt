@@ -46,6 +46,11 @@ public class JwtTokenConfigurationTest {
         return new JwtTokenConfiguration();
     }
 
+    @Test
+    public void testDefaultConfig() {
+        getNewInstance().afterPropertiesSet();
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testUnknownAlgorithm() throws Exception {
         JwtTokenConfiguration conf = getNewInstance();

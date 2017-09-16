@@ -6,23 +6,18 @@
  */
 package eu.fraho.spring.securityJwt.ut.config;
 
-import eu.fraho.spring.securityJwt.config.JwtRefreshCookieConfiguration;
+import eu.fraho.spring.securityJwt.config.JwtTokenHeaderConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class JwtRefreshCookieConfigurationTest {
-    private JwtRefreshCookieConfiguration getNewInstance() {
-        return new JwtRefreshCookieConfiguration();
-    }
-
-    @Test
-    public void testDefaultConfig() {
-        getNewInstance().afterPropertiesSet();
+public class TestJwtTokenHeaderConfiguration {
+    private JwtTokenHeaderConfiguration getNewInstance() {
+        return new JwtTokenHeaderConfiguration();
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testEmptyNames() {
-        JwtRefreshCookieConfiguration conf = getNewInstance();
+        JwtTokenHeaderConfiguration conf = getNewInstance();
         conf.setNames(new String[0]);
         conf.setEnabled(true);
         try {
@@ -35,11 +30,7 @@ public class JwtRefreshCookieConfigurationTest {
     }
 
     @Test
-    public void testLogging() {
-        JwtRefreshCookieConfiguration conf = new JwtRefreshCookieConfiguration();
-        conf.setEnabled(true);
-        conf.setHttpOnly(false);
-        conf.setSecure(false);
-        conf.afterPropertiesSet();
+    public void testDefaultConfig() {
+        getNewInstance().afterPropertiesSet();
     }
 }

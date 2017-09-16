@@ -31,7 +31,7 @@ public class JwtTokenHeaderConfiguration implements InitializingBean {
     public void afterPropertiesSet() {
         if (enabled) {
             if (names.length == 0) {
-                throw new IllegalArgumentException("You have to specify at least one cookie name to enable this feature!");
+                throw new IllegalArgumentException("You have to specify at least one cookie name to enable this feature");
             }
 
             log.info("Enabling authorization support via headers");

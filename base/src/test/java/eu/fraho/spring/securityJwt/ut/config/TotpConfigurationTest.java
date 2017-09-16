@@ -16,6 +16,11 @@ public class TotpConfigurationTest {
     }
 
     @Test
+    public void testDefaultConfig() {
+        getNewInstance().afterPropertiesSet();
+    }
+
+    @Test
     public void testVarianceBounds() {
         TotpConfiguration conf = getNewInstance();
 

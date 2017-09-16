@@ -17,6 +17,11 @@ public class CryptConfigurationTest {
     }
 
     @Test
+    public void testDefaultConfig() {
+        getNewInstance().afterPropertiesSet();
+    }
+
+    @Test
     public void testRoundsBounds() {
         CryptConfiguration conf = getNewInstance();
 

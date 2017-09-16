@@ -60,7 +60,7 @@ public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(HttpSecurity httpSecurity) throws Exception {
+    public void configure(HttpSecurity httpSecurity) throws Exception {
         log.info("Loading fraho security-jwt version {}", JwtSecurityConfig.class.getPackage().getImplementationVersion());
         log.debug("Configuring HttpSecurity");
 

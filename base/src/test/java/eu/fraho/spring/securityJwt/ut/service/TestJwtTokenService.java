@@ -27,6 +27,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -126,6 +127,18 @@ public class TestJwtTokenService {
     protected JwtTokenService getService() {
         return getService(getTokenConfig(), getRefreshConfig(), getRefreshStore(), new JwtUser(),
                 getTokenCookieConfig(), getTokenHeaderConfig(), getRefreshCookieConfig());
+    }
+
+    @NotNull
+    protected JwtTokenService getService(JwtRefreshCookieConfiguration refreshCookieConfiguration) {
+        return getService(getTokenConfig(), getRefreshConfig(), getRefreshStore(), new JwtUser(),
+                getTokenCookieConfig(), getTokenHeaderConfig(), refreshCookieConfiguration);
+    }
+
+    @NotNull
+    protected JwtTokenService getService(@NotNull JwtTokenCookieConfiguration tokenCookieConfiguration) {
+        return getService(getTokenConfig(), getRefreshConfig(), getRefreshStore(), new JwtUser(),
+                tokenCookieConfiguration, getTokenHeaderConfig(), getRefreshCookieConfig());
     }
 
     @NotNull
@@ -269,6 +282,48 @@ public class TestJwtTokenService {
         Assert.assertEquals("Token not extracted from header", Optional.of("foobar"), service.getToken(request));
         Assert.assertEquals("Token not extracted from header", Optional.of("foobar"), service.getToken(request));
         Assert.assertEquals("Token extracted from header", Optional.empty(), service.getToken(request));
+    }
+
+    @Test
+    public void testGetTokenCookie() throws Exception {
+        JwtTokenCookieConfiguration cookieConfiguration = new JwtTokenCookieConfiguration();
+        cookieConfiguration.setEnabled(true);
+        JwtTokenService service = getService(cookieConfiguration);
+
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getCookies()).thenReturn(
+                new Cookie[]{
+                        new Cookie("foo", "bar"),
+                        new Cookie(cookieConfiguration.getNames()[0], "foobar")
+                },
+                new Cookie[]{
+                        new Cookie(cookieConfiguration.getNames()[1], "foobar")
+                },
+                new Cookie[0]);
+
+        Assert.assertEquals("Token not extracted from header", Optional.of("foobar"), service.getToken(request));
+        Assert.assertEquals("Token not extracted from header", Optional.of("foobar"), service.getToken(request));
+        Assert.assertEquals("Token extracted from header", Optional.empty(), service.getToken(request));
+    }
+
+    @Test
+    public void testGetRefreshToken() {
+        JwtRefreshCookieConfiguration cookieConfiguration = new JwtRefreshCookieConfiguration();
+        cookieConfiguration.setEnabled(true);
+        JwtTokenService service = getService(cookieConfiguration);
+
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getCookies()).thenReturn(new Cookie[]{new Cookie(cookieConfiguration.getNames()[0], "foobar")}, (Cookie[]) null);
+
+        Assert.assertEquals("Token not extracted from cookies", Optional.of("foobar"), service.getRefreshToken(request));
+        Assert.assertEquals("Token extracted from header", Optional.empty(), service.getRefreshToken(request));
+    }
+
+    @Test
+    public void testGetRefreshTokenDisabled() {
+        JwtTokenService service = getService();
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Assert.assertEquals("Token extracted from header", Optional.empty(), service.getRefreshToken(request));
     }
 
     @Test

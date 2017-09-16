@@ -6,6 +6,7 @@
  */
 package eu.fraho.spring.securityJwt.it;
 
+import eu.fraho.spring.securityJwt.config.JwtRefreshCookieConfiguration;
 import eu.fraho.spring.securityJwt.it.spring.TestApiApplication;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +49,9 @@ public class TestAuthControllerWithCookies {
 
     @Autowired
     private Filter springSecurityFilterChain;
+
+    @Autowired
+    private JwtRefreshCookieConfiguration refreshCookieConfiguration;
 
     @Getter
     private MockMvc mockMvc;
@@ -152,6 +156,24 @@ public class TestAuthControllerWithCookies {
                 .andReturn().getResponse().getContentAsString();
 
         Assert.assertTrue("Body was generated", body.isEmpty());
+    }
+
+    @Test
+    public void testRefreshWhenDisabled() throws Exception {
+        MockHttpServletRequestBuilder req;
+        req = MockMvcRequestBuilders.get(AUTH_REFRESH_COOKIES);
+
+        try {
+            refreshCookieConfiguration.setEnabled(false);
+            String body = getMockMvc().perform(req)
+                    .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                    .andExpect(MockMvcResultMatchers.cookie().doesNotExist("access"))
+                    .andExpect(MockMvcResultMatchers.cookie().doesNotExist("refresh"))
+                    .andReturn().getResponse().getContentAsString();
+            Assert.assertTrue("Body was generated", body.isEmpty());
+        } finally {
+            refreshCookieConfiguration.setEnabled(true);
+        }
     }
 
     /**
