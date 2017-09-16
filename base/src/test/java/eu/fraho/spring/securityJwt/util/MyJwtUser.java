@@ -4,7 +4,11 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
+import java.text.ParseException;
+
+@Slf4j
 public class MyJwtUser extends JwtUser {
     @Getter
     @Setter
@@ -13,7 +17,11 @@ public class MyJwtUser extends JwtUser {
     @Override
     public void applyClaims(JWTClaimsSet claims) {
         super.applyClaims(claims);
-        setFoobar(String.valueOf(claims.getClaim("foobar")));
+        try {
+            setFoobar(claims.getStringClaim("foobar"));
+        } catch (ParseException e) {
+            log.error("Unable to parse foobar claim", e);
+        }
     }
 
     public JWTClaimsSet.Builder toClaims() {

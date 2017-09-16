@@ -21,7 +21,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -31,21 +30,14 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        Optional<String> authToken = jwtTokenUtil.getToken(request);
-
-        authToken.ifPresent(token -> {
-            if (jwtTokenUtil.validateToken(token)) {
-                log.debug("Provided token is valid");
+        jwtTokenUtil.getToken(request).ifPresent(token ->
                 jwtTokenUtil.parseUser(token).ifPresent(jwtUser -> {
                     log.debug("Successfully used token to authenticate {}", jwtUser.getUsername());
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(jwtUser, authToken, jwtUser.getAuthorities());
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(jwtUser, token, jwtUser.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-                });
-            } else {
-                log.warn("Provided token by client is invalid");
-            }
-        });
+                })
+        );
 
         chain.doFilter(request, response);
     }

@@ -18,6 +18,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -75,13 +76,21 @@ public class JwtUser implements UserDetails, CredentialsContainer {
     @SuppressWarnings("unchecked")
     public void applyClaims(JWTClaimsSet claims) {
         setUsername(claims.getSubject());
-        final List<String> claimAuthorities = (List<String>) claims.getClaim("authorities");
-        final List<GrantedAuthority> newAuthorities = new ArrayList<>();
-        for (String authority : claimAuthorities) {
-            newAuthorities.add(new SimpleGrantedAuthority(authority));
+        try {
+            setId(claims.getLongClaim("uid"));
+        } catch (ParseException e) {
+            log.error("Unable to parse uid claim", e);
         }
-        setAuthorities(newAuthorities);
-        setId(Long.valueOf(String.valueOf(claims.getClaim("uid"))));
+        try {
+            final List<String> claimAuthorities = claims.getStringListClaim("authorities");
+            final List<GrantedAuthority> newAuthorities = new ArrayList<>();
+            for (String authority : claimAuthorities) {
+                newAuthorities.add(new SimpleGrantedAuthority(authority));
+            }
+            setAuthorities(newAuthorities);
+        } catch (ParseException e) {
+            log.error("Unable to parse authorities", e);
+        }
     }
 
     public Optional<String> getTotpSecret() {

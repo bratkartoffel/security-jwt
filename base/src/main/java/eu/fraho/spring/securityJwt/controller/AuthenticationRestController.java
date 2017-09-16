@@ -69,7 +69,7 @@ public class AuthenticationRestController {
             @ApiResponse(code = 401, message = "Either the token expired, or the user has no longer access to this api"),
     })
     public ResponseEntity<JwtAuthenticationResponse> refresh(HttpServletResponse response,
-                                                             @RequestBody JwtRefreshRequest refreshRequest) throws JOSEException {
+                                                             @RequestBody JwtRefreshRequest refreshRequest) {
         if (!jwtTokenUtil.isRefreshTokenSupported()) {
             log.info("Refresh token support is disabled");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -88,9 +88,17 @@ public class AuthenticationRestController {
         }
 
         log.debug("Generating new tokens for {}", userDetails.getUsername());
-        final AccessToken accessToken = jwtTokenUtil.generateToken(userDetails);
+        final AccessToken accessToken;
+        try {
+            accessToken = jwtTokenUtil.generateToken(userDetails);
+        } catch (JOSEException e) {
+            log.info("Error creating an access token for {}", userDetails.getUsername());
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
         final RefreshToken refreshToken = jwtTokenUtil.generateRefreshToken(userDetails);
 
+        log.debug("Sending cookies if enabled");
         addTokenCookieIfEnabled(response, accessToken, tokenConfiguration.getCookie());
         addTokenCookieIfEnabled(response, refreshToken, refreshConfiguration.getCookie());
 
@@ -108,7 +116,7 @@ public class AuthenticationRestController {
             @ApiResponse(code = 401, message = "Either the credentials are wrong or the user has no access to this api"),
     })
     public ResponseEntity<JwtAuthenticationResponse> login(HttpServletResponse response,
-                                                           @RequestBody JwtAuthenticationRequest authenticationRequest) throws JOSEException {
+                                                           @RequestBody JwtAuthenticationRequest authenticationRequest) {
         // Perform the security
         final Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -129,7 +137,14 @@ public class AuthenticationRestController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         log.debug("Generating tokens");
-        final AccessToken accessToken = jwtTokenUtil.generateToken(userDetails);
+        final AccessToken accessToken;
+        try {
+            accessToken = jwtTokenUtil.generateToken(userDetails);
+        } catch (JOSEException e) {
+            log.info("Error creating an access token for {}", userDetails.getUsername());
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
         final RefreshToken refreshToken;
         if (jwtTokenUtil.isRefreshTokenSupported()) {
             refreshToken = jwtTokenUtil.generateRefreshToken(userDetails);
@@ -137,6 +152,7 @@ public class AuthenticationRestController {
             refreshToken = null;
         }
 
+        log.debug("Sending cookies if enabled");
         addTokenCookieIfEnabled(response, accessToken, tokenConfiguration.getCookie());
         addTokenCookieIfEnabled(response, refreshToken, refreshConfiguration.getCookie());
 

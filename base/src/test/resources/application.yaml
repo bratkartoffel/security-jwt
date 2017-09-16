@@ -13,4 +13,4 @@ fraho:
       expiration: 2 seconds
 
 spring.main.banner-mode: "off"
-logging.level.eu.fraho.spring.securityJwt: DEBUG
+logging.level.eu.fraho.spring.securityJwt: TRACE

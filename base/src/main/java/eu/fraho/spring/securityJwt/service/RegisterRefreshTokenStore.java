@@ -10,6 +10,7 @@ import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RegisterRefreshTokenStore implements InitializingBean {
@@ -43,6 +45,7 @@ public class RegisterRefreshTokenStore implements InitializingBean {
         beanDefinition.setAutowireCandidate(true);
         beanDefinition.setScope(AbstractBeanDefinition.SCOPE_DEFAULT);
 
+        log.info("Registering RefreshTokenStore = {}", refreshConfig.getCacheImpl());
         registry.registerBeanDefinition(BEAN_NAME, beanDefinition);
     }
 }

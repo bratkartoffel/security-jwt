@@ -8,6 +8,7 @@ package eu.fraho.spring.securityJwt.service;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import eu.fraho.spring.securityJwt.dto.AccessToken;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
@@ -42,12 +43,22 @@ public interface JwtTokenService {
     @NotNull <T extends JwtUser> AccessToken generateToken(@NotNull T user) throws JOSEException;
 
     /**
-     * Parse the token, validate the signature and check notBeforeDate and expirationTime.
+     * Parse the token, validate the signature and check that the various date claims from this token
+     * (not yet expired, already valid, issued at past)
      *
      * @param token The token to validate
      * @return {@code true} if the token passed all checks (is valid and trusted) or otherwise {@code false}
      */
     boolean validateToken(@NotNull String token);
+
+    /**
+     * Validate the signature and check that the various date claims from this token
+     * (not yet expired, already valid, issued at past)
+     *
+     * @param token The token to validate
+     * @return {@code true} if the token passed all checks (is valid and trusted) or otherwise {@code false}
+     */
+    boolean validateToken(@NotNull SignedJWT token);
 
     /**
      * Parse the token, validate the signature and check notBeforeDate and expirationTime.

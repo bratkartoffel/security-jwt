@@ -10,7 +10,6 @@ import eu.fraho.spring.securityJwt.config.CryptConfiguration;
 import eu.fraho.spring.securityJwt.dto.CryptAlgorithm;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.Crypt;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,6 @@ import java.util.Base64.Encoder;
 import java.util.Random;
 
 @Component
-@Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CryptPasswordEncoder implements PasswordEncoder {
     private final Random random = new SecureRandom();
@@ -52,8 +50,6 @@ public class CryptPasswordEncoder implements PasswordEncoder {
         } else {
             cryptParam = String.format("%s%s$", algorithm.getPrefix(), generateSalt());
         }
-
-        log.debug("Using crypt params: {}", cryptParam);
         return Crypt.crypt(rawPassword.toString(), cryptParam);
     }
 

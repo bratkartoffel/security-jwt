@@ -48,33 +48,30 @@ public class AuthenticationCookieRestController {
             @ApiResponse(code = 400, message = "Missing the refresh token cookie"),
             @ApiResponse(code = 401, message = "Either the token expired, or the user has no longer access to this api"),
     })
-    public ResponseEntity<Void> refresh(HttpServletRequest request,
-                                        HttpServletResponse response) throws JOSEException {
+    public ResponseEntity<Object> refresh(HttpServletRequest request,
+                                          HttpServletResponse response) throws JOSEException {
         if (!jwtTokenUtil.isRefreshTokenSupported() || !refreshCookieConfiguration.isEnabled()) {
-            log.info("Refresh token support is disabled");
+            log.warn("Refresh cookie support is disabled, but user tried anyways");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        Optional<String> refreshToken = jwtTokenUtil.getRefreshToken(request);
-
-        if (refreshToken.isPresent()) {
-            Optional<String> referer = getReferer(request);
+        return jwtTokenUtil.getRefreshToken(request).map(token -> {
             ResponseEntity<JwtAuthenticationResponse> result =
-                    authenticationRestController.refresh(response, new JwtRefreshRequest(refreshToken.get()));
+                    authenticationRestController.refresh(response, new JwtRefreshRequest(token));
 
             if (result.getStatusCode() == HttpStatus.OK) {
-                HttpStatus status = referer.isPresent() ? HttpStatus.TEMPORARY_REDIRECT : HttpStatus.SEE_OTHER;
+                Optional<String> referer = getReferer(request);
+                HttpStatus status = referer.map(s -> HttpStatus.TEMPORARY_REDIRECT).orElse(HttpStatus.SEE_OTHER);
                 String location = referer.orElse(refreshCookieConfiguration.getFallbackRedirectUrl());
+                log.info("Redirecting user to {}", location);
                 return ResponseEntity
                         .status(status)
                         .header("Location", location)
                         .build();
-            } else {
-                return ResponseEntity.status(result.getStatusCode()).build();
             }
-        }
 
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            return ResponseEntity.status(result.getStatusCode()).build();
+        }).orElse(new ResponseEntity<>(HttpStatus.UNAUTHORIZED));
     }
 
     private Optional<String> getReferer(@NotNull HttpServletRequest request) {

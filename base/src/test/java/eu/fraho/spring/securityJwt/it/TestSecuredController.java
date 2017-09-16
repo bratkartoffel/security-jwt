@@ -78,7 +78,7 @@ public class TestSecuredController {
                 .accept(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(req)
-                .andExpect(MockMvcResultMatchers.status().isForbidden());
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
     @Test
@@ -88,7 +88,7 @@ public class TestSecuredController {
                 .header("Authorization", "");
 
         mockMvc.perform(req)
-                .andExpect(MockMvcResultMatchers.status().isForbidden());
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
     @Test
@@ -98,7 +98,7 @@ public class TestSecuredController {
                 .header("Authorization", "foobar");
 
         mockMvc.perform(req)
-                .andExpect(MockMvcResultMatchers.status().isForbidden());
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
     @Test

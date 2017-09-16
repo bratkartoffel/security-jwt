@@ -56,7 +56,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     private final JwtRefreshCookieConfiguration refreshCookieConfiguration;
 
     @NonNull
-    private ObjectFactory<JwtUser> jwtUser;
+    private final ObjectFactory<JwtUser> jwtUser;
 
     @SuppressWarnings("SpringAutowiredFieldsWarningInspection") // not possible otherwise as this bean is lazy
     @Autowired
@@ -74,19 +74,19 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     @Override
     @SuppressWarnings("unchecked")
     public <T extends JwtUser> Optional<T> parseUser(@NotNull String token) {
+        Optional<T> result = Optional.empty();
         try {
-            JWTClaimsSet claims = SignedJWT.parse(token).getJWTClaimsSet();
-            if (validateToken(token)) {
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            if (validateToken(signedJWT)) {
+                JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
                 T user = (T) jwtUser.getObject();
                 user.applyClaims(claims);
-                return Optional.of(user);
-            } else {
-                return Optional.empty();
+                result = Optional.of(user);
             }
         } catch (ParseException e) {
-            log.debug(e.getMessage(), e);
-            return Optional.empty();
+            log.warn("Could not parse token", e);
         }
+        return result;
     }
 
     @Override
@@ -104,12 +104,11 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
                 .notBeforeTime(now)
                 .expirationTime(generateExpirationDate())
                 .build();
-
         SignedJWT token = new SignedJWT(
                 new JWSHeader(tokenConfig.getJwsAlgorithm()),
                 claims);
-
         token.sign(tokenConfig.getSigner());
+
         return new AccessToken(token.serialize(), tokenConfig.getExpiration().toSeconds());
     }
 
@@ -118,69 +117,65 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
         return Date.from(ZonedDateTime.now().plusSeconds(tokenConfig.getExpiration().toSeconds()).toInstant());
     }
 
-    private boolean validateClaims(@NotNull JWTClaimsSet claims) {
-        boolean result;
-
-        Date now = new Date();
-        Date exp = Optional.ofNullable(claims.getExpirationTime()).orElse(new Date(0));
-        Date nbf = Optional.ofNullable(claims.getNotBeforeTime()).orElse(new Date(0));
-        Date iat = Optional.ofNullable(claims.getIssueTime()).orElse(new Date(0));
-
-        log.debug("Validating claims, now={}, exp={}, nbf={}, iat={}", now, exp, nbf, iat);
-
-        result = iat.before(now);
-        log.debug("After iat < now: {}", result);
-        result &= nbf.before(now);
-        log.debug("After nbf < now: {}", result);
-        result &= exp.after(now);
-        log.debug("After exp > now: {}", result);
-        return result;
-    }
-
-    @Override
-    public boolean validateToken(@NotNull String token) {
-        log.trace("Validating {}", token);
-
-        boolean result;
-        try {
-            SignedJWT parsedToken = SignedJWT.parse(token);
-            JWTClaimsSet claims = parsedToken.getJWTClaimsSet();
-            result = parsedToken.verify(tokenConfig.getVerifier());
-            log.debug("After verify: {}", result);
-            result &= validateClaims(claims);
-            log.debug("After validateClaims: {}", result);
-        } catch (ParseException | JOSEException e) {
-            log.debug(e.getMessage(), e);
-            result = false;
-        }
-
-        log.debug("Validate token returns {}", result);
-        return result;
-    }
-
     @Override
     public boolean validateToken(@NotNull AccessToken token) {
         return validateToken(token.getToken());
     }
 
     @Override
-    public Optional<String> getToken(@NotNull HttpServletRequest request) {
-        Optional<String> token = Optional.empty();
-        if (tokenHeaderConfiguration.isEnabled()) {
-            token = extractHeaderToken(tokenHeaderConfiguration.getNames(), request);
-        } else if (tokenCookieConfiguration.isEnabled()) {
-            token = extractCookieToken(tokenCookieConfiguration.getNames(), request.getCookies());
+    public boolean validateToken(@NotNull String token) {
+        boolean result = false;
+        try {
+            result = validateToken(SignedJWT.parse(token));
+        } catch (ParseException e) {
+            log.error("Supplied token did not validate", e);
         }
-        return token;
+        return result;
+    }
+
+    @Override
+    public boolean validateToken(@NotNull SignedJWT signedJWT) {
+        boolean result;
+        try {
+            result = signedJWT.verify(tokenConfig.getVerifier());
+            result &= areClaimsValid(signedJWT.getJWTClaimsSet());
+        } catch (ParseException | JOSEException e) {
+            log.error("Supplied token did not validate", e);
+            result = false;
+        }
+        return result;
+    }
+
+    private boolean areClaimsValid(@NotNull JWTClaimsSet claims) {
+        Date now = new Date();
+        Date exp = Optional.ofNullable(claims.getExpirationTime()).orElse(new Date(0));
+        Date nbf = Optional.ofNullable(claims.getNotBeforeTime()).orElse(new Date(0));
+        Date iat = Optional.ofNullable(claims.getIssueTime()).orElse(new Date(0));
+
+        boolean result = iat.before(now);
+        result &= nbf.before(now);
+        result &= exp.after(now);
+        return result;
+    }
+
+    @Override
+    public Optional<String> getToken(@NotNull HttpServletRequest request) {
+        Optional<String> result = Optional.empty();
+        if (tokenHeaderConfiguration.isEnabled()) {
+            result = extractHeaderToken(tokenHeaderConfiguration.getNames(), request);
+        } else if (tokenCookieConfiguration.isEnabled()) {
+            result = extractCookieToken(tokenCookieConfiguration.getNames(), request.getCookies());
+        }
+        return result;
     }
 
     @Override
     public Optional<String> getRefreshToken(@NotNull HttpServletRequest request) {
-        Optional<String> token = Optional.empty();
+        Optional<String> result = Optional.empty();
         if (refreshCookieConfiguration.isEnabled()) {
-            token = extractCookieToken(refreshCookieConfiguration.getNames(), request.getCookies());
+            result = extractCookieToken(refreshCookieConfiguration.getNames(), request.getCookies());
         }
-        return token;
+        return result;
     }
 
     private Optional<String> extractHeaderToken(@NotNull String[] names, @NotNull HttpServletRequest request) {
@@ -192,14 +187,15 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     }
 
     private Optional<String> extractCookieToken(@NotNull String[] names, @Nullable Cookie[] cookies) {
-        if (cookies == null) {
-            return Optional.empty();
+        Optional<String> result = Optional.empty();
+        if (cookies != null) {
+            result = Arrays.stream(names)
+                    .map(String::toLowerCase)
+                    .flatMap(name -> Arrays.stream(cookies).filter(c -> Objects.equals(c.getName().toLowerCase(), name)))
+                    .findFirst()
+                    .map(Cookie::getValue);
         }
-        return Arrays.stream(names)
-                .map(String::toLowerCase)
-                .flatMap(name -> Arrays.stream(cookies).filter(c -> Objects.equals(c.getName().toLowerCase(), name)))
-                .findFirst()
-                .map(Cookie::getValue);
+        return result;
     }
 
     @Override

@@ -56,6 +56,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
                 url = refreshCookieConfiguration.getPath();
             }
 
+            log.debug("Cookie refresh finished, redirecting to {}", url);
             response.sendRedirect(url);
         } else {
             // We should just send a 401 Unauthorized response because there is no 'login page' to redirect to

@@ -64,7 +64,7 @@ abstract class AbstractTestAuthController {
                 .accept(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(req)
-                .andExpect(MockMvcResultMatchers.status().isForbidden())
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized())
                 .andReturn();
     }
 
