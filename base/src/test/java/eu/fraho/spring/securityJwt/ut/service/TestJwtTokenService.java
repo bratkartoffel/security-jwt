@@ -279,9 +279,9 @@ public class TestJwtTokenService {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getHeader("Authorization")).thenReturn("Bearer foobar", "foobar", null);
 
-        Assert.assertEquals("Token not extracted from header", Optional.of("foobar"), service.getToken(request));
-        Assert.assertEquals("Token not extracted from header", Optional.of("foobar"), service.getToken(request));
-        Assert.assertEquals("Token extracted from header", Optional.empty(), service.getToken(request));
+        Assert.assertEquals("Token not extracted from header", Optional.of("foobar"), service.getAccessToken(request));
+        Assert.assertEquals("Token not extracted from header", Optional.of("foobar"), service.getAccessToken(request));
+        Assert.assertEquals("Token extracted from header", Optional.empty(), service.getAccessToken(request));
     }
 
     @Test
@@ -301,9 +301,9 @@ public class TestJwtTokenService {
                 },
                 new Cookie[0]);
 
-        Assert.assertEquals("Token not extracted from header", Optional.of("foobar"), service.getToken(request));
-        Assert.assertEquals("Token not extracted from header", Optional.of("foobar"), service.getToken(request));
-        Assert.assertEquals("Token extracted from header", Optional.empty(), service.getToken(request));
+        Assert.assertEquals("Token not extracted from header", Optional.of("foobar"), service.getAccessToken(request));
+        Assert.assertEquals("Token not extracted from header", Optional.of("foobar"), service.getAccessToken(request));
+        Assert.assertEquals("Token extracted from header", Optional.empty(), service.getAccessToken(request));
     }
 
     @Test

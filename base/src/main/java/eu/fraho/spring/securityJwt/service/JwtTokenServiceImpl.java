@@ -159,7 +159,13 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     }
 
     @Override
+    @Deprecated
     public Optional<String> getToken(@NotNull HttpServletRequest request) {
+        return getAccessToken(request);
+    }
+
+    @Override
+    public Optional<String> getAccessToken(@NotNull HttpServletRequest request) {
         Optional<String> result = Optional.empty();
         if (tokenHeaderConfiguration.isEnabled()) {
             result = extractHeaderToken(tokenHeaderConfiguration.getNames(), request);

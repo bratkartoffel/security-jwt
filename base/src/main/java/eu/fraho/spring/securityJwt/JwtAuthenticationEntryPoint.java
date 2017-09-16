@@ -36,7 +36,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request,
                          HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
-        if (refreshCookieConfiguration.isEnabled() && jwtTokenService.getRefreshToken(request).isPresent()) {
+        if (refreshCookieConfiguration.isEnabled() && jwtTokenService.getAccessToken(request).isPresent()) {
             String url;
             if (refreshCookieConfiguration.getDomain() != null) {
                 try {

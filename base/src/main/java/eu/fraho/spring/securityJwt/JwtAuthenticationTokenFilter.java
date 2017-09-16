@@ -30,7 +30,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        jwtTokenUtil.getToken(request).ifPresent(token ->
+        jwtTokenUtil.getAccessToken(request).ifPresent(token ->
                 jwtTokenUtil.parseUser(token).ifPresent(jwtUser -> {
                     log.debug("Successfully used token to authenticate {}", jwtUser.getUsername());
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(jwtUser, token, jwtUser.getAuthorities());

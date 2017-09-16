@@ -10,7 +10,10 @@
   * Remove deprecated RefreshTokenStore.getRefreshExpiration
   * Reworked RefreshTokenStore interface (use JwtUser instance instead of username)
   * Reworked JwtTokenService (use JwtUser instance instead of username)
+  * All modules now have their own package
+    * e.g. internal moved from ```eu.fraho.spring.securityJwt.service.InternalTokenStore``` to ```eu.fraho.spring.securityJwt.service.internal.InternalTokenStore```
 * (base) Add support for tokens sent as cookies (both access and refresh)
+* (base) Make JwtTokenService.getToken() deprecated
 
 ### 1.1.0 (not yet released)
 * (base) Make JwtUser extendable (#20)
