@@ -4,7 +4,7 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.securityJwt.dto;
+package eu.fraho.spring.securityJwt.hibernate.dto;
 
 import javax.persistence.AttributeConverter;
 import java.sql.Timestamp;
