@@ -54,6 +54,7 @@ subprojects {
             expiringMapVersion = '[0.5,1.0['
             h2Version = '[1.4,2.0['
             jetbrainsAnnotationsVersion = '[15.0,16.0['
+            powerMockVersion = '[1.7,2.0['
         }
         repositories {
             mavenCentral()
