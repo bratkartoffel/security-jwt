@@ -4,8 +4,9 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.securityJwt.dto;
+package eu.fraho.spring.securityJwt.memcache.dto;
 
+import eu.fraho.spring.securityJwt.dto.JwtUser;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 
