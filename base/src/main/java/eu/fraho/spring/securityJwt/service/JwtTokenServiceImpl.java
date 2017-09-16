@@ -163,7 +163,8 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
         Optional<String> result = Optional.empty();
         if (tokenHeaderConfiguration.isEnabled()) {
             result = extractHeaderToken(tokenHeaderConfiguration.getNames(), request);
-        } else if (tokenCookieConfiguration.isEnabled()) {
+        }
+        if (!result.isPresent() && tokenCookieConfiguration.isEnabled()) {
             result = extractCookieToken(tokenCookieConfiguration.getNames(), request.getCookies());
         }
         return result;
