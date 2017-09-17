@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-eu.fraho.spring.securityJwt.starter.internal.SecurityJwtInternalAutoConfiguration
+eu.fraho.spring.securityJwt.internal.starter.SecurityJwtInternalAutoConfiguration
