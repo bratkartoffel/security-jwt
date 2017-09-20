@@ -48,20 +48,6 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
     }
 
     @Test
-    public void testGenerateRefreshToken() throws Exception {
-        JwtTokenService service = getService();
-        JwtUser user = getJwtUser();
-
-        RefreshToken token1 = service.generateRefreshToken(user);
-        Assert.assertNotNull("No token generated", token1.getToken());
-        Assert.assertEquals("Wrong expiresIn", getRefreshConfig().getExpiration().toSeconds(), token1.getExpiresIn());
-
-        RefreshToken token2 = service.generateRefreshToken(user);
-        Assert.assertNotNull("No token generated", token2.getToken());
-        Assert.assertNotEquals("No new toke ngenerated", token1, token2);
-    }
-
-    @Test
     public void testRefreshTokenSupported() throws Exception {
         JwtTokenService service = getService();
 
@@ -103,7 +89,7 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
     }
 
     @Test
-    public void testListRefreshTokens() throws Exception {
+    public void testListRefreshTokens() {
         JwtTokenService service = getService();
 
         JwtUser jsmith = getJwtUser();
@@ -236,13 +222,6 @@ public abstract class AbstractTestJwtTokenServiceWithRefresh extends TestJwtToke
 
         Assert.assertTrue("Token should be used", service.useRefreshToken(tokenA.getToken()).isPresent());
         Assert.assertEquals("Wrong token used", tokenB, service.listRefreshTokens(jsmith).get(0));
-    }
-
-    @Test
-    public void testUseRefreshToken() throws Exception {
-        JwtTokenService service = getService();
-
-        Assert.assertFalse("Unknown token used", service.useRefreshToken("baz").isPresent());
     }
 
     @Test(expected = FeatureNotConfiguredException.class)

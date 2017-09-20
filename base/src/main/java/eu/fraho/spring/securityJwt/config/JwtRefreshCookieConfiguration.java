@@ -33,22 +33,11 @@ public class JwtRefreshCookieConfiguration implements CookieConfiguration {
     private String[] names = new String[]{"JWT-REFRESHTOKEN"};
 
     /**
-     * If this value is not specified, then the redirect for refreshing the cookies will be sent only with
-     * the {@link #path} specified. Otherweise the domain will be prepended to the redirect, thus allowing
-     * to use an external refresh server.
+     * The cookie will only be sent to these domains.
      *
      * @see javax.servlet.http.Cookie#setDomain(String)
      */
     private String domain;
-
-    /**
-     * When the client requests a resource with an expired token, he will be redirected to the authentication
-     * server to automatically obtain new token cookies.
-     * <p>
-     * If the authentication server don't run on default http(s) port, then you can use this property to
-     * set the portnumber. A value of -1 means that no portnumber will be used in the redirect URI.
-     */
-    private int port = -1;
 
     /**
      * The cookie will not be accessible by client JavaScript if enabled (highly recommend)
@@ -65,19 +54,13 @@ public class JwtRefreshCookieConfiguration implements CookieConfiguration {
     private boolean secure = true;
 
     /**
-     * After using the refresh token redirect user to his referer
-     * or (if unavailable for any reason) to this path.
+     * The issued access token cookie will only be sent by the client to URIs matching this pattern.
      * <p>
-     * The path may be a full URI.
+     * This path spec has to include the endpoint for refreshing tokens, otherwise this won't work!
+     *
+     * @see javax.servlet.http.Cookie#setPath(String)
      */
-    private String fallbackRedirectUrl = "/";
-
-    /**
-     * Sets the path for the RestController, defining the endpoint for refresh requests.
-     * This path has to start with a /.
-     * This endpoint has to be different to @{link {@link JwtRefreshConfiguration#path}}
-     */
-    private String path = "/auth/refreshCookie";
+    private String path = "/auth/refresh";
 
     public Logger getLog() {
         return log;

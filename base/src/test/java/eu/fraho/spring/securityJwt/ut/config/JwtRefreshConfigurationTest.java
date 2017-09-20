@@ -43,20 +43,6 @@ public class JwtRefreshConfigurationTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testSamePaths() {
-        JwtRefreshConfiguration conf = getNewInstance();
-        conf.setPath("/foobar");
-        conf.getCookie().setPath("/foobar");
-        try {
-            conf.afterPropertiesSet();
-        } catch (IllegalArgumentException iae) {
-            Assert.assertEquals("Wrong message text",
-                    "The paths for regular refresh and cookie refresh have to be different", iae.getMessage());
-            throw iae;
-        }
-    }
-
-    @Test(expected = IllegalArgumentException.class)
     public void testEmptyPath() {
         JwtRefreshConfiguration conf = getNewInstance();
         conf.setPath("");

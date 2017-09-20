@@ -33,25 +33,22 @@ deactivate jwtl
 deactivate ms
 
 == Using refresh token ==
-u -> ms: //<Any Method>// /foobar/action\nCookie JWT-ACCESSTOKEN
+u -> ms: GET /foobar/action\nCookie JWT-ACCESSTOKEN
 activate ms
 ms -> jwtl: Check authorization
 activate jwtl
 jwtl --> ms: Token expired
 deactivate jwtl
 
-ms --> u: 307 Redirect\nLocation: /auth/refreshCookie
+ms --> u: 401 Unauthorized
 deactivate ms
-u -> ms: //<Any Method>// /auth/refreshCokie\nCookie JWT-REFRESHTOKEN
+u -> ms: POST /auth/refresh\nCookie JWT-REFRESHTOKEN
 activate ms
 ms -> jwtl: use token
 activate jwtl
-jwtl --> u: 307 Location: /foobar/action\nCookie JWT-ACCESSTOKEN\nCookie JWT-REFRESHTOKEN
+
+jwtl --> u: 200 Ok\n(AccessToken, RefreshToken)\nCookie JWT-ACCESSTOKEN\nCookie JWT-REFRESHTOKEN
 deactivate jwtl
-u -> ms: //<Any Method>// /foobar/action\nCookie JWT-ACCESSTOKEN
-ms -> ms: Some business logic
-ms --> u: Result of call
 deactivate ms
-deactivate u
 
 @enduml

@@ -7,7 +7,7 @@
 package eu.fraho.spring.securityJwt.internal.starter;
 
 import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
-import eu.fraho.spring.securityJwt.service.internal.InternalTokenStore;
+import eu.fraho.spring.securityJwt.internal.service.InternalTokenStore;
 import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
 import eu.fraho.spring.securityJwt.starter.SecurityJwtBaseAutoConfiguration;
 import eu.fraho.spring.securityJwt.starter.SecurityJwtNoRefreshStoreAutoConfiguration;

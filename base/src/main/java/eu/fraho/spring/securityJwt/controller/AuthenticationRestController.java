@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
@@ -69,12 +70,24 @@ public class AuthenticationRestController {
             @ApiResponse(code = 401, message = "Either the token expired, or the user has no longer access to this api"),
     })
     public ResponseEntity<JwtAuthenticationResponse> refresh(HttpServletResponse response,
-                                                             @RequestBody JwtRefreshRequest refreshRequest) {
+                                                             HttpServletRequest request,
+                                                             @RequestBody(required = false) @Nullable JwtRefreshRequest refreshRequest) {
         if (!jwtTokenUtil.isRefreshTokenSupported()) {
             log.info("Refresh token support is disabled");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        Optional<JwtUser> jwtUser = jwtTokenUtil.useRefreshToken(refreshRequest.getRefreshToken());
+
+        Optional<String> token = Optional.ofNullable(refreshRequest).map(JwtRefreshRequest::getRefreshToken);
+        if (!token.isPresent()) {
+            token = jwtTokenUtil.getRefreshToken(request);
+        }
+
+        if (!token.isPresent()) {
+            log.info("No refresh token found in request");
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        Optional<JwtUser> jwtUser = jwtTokenUtil.useRefreshToken(token.get());
         if (!jwtUser.isPresent()) {
             log.info("Using refresh token failed");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

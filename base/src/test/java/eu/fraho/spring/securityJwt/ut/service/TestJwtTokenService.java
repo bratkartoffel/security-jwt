@@ -9,9 +9,9 @@ package eu.fraho.spring.securityJwt.ut.service;
 import eu.fraho.spring.securityJwt.config.*;
 import eu.fraho.spring.securityJwt.dto.AccessToken;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
+import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 import eu.fraho.spring.securityJwt.exceptions.FeatureNotConfiguredException;
-import eu.fraho.spring.securityJwt.it.spring.MockTokenStore;
 import eu.fraho.spring.securityJwt.it.spring.UserDetailsServiceTestImpl;
 import eu.fraho.spring.securityJwt.password.CryptPasswordEncoder;
 import eu.fraho.spring.securityJwt.service.JwtTokenService;
@@ -21,6 +21,7 @@ import eu.fraho.spring.securityJwt.util.JwtTokens;
 import eu.fraho.spring.securityJwt.util.MyJwtUser;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -46,6 +47,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 public class TestJwtTokenService {
+    protected RefreshTokenStore tokenstoreMock;
+
     /**
      * private key or hmac secret
      */
@@ -130,7 +133,7 @@ public class TestJwtTokenService {
     }
 
     @NotNull
-    protected JwtTokenService getService(JwtRefreshCookieConfiguration refreshCookieConfiguration) {
+    protected JwtTokenService getService(@NotNull JwtRefreshCookieConfiguration refreshCookieConfiguration) {
         return getService(getTokenConfig(), getRefreshConfig(), getRefreshStore(), new JwtUser(),
                 getTokenCookieConfig(), getTokenHeaderConfig(), refreshCookieConfiguration);
     }
@@ -173,10 +176,18 @@ public class TestJwtTokenService {
     }
 
     @NotNull
+    private JwtTokenService getNoPrivService() {
+        JwtTokenConfiguration tokenConfiguration = getRsaTokenConfig();
+        tokenConfiguration.setPriv(null);
+        return getService(tokenConfiguration);
+    }
+
+    @NotNull
     protected RefreshTokenStore getRefreshStore() {
-        MockTokenStore tokenStore = new MockTokenStore(getUserdetailsService());
-        tokenStore.afterPropertiesSet();
-        return tokenStore;
+        tokenstoreMock = Mockito.mock(RefreshTokenStore.class);
+        Mockito.when(tokenstoreMock.useToken(Mockito.any())).thenReturn(Optional.empty());
+
+        return tokenstoreMock;
     }
 
     @NotNull
@@ -211,6 +222,11 @@ public class TestJwtTokenService {
         user.setAuthorities(Collections.singletonList(new SimpleGrantedAuthority("HOUSE_STARK")));
         user.setFoobar("this is just a simple custom field for demonstration");
         return user;
+    }
+
+    @Before
+    public void beforeTest() {
+        tokenstoreMock = null;
     }
 
     @Test
@@ -273,6 +289,14 @@ public class TestJwtTokenService {
     }
 
     @Test
+    public void testValidateTokenParseException() throws Exception {
+        JwtTokenService service = getService();
+
+        String token = "ö";
+        Assert.assertFalse("Token is invalid", service.validateToken(token));
+    }
+
+    @Test
     public void testGetToken() throws Exception {
         JwtTokenService service = getService();
 
@@ -304,6 +328,22 @@ public class TestJwtTokenService {
         Assert.assertEquals("Token not extracted from header", Optional.of("foobar"), service.getAccessToken(request));
         Assert.assertEquals("Token not extracted from header", Optional.of("foobar"), service.getAccessToken(request));
         Assert.assertEquals("Token extracted from header", Optional.empty(), service.getAccessToken(request));
+    }
+
+    @Test
+    public void testGetTokenWhenBothThenHeaderPrimary() throws Exception {
+        JwtTokenCookieConfiguration cookieConfiguration = new JwtTokenCookieConfiguration();
+        cookieConfiguration.setEnabled(true);
+        JwtTokenService service = getService(cookieConfiguration);
+
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getHeader("Authorization")).thenReturn("Bearer foobar");
+        Mockito.when(request.getCookies()).thenReturn(
+                new Cookie[]{
+                        new Cookie(cookieConfiguration.getNames()[0], "baz")
+                });
+
+        Assert.assertEquals("Token not extracted from header", Optional.of("foobar"), service.getAccessToken(request));
     }
 
     @Test
@@ -360,5 +400,48 @@ public class TestJwtTokenService {
         Optional<MyJwtUser> user1 = service.parseUser(token.getToken());
         Assert.assertTrue("User should be parsed", user1.isPresent());
         Assert.assertEquals("Custom claim should be present", user.getFoobar(), user1.get().getFoobar());
+    }
+
+    @Test(expected = FeatureNotConfiguredException.class)
+    public void testUseRefreshTokenNoPriv() throws Exception {
+        JwtTokenService service = getNoPrivService();
+
+        try {
+            service.useRefreshToken(new RefreshToken("foobar", -1));
+        } catch (FeatureNotConfiguredException fnce) {
+            Assert.assertEquals("Wrong error message", "Access token signing is not enabled.", fnce.getMessage());
+            throw fnce;
+        }
+
+        Mockito.verifyZeroInteractions(tokenstoreMock);
+    }
+
+    @Test
+    public void testUseRefreshToken() throws Exception {
+        JwtTokenService service = getService();
+
+        RefreshToken token = new RefreshToken("foobar", -1);
+        Assert.assertFalse("Unknown token used", service.useRefreshToken(token).isPresent());
+
+        if (tokenstoreMock != null) {
+            Mockito.verify(tokenstoreMock).useToken(Mockito.eq(token.getToken()));
+        }
+    }
+
+    @Test
+    public void testGenerateRefreshToken() {
+        JwtTokenService service = getService();
+        JwtUser user = getJwtUser();
+        RefreshToken token1 = service.generateRefreshToken(user);
+        Assert.assertNotNull("No token generated", token1.getToken());
+        Assert.assertEquals("Wrong expiresIn", getRefreshConfig().getExpiration().toSeconds(), token1.getExpiresIn());
+
+        if (tokenstoreMock != null) {
+            Mockito.verify(tokenstoreMock).saveToken(Mockito.eq(user), Mockito.eq(token1.getToken()));
+        }
+
+        RefreshToken token2 = service.generateRefreshToken(user);
+        Assert.assertNotNull("No token generated", token2.getToken());
+        Assert.assertNotEquals("No new token generated", token1, token2);
     }
 }

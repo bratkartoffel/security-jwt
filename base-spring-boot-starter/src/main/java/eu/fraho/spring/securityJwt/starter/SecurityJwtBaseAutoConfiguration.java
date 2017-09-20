@@ -8,7 +8,6 @@ package eu.fraho.spring.securityJwt.starter;
 
 import eu.fraho.spring.securityJwt.JwtAuthenticationEntryPoint;
 import eu.fraho.spring.securityJwt.config.*;
-import eu.fraho.spring.securityJwt.controller.AuthenticationCookieRestController;
 import eu.fraho.spring.securityJwt.controller.AuthenticationRestController;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.password.CryptPasswordEncoder;
@@ -20,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -94,10 +92,9 @@ public class SecurityJwtBaseAutoConfiguration {
     }
 
     @Bean
-    public JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint(final JwtRefreshCookieConfiguration refreshCookieConfiguration,
-                                                                   final JwtTokenService jwtTokenService) {
+    public JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint() {
         log.debug("Register JwtAuthenticationEntryPoint");
-        return new JwtAuthenticationEntryPoint(refreshCookieConfiguration, jwtTokenService);
+        return new JwtAuthenticationEntryPoint();
     }
 
     @Bean
@@ -120,14 +117,6 @@ public class SecurityJwtBaseAutoConfiguration {
     public UserDetailsService defaultUserDetailsService() {
         log.debug("Register EmptyUserDetailsService");
         return new EmptyUserDetailsService();
-    }
-
-    @Bean
-    @ConditionalOnProperty("fraho.jwt.refresh.cookie.enabled")
-    public AuthenticationCookieRestController authenticationCookieRestController(final JwtTokenService jwtTokenService,
-                                                                                 final JwtRefreshCookieConfiguration refreshCookieConfiguration,
-                                                                                 final AuthenticationRestController authenticationRestController) {
-        return new AuthenticationCookieRestController(jwtTokenService, refreshCookieConfiguration, authenticationRestController);
     }
 
     @Bean

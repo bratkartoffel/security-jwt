@@ -4,7 +4,7 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.securityJwt.service.internal;
+package eu.fraho.spring.securityJwt.internal.service;
 
 import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
 import eu.fraho.spring.securityJwt.dto.JwtUser;

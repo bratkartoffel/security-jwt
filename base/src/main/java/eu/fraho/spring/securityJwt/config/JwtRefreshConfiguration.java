@@ -16,8 +16,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.stereotype.Component;
 
-import java.util.Objects;
-
 @ConfigurationProperties(prefix = "fraho.jwt.refresh")
 @Component
 @Data
@@ -67,11 +65,6 @@ public class JwtRefreshConfiguration implements InitializingBean {
         // cookie path may not be empty (required for controller)
         if (path == null || path.isEmpty()) {
             throw new IllegalArgumentException("The path for refresh cookies may not be empty");
-        }
-
-        // cookie refresh path has to be different to normal path
-        if (Objects.equals(path, cookie.getPath())) {
-            throw new IllegalArgumentException("The paths for regular refresh and cookie refresh have to be different");
         }
     }
 }
