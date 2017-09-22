@@ -58,7 +58,8 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     @NonNull
     private final ObjectFactory<JwtUser> jwtUser;
 
-    @SuppressWarnings("SpringAutowiredFieldsWarningInspection") // not possible otherwise as this bean is lazy
+    // not possible otherwise, as the RegisterRefreshTokenStore comes pretty late
+    @SuppressWarnings("SpringAutowiredFieldsWarningInspection")
     @Autowired
     @Lazy
     @Setter
@@ -78,9 +79,11 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
             if (validateToken(signedJWT)) {
+                log.debug("Successfully validated token by client");
                 JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
                 T user = (T) jwtUser.getObject();
                 user.applyClaims(claims);
+                log.debug("Token resulted in user {}", user);
                 result = Optional.of(user);
             }
         } catch (ParseException e) {
@@ -138,7 +141,9 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
         boolean result;
         try {
             result = signedJWT.verify(tokenConfig.getVerifier());
+            log.debug("Token signature verified, result={}", result);
             result &= areClaimsValid(signedJWT.getJWTClaimsSet());
+            log.debug("Claims verified, result={}", result);
         } catch (ParseException | JOSEException e) {
             log.error("Supplied token did not validate", e);
             result = false;
@@ -152,9 +157,13 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
         Date nbf = Optional.ofNullable(claims.getNotBeforeTime()).orElse(new Date(0));
         Date iat = Optional.ofNullable(claims.getIssueTime()).orElse(new Date(0));
 
+        log.debug("Validating claims");
         boolean result = iat.before(now);
+        log.debug("iat={} < now={}, result={}", iat, now, result);
         result &= nbf.before(now);
+        log.debug("nbf={} < now={}, result={}", nbf, now, result);
         result &= exp.after(now);
+        log.debug("exp={} > now={}, result={}", exp, now, result);
         return result;
     }
 
@@ -168,9 +177,11 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     public Optional<String> getAccessToken(@NotNull HttpServletRequest request) {
         Optional<String> result = Optional.empty();
         if (tokenHeaderConfiguration.isEnabled()) {
+            log.debug("Extracting token from header");
             result = extractHeaderToken(tokenHeaderConfiguration.getNames(), request);
         }
         if (!result.isPresent() && tokenCookieConfiguration.isEnabled()) {
+            log.debug("Extracting token from cookies");
             result = extractCookieToken(tokenCookieConfiguration.getNames(), request.getCookies());
         }
         return result;
@@ -180,6 +191,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     public Optional<String> getRefreshToken(@NotNull HttpServletRequest request) {
         Optional<String> result = Optional.empty();
         if (refreshCookieConfiguration.isEnabled()) {
+            log.debug("Extracting refreshtoken from cookies");
             result = extractCookieToken(refreshCookieConfiguration.getNames(), request.getCookies());
         }
         return result;
@@ -211,6 +223,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
         byte[] data = new byte[refreshConfig.getLength()];
         random.nextBytes(data);
         final String token = Base64.getEncoder().encodeToString(data);
+        log.debug("Generated refresh token, storing at configured store");
         refreshTokenStore.saveToken(user, token);
         return new RefreshToken(token, refreshConfig.getExpiration().toSeconds());
     }

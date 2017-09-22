@@ -30,13 +30,15 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        jwtTokenUtil.getAccessToken(request).ifPresent(token ->
-                jwtTokenUtil.parseUser(token).ifPresent(jwtUser -> {
-                    log.debug("Successfully used token to authenticate {}", jwtUser.getUsername());
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(jwtUser, token, jwtUser.getAuthorities());
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                })
+        jwtTokenUtil.getAccessToken(request).ifPresent(token -> {
+                    log.debug("AccessToken was present in request, extracting userdetails");
+                    jwtTokenUtil.parseUser(token).ifPresent(jwtUser -> {
+                        log.debug("Successfully used token to authenticate {}", jwtUser.getUsername());
+                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(jwtUser, token, jwtUser.getAuthorities());
+                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    });
+                }
         );
 
         chain.doFilter(request, response);

@@ -59,7 +59,9 @@ public class TotpServiceImpl implements TotpService {
         boolean result = false;
         try {
             for (int i = -configuration.getVariance(); i <= configuration.getVariance(); i++) {
-                if (getCode(secretBytes, timeIndex + i) == code) {
+                int calculated = getCode(secretBytes, timeIndex + i);
+                log.trace("Verifying code i={}, calculated={}, given={}", i, calculated, code);
+                if (calculated == code) {
                     result = true;
                     break;
                 }
@@ -74,6 +76,7 @@ public class TotpServiceImpl implements TotpService {
     public String generateSecret() {
         final byte[] secret = new byte[configuration.getLength()];
         random.nextBytes(secret);
+        log.debug("Generated secret with length=", secret.length);
         return base32.encodeToString(secret);
     }
 }

@@ -79,6 +79,7 @@ public class AuthenticationRestController {
 
         Optional<String> token = Optional.ofNullable(refreshRequest).map(JwtRefreshRequest::getRefreshToken);
         if (!token.isPresent()) {
+            log.debug("Using cookie refresh");
             token = jwtTokenUtil.getRefreshToken(request);
         }
 
@@ -105,7 +106,7 @@ public class AuthenticationRestController {
         try {
             accessToken = jwtTokenUtil.generateToken(userDetails);
         } catch (JOSEException e) {
-            log.info("Error creating an access token for {}", userDetails.getUsername());
+            log.info("Error creating an access token for {}", userDetails.getUsername(), e);
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
@@ -116,9 +117,8 @@ public class AuthenticationRestController {
         addTokenCookieIfEnabled(response, refreshToken, refreshConfiguration.getCookie());
 
         // Return the token
-        JwtAuthenticationResponse body = new JwtAuthenticationResponse(accessToken, refreshToken);
         log.info("Successfully used refresh token for {}", userDetails.getUsername());
-        return ResponseEntity.ok(body);
+        return ResponseEntity.ok(new JwtAuthenticationResponse(accessToken, refreshToken));
     }
 
     @RequestMapping("${fraho.jwt.token.path:/auth/login}")
@@ -130,7 +130,7 @@ public class AuthenticationRestController {
     })
     public ResponseEntity<JwtAuthenticationResponse> login(HttpServletResponse response,
                                                            @RequestBody JwtAuthenticationRequest authenticationRequest) {
-        // Perform the security
+        // Perform the basic security
         final Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         authenticationRequest.getUsername(),
@@ -154,7 +154,7 @@ public class AuthenticationRestController {
         try {
             accessToken = jwtTokenUtil.generateToken(userDetails);
         } catch (JOSEException e) {
-            log.info("Error creating an access token for {}", userDetails.getUsername());
+            log.info("Error creating an access token for {}", userDetails.getUsername(), e);
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
@@ -170,17 +170,16 @@ public class AuthenticationRestController {
         addTokenCookieIfEnabled(response, refreshToken, refreshConfiguration.getCookie());
 
         // Return the token
-        JwtAuthenticationResponse body = new JwtAuthenticationResponse(accessToken, refreshToken);
         log.info("Successfully created token for {}", userDetails.getUsername());
-        return ResponseEntity.ok(body);
+        return ResponseEntity.ok(new JwtAuthenticationResponse(accessToken, refreshToken));
     }
 
     private boolean isTotpOk(JwtAuthenticationRequest authenticationRequest, JwtUser userDetails) {
         return userDetails.getTotpSecret().map(secret ->
                 authenticationRequest.getTotp().map(code ->
                         totpService.verifyCode(secret, code)
-                ).orElse(false)
-        ).orElse(true);
+                ).orElse(false) // user has totp, but none in request = nok
+        ).orElse(true); // user has no secret = ok
     }
 
     private void addTokenCookieIfEnabled(HttpServletResponse response, @Nullable Token token, CookieConfiguration configuration) {
