@@ -6,7 +6,7 @@
  */
 package eu.fraho.spring.securityJwt.hibernate.service;
 
-import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
+import eu.fraho.spring.securityJwt.config.RefreshProperties;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.hibernate.dto.RefreshTokenEntity;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class HibernateTokenStore implements RefreshTokenStore {
     @NonNull
-    private final JwtRefreshConfiguration refreshConfig;
+    private final RefreshProperties refreshProperties;
 
     @NonNull
     private UserDetailsService userDetailsService;
@@ -89,7 +89,7 @@ public class HibernateTokenStore implements RefreshTokenStore {
     }
 
     private void setQueryExpiration(@NotNull Query query) {
-        final ZonedDateTime expiration = ZonedDateTime.now().minusSeconds(refreshConfig.getExpiration().toSeconds());
+        final ZonedDateTime expiration = ZonedDateTime.now().minusSeconds(refreshProperties.getExpiration().toSeconds());
         query.setParameter("expiration", expiration);
     }
 

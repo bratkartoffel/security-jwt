@@ -6,7 +6,7 @@
  */
 package eu.fraho.spring.securityJwt.password;
 
-import eu.fraho.spring.securityJwt.config.CryptConfiguration;
+import eu.fraho.spring.securityJwt.config.CryptProperties;
 import eu.fraho.spring.securityJwt.dto.CryptAlgorithm;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ public class CryptPasswordEncoder implements PasswordEncoder {
     private final Encoder encoder = Base64.getUrlEncoder();
 
     @NonNull
-    private final CryptConfiguration configuration;
+    private final CryptProperties configuration;
 
     private static boolean slowEquals(@NotNull CharSequence a, @NotNull CharSequence b) {
         int diff = a.length() ^ b.length();

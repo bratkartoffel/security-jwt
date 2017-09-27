@@ -2,9 +2,6 @@ fraho:
   totp:
     variance: 3
     length:   8
-  crypt:
-    algorithm: SHA256
-    rounds: 100
   jwt:
     token:
       expiration: 2 seconds

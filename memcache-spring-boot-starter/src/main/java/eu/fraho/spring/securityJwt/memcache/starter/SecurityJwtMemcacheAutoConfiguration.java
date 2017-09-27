@@ -6,8 +6,8 @@
  */
 package eu.fraho.spring.securityJwt.memcache.starter;
 
-import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
-import eu.fraho.spring.securityJwt.memcache.config.MemcacheConfiguration;
+import eu.fraho.spring.securityJwt.config.RefreshProperties;
+import eu.fraho.spring.securityJwt.memcache.config.MemcacheProperties;
 import eu.fraho.spring.securityJwt.memcache.service.MemcacheTokenStore;
 import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
 import eu.fraho.spring.securityJwt.starter.SecurityJwtBaseAutoConfiguration;
@@ -28,17 +28,17 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 public class SecurityJwtMemcacheAutoConfiguration {
     @Bean
     @ConditionalOnBean(RefreshTokenStore.class)
-    public MemcacheConfiguration memcacheConfiguration() {
-        log.debug("Register MemcacheConfiguration");
-        return new MemcacheConfiguration();
+    public MemcacheProperties memcacheProperties() {
+        log.debug("Register MemcacheProperties");
+        return new MemcacheProperties();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public RefreshTokenStore refreshTokenStore(final JwtRefreshConfiguration jwtRefreshConfiguration,
-                                               final MemcacheConfiguration memcacheConfiguration,
+    public RefreshTokenStore refreshTokenStore(final RefreshProperties refreshProperties,
+                                               final MemcacheProperties memcacheProperties,
                                                final UserDetailsService userDetailsService) {
         log.debug("Register MemcacheTokenStore");
-        return new MemcacheTokenStore(jwtRefreshConfiguration, memcacheConfiguration, userDetailsService);
+        return new MemcacheTokenStore(refreshProperties, memcacheProperties, userDetailsService);
     }
 }

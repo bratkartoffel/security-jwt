@@ -6,7 +6,7 @@
  */
 package eu.fraho.spring.securityJwt.internal.starter;
 
-import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
+import eu.fraho.spring.securityJwt.config.RefreshProperties;
 import eu.fraho.spring.securityJwt.internal.service.InternalTokenStore;
 import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
 import eu.fraho.spring.securityJwt.starter.SecurityJwtBaseAutoConfiguration;
@@ -26,9 +26,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 public class SecurityJwtInternalAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
-    public RefreshTokenStore refreshTokenStore(final JwtRefreshConfiguration jwtRefreshConfiguration,
+    public RefreshTokenStore refreshTokenStore(final RefreshProperties refreshProperties,
                                                final UserDetailsService userDetailsService) {
         log.debug("Register InternalTokenStore");
-        return new InternalTokenStore(jwtRefreshConfiguration, userDetailsService);
+        return new InternalTokenStore(refreshProperties, userDetailsService);
     }
 }

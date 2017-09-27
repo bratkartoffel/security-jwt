@@ -7,9 +7,9 @@
 package eu.fraho.spring.securityJwt.controller;
 
 import com.nimbusds.jose.JOSEException;
-import eu.fraho.spring.securityJwt.config.CookieConfiguration;
-import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
-import eu.fraho.spring.securityJwt.config.JwtTokenConfiguration;
+import eu.fraho.spring.securityJwt.config.CookieProperties;
+import eu.fraho.spring.securityJwt.config.RefreshProperties;
+import eu.fraho.spring.securityJwt.config.TokenProperties;
 import eu.fraho.spring.securityJwt.dto.*;
 import eu.fraho.spring.securityJwt.service.JwtTokenService;
 import eu.fraho.spring.securityJwt.service.TotpService;
@@ -48,7 +48,7 @@ public class AuthenticationRestController {
     private final AuthenticationManager authenticationManager;
 
     @NonNull
-    private final JwtTokenService jwtTokenUtil;
+    private final JwtTokenService tokenService;
 
     @NonNull
     private final UserDetailsService userDetailsService;
@@ -57,10 +57,10 @@ public class AuthenticationRestController {
     private final TotpService totpService;
 
     @NonNull
-    private final JwtTokenConfiguration tokenConfiguration;
+    private final TokenProperties tokenProperties;
 
     @NonNull
-    private final JwtRefreshConfiguration refreshConfiguration;
+    private final RefreshProperties refreshProperties;
 
     @RequestMapping("${fraho.jwt.refresh.path:/auth/refresh}")
     @ApiOperation("Use a previously fetched refresh token to create a new access token")
@@ -69,18 +69,18 @@ public class AuthenticationRestController {
             @ApiResponse(code = 400, message = "Missing a required field in the request or refresh tokens not supported"),
             @ApiResponse(code = 401, message = "Either the token expired, or the user has no longer access to this api"),
     })
-    public ResponseEntity<JwtAuthenticationResponse> refresh(HttpServletResponse response,
-                                                             HttpServletRequest request,
-                                                             @RequestBody(required = false) @Nullable JwtRefreshRequest refreshRequest) {
-        if (!jwtTokenUtil.isRefreshTokenSupported()) {
+    public ResponseEntity<AuthenticationResponse> refresh(HttpServletResponse response,
+                                                          HttpServletRequest request,
+                                                          @RequestBody(required = false) @Nullable RefreshRequest refreshRequest) {
+        if (!tokenService.isRefreshTokenSupported()) {
             log.info("Refresh token support is disabled");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        Optional<String> token = Optional.ofNullable(refreshRequest).map(JwtRefreshRequest::getRefreshToken);
+        Optional<String> token = Optional.ofNullable(refreshRequest).map(RefreshRequest::getRefreshToken);
         if (!token.isPresent()) {
             log.debug("Using cookie refresh");
-            token = jwtTokenUtil.getRefreshToken(request);
+            token = tokenService.getRefreshToken(request);
         }
 
         if (!token.isPresent()) {
@@ -88,7 +88,7 @@ public class AuthenticationRestController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        Optional<JwtUser> jwtUser = jwtTokenUtil.useRefreshToken(token.get());
+        Optional<JwtUser> jwtUser = tokenService.useRefreshToken(token.get());
         if (!jwtUser.isPresent()) {
             log.info("Using refresh token failed");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -104,21 +104,21 @@ public class AuthenticationRestController {
         log.debug("Generating new tokens for {}", userDetails.getUsername());
         final AccessToken accessToken;
         try {
-            accessToken = jwtTokenUtil.generateToken(userDetails);
+            accessToken = tokenService.generateToken(userDetails);
         } catch (JOSEException e) {
             log.info("Error creating an access token for {}", userDetails.getUsername(), e);
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        final RefreshToken refreshToken = jwtTokenUtil.generateRefreshToken(userDetails);
+        final RefreshToken refreshToken = tokenService.generateRefreshToken(userDetails);
 
         log.debug("Sending cookies if enabled");
-        addTokenCookieIfEnabled(response, accessToken, tokenConfiguration.getCookie());
-        addTokenCookieIfEnabled(response, refreshToken, refreshConfiguration.getCookie());
+        addTokenCookieIfEnabled(response, accessToken, tokenProperties.getCookie());
+        addTokenCookieIfEnabled(response, refreshToken, refreshProperties.getCookie());
 
         // Return the token
         log.info("Successfully used refresh token for {}", userDetails.getUsername());
-        return ResponseEntity.ok(new JwtAuthenticationResponse(accessToken, refreshToken));
+        return ResponseEntity.ok(new AuthenticationResponse(accessToken, refreshToken));
     }
 
     @RequestMapping("${fraho.jwt.token.path:/auth/login}")
@@ -128,8 +128,8 @@ public class AuthenticationRestController {
             @ApiResponse(code = 400, message = "Missing a required field in the request"),
             @ApiResponse(code = 401, message = "Either the credentials are wrong or the user has no access to this api"),
     })
-    public ResponseEntity<JwtAuthenticationResponse> login(HttpServletResponse response,
-                                                           @RequestBody JwtAuthenticationRequest authenticationRequest) {
+    public ResponseEntity<AuthenticationResponse> login(HttpServletResponse response,
+                                                        @RequestBody AuthenticationRequest authenticationRequest) {
         // Perform the basic security
         final Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -152,29 +152,29 @@ public class AuthenticationRestController {
         log.debug("Generating tokens");
         final AccessToken accessToken;
         try {
-            accessToken = jwtTokenUtil.generateToken(userDetails);
+            accessToken = tokenService.generateToken(userDetails);
         } catch (JOSEException e) {
             log.info("Error creating an access token for {}", userDetails.getUsername(), e);
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         final RefreshToken refreshToken;
-        if (jwtTokenUtil.isRefreshTokenSupported()) {
-            refreshToken = jwtTokenUtil.generateRefreshToken(userDetails);
+        if (tokenService.isRefreshTokenSupported()) {
+            refreshToken = tokenService.generateRefreshToken(userDetails);
         } else {
             refreshToken = null;
         }
 
         log.debug("Sending cookies if enabled");
-        addTokenCookieIfEnabled(response, accessToken, tokenConfiguration.getCookie());
-        addTokenCookieIfEnabled(response, refreshToken, refreshConfiguration.getCookie());
+        addTokenCookieIfEnabled(response, accessToken, tokenProperties.getCookie());
+        addTokenCookieIfEnabled(response, refreshToken, refreshProperties.getCookie());
 
         // Return the token
         log.info("Successfully created token for {}", userDetails.getUsername());
-        return ResponseEntity.ok(new JwtAuthenticationResponse(accessToken, refreshToken));
+        return ResponseEntity.ok(new AuthenticationResponse(accessToken, refreshToken));
     }
 
-    private boolean isTotpOk(JwtAuthenticationRequest authenticationRequest, JwtUser userDetails) {
+    private boolean isTotpOk(AuthenticationRequest authenticationRequest, JwtUser userDetails) {
         return userDetails.getTotpSecret().map(secret ->
                 authenticationRequest.getTotp().map(code ->
                         totpService.verifyCode(secret, code)
@@ -182,7 +182,7 @@ public class AuthenticationRestController {
         ).orElse(true); // user has no secret = ok
     }
 
-    private void addTokenCookieIfEnabled(HttpServletResponse response, @Nullable Token token, CookieConfiguration configuration) {
+    private void addTokenCookieIfEnabled(HttpServletResponse response, @Nullable AbstractToken token, CookieProperties configuration) {
         if (configuration.isEnabled() && token != null) {
             Cookie cookie = new Cookie(configuration.getNames()[0], token.getToken());
             Optional.ofNullable(configuration.getDomain()).ifPresent(cookie::setDomain);

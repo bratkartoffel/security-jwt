@@ -6,7 +6,7 @@
  */
 package eu.fraho.spring.securityJwt.service;
 
-import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
+import eu.fraho.spring.securityJwt.config.RefreshProperties;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -29,7 +29,7 @@ public class RegisterRefreshTokenStore implements InitializingBean {
     private final ConfigurableListableBeanFactory factory;
 
     @NonNull
-    private final JwtRefreshConfiguration refreshConfig;
+    private final RefreshProperties refreshProperties;
 
     @Setter
     private BeanDefinitionRegistry registry;
@@ -39,13 +39,13 @@ public class RegisterRefreshTokenStore implements InitializingBean {
         if (registry == null) registry = ((BeanDefinitionRegistry) factory);
 
         GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
-        beanDefinition.setBeanClass(refreshConfig.getCacheImpl());
+        beanDefinition.setBeanClass(refreshProperties.getCacheImpl());
         beanDefinition.setLazyInit(false);
         beanDefinition.setAbstract(false);
         beanDefinition.setAutowireCandidate(true);
         beanDefinition.setScope(AbstractBeanDefinition.SCOPE_DEFAULT);
 
-        log.info("Registering RefreshTokenStore = {}", refreshConfig.getCacheImpl());
+        log.info("Registering RefreshTokenStore = {}", refreshProperties.getCacheImpl());
         registry.registerBeanDefinition(BEAN_NAME, beanDefinition);
     }
 }

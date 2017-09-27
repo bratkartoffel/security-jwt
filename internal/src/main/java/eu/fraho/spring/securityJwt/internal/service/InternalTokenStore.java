@@ -6,7 +6,7 @@
  */
 package eu.fraho.spring.securityJwt.internal.service;
 
-import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
+import eu.fraho.spring.securityJwt.config.RefreshProperties;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
@@ -25,12 +25,12 @@ import java.util.*;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class InternalTokenStore implements RefreshTokenStore {
     @NonNull
-    private final JwtRefreshConfiguration refreshConfig;
+    private final RefreshProperties refreshProperties;
 
     @NonNull
     private UserDetailsService userDetailsService;
 
-    //                  Token   User
+    //                  AbstractToken   User
     private ExpiringMap<String, JwtUser> refreshTokenMap;
 
     @Override
@@ -94,7 +94,7 @@ public class InternalTokenStore implements RefreshTokenStore {
         log.info("Using in-memory implementation to handle refresh tokens");
         refreshTokenMap = ExpiringMap.builder()
                 .expirationPolicy(ExpirationPolicy.CREATED)
-                .expiration(refreshConfig.getExpiration().getQuantity(), refreshConfig.getExpiration().getTimeUnit())
+                .expiration(refreshProperties.getExpiration().getQuantity(), refreshProperties.getExpiration().getTimeUnit())
                 .build();
     }
 }

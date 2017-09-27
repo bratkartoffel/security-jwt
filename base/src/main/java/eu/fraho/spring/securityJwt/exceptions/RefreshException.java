@@ -6,8 +6,8 @@
  */
 package eu.fraho.spring.securityJwt.exceptions;
 
-public class FeatureNotConfiguredException extends SecurityException {
-    public FeatureNotConfiguredException(String message) {
-        super(message);
+public class RefreshException extends SecurityException {
+    public RefreshException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

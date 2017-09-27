@@ -41,19 +41,19 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     private final SecureRandom random = new SecureRandom();
 
     @NonNull
-    private final JwtTokenConfiguration tokenConfig;
+    private final TokenProperties tokenProperties;
 
     @NonNull
-    private final JwtRefreshConfiguration refreshConfig;
+    private final RefreshProperties refreshProperties;
 
     @NonNull
-    private final JwtTokenCookieConfiguration tokenCookieConfiguration;
+    private final TokenCookieProperties tokenCookieProperties;
 
     @NonNull
-    private final JwtTokenHeaderConfiguration tokenHeaderConfiguration;
+    private final TokenHeaderProperties tokenHeaderProperties;
 
     @NonNull
-    private final JwtRefreshCookieConfiguration refreshCookieConfiguration;
+    private final RefreshCookieProperties refreshCookieProperties;
 
     @NonNull
     private final ObjectFactory<JwtUser> jwtUser;
@@ -67,7 +67,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        if (tokenConfig.getSigner() == null) {
+        if (tokenProperties.getSigner() == null) {
             log.warn("No private key specified. This service may neither issue new tokens nor use refresh tokens.");
         }
     }
@@ -83,7 +83,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
                 JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
                 T user = (T) jwtUser.getObject();
                 user.applyClaims(claims);
-                log.debug("Token resulted in user {}", user);
+                log.debug("AbstractToken resulted in user {}", user);
                 result = Optional.of(user);
             }
         } catch (ParseException e) {
@@ -95,29 +95,29 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     @Override
     @NotNull
     public <T extends JwtUser> AccessToken generateToken(@NotNull T user) throws JOSEException {
-        if (tokenConfig.getSigner() == null) {
+        if (tokenProperties.getSigner() == null) {
             throw new FeatureNotConfiguredException("Access token signing is not enabled.");
         }
 
         Date now = new Date();
         JWTClaimsSet claims = user.toClaims()
                 .jwtID(UUID.randomUUID().toString())
-                .issuer(tokenConfig.getIssuer())
+                .issuer(tokenProperties.getIssuer())
                 .issueTime(now)
                 .notBeforeTime(now)
                 .expirationTime(generateExpirationDate())
                 .build();
         SignedJWT token = new SignedJWT(
-                new JWSHeader(tokenConfig.getJwsAlgorithm()),
+                new JWSHeader(tokenProperties.getJwsAlgorithm()),
                 claims);
-        token.sign(tokenConfig.getSigner());
+        token.sign(tokenProperties.getSigner());
 
-        return new AccessToken(token.serialize(), tokenConfig.getExpiration().toSeconds());
+        return new AccessToken(token.serialize(), tokenProperties.getExpiration().toSeconds());
     }
 
     @NotNull
     private Date generateExpirationDate() {
-        return Date.from(ZonedDateTime.now().plusSeconds(tokenConfig.getExpiration().toSeconds()).toInstant());
+        return Date.from(ZonedDateTime.now().plusSeconds(tokenProperties.getExpiration().toSeconds()).toInstant());
     }
 
     @Override
@@ -140,8 +140,8 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     public boolean validateToken(@NotNull SignedJWT signedJWT) {
         boolean result;
         try {
-            result = signedJWT.verify(tokenConfig.getVerifier());
-            log.debug("Token signature verified, result={}", result);
+            result = signedJWT.verify(tokenProperties.getVerifier());
+            log.debug("AbstractToken signature verified, result={}", result);
             result &= areClaimsValid(signedJWT.getJWTClaimsSet());
             log.debug("Claims verified, result={}", result);
         } catch (ParseException | JOSEException e) {
@@ -176,13 +176,13 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     @Override
     public Optional<String> getAccessToken(@NotNull HttpServletRequest request) {
         Optional<String> result = Optional.empty();
-        if (tokenHeaderConfiguration.isEnabled()) {
+        if (tokenHeaderProperties.isEnabled()) {
             log.debug("Extracting token from header");
-            result = extractHeaderToken(tokenHeaderConfiguration.getNames(), request);
+            result = extractHeaderToken(tokenHeaderProperties.getNames(), request);
         }
-        if (!result.isPresent() && tokenCookieConfiguration.isEnabled()) {
+        if (!result.isPresent() && tokenCookieProperties.isEnabled()) {
             log.debug("Extracting token from cookies");
-            result = extractCookieToken(tokenCookieConfiguration.getNames(), request.getCookies());
+            result = extractCookieToken(tokenCookieProperties.getNames(), request.getCookies());
         }
         return result;
     }
@@ -190,9 +190,9 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     @Override
     public Optional<String> getRefreshToken(@NotNull HttpServletRequest request) {
         Optional<String> result = Optional.empty();
-        if (refreshCookieConfiguration.isEnabled()) {
+        if (refreshCookieProperties.isEnabled()) {
             log.debug("Extracting refreshtoken from cookies");
-            result = extractCookieToken(refreshCookieConfiguration.getNames(), request.getCookies());
+            result = extractCookieToken(refreshCookieProperties.getNames(), request.getCookies());
         }
         return result;
     }
@@ -220,12 +220,12 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     @Override
     @NotNull
     public RefreshToken generateRefreshToken(JwtUser user) {
-        byte[] data = new byte[refreshConfig.getLength()];
+        byte[] data = new byte[refreshProperties.getLength()];
         random.nextBytes(data);
         final String token = Base64.getEncoder().encodeToString(data);
         log.debug("Generated refresh token, storing at configured store");
         refreshTokenStore.saveToken(user, token);
-        return new RefreshToken(token, refreshConfig.getExpiration().toSeconds());
+        return new RefreshToken(token, refreshProperties.getExpiration().toSeconds());
     }
 
     @Override
@@ -240,7 +240,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
 
     @Override
     public <T extends JwtUser> Optional<T> useRefreshToken(@NotNull String token) {
-        if (tokenConfig.getSigner() == null) {
+        if (tokenProperties.getSigner() == null) {
             throw new FeatureNotConfiguredException("Access token signing is not enabled.");
         }
 

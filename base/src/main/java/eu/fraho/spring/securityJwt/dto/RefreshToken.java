@@ -15,7 +15,7 @@ import net.jcip.annotations.Immutable;
 @Getter
 @Immutable
 @EqualsAndHashCode(callSuper = true)
-public final class RefreshToken extends Token {
+public final class RefreshToken extends AbstractToken {
     @JsonCreator
     public RefreshToken(@JsonProperty("token") String token, @JsonProperty("expiresIn") int expiresIn) {
         super(token, expiresIn);
