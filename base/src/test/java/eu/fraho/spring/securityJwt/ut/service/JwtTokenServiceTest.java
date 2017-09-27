@@ -408,7 +408,9 @@ public class JwtTokenServiceTest {
             throw fnce;
         }
 
-        Mockito.verifyZeroInteractions(tokenstoreMock);
+        if (tokenstoreMock != null) {
+            Mockito.verifyZeroInteractions(tokenstoreMock);
+        }
     }
 
     @Test

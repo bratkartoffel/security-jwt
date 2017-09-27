@@ -77,20 +77,23 @@ public class AuthenticationRestController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+        // extract the refreshtoken from the body
         Optional<String> token = Optional.ofNullable(refreshRequest).map(RefreshRequest::getRefreshToken);
         if (!token.isPresent()) {
-            log.debug("Using cookie refresh");
+            log.debug("No refreshtoken in body found, trying to read it from the cookies");
             token = tokenService.getRefreshToken(request);
         }
 
+        // if no token was found at all, then abort with an unauthorized error
         if (!token.isPresent()) {
             log.info("No refresh token found in request");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
+        // use the refresh token to get the underlying userdetails
         Optional<JwtUser> jwtUser = tokenService.useRefreshToken(token.get());
         if (!jwtUser.isPresent()) {
-            log.info("Using refresh token failed");
+            log.info("Using refresh token failed (unknown refreshtoken?)");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         final JwtUser userDetails = jwtUser.get();
@@ -139,8 +142,10 @@ public class AuthenticationRestController {
         );
         log.info("Successfully authenticated against database for {}", authenticationRequest.getUsername());
 
-        // Reload password post-security so we can generate token
+        // Load the userdetails from the backend
         final JwtUser userDetails = (JwtUser) userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+
+        // Verify that the user may access this api and his TOTP (if present / provided) is valid
         if (!userDetails.isApiAccessAllowed() || !isTotpOk(authenticationRequest, userDetails)) {
             log.info("User {} may not access api or the provided TOTP is invalid", userDetails.getUsername());
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -160,12 +165,13 @@ public class AuthenticationRestController {
 
         final RefreshToken refreshToken;
         if (tokenService.isRefreshTokenSupported()) {
+            log.debug("Generating refreshtoken");
             refreshToken = tokenService.generateRefreshToken(userDetails);
         } else {
             refreshToken = null;
         }
 
-        log.debug("Sending cookies if enabled");
+        // Send the cookies if enabled by configuration
         addTokenCookieIfEnabled(response, accessToken, tokenProperties.getCookie());
         addTokenCookieIfEnabled(response, refreshToken, refreshProperties.getCookie());
 

@@ -6,6 +6,7 @@
  */
 package eu.fraho.spring.securityJwt;
 
+import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.service.JwtTokenService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -30,17 +31,19 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        jwtTokenService.getAccessToken(request).ifPresent(token -> {
-                    log.debug("AccessToken was present in request, extracting userdetails");
-                    jwtTokenService.parseUser(token).ifPresent(jwtUser -> {
-                        log.debug("Successfully used token to authenticate {}", jwtUser.getUsername());
-                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(jwtUser, token, jwtUser.getAuthorities());
-                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
-                    });
-                }
-        );
-
+        jwtTokenService.getAccessToken(request).ifPresent(t -> handleToken(t, request));
         chain.doFilter(request, response);
+    }
+
+    protected void handleToken(String token, HttpServletRequest request) {
+        log.debug("AccessToken was present in request, extracting userdetails");
+        jwtTokenService.parseUser(token).ifPresent(u -> handleUser(u, request));
+    }
+
+    protected void handleUser(JwtUser jwtUser, HttpServletRequest request) {
+        log.debug("Successfully used token to authenticate {}", jwtUser.getUsername());
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(jwtUser, "JWT", jwtUser.getAuthorities());
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }
