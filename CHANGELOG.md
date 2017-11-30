@@ -1,6 +1,6 @@
 # Changelog
 
-### 1.1.0 (not yet released)
+### 1.1.0 (2017-11-30)
 * (base) Make JwtUser extendable (#20)
 * (base) Make rest endpoints configurable (#19)
 * (base) Mark JwtTokenService.getExpiration as deprecated

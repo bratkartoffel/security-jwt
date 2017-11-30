@@ -33,7 +33,7 @@ The default configuration should be sufficient for the most use cases.
 <dependency>
     <groupId>eu.fraho.spring</groupId>
     <artifactId>security-jwt-base</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 
@@ -43,17 +43,17 @@ When you want to add refresh token support, then choose one of the following dep
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-internal</artifactId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-memcache</artifactId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-hibernate</artifactId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
     </dependency>
 </dependencies>
 ```
