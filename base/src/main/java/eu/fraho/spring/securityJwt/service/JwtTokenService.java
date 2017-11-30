@@ -25,6 +25,7 @@ public interface JwtTokenService {
      * See {@link JwtUser#applyClaims(JWTClaimsSet)} for a list of copied / supported attributes.
      *
      * @param token The JWT to parse
+     * @param <T>   The type of user to return
      * @return an user object
      */
     <T extends JwtUser> Optional<T> parseUser(@NotNull String token);
@@ -34,6 +35,7 @@ public interface JwtTokenService {
      * See {@link JwtUser#toClaims()} for a list of copied / supported attributes.
      *
      * @param user The user to create the token for.
+     * @param <T>   The type of user to return
      * @return The token (Base64 encoded)
      * @throws JOSEException            When the token could not be signed
      * @throws IllegalArgumentException If no private key is specified (service cannot sign tokens)
