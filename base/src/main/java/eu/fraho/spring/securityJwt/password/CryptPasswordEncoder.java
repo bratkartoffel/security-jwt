@@ -6,7 +6,7 @@
  */
 package eu.fraho.spring.securityJwt.password;
 
-import eu.fraho.spring.securityJwt.config.CryptConfiguration;
+import eu.fraho.spring.securityJwt.config.CryptProperties;
 import eu.fraho.spring.securityJwt.dto.CryptAlgorithm;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ public class CryptPasswordEncoder implements PasswordEncoder {
     private final Encoder encoder = Base64.getUrlEncoder();
 
     @NonNull
-    private final CryptConfiguration configuration;
+    private final CryptProperties configuration;
 
     private static boolean slowEquals(@NotNull CharSequence a, @NotNull CharSequence b) {
         int diff = a.length() ^ b.length();
@@ -52,8 +52,7 @@ public class CryptPasswordEncoder implements PasswordEncoder {
         } else {
             cryptParam = String.format("%s%s$", algorithm.getPrefix(), generateSalt());
         }
-
-        log.debug("Using crypt params: {}", cryptParam);
+        log.trace("Encoding password with param={}", cryptParam);
         return Crypt.crypt(rawPassword.toString(), cryptParam);
     }
 
@@ -70,6 +69,8 @@ public class CryptPasswordEncoder implements PasswordEncoder {
         random.nextBytes(bytes);
         String salt = encoder.encodeToString(bytes);
         salt = salt.replaceAll("[-_]", "");
-        return salt.substring(0, algorithm.getSaltLength());
+        String realSalt = salt.substring(0, algorithm.getSaltLength());
+        log.trace("Generated salt for encoding, length={}", realSalt.length());
+        return realSalt;
     }
 }

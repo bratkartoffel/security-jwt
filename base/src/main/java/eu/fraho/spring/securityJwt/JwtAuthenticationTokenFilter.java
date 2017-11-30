@@ -6,6 +6,7 @@
  */
 package eu.fraho.spring.securityJwt;
 
+import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.service.JwtTokenService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -21,32 +22,28 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @NonNull
-    private final JwtTokenService jwtTokenUtil;
+    private final JwtTokenService jwtTokenService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        Optional<String> authToken = jwtTokenUtil.getToken(request);
-
-        authToken.ifPresent(token -> {
-            if (jwtTokenUtil.validateToken(token)) {
-                log.debug("Provided token is valid");
-                jwtTokenUtil.parseUser(token).ifPresent(jwtUser -> {
-                    log.debug("Successfully used token to authenticate {}", jwtUser.getUsername());
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(jwtUser, authToken, jwtUser.getAuthorities());
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                });
-            } else {
-                log.warn("Provided token by client is invalid");
-            }
-        });
-
+        jwtTokenService.getAccessToken(request).ifPresent(t -> handleToken(t, request));
         chain.doFilter(request, response);
+    }
+
+    protected void handleToken(String token, HttpServletRequest request) {
+        log.debug("AccessToken was present in request, extracting userdetails");
+        jwtTokenService.parseUser(token).ifPresent(u -> handleUser(u, request));
+    }
+
+    protected void handleUser(JwtUser jwtUser, HttpServletRequest request) {
+        log.debug("Successfully used token to authenticate {}", jwtUser.getUsername());
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(jwtUser, "JWT", jwtUser.getAuthorities());
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }

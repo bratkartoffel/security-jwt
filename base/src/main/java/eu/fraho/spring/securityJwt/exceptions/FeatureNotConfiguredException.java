@@ -6,7 +6,7 @@
  */
 package eu.fraho.spring.securityJwt.exceptions;
 
-public class FeatureNotConfiguredException extends JwtSecurityException {
+public class FeatureNotConfiguredException extends SecurityException {
     public FeatureNotConfiguredException(String message) {
         super(message);
     }

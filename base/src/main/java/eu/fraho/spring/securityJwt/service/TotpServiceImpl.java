@@ -6,7 +6,7 @@
  */
 package eu.fraho.spring.securityJwt.service;
 
-import eu.fraho.spring.securityJwt.config.TotpConfiguration;
+import eu.fraho.spring.securityJwt.config.TotpProperties;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +32,7 @@ public class TotpServiceImpl implements TotpService {
     private final Random random = new SecureRandom();
 
     @NonNull
-    private final TotpConfiguration configuration;
+    private final TotpProperties totpProperties;
 
     private int getCode(byte[] secret, long timeIndex) throws NoSuchAlgorithmException, InvalidKeyException {
         final SecretKeySpec signKey = new SecretKeySpec(secret, "HmacSHA1");
@@ -56,10 +56,16 @@ public class TotpServiceImpl implements TotpService {
     public boolean verifyCode(@NotNull String secret, int code) {
         final long timeIndex = System.currentTimeMillis() / 1000 / 30;
         final byte[] secretBytes = base32.decode(secret);
+        if (secretBytes.length == 0) {
+            return false;
+        }
+
         boolean result = false;
         try {
-            for (int i = -configuration.getVariance(); i <= configuration.getVariance(); i++) {
-                if (getCode(secretBytes, timeIndex + i) == code) {
+            for (int i = -totpProperties.getVariance(); i <= totpProperties.getVariance(); i++) {
+                int calculated = getCode(secretBytes, timeIndex + i);
+                log.trace("Verifying code i={}, calculated={}, given={}", i, calculated, code);
+                if (calculated == code) {
                     result = true;
                     break;
                 }
@@ -72,8 +78,9 @@ public class TotpServiceImpl implements TotpService {
 
     @Override
     public String generateSecret() {
-        final byte[] secret = new byte[configuration.getLength()];
+        final byte[] secret = new byte[totpProperties.getLength()];
         random.nextBytes(secret);
+        log.debug("Generated secret with length=", secret.length);
         return base32.encodeToString(secret);
     }
 }

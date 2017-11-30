@@ -6,7 +6,7 @@
  */
 package eu.fraho.spring.securityJwt.ut.service;
 
-import eu.fraho.spring.securityJwt.dto.RefreshToken;
+import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.exceptions.FeatureNotConfiguredException;
 import eu.fraho.spring.securityJwt.service.NullTokenStore;
 import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
@@ -14,6 +14,13 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class NullTokenStoreTest {
+    private JwtUser getJwtUser() {
+        JwtUser user = new JwtUser();
+        user.setId(42L);
+        user.setUsername("foobar");
+        return user;
+    }
+
     private RefreshTokenStore getNewInstance() {
         NullTokenStore tokenStore = new NullTokenStore();
         tokenStore.afterPropertiesSet();
@@ -22,12 +29,12 @@ public class NullTokenStoreTest {
 
     @Test(expected = FeatureNotConfiguredException.class)
     public void testSaveToken() throws Exception {
-        getNewInstance().saveToken("foo", "bar", "baz");
+        getNewInstance().saveToken(getJwtUser(), "bar");
     }
 
     @Test(expected = FeatureNotConfiguredException.class)
     public void testUseToken() throws Exception {
-        getNewInstance().useToken("foo", "bar", "baz");
+        getNewInstance().useToken("bar");
     }
 
     @Test(expected = FeatureNotConfiguredException.class)
@@ -37,17 +44,12 @@ public class NullTokenStoreTest {
 
     @Test(expected = FeatureNotConfiguredException.class)
     public void testListTokensForUser() throws Exception {
-        getNewInstance().listTokens("foo");
+        getNewInstance().listTokens(getJwtUser());
     }
 
     @Test(expected = FeatureNotConfiguredException.class)
-    public void testRevokeTokenUserAndDevice() throws Exception {
-        getNewInstance().revokeToken("foo", "bar");
-    }
-
-    @Test(expected = FeatureNotConfiguredException.class)
-    public void testRevokeTokenUserAndToken() throws Exception {
-        getNewInstance().revokeToken("foo", new RefreshToken("baz", 0, "bar"));
+    public void testRevokeToken() throws Exception {
+        getNewInstance().revokeToken("baz");
     }
 
     @Test(expected = FeatureNotConfiguredException.class)
@@ -57,12 +59,7 @@ public class NullTokenStoreTest {
 
     @Test(expected = FeatureNotConfiguredException.class)
     public void testRevokeTokensForUser() throws Exception {
-        getNewInstance().revokeTokens("foo");
-    }
-
-    @Test(expected = FeatureNotConfiguredException.class)
-    public void testGetRefreshExpiration() throws Exception {
-        getNewInstance().getRefreshExpiration();
+        getNewInstance().revokeTokens(getJwtUser());
     }
 
     @Test

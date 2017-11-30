@@ -7,6 +7,9 @@
 package eu.fraho.spring.securityJwt.it.spring;
 
 import eu.fraho.spring.securityJwt.dto.JwtUser;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,45 +19,48 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UserDetailsServiceTestImpl implements UserDetailsService {
     public static final String BASE32_TOTP = "MZXW6YTBOI======";
 
-    private int noRefreshAccessCount = 0;
+    private final AtomicBoolean apiAccessAllowed = new AtomicBoolean(true);
 
-    @Autowired
-    private PasswordEncoder passwordEncoder = null;
+    @NonNull
+    private PasswordEncoder passwordEncoder;
+
+    @NonNull
+    private ObjectFactory<JwtUser> jwtUser;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        JwtUser user = new JwtUser();
+        JwtUser user = jwtUser.getObject();
         user.setUsername(username);
         user.setPassword(passwordEncoder.encode(username));
         user.setAccountNonExpired(true);
         user.setAccountNonLocked(true);
         user.setCredentialsNonExpired(true);
         user.setEnabled(true);
-        if (username.equals("admin")) {
+        if ("admin".equals(username)) {
             user.setAuthorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN")));
         } else {
             user.setAuthorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
         }
         user.setApiAccessAllowed(true);
-        if (username.equals("noRefresh")) {
-            noRefreshAccessCount++;
-            if (noRefreshAccessCount % 3 == 0) {
-                // login 2 times, refresh should fail
-                user.setApiAccessAllowed(false);
-            }
-        } else {
-            noRefreshAccessCount = 0;
+        if ("noRefresh".equals(username)) {
+            user.setApiAccessAllowed(apiAccessAllowed.get());
         }
 
-        if (username.equals("user_totp")) {
+        if ("user_totp".equals(username)) {
             user.setTotpSecret(BASE32_TOTP);
         }
 
         return user;
+    }
+
+    public void setApiAccessAllowed(boolean b) {
+        apiAccessAllowed.set(b);
     }
 }

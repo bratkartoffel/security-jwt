@@ -7,12 +7,12 @@ This module adds support for storing refresh tokens within an in-memory storage.
 <dependency>
     <groupId>eu.fraho.spring</groupId>
     <artifactId>security-jwt-internal</artifactId>
-    <version>1.0.0</version>
+    <version>2.0.0</version>
 </dependency>
 ```
 
 # Usage
 * Add the dependency to your build script
-* When not using the boot-starter: Use ```eu.fraho.spring.securityJwt.service.InternalTokenStore``` as ```fraho.jwt.refresh.cache-impl``` configuration value
+* When not using the boot-starter: Use ```eu.fraho.spring.securityJwt.service.internal.InternalTokenStore``` as ```fraho.jwt.refresh.cache-impl``` configuration value
 
 This module doesn't use any additional application properties.

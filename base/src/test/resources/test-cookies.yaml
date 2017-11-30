@@ -1,0 +1,8 @@
+fraho.jwt:
+  refresh:
+    cookie.enabled: true
+    cookie.names: refresh
+  token:
+    header.enabled: false
+    cookie.enabled: true
+    cookie.names: access

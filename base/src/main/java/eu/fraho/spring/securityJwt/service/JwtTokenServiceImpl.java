@@ -10,8 +10,7 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import eu.fraho.spring.securityJwt.config.JwtRefreshConfiguration;
-import eu.fraho.spring.securityJwt.config.JwtTokenConfiguration;
+import eu.fraho.spring.securityJwt.config.*;
 import eu.fraho.spring.securityJwt.dto.AccessToken;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
@@ -21,11 +20,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.security.SecureRandom;
 import java.text.ParseException;
@@ -39,161 +41,191 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     private final SecureRandom random = new SecureRandom();
 
     @NonNull
-    private final JwtTokenConfiguration tokenConfig;
+    private final TokenProperties tokenProperties;
 
     @NonNull
-    private final JwtRefreshConfiguration refreshConfig;
+    private final RefreshProperties refreshProperties;
 
-    @SuppressWarnings("SpringAutowiredFieldsWarningInspection") // not possible otherwise as this bean is lazy
+    @NonNull
+    private final TokenCookieProperties tokenCookieProperties;
+
+    @NonNull
+    private final TokenHeaderProperties tokenHeaderProperties;
+
+    @NonNull
+    private final RefreshCookieProperties refreshCookieProperties;
+
+    @NonNull
+    private final ObjectFactory<JwtUser> jwtUser;
+
+    // not possible otherwise, as the RegisterRefreshTokenStore comes pretty late
+    @SuppressWarnings("SpringAutowiredFieldsWarningInspection")
     @Autowired
     @Lazy
     @Setter
     private RefreshTokenStore refreshTokenStore;
 
-    private String truncateDeviceId(String str) {
-        return Optional.ofNullable(str)
-                .map(String::trim)
-                .filter(e -> !e.isEmpty())
-                .map(e -> e.substring(0, Math.min(e.length(), refreshConfig.getDeviceIdLength())))
-                .orElse(refreshConfig.getDefaultDeviceId());
-    }
-
-    @Override
-    public Integer getExpiration() {
-        return tokenConfig.getExpiration().toSeconds();
-    }
-
     @Override
     public void afterPropertiesSet() {
-        if (tokenConfig.getSigner() == null) {
+        if (tokenProperties.getSigner() == null) {
             log.warn("No private key specified. This service may neither issue new tokens nor use refresh tokens.");
         }
     }
 
     @Override
-    public Optional<JwtUser> parseUser(String token) {
+    @SuppressWarnings("unchecked")
+    public <T extends JwtUser> Optional<T> parseUser(@NotNull String token) {
+        Optional<T> result = Optional.empty();
         try {
-            JWTClaimsSet claims = SignedJWT.parse(token).getJWTClaimsSet();
-            if (validateToken(token)) {
-                return Optional.of(JwtUser.fromClaims(claims));
-            } else {
-                return Optional.empty();
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            if (validateToken(signedJWT)) {
+                log.debug("Successfully validated token by client");
+                JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
+                T user = (T) jwtUser.getObject();
+                user.applyClaims(claims);
+                log.debug("AbstractToken resulted in user {}", user);
+                result = Optional.of(user);
             }
         } catch (ParseException e) {
-            log.debug(e.getMessage(), e);
-            return Optional.empty();
+            log.warn("Could not parse token", e);
         }
+        return result;
     }
 
     @Override
     @NotNull
-    public AccessToken generateToken(JwtUser user) throws JOSEException {
-        if (tokenConfig.getSigner() == null) {
+    public <T extends JwtUser> AccessToken generateToken(@NotNull T user) throws JOSEException {
+        if (tokenProperties.getSigner() == null) {
             throw new FeatureNotConfiguredException("Access token signing is not enabled.");
         }
 
         Date now = new Date();
         JWTClaimsSet claims = user.toClaims()
                 .jwtID(UUID.randomUUID().toString())
-                .issuer(tokenConfig.getIssuer())
+                .issuer(tokenProperties.getIssuer())
                 .issueTime(now)
                 .notBeforeTime(now)
                 .expirationTime(generateExpirationDate())
                 .build();
-
         SignedJWT token = new SignedJWT(
-                new JWSHeader(tokenConfig.getJwsAlgorithm()),
+                new JWSHeader(tokenProperties.getJwsAlgorithm()),
                 claims);
+        token.sign(tokenProperties.getSigner());
 
-        token.sign(tokenConfig.getSigner());
-        return new AccessToken(token.serialize(), getExpiration());
+        return new AccessToken(token.serialize(), tokenProperties.getExpiration().toSeconds());
     }
 
     @NotNull
     private Date generateExpirationDate() {
-        return Date.from(ZonedDateTime.now().plusSeconds(tokenConfig.getExpiration().toSeconds()).toInstant());
-    }
-
-    private boolean validateClaims(JWTClaimsSet claims) {
-        boolean result;
-
-        Date now = new Date();
-        Date exp = claims.getExpirationTime();
-        Date nbf = claims.getNotBeforeTime();
-        Date iat = claims.getIssueTime();
-
-        if (exp == null) {
-            exp = new Date(0);
-        }
-        if (nbf == null) {
-            nbf = new Date(0);
-        }
-        if (iat == null) {
-            iat = new Date(0);
-        }
-        log.debug("Validating claims, now={}, exp={}, nbf={}, iat={}", now, exp, nbf, iat);
-
-        result = iat.before(now);
-        log.debug("After iat < now: {}", result);
-        result &= nbf.before(now);
-        log.debug("After nbf < now: {}", result);
-        result &= exp.after(now);
-        log.debug("After exp > now: {}", result);
-        return result;
+        return Date.from(ZonedDateTime.now().plusSeconds(tokenProperties.getExpiration().toSeconds()).toInstant());
     }
 
     @Override
-    public boolean validateToken(String token) {
-        log.trace("Validating {}", token);
-
-        boolean result;
-        try {
-            SignedJWT parsedToken = SignedJWT.parse(token);
-            JWTClaimsSet claims = parsedToken.getJWTClaimsSet();
-            result = parsedToken.verify(tokenConfig.getVerifier());
-            log.debug("After verify: {}", result);
-            result &= validateClaims(claims);
-            log.debug("After validateClaims: {}", result);
-        } catch (ParseException | JOSEException e) {
-            log.debug(e.getMessage(), e);
-            result = false;
-        }
-
-        log.debug("Validate token returns {}", result);
-        return result;
-    }
-
-    @Override
-    public boolean validateToken(AccessToken token) {
+    public boolean validateToken(@NotNull AccessToken token) {
         return validateToken(token.getToken());
     }
 
     @Override
-    public Optional<String> getToken(HttpServletRequest request) {
-        return Optional.ofNullable(request.getHeader("Authorization")).map(e -> e.startsWith("Bearer ") ? e.substring("Bearer".length() + 1) : e);
+    public boolean validateToken(@NotNull String token) {
+        boolean result = false;
+        try {
+            result = validateToken(SignedJWT.parse(token));
+        } catch (ParseException e) {
+            log.error("Supplied token did not validate", e);
+        }
+        return result;
+    }
+
+    @Override
+    public boolean validateToken(@NotNull SignedJWT signedJWT) {
+        boolean result;
+        try {
+            result = signedJWT.verify(tokenProperties.getVerifier());
+            log.debug("AbstractToken signature verified, result={}", result);
+            result &= areClaimsValid(signedJWT.getJWTClaimsSet());
+            log.debug("Claims verified, result={}", result);
+        } catch (ParseException | JOSEException e) {
+            log.error("Supplied token did not validate", e);
+            result = false;
+        }
+        return result;
+    }
+
+    private boolean areClaimsValid(@NotNull JWTClaimsSet claims) {
+        Date now = new Date();
+        Date exp = Optional.ofNullable(claims.getExpirationTime()).orElse(new Date(0));
+        Date nbf = Optional.ofNullable(claims.getNotBeforeTime()).orElse(new Date(0));
+        Date iat = Optional.ofNullable(claims.getIssueTime()).orElse(new Date(0));
+
+        log.debug("Validating claims");
+        boolean result = iat.before(now);
+        log.debug("iat={} < now={}, result={}", iat, now, result);
+        result &= nbf.before(now);
+        log.debug("nbf={} < now={}, result={}", nbf, now, result);
+        result &= exp.after(now);
+        log.debug("exp={} > now={}, result={}", exp, now, result);
+        return result;
+    }
+
+    @Override
+    @Deprecated
+    public Optional<String> getToken(@NotNull HttpServletRequest request) {
+        return getAccessToken(request);
+    }
+
+    @Override
+    public Optional<String> getAccessToken(@NotNull HttpServletRequest request) {
+        Optional<String> result = Optional.empty();
+        if (tokenHeaderProperties.isEnabled()) {
+            log.debug("Extracting token from header");
+            result = extractHeaderToken(tokenHeaderProperties.getNames(), request);
+        }
+        if (!result.isPresent() && tokenCookieProperties.isEnabled()) {
+            log.debug("Extracting token from cookies");
+            result = extractCookieToken(tokenCookieProperties.getNames(), request.getCookies());
+        }
+        return result;
+    }
+
+    @Override
+    public Optional<String> getRefreshToken(@NotNull HttpServletRequest request) {
+        Optional<String> result = Optional.empty();
+        if (refreshCookieProperties.isEnabled()) {
+            log.debug("Extracting refreshtoken from cookies");
+            result = extractCookieToken(refreshCookieProperties.getNames(), request.getCookies());
+        }
+        return result;
+    }
+
+    private Optional<String> extractHeaderToken(@NotNull String[] names, @NotNull HttpServletRequest request) {
+        return Arrays.stream(names)
+                .map(request::getHeader)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .map(e -> e.startsWith("Bearer ") ? e.substring(7) : e);
+    }
+
+    private Optional<String> extractCookieToken(@NotNull String[] names, @Nullable Cookie[] cookies) {
+        Optional<String> result = Optional.empty();
+        if (cookies != null) {
+            result = Arrays.stream(names)
+                    .map(String::toLowerCase)
+                    .flatMap(name -> Arrays.stream(cookies).filter(c -> Objects.equals(c.getName().toLowerCase(), name)))
+                    .findFirst()
+                    .map(Cookie::getValue);
+        }
+        return result;
     }
 
     @Override
     @NotNull
-    public RefreshToken generateRefreshToken(String user) {
-        return generateRefreshToken(user, refreshConfig.getDefaultDeviceId());
-    }
-
-    @Override
-    @NotNull
-    public RefreshToken generateRefreshToken(String user, String deviceId) {
-        final String devId = truncateDeviceId(deviceId);
-        byte[] data = new byte[refreshConfig.getLength()];
+    public RefreshToken generateRefreshToken(JwtUser user) {
+        byte[] data = new byte[refreshProperties.getLength()];
         random.nextBytes(data);
         final String token = Base64.getEncoder().encodeToString(data);
-
-        refreshTokenStore.saveToken(user, devId, token);
-        return new RefreshToken(token, refreshConfig.getExpiration().toSeconds(), devId);
-    }
-
-    @Override
-    public boolean useRefreshToken(String username, String refreshToken) {
-        return useRefreshToken(username, refreshConfig.getDefaultDeviceId(), refreshToken);
+        log.debug("Generated refresh token, storing at configured store");
+        refreshTokenStore.saveToken(user, token);
+        return new RefreshToken(token, refreshProperties.getExpiration().toSeconds());
     }
 
     @Override
@@ -202,45 +234,44 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     }
 
     @Override
-    public boolean useRefreshToken(String username, RefreshToken token) {
-        return useRefreshToken(username, token.getDeviceId(), token.getToken());
+    public <T extends JwtUser> Optional<T> useRefreshToken(@NotNull RefreshToken token) {
+        return useRefreshToken(token.getToken());
     }
 
     @Override
-    public boolean useRefreshToken(String username, String deviceId, String refreshToken) {
-        if (tokenConfig.getSigner() == null) {
+    public <T extends JwtUser> Optional<T> useRefreshToken(@NotNull String token) {
+        if (tokenProperties.getSigner() == null) {
             throw new FeatureNotConfiguredException("Access token signing is not enabled.");
         }
 
-        final String devId = truncateDeviceId(deviceId);
-        return refreshTokenStore.useToken(username, devId, refreshToken);
+        return refreshTokenStore.useToken(token);
     }
 
     @Override
     @NotNull
-    public Map<String, List<RefreshToken>> listRefreshTokens() {
+    public Map<Long, List<RefreshToken>> listRefreshTokens() {
         return refreshTokenStore.listTokens();
     }
 
     @Override
     @NotNull
-    public List<RefreshToken> listRefreshTokens(String username) {
-        return refreshTokenStore.listTokens(username);
+    public List<RefreshToken> listRefreshTokens(@NotNull JwtUser user) {
+        return refreshTokenStore.listTokens(user);
     }
 
     @Override
-    public boolean revokeRefreshToken(String username, RefreshToken token) {
-        return refreshTokenStore.revokeToken(username, token);
+    public boolean revokeRefreshToken(@NotNull RefreshToken token) {
+        return refreshTokenStore.revokeToken(token.getToken());
     }
 
     @Override
-    public boolean revokeRefreshToken(String username, String deviceId) {
-        return refreshTokenStore.revokeToken(username, truncateDeviceId(deviceId));
+    public boolean revokeRefreshToken(@NotNull String token) {
+        return refreshTokenStore.revokeToken(token);
     }
 
     @Override
-    public int revokeRefreshTokens(String username) {
-        return refreshTokenStore.revokeTokens(username);
+    public int revokeRefreshTokens(@NotNull JwtUser user) {
+        return refreshTokenStore.revokeTokens(user);
     }
 
     @Override

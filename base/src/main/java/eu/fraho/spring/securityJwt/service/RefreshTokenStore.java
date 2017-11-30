@@ -6,71 +6,74 @@
  */
 package eu.fraho.spring.securityJwt.service;
 
+import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
-import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
-import eu.fraho.spring.securityJwt.exceptions.JwtRefreshException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.InitializingBean;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
+import java.util.Optional;
 
 public interface RefreshTokenStore extends InitializingBean {
-    void saveToken(@NotNull String username, @NotNull String deviceId, @NotNull String token);
+    /**
+     * Save the given token to the underlying backend.
+     *
+     * @param user  The token is valid for the given user
+     * @param token The token to save
+     */
+    void saveToken(@NotNull JwtUser user, @NotNull String token);
 
-    boolean useToken(@NotNull String username, @NotNull String deviceId, @NotNull String token);
+    /**
+     * Try to use the given token and return the associated userdetails.
+     *
+     * @param token The token to use
+     * @param <T>   The type of the userdetails, could be a custom implementation
+     * @return An user instance if the token was valid, otherwise an empty Optional.
+     */
+    <T extends JwtUser> Optional<T> useToken(@NotNull String token);
 
+    /**
+     * Lists all tokens for the specified user
+     *
+     * @param user The user to query for
+     * @return A List of tokens. Maybe the tokens have not all fields set, this depends
+     * on the used implementation. (e.g. memcache doesn't know the expiration)
+     */
     @NotNull
-    List<RefreshToken> listTokens(@NotNull String username);
+    List<RefreshToken> listTokens(@NotNull JwtUser user);
 
+    /**
+     * Lists all tokens stored at the implementation.
+     *
+     * @return A Map with all tokens, whery the Key is the userId and the values are a list of
+     * tokens for that id.
+     */
     @NotNull
-    Map<String, List<RefreshToken>> listTokens();
+    Map<Long, List<RefreshToken>> listTokens();
 
-    boolean revokeToken(@NotNull String username, @NotNull RefreshToken token);
+    /**
+     * Revoke a single token.
+     *
+     * @param token The token to revoke
+     * @return <code>true</code> if the token was found and revoked, otherweise <code>false</code>
+     */
+    boolean revokeToken(@NotNull String token);
 
-    boolean revokeToken(@NotNull String username, @NotNull String deviceId);
+    /**
+     * Revoke all tokens for that given user (e.g. after password change)
+     *
+     * @param user The user which tokens should be revoked
+     * @return The count of revoked tokens.
+     */
+    int revokeTokens(@NotNull JwtUser user);
 
-    int revokeTokens(@NotNull String username);
-
+    /**
+     * Revoke all tokens stored at this implementation.
+     *
+     * @return The number of revoked tokens in total.
+     */
     int revokeTokens();
-
-    @NotNull
-    TimeWithPeriod getRefreshExpiration();
-
-    /**
-     * Try to achieve some time constant compare.
-     * Should be used to verify that a provided token is the same as the stored one.
-     *
-     * @param a First
-     * @param b Second
-     * @return {@code true} if both are equal
-     */
-    default boolean tokenEquals(byte[] a, byte[] b) {
-        int diff = a.length ^ b.length;
-        for (int i = 0; i < a.length && i < b.length; i++) {
-            diff |= a[i] ^ b[i];
-        }
-        return diff == 0;
-    }
-
-    /**
-     * Helper method for modules to achieve higher code coverage.
-     * Execute the given action and return the result.
-     * If an exception occurs, it is wrapped as an {@link JwtRefreshException}
-     *
-     * @param message The exception message on error
-     * @param action  The action to execute
-     * @param <T>     Generic return type
-     * @return Result of action
-     */
-    default <T> T exceptionWrapper(String message, Supplier<T> action) {
-        try {
-            return action.get();
-        } catch (Exception ex) {
-            throw new JwtRefreshException(message, ex);
-        }
-    }
 
     /**
      * Ask this service if refresh token support is enabled

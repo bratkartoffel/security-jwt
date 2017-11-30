@@ -2,16 +2,12 @@ fraho:
   totp:
     variance: 3
     length:   8
-  crypt:
-    algorithm: SHA256
-    rounds: 100
   jwt:
     token:
       expiration: 2 seconds
       algorithm: HS256
     refresh:
       expiration: 2 seconds
-      deviceIdLength: 10
 
 spring.main.banner-mode: "off"
-logging.level.eu.fraho.spring.securityJwt: DEBUG
+logging.level.eu.fraho.spring.securityJwt: TRACE

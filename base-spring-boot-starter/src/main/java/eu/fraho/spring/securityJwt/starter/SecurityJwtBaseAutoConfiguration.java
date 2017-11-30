@@ -6,24 +6,28 @@
  */
 package eu.fraho.spring.securityJwt.starter;
 
+import eu.fraho.spring.securityJwt.JwtAuthenticationEntryPoint;
 import eu.fraho.spring.securityJwt.config.*;
 import eu.fraho.spring.securityJwt.controller.AuthenticationRestController;
-import eu.fraho.spring.securityJwt.password.CryptPasswordEncoder;
+import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.service.JwtTokenService;
 import eu.fraho.spring.securityJwt.service.JwtTokenServiceImpl;
 import eu.fraho.spring.securityJwt.service.TotpService;
 import eu.fraho.spring.securityJwt.service.TotpServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.StandardPasswordEncoder;
 
 @Configuration
 @AutoConfigureAfter(SecurityAutoConfiguration.class)
@@ -32,46 +36,74 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Slf4j
 public class SecurityJwtBaseAutoConfiguration {
     @Bean
-    public TotpConfiguration totpConfig() {
-        log.debug("Register TotpConfiguration");
-        return new TotpConfiguration();
-    }
-
-    @Bean
-    public CryptConfiguration cryptConfiguration() {
-        log.debug("Register CryptConfiguration");
-        return new CryptConfiguration();
+    public TotpProperties totpProperties() {
+        log.debug("Register TotpProperties");
+        return new TotpProperties();
     }
 
     @Bean
     public TotpService totpService() {
         log.debug("Register TotpService");
-        return new TotpServiceImpl(totpConfig());
+        return new TotpServiceImpl(totpProperties());
     }
 
     @Bean
-    public JwtTokenConfiguration jwtTokenConfiguration() {
-        log.debug("Register JwtTokenConfiguration");
-        return new JwtTokenConfiguration();
+    public TokenProperties tokenProperties() {
+        log.debug("Register TokenProperties");
+        return new TokenProperties();
     }
 
     @Bean
-    public JwtRefreshConfiguration jwtRefreshConfiguration() {
-        log.debug("Register JwtRefreshConfiguration");
-        return new JwtRefreshConfiguration();
+    public RefreshProperties refreshProperties() {
+        log.debug("Register RefreshProperties");
+        return new RefreshProperties();
     }
 
     @Bean
     public JwtTokenService jwtTokenService() {
         log.debug("Register JwtTokenService");
-        return new JwtTokenServiceImpl(jwtTokenConfiguration(), jwtRefreshConfiguration());
+        return new JwtTokenServiceImpl(tokenProperties(), refreshProperties(),
+                tokenCookieProperties(), tokenHeaderProperties(), refreshCookieProperties(),
+                this::jwtUser);
+    }
+
+    @Bean
+    public TokenCookieProperties tokenCookieProperties() {
+        log.debug("Register TokenCookieProperties");
+        return new TokenCookieProperties();
+    }
+
+    @Bean
+    public TokenHeaderProperties tokenHeaderProperties() {
+        log.debug("Register TokenHeaderProperties");
+        return new TokenHeaderProperties();
+    }
+
+    @Bean
+    public RefreshCookieProperties refreshCookieProperties() {
+        log.debug("Register RefreshCookieProperties");
+        return new RefreshCookieProperties();
+    }
+
+    @Bean
+    public JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint() {
+        log.debug("Register JwtAuthenticationEntryPoint");
+        return new JwtAuthenticationEntryPoint();
     }
 
     @Bean
     @ConditionalOnMissingBean
     public PasswordEncoder passwordEncoder() {
-        log.debug("Register CryptPasswordEncoder");
-        return new CryptPasswordEncoder(cryptConfiguration());
+        log.debug("Register StandardPasswordEncoder");
+        return new StandardPasswordEncoder();
+    }
+
+    @Bean
+    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
+    @ConditionalOnMissingBean
+    public JwtUser jwtUser() {
+        log.debug("Register JwtUser");
+        return new JwtUser();
     }
 
     @Bean
@@ -85,16 +117,20 @@ public class SecurityJwtBaseAutoConfiguration {
     public AuthenticationRestController authenticationRestController(final AuthenticationManager authenticationManager,
                                                                      final JwtTokenService jwtTokenService,
                                                                      final UserDetailsService userDetailsService,
-                                                                     final TotpService totpService) {
+                                                                     final TotpService totpService,
+                                                                     final TokenProperties tokenProperties,
+                                                                     final RefreshProperties refreshProperties) {
         log.debug("Register AuthenticationRestController");
-        return new AuthenticationRestController(authenticationManager, jwtTokenService, userDetailsService, totpService);
+        return new AuthenticationRestController(authenticationManager, jwtTokenService, userDetailsService, totpService,
+                tokenProperties, refreshProperties);
     }
 
     @Bean
     public JwtSecurityConfig webSecurityConfig(final UserDetailsService userDetailsService,
                                                final PasswordEncoder passwordEncoder,
-                                               final JwtTokenService jwtTokenService) {
+                                               final JwtTokenService jwtTokenService,
+                                               final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
         log.debug("Register JwtSecurityConfig");
-        return new JwtSecurityConfig(userDetailsService, passwordEncoder, jwtTokenService);
+        return new JwtSecurityConfig(userDetailsService, passwordEncoder, jwtTokenService, jwtAuthenticationEntryPoint);
     }
 }

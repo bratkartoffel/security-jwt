@@ -1,5 +1,27 @@
 # Changelog
 
+### 2.0.0 (2017-11-30)
+* (base) Another great refactoring:
+  * Remove deviceId from everywhere
+    * Clients do no longer need any deviceId for refresh tokens
+    * Getting new tokens with refresh now works solely with refreshToken
+  * Remove ```fraho.jwt.refresh.delimiter```, not needed any more
+  * Remove deprecated JwtTokenService.getExpiration
+  * Remove deprecated RefreshTokenStore.getRefreshExpiration
+  * Reworked RefreshTokenStore interface (use JwtUser instance instead of username)
+  * Reworked JwtTokenService (use JwtUser instance instead of username)
+  * All modules now have their own package
+    * e.g. internal moved from ```eu.fraho.spring.securityJwt.service.InternalTokenStore``` to ```eu.fraho.spring.securityJwt.service.internal.InternalTokenStore```
+* (base) Add support for tokens sent as cookies (both access and refresh)
+* (base) Make JwtTokenService.getToken() deprecated
+
+### 1.1.0 (not yet released)
+* (base) Make JwtUser extendable (#20)
+* (base) Make rest endpoints configurable (#19)
+* (base) Mark JwtTokenService.getExpiration as deprecated
+* (base) Mark RefreshTokenStore.getRefreshExpiration as deprecated
+* (doc) Create a plantuml sequence diagram for README
+
 ### 1.0.0 (2017-09-05)
 * (all) Add spring configuration properties support for IDE auto-completion
 * (all) Renamed / moved some properties

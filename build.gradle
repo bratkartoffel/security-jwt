@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        projectVersion = '1.0.0'
+        projectVersion = '2.0.0'
     }
     repositories {
         mavenCentral()
@@ -54,6 +54,7 @@ subprojects {
             expiringMapVersion = '[0.5,1.0['
             h2Version = '[1.4,2.0['
             jetbrainsAnnotationsVersion = '[15.0,16.0['
+            powerMockVersion = '[1.7,2.0['
         }
         repositories {
             mavenCentral()
@@ -68,6 +69,11 @@ subprojects {
         testCompile('org.springframework.boot:spring-boot-starter-test')
         testCompile('org.springframework:spring-aspects')
         testCompile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    }
+
+    // do not abort on test failures
+    test {
+        ignoreFailures = true
     }
 
     // propdeps
@@ -114,6 +120,11 @@ if (project.hasProperty('release')) {
     apply plugin: 'io.codearte.nexus-staging'
 
     subprojects {
+        // abort on test failures on releasing
+        test {
+            ignoreFailures = false
+        }
+
         apply plugin: 'signing'
 
         // Signature of artifacts
