@@ -1,6 +1,6 @@
 # Changelog
 
-### 2.0.0 (not yet released)
+### 2.0.0 (2017-11-30)
 * (base) Another great refactoring:
   * Remove deviceId from everywhere
     * Clients do no longer need any deviceId for refresh tokens
