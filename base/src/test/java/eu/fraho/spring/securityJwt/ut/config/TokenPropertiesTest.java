@@ -236,7 +236,7 @@ public class TokenPropertiesTest {
         }
     }
 
-    private TokenProperties withRsa(final TokenProperties conf) throws NoSuchProviderException, NoSuchAlgorithmException, InvalidKeySpecException, IOException {
+    private TokenProperties withRsa(final TokenProperties conf) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
         // initialize generator
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         keyPairGenerator.initialize(512);
@@ -260,7 +260,7 @@ public class TokenPropertiesTest {
         return conf;
     }
 
-    private TokenProperties withEcdsa(final TokenProperties conf) throws NoSuchProviderException, NoSuchAlgorithmException, InvalidKeySpecException, IOException, InvalidAlgorithmParameterException {
+    private TokenProperties withEcdsa(final TokenProperties conf) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException, InvalidAlgorithmParameterException {
         // initialize generator
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("ECDSA");
         keyPairGenerator.initialize(ECKey.Curve.P_256.toECParameterSpec());

@@ -55,6 +55,7 @@ public class JwtSecurityConfigTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testConfigure() throws Exception {
         JwtAuthenticationEntryPoint authenticationEntryPoint = Mockito.mock(JwtAuthenticationEntryPoint.class);
         HttpSecurity httpSecurity = PowerMockito.mock(HttpSecurity.class);

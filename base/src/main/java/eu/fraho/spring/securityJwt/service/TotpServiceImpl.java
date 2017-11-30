@@ -56,6 +56,10 @@ public class TotpServiceImpl implements TotpService {
     public boolean verifyCode(@NotNull String secret, int code) {
         final long timeIndex = System.currentTimeMillis() / 1000 / 30;
         final byte[] secretBytes = base32.decode(secret);
+        if (secretBytes.length == 0) {
+            return false;
+        }
+
         boolean result = false;
         try {
             for (int i = -totpProperties.getVariance(); i <= totpProperties.getVariance(); i++) {

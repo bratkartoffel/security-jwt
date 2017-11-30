@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 @Slf4j
 public class JwtServiceRefreshInternalTest extends AbstractJwtTokenServiceWithRefreshTest {
-    private RefreshTokenStore refreshTokenStore;
+    private final RefreshTokenStore refreshTokenStore;
 
     public JwtServiceRefreshInternalTest() throws Exception {
         refreshTokenStore = new InternalTokenStore(getRefreshProperties(), getUserdetailsService());

@@ -7,10 +7,10 @@
 package eu.fraho.spring.securityJwt.service.memcache;
 
 import eu.fraho.spring.securityJwt.config.RefreshProperties;
-import eu.fraho.spring.securityJwt.memcache.config.MemcacheProperties;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
+import eu.fraho.spring.securityJwt.memcache.config.MemcacheProperties;
 import eu.fraho.spring.securityJwt.memcache.service.MemcacheTokenStore;
 import eu.fraho.spring.securityJwt.service.JwtTokenService;
 import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
@@ -34,8 +34,8 @@ import java.util.stream.Collectors;
 @Slf4j
 @RunWith(SpringJUnit4ClassRunner.class)
 public class JwtServiceRefreshMemcacheTest extends AbstractJwtTokenServiceWithRefreshTest {
-    private RefreshProperties refreshProperties;
-    private RefreshTokenStore refreshTokenStore;
+    private final RefreshProperties refreshProperties;
+    private final RefreshTokenStore refreshTokenStore;
 
     public JwtServiceRefreshMemcacheTest() throws Exception {
         refreshProperties = getRefreshProperties();

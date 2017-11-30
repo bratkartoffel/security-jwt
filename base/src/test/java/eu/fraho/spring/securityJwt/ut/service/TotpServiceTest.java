@@ -23,7 +23,7 @@ public class TotpServiceTest {
         long timeIndex = (System.currentTimeMillis() / 1000 / 30) + varianceDiff;
 
         try {
-            Method method = service.getClass().getDeclaredMethod("getCode", byte[].class, long.class);
+            Method method = TotpServiceImpl.class.getDeclaredMethod("getCode", byte[].class, long.class);
             method.setAccessible(true);
             Object result = method.invoke(service, decoded, timeIndex);
             return (Integer) result;
