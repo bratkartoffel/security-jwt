@@ -8,8 +8,10 @@ package eu.fraho.spring.securityJwt;
 
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.service.JwtTokenService;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,10 +26,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@NoArgsConstructor
+@AllArgsConstructor
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
-    @NonNull
-    private final JwtTokenService jwtTokenService;
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
+    private JwtTokenService jwtTokenService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {

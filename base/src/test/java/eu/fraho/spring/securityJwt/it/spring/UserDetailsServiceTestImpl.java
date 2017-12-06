@@ -8,7 +8,7 @@ package eu.fraho.spring.securityJwt.it.spring;
 
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,16 +22,15 @@ import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UserDetailsServiceTestImpl implements UserDetailsService {
     public static final String BASE32_TOTP = "MZXW6YTBOI======";
 
     private final AtomicBoolean apiAccessAllowed = new AtomicBoolean(true);
 
-    @NonNull
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
     private PasswordEncoder passwordEncoder;
 
-    @NonNull
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
     private ObjectFactory<JwtUser> jwtUser;
 
     @Override

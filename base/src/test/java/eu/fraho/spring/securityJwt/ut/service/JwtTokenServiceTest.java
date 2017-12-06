@@ -47,13 +47,12 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 public class JwtTokenServiceTest {
-    protected RefreshTokenStore tokenstoreMock;
-
     /**
      * private key or hmac secret
      */
     private final File tempKey;
     private final File tempPub;
+    protected RefreshTokenStore tokenstoreMock;
 
     public JwtTokenServiceTest() throws IOException {
         super();
@@ -164,12 +163,14 @@ public class JwtTokenServiceTest {
                                          @NotNull TokenCookieProperties tokenCookieProperties,
                                          @NotNull TokenHeaderProperties tokenHeaderProperties,
                                          @NotNull RefreshCookieProperties refreshCookieProperties) {
-        JwtTokenServiceImpl tokenService = new JwtTokenServiceImpl(tokenProperties,
-                refreshProperties,
-                tokenCookieProperties,
-                tokenHeaderProperties,
-                refreshCookieProperties,
-                () -> jwtUser);
+        JwtTokenServiceImpl tokenService = new JwtTokenServiceImpl();
+        tokenService.setTokenProperties(tokenProperties);
+        tokenService.setRefreshProperties(refreshProperties);
+        tokenService.setTokenCookieProperties(tokenCookieProperties);
+        tokenService.setTokenHeaderProperties(tokenHeaderProperties);
+        tokenService.setRefreshCookieProperties(refreshCookieProperties);
+        tokenService.setJwtUser(() -> jwtUser);
+        tokenService.setTokenCookieProperties(tokenCookieProperties);
         tokenService.afterPropertiesSet();
         tokenService.setRefreshTokenStore(refreshTokenStore);
         return tokenService;
@@ -197,7 +198,10 @@ public class JwtTokenServiceTest {
 
     @NotNull
     protected UserDetailsService getUserdetailsService() {
-        return new UserDetailsServiceTestImpl(getPasswordEncoder(), JwtUser::new);
+        UserDetailsServiceTestImpl userDetailsServiceTest = new UserDetailsServiceTestImpl();
+        userDetailsServiceTest.setPasswordEncoder(getPasswordEncoder());
+        userDetailsServiceTest.setJwtUser(JwtUser::new);
+        return userDetailsServiceTest;
     }
 
     @NotNull

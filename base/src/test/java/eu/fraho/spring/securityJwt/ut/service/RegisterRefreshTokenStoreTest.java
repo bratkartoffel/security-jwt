@@ -19,8 +19,10 @@ public class RegisterRefreshTokenStoreTest {
     public void testRegistration() throws Exception {
         ConfigurableListableBeanFactory factory = Mockito.mock(ConfigurableListableBeanFactory.class);
         BeanDefinitionRegistry registry = Mockito.mock(BeanDefinitionRegistry.class);
-        RefreshProperties refreshConfig = new RefreshProperties();
-        RegisterRefreshTokenStore service = new RegisterRefreshTokenStore(factory, refreshConfig);
+        RefreshProperties refreshProperties = new RefreshProperties();
+        RegisterRefreshTokenStore service = new RegisterRefreshTokenStore();
+        service.setFactory(factory);
+        service.setRefreshProperties(refreshProperties);
         service.setRegistry(registry);
         service.afterPropertiesSet();
 

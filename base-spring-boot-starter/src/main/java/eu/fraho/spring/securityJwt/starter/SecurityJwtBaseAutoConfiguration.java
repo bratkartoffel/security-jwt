@@ -44,7 +44,9 @@ public class SecurityJwtBaseAutoConfiguration {
     @Bean
     public TotpService totpService() {
         log.debug("Register TotpService");
-        return new TotpServiceImpl(totpProperties());
+        TotpServiceImpl totpService = new TotpServiceImpl();
+        totpService.setTotpProperties(totpProperties());
+        return totpService;
     }
 
     @Bean
@@ -62,9 +64,14 @@ public class SecurityJwtBaseAutoConfiguration {
     @Bean
     public JwtTokenService jwtTokenService() {
         log.debug("Register JwtTokenService");
-        return new JwtTokenServiceImpl(tokenProperties(), refreshProperties(),
-                tokenCookieProperties(), tokenHeaderProperties(), refreshCookieProperties(),
-                this::jwtUser);
+        JwtTokenServiceImpl jwtTokenService = new JwtTokenServiceImpl();
+        jwtTokenService.setTokenProperties(tokenProperties());
+        jwtTokenService.setRefreshProperties(refreshProperties());
+        jwtTokenService.setTokenCookieProperties(tokenCookieProperties());
+        jwtTokenService.setTokenHeaderProperties(tokenHeaderProperties());
+        jwtTokenService.setRefreshCookieProperties(refreshCookieProperties());
+        jwtTokenService.setJwtUser(this::jwtUser);
+        return jwtTokenService;
     }
 
     @Bean
@@ -121,8 +128,14 @@ public class SecurityJwtBaseAutoConfiguration {
                                                                      final TokenProperties tokenProperties,
                                                                      final RefreshProperties refreshProperties) {
         log.debug("Register AuthenticationRestController");
-        return new AuthenticationRestController(authenticationManager, jwtTokenService, userDetailsService, totpService,
-                tokenProperties, refreshProperties);
+        AuthenticationRestController controller = new AuthenticationRestController();
+        controller.setAuthenticationManager(authenticationManager);
+        controller.setJwtTokenService(jwtTokenService);
+        controller.setUserDetailsService(userDetailsService);
+        controller.setTotpService(totpService);
+        controller.setTokenProperties(tokenProperties);
+        controller.setRefreshProperties(refreshProperties);
+        return controller;
     }
 
     @Bean
@@ -131,6 +144,11 @@ public class SecurityJwtBaseAutoConfiguration {
                                                final JwtTokenService jwtTokenService,
                                                final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
         log.debug("Register JwtSecurityConfig");
-        return new JwtSecurityConfig(userDetailsService, passwordEncoder, jwtTokenService, jwtAuthenticationEntryPoint);
+        JwtSecurityConfig config = new JwtSecurityConfig();
+        config.setUserDetailsService(userDetailsService);
+        config.setPasswordEncoder(passwordEncoder);
+        config.setJwtTokenService(jwtTokenService);
+        config.setJwtAuthenticationEntryPoint(jwtAuthenticationEntryPoint);
+        return config;
     }
 }

@@ -71,9 +71,9 @@ public interface JwtTokenService {
     /**
      * Helper method to extract the token from the requests headers or cookies.
      *
-     * @deprecated Use {@link #getAccessToken(HttpServletRequest)} instead
      * @param request the request
      * @return optional token
+     * @deprecated Use {@link #getAccessToken(HttpServletRequest)} instead
      */
     @Deprecated
     Optional<String> getToken(@NotNull HttpServletRequest request);

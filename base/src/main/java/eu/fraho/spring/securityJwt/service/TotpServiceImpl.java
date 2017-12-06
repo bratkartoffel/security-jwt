@@ -7,8 +7,10 @@
 package eu.fraho.spring.securityJwt.service;
 
 import eu.fraho.spring.securityJwt.config.TotpProperties;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base32;
 import org.jetbrains.annotations.NotNull;
@@ -25,14 +27,15 @@ import java.util.Random;
 
 @Component
 @Slf4j
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@NoArgsConstructor
+@AllArgsConstructor
 public class TotpServiceImpl implements TotpService {
     private final Base32 base32 = new Base32();
 
     private final Random random = new SecureRandom();
 
-    @NonNull
-    private final TotpProperties totpProperties;
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
+    private TotpProperties totpProperties;
 
     private int getCode(byte[] secret, long timeIndex) throws NoSuchAlgorithmException, InvalidKeyException {
         final SecretKeySpec signKey = new SecretKeySpec(secret, "HmacSHA1");

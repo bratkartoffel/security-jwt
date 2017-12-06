@@ -39,6 +39,10 @@ public class SecurityJwtMemcacheAutoConfiguration {
                                                final MemcacheProperties memcacheProperties,
                                                final UserDetailsService userDetailsService) {
         log.debug("Register MemcacheTokenStore");
-        return new MemcacheTokenStore(refreshProperties, memcacheProperties, userDetailsService);
+        MemcacheTokenStore store = new MemcacheTokenStore();
+        store.setRefreshProperties(refreshProperties);
+        store.setMemcacheProperties(memcacheProperties);
+        store.setUserDetailsService(userDetailsService);
+        return store;
     }
 }

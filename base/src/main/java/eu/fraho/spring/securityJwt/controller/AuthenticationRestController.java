@@ -16,8 +16,10 @@ import eu.fraho.spring.securityJwt.service.TotpService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,25 +44,26 @@ import java.util.Optional;
 @RestController
 @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@NoArgsConstructor
+@AllArgsConstructor
 public class AuthenticationRestController {
-    @NonNull
-    private final AuthenticationManager authenticationManager;
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
+    private AuthenticationManager authenticationManager;
 
-    @NonNull
-    private final JwtTokenService tokenService;
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
+    private JwtTokenService jwtTokenService;
 
-    @NonNull
-    private final UserDetailsService userDetailsService;
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
+    private UserDetailsService userDetailsService;
 
-    @NonNull
-    private final TotpService totpService;
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
+    private TotpService totpService;
 
-    @NonNull
-    private final TokenProperties tokenProperties;
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
+    private TokenProperties tokenProperties;
 
-    @NonNull
-    private final RefreshProperties refreshProperties;
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
+    private RefreshProperties refreshProperties;
 
     @RequestMapping("${fraho.jwt.refresh.path:/auth/refresh}")
     @ApiOperation("Use a previously fetched refresh token to create a new access token")
@@ -72,7 +75,7 @@ public class AuthenticationRestController {
     public ResponseEntity<AuthenticationResponse> refresh(HttpServletResponse response,
                                                           HttpServletRequest request,
                                                           @RequestBody(required = false) @Nullable RefreshRequest refreshRequest) {
-        if (!tokenService.isRefreshTokenSupported()) {
+        if (!jwtTokenService.isRefreshTokenSupported()) {
             log.info("Refresh token support is disabled");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -81,7 +84,7 @@ public class AuthenticationRestController {
         Optional<String> token = Optional.ofNullable(refreshRequest).map(RefreshRequest::getRefreshToken);
         if (!token.isPresent()) {
             log.debug("No refreshtoken in body found, trying to read it from the cookies");
-            token = tokenService.getRefreshToken(request);
+            token = jwtTokenService.getRefreshToken(request);
         }
 
         // if no token was found at all, then abort with an unauthorized error
@@ -91,7 +94,7 @@ public class AuthenticationRestController {
         }
 
         // use the refresh token to get the underlying userdetails
-        Optional<JwtUser> jwtUser = tokenService.useRefreshToken(token.get());
+        Optional<JwtUser> jwtUser = jwtTokenService.useRefreshToken(token.get());
         if (!jwtUser.isPresent()) {
             log.info("Using refresh token failed (unknown refreshtoken?)");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -107,13 +110,13 @@ public class AuthenticationRestController {
         log.debug("Generating new tokens for {}", userDetails.getUsername());
         final AccessToken accessToken;
         try {
-            accessToken = tokenService.generateToken(userDetails);
+            accessToken = jwtTokenService.generateToken(userDetails);
         } catch (JOSEException e) {
             log.info("Error creating an access token for {}", userDetails.getUsername(), e);
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        final RefreshToken refreshToken = tokenService.generateRefreshToken(userDetails);
+        final RefreshToken refreshToken = jwtTokenService.generateRefreshToken(userDetails);
 
         log.debug("Sending cookies if enabled");
         addTokenCookieIfEnabled(response, accessToken, tokenProperties.getCookie());
@@ -157,16 +160,16 @@ public class AuthenticationRestController {
         log.debug("Generating tokens");
         final AccessToken accessToken;
         try {
-            accessToken = tokenService.generateToken(userDetails);
+            accessToken = jwtTokenService.generateToken(userDetails);
         } catch (JOSEException e) {
             log.info("Error creating an access token for {}", userDetails.getUsername(), e);
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         final RefreshToken refreshToken;
-        if (tokenService.isRefreshTokenSupported()) {
+        if (jwtTokenService.isRefreshTokenSupported()) {
             log.debug("Generating refreshtoken");
-            refreshToken = tokenService.generateRefreshToken(userDetails);
+            refreshToken = jwtTokenService.generateRefreshToken(userDetails);
         } else {
             refreshToken = null;
         }

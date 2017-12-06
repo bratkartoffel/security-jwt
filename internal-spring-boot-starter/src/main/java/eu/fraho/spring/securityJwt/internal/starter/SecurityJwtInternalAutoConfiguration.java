@@ -29,6 +29,9 @@ public class SecurityJwtInternalAutoConfiguration {
     public RefreshTokenStore refreshTokenStore(final RefreshProperties refreshProperties,
                                                final UserDetailsService userDetailsService) {
         log.debug("Register InternalTokenStore");
-        return new InternalTokenStore(refreshProperties, userDetailsService);
+        InternalTokenStore store = new InternalTokenStore();
+        store.setRefreshProperties(refreshProperties);
+        store.setUserDetailsService(userDetailsService);
+        return store;
     }
 }

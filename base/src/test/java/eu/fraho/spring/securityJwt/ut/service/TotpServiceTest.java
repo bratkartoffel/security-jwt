@@ -36,8 +36,10 @@ public class TotpServiceTest {
         return new TotpProperties();
     }
 
-    private TotpService getNewInstance(TotpProperties config) {
-        return new TotpServiceImpl(config);
+    private TotpService getNewInstance(TotpProperties totpProperties) {
+        TotpServiceImpl totpService = new TotpServiceImpl();
+        totpService.setTotpProperties(totpProperties);
+        return totpService;
     }
 
     @Test

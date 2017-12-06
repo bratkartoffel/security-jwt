@@ -10,8 +10,10 @@ import eu.fraho.spring.securityJwt.config.RefreshProperties;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
@@ -22,16 +24,21 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import java.util.*;
 
 @Slf4j
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@NoArgsConstructor
 public class InternalTokenStore implements RefreshTokenStore {
-    @NonNull
-    private final RefreshProperties refreshProperties;
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
+    private RefreshProperties refreshProperties;
 
-    @NonNull
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
     private UserDetailsService userDetailsService;
 
     //                  AbstractToken   User
     private ExpiringMap<String, JwtUser> refreshTokenMap;
+
+    public InternalTokenStore(RefreshProperties refreshProperties, UserDetailsService userDetailsService) {
+        this.refreshProperties = refreshProperties;
+        this.userDetailsService = userDetailsService;
+    }
 
     @Override
     public synchronized void saveToken(@NotNull JwtUser user, @NotNull String token) {

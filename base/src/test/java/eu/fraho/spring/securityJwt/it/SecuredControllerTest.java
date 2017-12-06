@@ -11,6 +11,8 @@ import eu.fraho.spring.securityJwt.dto.AccessToken;
 import eu.fraho.spring.securityJwt.dto.AuthenticationResponse;
 import eu.fraho.spring.securityJwt.it.spring.TestApiApplication;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Before;
@@ -46,11 +48,11 @@ public class SecuredControllerTest {
 
     public static final String HELLO_WORLD = "Hello world!";
 
-    @Autowired
-    private WebApplicationContext context = null;
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
+    private WebApplicationContext context;
 
-    @Autowired
-    private Filter springSecurityFilterChain = null;
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
+    private Filter springSecurityFilterChain;
 
     private MockMvc mockMvc;
 
