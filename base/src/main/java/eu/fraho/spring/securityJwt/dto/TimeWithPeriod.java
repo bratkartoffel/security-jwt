@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * This class specifies a quanitity of periods.
- * Used for the cryptProperties to provide some human readable values for the expiration settings.<br>
+ * Used for the configuration to provide some human readable values for the expiration settings.<br>
  * Just specify them like this: {@code fraho.jwt.example: 1 hour} or {@code fraho.jwt.example: 45 minutes}<br>
  * <br>
  * Example values:
@@ -43,7 +43,7 @@ public final class TimeWithPeriod {
     private final TimeUnit timeUnit;
 
     /**
-     * Parse the given cryptProperties value and extract the {@link #quantity} and {@link #timeUnit}.<br>
+     * Parse the given configuration value and extract the {@link #quantity} and {@link #timeUnit}.<br>
      *
      * @param value A string representation like &quot;&lt;quantity&gt; &lt;timeUnit&gt;&quot;
      */
