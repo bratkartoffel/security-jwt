@@ -14,7 +14,7 @@ This project is split into 4 parts:
 * hibernate: Support for hibernate to store refresh tokens
 
 Simply use the dependencies within your build script, spring boot takes care of the rest.
-The default cryptProperties should be sufficient for the most use cases.
+The default configuration should be sufficient for the most use cases.
 
 # Contents
 * base:
@@ -62,8 +62,8 @@ For details on the usage of the plugins please see the README within the relevan
 # Usage
 Starting with version 1.0.0 there are two ways on how to use these libraries.
 
-The old way is by directly using the libraries as dependencies and doing some manual cryptProperties.
-The newer way used spring boot autoconfiguration and reduced the needed cryptProperties a lot.
+The old way is by directly using the libraries as dependencies and doing some manual configuration.
+The newer way used spring boot autoconfiguration and reduced the needed configuration a lot.
 
 To see this library "in action", please take a look at [the examples](https://github.com/bratkartoffel/security-jwt-examples).
 
@@ -72,7 +72,7 @@ To see this library "in action", please take a look at [the examples](https://gi
 * Bouncycastle will be automagically loaded and installed if on classpath
 * My enhanced PasswordEncoder (using Unix-Crypt-Style hashes) will be used as default
 
-## Manual cryptProperties (legacy):
+## Manual configuration (legacy):
 * Add the dependencies to your build script
 * Configure your boot application to pick up our components (add "eu.fraho.spring.securityJwt" to the scanBasePackages field of your ```@SpringBootApplication```)
 * Optionally add the BouncyCastle Provider (e.g. within the [main-Method](base/src/test/java/eu/fraho/spring/securityJwt/util/CreateEcdsaJwtKeys.java))
@@ -92,13 +92,13 @@ To see this library "in action", please take a look at [the examples](https://gi
   * When using cookies this is done automatically by your browser
 
 # Configuration
-This library will run out-of the box, but you should at least take a look at the different cryptProperties properties. I tried to make them reasonable secure, but if you're really paranoid you can change them as you like.
+This library will run out-of the box, but you should at least take a look at the different configuration properties. I tried to make them reasonable secure, but if you're really paranoid you can change them as you like.
 
 By default, this library creates an hmac secret on startup. As this is no problem for testing and running your application you are strongly adviced to define a static key. Otherwise you will render all access tokens invalid upon service restart, thus requiring your clients to login again.
 
 I recommend using ECDSA for tokens (you can use [this](base/src/test/java/eu/fraho/spring/securityJwt/util/CreateEcdsaJwtKeys.java) class for that) and setting the ```algorithm``` field to something like ES256.
 
-## Token cryptProperties (Prefix fraho.jwt.token)
+## Token configuration (Prefix fraho.jwt.token)
 | Property        | Default                     | Description   |
 |-----------------|-----------------------------|---------------|
 | algorithm       | HS256                       | The signature algorithm used for the tokens. For a list of valid algorithms please see either the [JWT spec](https://tools.ietf.org/html/rfc7518#section-3) or [JWSAlgorithm](https://bitbucket.org/connect2id/nimbus-jose-jwt/src/master/src/main/java/com/nimbusds/jose/JWSAlgorithm.java)|
@@ -117,7 +117,7 @@ I recommend using ECDSA for tokens (you can use [this](base/src/test/java/eu/fra
 | priv            | null                        | Defines the private key file when using a public / private key signature method. May be null if this service should only verify, but not issue tokens. In this case, any calls to ```generateToken``` or ```generateRefreshToken``` will throw an FeatureNotConfiguredException. To the caller, it will be shown as a UNAUTHORIZED Http StatusCode.|
 | pub             | null                        | Defines the public key file when using a public / private key signature method|
 
-## Refresh cryptProperties (Prefix fraho.jwt.refresh)
+## Refresh configuration (Prefix fraho.jwt.refresh)
 | Property                   | Default             | Description   |
 |----------------------------|---------------------|---------------|
 | cache-impl                 | null                | Defines the implemenation for refresh token storage. The specified class has to implement the [RefreshTokenStore](base/src/main/java/eu/fraho/spring/securityJwt/service/RefreshTokenStore.java) Interface. To disable the refresh tokens at all use null as value.<br>You have to add at least one of the optional dependencies below to add refresh token support.<br>Please see module READMEs for valid values.|
@@ -131,7 +131,7 @@ I recommend using ECDSA for tokens (you can use [this](base/src/test/java/eu/fra
 | length                     | 24                  | Defines the length of refresh tokens in bytes, without the base64 encoding|
 | path                       | /auth/refresh       | Sets the path for the RestController, defining the endpoint for refresh requests.|
 
-## Other cryptProperties properties
+## Other configuration properties
 | Property              | Default | Description   |
 |-----------------------|---------|---------------|
 | fraho.totp.length     | 16      | Defines the length of the generated TOTP secrets|

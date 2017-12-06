@@ -20,7 +20,7 @@ for rows you have to regularly cleanup the token table, e.g. by using a cronjob.
 # Usage
 * Add the dependency to your build script
 * When not using the boot-starter:
-  * Use ```eu.fraho.spring.securityJwt.hibernate.service.HibernateTokenStore``` as ```fraho.jwt.refresh.cache-impl``` cryptProperties value
+  * Use ```eu.fraho.spring.securityJwt.hibernate.service.HibernateTokenStore``` as ```fraho.jwt.refresh.cache-impl``` configuration value
   * Configure your boot application to pick up our entities (add ```@EntityScan(basePackages = {"eu.fraho.spring.securityJwt"})``` annotation asside your ```@SpringBootApplication```)
 
 This module doesn't use any additional application properties.
