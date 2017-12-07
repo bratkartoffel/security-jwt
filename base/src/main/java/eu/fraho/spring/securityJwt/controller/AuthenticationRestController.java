@@ -65,6 +65,7 @@ public class AuthenticationRestController {
     @Setter(onMethod = @__({@Autowired, @NonNull}))
     private RefreshProperties refreshProperties;
 
+    @SuppressWarnings("MVCPathVariableInspection")
     @RequestMapping("${fraho.jwt.refresh.path:/auth/refresh}")
     @ApiOperation("Use a previously fetched refresh token to create a new access token")
     @ApiResponses({
@@ -127,6 +128,7 @@ public class AuthenticationRestController {
         return ResponseEntity.ok(new AuthenticationResponse(accessToken, refreshToken));
     }
 
+    @SuppressWarnings("MVCPathVariableInspection")
     @RequestMapping("${fraho.jwt.token.path:/auth/login}")
     @ApiOperation("Create a new token using the supplied credentials")
     @ApiResponses({

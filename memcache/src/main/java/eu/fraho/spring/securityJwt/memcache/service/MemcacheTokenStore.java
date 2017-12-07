@@ -46,6 +46,7 @@ public class MemcacheTokenStore implements RefreshTokenStore {
 
     private MemcachedClient memcachedClient;
 
+    @SuppressWarnings("unused")
     public MemcacheTokenStore(RefreshProperties refreshProperties, MemcacheProperties memcacheProperties, UserDetailsService userDetailsService) {
         this.refreshProperties = refreshProperties;
         this.memcacheProperties = memcacheProperties;

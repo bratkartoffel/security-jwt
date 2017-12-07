@@ -28,10 +28,10 @@ public class TimeWithPeriodTest {
     @SuppressWarnings("ObjectEqualsNull") // is intended; check for correct null handling within "equals"
     @Test
     public void testEquals() {
-        Assert.assertTrue(new TimeWithPeriod(1, TimeUnit.DAYS).equals(new TimeWithPeriod(24, TimeUnit.HOURS)));
-        Assert.assertFalse(new TimeWithPeriod(1, TimeUnit.HOURS).equals(new TimeWithPeriod(3601, TimeUnit.SECONDS)));
-        Assert.assertFalse(new TimeWithPeriod(1, TimeUnit.HOURS).equals(null));
-        Assert.assertFalse(new TimeWithPeriod(1, TimeUnit.HOURS).equals(new Object()));
+        Assert.assertEquals(new TimeWithPeriod(1, TimeUnit.DAYS), new TimeWithPeriod(24, TimeUnit.HOURS));
+        Assert.assertNotEquals(new TimeWithPeriod(1, TimeUnit.HOURS), new TimeWithPeriod(3601, TimeUnit.SECONDS));
+        Assert.assertNotEquals(new TimeWithPeriod(1, TimeUnit.HOURS), null);
+        Assert.assertNotEquals(new TimeWithPeriod(1, TimeUnit.HOURS), new Object());
     }
 
     @Test

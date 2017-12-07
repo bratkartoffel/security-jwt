@@ -16,7 +16,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 
 public class RegisterRefreshTokenStoreTest {
     @Test
-    public void testRegistration() throws Exception {
+    public void testRegistration() {
         ConfigurableListableBeanFactory factory = Mockito.mock(ConfigurableListableBeanFactory.class);
         BeanDefinitionRegistry registry = Mockito.mock(BeanDefinitionRegistry.class);
         RefreshProperties refreshProperties = new RefreshProperties();

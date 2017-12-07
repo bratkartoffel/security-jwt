@@ -21,7 +21,7 @@ import java.security.Security;
 @AutoConfigureBefore(SecurityJwtBaseAutoConfiguration.class)
 public class InstallBouncyCastleConfiguration implements InitializingBean {
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         log.debug("Register BouncyCastleProvider");
         BouncyCastleProvider provider = new BouncyCastleProvider();
         Security.removeProvider(provider.getName());

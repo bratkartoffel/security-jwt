@@ -40,7 +40,7 @@ public class RegisterRefreshTokenStore implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         if (registry == null) registry = ((BeanDefinitionRegistry) factory);
 
         GenericBeanDefinition beanDefinition = new GenericBeanDefinition();

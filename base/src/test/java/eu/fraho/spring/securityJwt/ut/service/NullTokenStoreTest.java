@@ -28,37 +28,37 @@ public class NullTokenStoreTest {
     }
 
     @Test(expected = FeatureNotConfiguredException.class)
-    public void testSaveToken() throws Exception {
+    public void testSaveToken() {
         getNewInstance().saveToken(getJwtUser(), "bar");
     }
 
     @Test(expected = FeatureNotConfiguredException.class)
-    public void testUseToken() throws Exception {
+    public void testUseToken() {
         getNewInstance().useToken("bar");
     }
 
     @Test(expected = FeatureNotConfiguredException.class)
-    public void testListTokens() throws Exception {
+    public void testListTokens() {
         getNewInstance().listTokens();
     }
 
     @Test(expected = FeatureNotConfiguredException.class)
-    public void testListTokensForUser() throws Exception {
+    public void testListTokensForUser() {
         getNewInstance().listTokens(getJwtUser());
     }
 
     @Test(expected = FeatureNotConfiguredException.class)
-    public void testRevokeToken() throws Exception {
+    public void testRevokeToken() {
         getNewInstance().revokeToken("baz");
     }
 
     @Test(expected = FeatureNotConfiguredException.class)
-    public void testRevokeTokens() throws Exception {
+    public void testRevokeTokens() {
         getNewInstance().revokeTokens();
     }
 
     @Test(expected = FeatureNotConfiguredException.class)
-    public void testRevokeTokensForUser() throws Exception {
+    public void testRevokeTokensForUser() {
         getNewInstance().revokeTokens(getJwtUser());
     }
 

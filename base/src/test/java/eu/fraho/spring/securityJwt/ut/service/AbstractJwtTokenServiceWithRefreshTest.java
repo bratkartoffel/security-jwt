@@ -36,7 +36,7 @@ public abstract class AbstractJwtTokenServiceWithRefreshTest extends JwtTokenSer
     }
 
     @NotNull
-    protected ObjectMapper getObjectMapper() throws Exception {
+    protected ObjectMapper getObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.findAndRegisterModules();
         return mapper;
@@ -48,7 +48,7 @@ public abstract class AbstractJwtTokenServiceWithRefreshTest extends JwtTokenSer
     }
 
     @Test
-    public void testRefreshTokenSupported() throws Exception {
+    public void testRefreshTokenSupported() {
         JwtTokenService service = getService();
 
         Assert.assertTrue("Refresh tokens not supported", getRefreshStore().isRefreshTokenSupported());
@@ -56,7 +56,7 @@ public abstract class AbstractJwtTokenServiceWithRefreshTest extends JwtTokenSer
     }
 
     @Test
-    public void testListRefreshTokensForUser() throws Exception {
+    public void testListRefreshTokensForUser() {
         JwtTokenService service = getService();
 
         JwtUser jsmith = getJwtUser();
@@ -134,7 +134,7 @@ public abstract class AbstractJwtTokenServiceWithRefreshTest extends JwtTokenSer
     }
 
     @Test
-    public void testRemoveSingleToken() throws Exception {
+    public void testRemoveSingleToken() {
         JwtTokenService service = getService();
         JwtUser user = getJwtUser();
 
@@ -152,7 +152,7 @@ public abstract class AbstractJwtTokenServiceWithRefreshTest extends JwtTokenSer
     }
 
     @Test
-    public void testRemoveSingleTokenTwice() throws Exception {
+    public void testRemoveSingleTokenTwice() {
         JwtTokenService service = getService();
         JwtUser jsmith = getJwtUser();
 
@@ -169,7 +169,7 @@ public abstract class AbstractJwtTokenServiceWithRefreshTest extends JwtTokenSer
     }
 
     @Test
-    public void testRemoveAllTokensForUser() throws Exception {
+    public void testRemoveAllTokensForUser() {
         JwtTokenService service = getService();
         JwtUser jsmith = getJwtUser();
 
@@ -186,7 +186,7 @@ public abstract class AbstractJwtTokenServiceWithRefreshTest extends JwtTokenSer
     }
 
     @Test
-    public void testRemoveAllTokens() throws Exception {
+    public void testRemoveAllTokens() {
         JwtTokenService service = getService();
 
         JwtUser jsmith = getJwtUser();
@@ -210,7 +210,7 @@ public abstract class AbstractJwtTokenServiceWithRefreshTest extends JwtTokenSer
     }
 
     @Test
-    public void testUseRefreshTokenOnlyStrings() throws Exception {
+    public void testUseRefreshTokenOnlyStrings() {
         JwtTokenService service = getService();
         JwtUser jsmith = getJwtUser();
 
@@ -225,7 +225,7 @@ public abstract class AbstractJwtTokenServiceWithRefreshTest extends JwtTokenSer
     }
 
     @Test(expected = FeatureNotConfiguredException.class)
-    public void testUseTokenNoPrivateKey() throws Exception {
+    public void testUseTokenNoPrivateKey() {
         TokenProperties tokenProperties = getRsaTokenProperties();
         JwtTokenService service = getService(tokenProperties);
 

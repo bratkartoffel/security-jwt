@@ -10,7 +10,6 @@ import eu.fraho.spring.securityJwt.config.RefreshProperties;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
@@ -35,6 +34,7 @@ public class InternalTokenStore implements RefreshTokenStore {
     //                  AbstractToken   User
     private ExpiringMap<String, JwtUser> refreshTokenMap;
 
+    @SuppressWarnings("unused")
     public InternalTokenStore(RefreshProperties refreshProperties, UserDetailsService userDetailsService) {
         this.refreshProperties = refreshProperties;
         this.userDetailsService = userDetailsService;
