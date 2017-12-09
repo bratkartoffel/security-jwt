@@ -1,5 +1,7 @@
 # Changelog
 
+### 2.0.2 (not yet released)
+
 ### 2.0.1 (2017-12-09)
 * (all) Replaced beans constructor-based autowiring with setters
 * (all) Project is now compatible with DCEVM and Hotswap agent
