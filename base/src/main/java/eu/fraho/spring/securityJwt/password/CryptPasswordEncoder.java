@@ -8,8 +8,10 @@ package eu.fraho.spring.securityJwt.password;
 
 import eu.fraho.spring.securityJwt.config.CryptProperties;
 import eu.fraho.spring.securityJwt.dto.CryptAlgorithm;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.Crypt;
 import org.jetbrains.annotations.NotNull;
@@ -24,14 +26,15 @@ import java.util.Random;
 
 @Component
 @Slf4j
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@NoArgsConstructor
+@AllArgsConstructor
 public class CryptPasswordEncoder implements PasswordEncoder {
     private final Random random = new SecureRandom();
 
     private final Encoder encoder = Base64.getUrlEncoder();
 
-    @NonNull
-    private final CryptProperties configuration;
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
+    private CryptProperties cryptProperties;
 
     private static boolean slowEquals(@NotNull CharSequence a, @NotNull CharSequence b) {
         int diff = a.length() ^ b.length();
@@ -44,9 +47,9 @@ public class CryptPasswordEncoder implements PasswordEncoder {
     @Override
     public String encode(@NotNull CharSequence rawPassword) {
         final String cryptParam;
-        CryptAlgorithm algorithm = configuration.getAlgorithm();
+        CryptAlgorithm algorithm = cryptProperties.getAlgorithm();
         if (algorithm.isRoundsSupported()) {
-            cryptParam = String.format("%srounds=%d$%s$", algorithm.getPrefix(), configuration.getRounds(), generateSalt());
+            cryptParam = String.format("%srounds=%d$%s$", algorithm.getPrefix(), cryptProperties.getRounds(), generateSalt());
         } else if (CryptAlgorithm.DES.equals(algorithm)) {
             cryptParam = generateSalt();
         } else {
@@ -64,7 +67,7 @@ public class CryptPasswordEncoder implements PasswordEncoder {
 
     @NotNull
     protected String generateSalt() {
-        CryptAlgorithm algorithm = configuration.getAlgorithm();
+        CryptAlgorithm algorithm = cryptProperties.getAlgorithm();
         final byte[] bytes = new byte[algorithm.getSaltLength() * 2];
         random.nextBytes(bytes);
         String salt = encoder.encodeToString(bytes);

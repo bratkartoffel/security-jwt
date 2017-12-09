@@ -16,11 +16,13 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 
 public class RegisterRefreshTokenStoreTest {
     @Test
-    public void testRegistration() throws Exception {
+    public void testRegistration() {
         ConfigurableListableBeanFactory factory = Mockito.mock(ConfigurableListableBeanFactory.class);
         BeanDefinitionRegistry registry = Mockito.mock(BeanDefinitionRegistry.class);
-        RefreshProperties refreshConfig = new RefreshProperties();
-        RegisterRefreshTokenStore service = new RegisterRefreshTokenStore(factory, refreshConfig);
+        RefreshProperties refreshProperties = new RefreshProperties();
+        RegisterRefreshTokenStore service = new RegisterRefreshTokenStore();
+        service.setFactory(factory);
+        service.setRefreshProperties(refreshProperties);
         service.setRegistry(registry);
         service.afterPropertiesSet();
 

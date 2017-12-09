@@ -11,13 +11,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.aspectj.EnableSpringConfigured;
 
-import java.io.IOException;
-
 @SpringBootApplication(scanBasePackages = {"eu.fraho.spring.securityJwt"})
 @EnableSpringConfigured
 @EntityScan(basePackages = {"eu.fraho.spring.securityJwt.hibernate"})
 public class TestHibernateApiApplication {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         TestApiApplication.main(args);
     }
 }

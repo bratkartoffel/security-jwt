@@ -11,6 +11,8 @@ import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.it.spring.TestApiApplication;
 import eu.fraho.spring.securityJwt.service.JwtTokenService;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,10 +29,10 @@ import java.util.Optional;
 @SpringBootTest(classes = TestApiApplication.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 public class JwtTokenServiceTest {
-    @Autowired
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
     private JwtTokenService jwtTokenService;
 
-    @Autowired
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
     private UserDetailsService userDetailsService;
 
     @Test

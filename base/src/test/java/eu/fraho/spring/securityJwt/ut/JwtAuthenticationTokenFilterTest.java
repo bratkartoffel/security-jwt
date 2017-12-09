@@ -31,8 +31,10 @@ public class JwtAuthenticationTokenFilterTest {
     }
 
     @NotNull
-    private JwtAuthenticationTokenFilter getNewInstance(JwtTokenService service) {
-        return new JwtAuthenticationTokenFilter(service);
+    private JwtAuthenticationTokenFilter getNewInstance(JwtTokenService jwtTokenService) {
+        JwtAuthenticationTokenFilter filter = new JwtAuthenticationTokenFilter();
+        filter.setJwtTokenService(jwtTokenService);
+        return filter;
     }
 
     @Before

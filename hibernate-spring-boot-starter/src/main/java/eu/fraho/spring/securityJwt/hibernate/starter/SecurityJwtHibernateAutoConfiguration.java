@@ -20,6 +20,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import javax.persistence.EntityManager;
+
 @Configuration
 @AutoConfigureAfter(SecurityJwtBaseAutoConfiguration.class)
 @AutoConfigureBefore(SecurityJwtNoRefreshStoreAutoConfiguration.class)
@@ -29,8 +31,13 @@ public class SecurityJwtHibernateAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public RefreshTokenStore refreshTokenStore(final RefreshProperties refreshProperties,
-                                               final UserDetailsService userDetailsService) {
+                                               final UserDetailsService userDetailsService,
+                                               final EntityManager entityManager) {
         log.debug("Register HibernateTokenStore");
-        return new HibernateTokenStore(refreshProperties, userDetailsService);
+        HibernateTokenStore store = new HibernateTokenStore();
+        store.setRefreshProperties(refreshProperties);
+        store.setUserDetailsService(userDetailsService);
+        store.setEntityManager(entityManager);
+        return store;
     }
 }

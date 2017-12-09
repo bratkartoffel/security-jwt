@@ -34,11 +34,16 @@ public class JwtSecurityConfigTest {
         return getNewInstance(Mockito.mock(JwtAuthenticationEntryPoint.class));
     }
 
-    private JwtSecurityConfig getNewInstance(JwtAuthenticationEntryPoint authenticationEntryPoint) {
+    private JwtSecurityConfig getNewInstance(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
         UserDetailsService userDetailsService = Mockito.mock(UserDetailsService.class);
         PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
         JwtTokenService tokenService = Mockito.mock(JwtTokenService.class);
-        return new JwtSecurityConfig(userDetailsService, passwordEncoder, tokenService, authenticationEntryPoint);
+        JwtSecurityConfig config = new JwtSecurityConfig();
+        config.setUserDetailsService(userDetailsService);
+        config.setPasswordEncoder(passwordEncoder);
+        config.setJwtTokenService(tokenService);
+        config.setJwtAuthenticationEntryPoint(jwtAuthenticationEntryPoint);
+        return config;
     }
 
     @Test

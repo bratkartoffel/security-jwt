@@ -7,14 +7,15 @@
 package eu.fraho.spring.securityJwt.memcache.service;
 
 import eu.fraho.spring.securityJwt.config.RefreshProperties;
-import eu.fraho.spring.securityJwt.memcache.config.MemcacheProperties;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
-import eu.fraho.spring.securityJwt.memcache.dto.MemcacheEntry;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.exceptions.RefreshException;
+import eu.fraho.spring.securityJwt.memcache.config.MemcacheProperties;
+import eu.fraho.spring.securityJwt.memcache.dto.MemcacheEntry;
 import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.spy.memcached.MemcachedClient;
 import net.spy.memcached.internal.OperationFuture;
@@ -32,18 +33,25 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Slf4j
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@NoArgsConstructor
 public class MemcacheTokenStore implements RefreshTokenStore {
-    @NonNull
-    private final RefreshProperties refreshProperties;
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
+    private RefreshProperties refreshProperties;
 
-    @NonNull
-    private final MemcacheProperties memcacheProperties;
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
+    private MemcacheProperties memcacheProperties;
 
-    @NonNull
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
     private UserDetailsService userDetailsService;
 
-    private MemcachedClient memcachedClient = null;
+    private MemcachedClient memcachedClient;
+
+    @SuppressWarnings("unused")
+    public MemcacheTokenStore(RefreshProperties refreshProperties, MemcacheProperties memcacheProperties, UserDetailsService userDetailsService) {
+        this.refreshProperties = refreshProperties;
+        this.memcacheProperties = memcacheProperties;
+        this.userDetailsService = userDetailsService;
+    }
 
     private <T> T getAndWait(@NotNull String message, @NotNull Supplier<OperationFuture<T>> action) {
         try {

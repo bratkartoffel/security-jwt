@@ -22,8 +22,10 @@ public class CryptPasswordEncoderTest {
         return new CryptProperties();
     }
 
-    private CryptPasswordEncoder getNewInstance(CryptProperties config) {
-        return new CryptPasswordEncoder(config);
+    private CryptPasswordEncoder getNewInstance(CryptProperties cryptProperties) {
+        CryptPasswordEncoder cryptPasswordEncoder = new CryptPasswordEncoder();
+        cryptPasswordEncoder.setCryptProperties(cryptProperties);
+        return cryptPasswordEncoder;
     }
 
     @Test

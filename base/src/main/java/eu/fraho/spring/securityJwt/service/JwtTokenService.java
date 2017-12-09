@@ -58,6 +58,7 @@ public interface JwtTokenService {
      * @param token The token to validate
      * @return {@code true} if the token passed all checks (is valid and trusted) or otherwise {@code false}
      */
+    @SuppressWarnings("unused")
     boolean validateToken(@NotNull SignedJWT token);
 
     /**
@@ -71,9 +72,9 @@ public interface JwtTokenService {
     /**
      * Helper method to extract the token from the requests headers or cookies.
      *
-     * @deprecated Use {@link #getAccessToken(HttpServletRequest)} instead
      * @param request the request
      * @return optional token
+     * @deprecated Use {@link #getAccessToken(HttpServletRequest)} instead
      */
     @Deprecated
     Optional<String> getToken(@NotNull HttpServletRequest request);
@@ -169,6 +170,7 @@ public interface JwtTokenService {
      * @param token The token to revoke
      * @return {@code true} if the token was revoked
      */
+    @SuppressWarnings("unused")
     boolean revokeRefreshToken(@NotNull String token);
 
     /**

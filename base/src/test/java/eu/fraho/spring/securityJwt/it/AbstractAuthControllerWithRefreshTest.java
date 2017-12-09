@@ -8,7 +8,8 @@ package eu.fraho.spring.securityJwt.it;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.fraho.spring.securityJwt.it.spring.UserDetailsServiceTestImpl;
-import lombok.RequiredArgsConstructor;
+import lombok.NonNull;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Test;
@@ -22,11 +23,10 @@ import java.util.Map;
 
 @SuppressWarnings("unused")
 @Slf4j
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public abstract class AbstractAuthControllerWithRefreshTest extends AbstractAuthControllerTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Autowired
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
     private UserDetailsServiceTestImpl userDetailsService;
 
     @Test

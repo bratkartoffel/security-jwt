@@ -52,7 +52,7 @@ public class TokenPropertiesTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testUnknownAlgorithm() throws Exception {
+    public void testUnknownAlgorithm() {
         TokenProperties conf = getNewInstance();
         conf.setAlgorithm("foobar");
         try {
@@ -64,7 +64,7 @@ public class TokenPropertiesTest {
     }
 
     @Test
-    public void testHmacNoKey() throws Exception {
+    public void testHmacNoKey() {
         TokenProperties conf = getNewInstance();
         conf.afterPropertiesSet();
 
@@ -223,7 +223,7 @@ public class TokenPropertiesTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testNeitherHeaderNorCookieEnabled() throws Exception {
+    public void testNeitherHeaderNorCookieEnabled() {
         TokenProperties conf = getNewInstance();
         conf.getCookie().setEnabled(false);
         conf.getHeader().setEnabled(false);

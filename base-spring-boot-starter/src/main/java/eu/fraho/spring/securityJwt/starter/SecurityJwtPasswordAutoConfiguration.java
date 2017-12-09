@@ -30,6 +30,8 @@ public class SecurityJwtPasswordAutoConfiguration {
     @ConditionalOnMissingBean
     public PasswordEncoder passwordEncoder() {
         log.debug("Register CryptPasswordEncoder");
-        return new CryptPasswordEncoder(cryptProperties());
+        CryptPasswordEncoder encoder = new CryptPasswordEncoder();
+        encoder.setCryptProperties(cryptProperties());
+        return encoder;
     }
 }

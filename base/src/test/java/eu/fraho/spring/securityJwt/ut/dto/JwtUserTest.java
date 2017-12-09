@@ -64,7 +64,7 @@ public class JwtUserTest {
     }
 
     @Test
-    public void testToAndFromClaimsSymetric() throws ParseException {
+    public void testToAndFromClaimsSymetric() {
         JwtUser user = newInstance();
         JWTClaimsSet claims1 = user.toClaims().build();
         JwtUser user2 = new JwtUser();

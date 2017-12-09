@@ -1,5 +1,9 @@
 # Changelog
 
+### 2.0.1 (2017-12-09)
+* (all) Replaced beans constructor-based autowiring with setters
+* (all) Project is now compatible with DCEVM and Hotswap agent
+
 ### 2.0.0 (2017-11-30)
 * (base) Another great refactoring:
   * Remove deviceId from everywhere
@@ -15,7 +19,7 @@
 * (base) Add support for tokens sent as cookies (both access and refresh)
 * (base) Make JwtTokenService.getToken() deprecated
 
-### 1.1.0 (not yet released)
+### 1.1.0 (2017-11-30)
 * (base) Make JwtUser extendable (#20)
 * (base) Make rest endpoints configurable (#19)
 * (base) Mark JwtTokenService.getExpiration as deprecated

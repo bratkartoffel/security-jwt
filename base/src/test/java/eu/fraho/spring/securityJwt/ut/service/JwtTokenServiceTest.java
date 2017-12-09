@@ -47,13 +47,12 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 public class JwtTokenServiceTest {
-    protected RefreshTokenStore tokenstoreMock;
-
     /**
      * private key or hmac secret
      */
     private final File tempKey;
     private final File tempPub;
+    protected RefreshTokenStore tokenstoreMock;
 
     public JwtTokenServiceTest() throws IOException {
         super();
@@ -164,12 +163,14 @@ public class JwtTokenServiceTest {
                                          @NotNull TokenCookieProperties tokenCookieProperties,
                                          @NotNull TokenHeaderProperties tokenHeaderProperties,
                                          @NotNull RefreshCookieProperties refreshCookieProperties) {
-        JwtTokenServiceImpl tokenService = new JwtTokenServiceImpl(tokenProperties,
-                refreshProperties,
-                tokenCookieProperties,
-                tokenHeaderProperties,
-                refreshCookieProperties,
-                () -> jwtUser);
+        JwtTokenServiceImpl tokenService = new JwtTokenServiceImpl();
+        tokenService.setTokenProperties(tokenProperties);
+        tokenService.setRefreshProperties(refreshProperties);
+        tokenService.setTokenCookieProperties(tokenCookieProperties);
+        tokenService.setTokenHeaderProperties(tokenHeaderProperties);
+        tokenService.setRefreshCookieProperties(refreshCookieProperties);
+        tokenService.setJwtUser(() -> jwtUser);
+        tokenService.setTokenCookieProperties(tokenCookieProperties);
         tokenService.afterPropertiesSet();
         tokenService.setRefreshTokenStore(refreshTokenStore);
         return tokenService;
@@ -197,7 +198,10 @@ public class JwtTokenServiceTest {
 
     @NotNull
     protected UserDetailsService getUserdetailsService() {
-        return new UserDetailsServiceTestImpl(getPasswordEncoder(), JwtUser::new);
+        UserDetailsServiceTestImpl userDetailsServiceTest = new UserDetailsServiceTestImpl();
+        userDetailsServiceTest.setPasswordEncoder(getPasswordEncoder());
+        userDetailsServiceTest.setJwtUser(JwtUser::new);
+        return userDetailsServiceTest;
     }
 
     @NotNull
@@ -225,7 +229,7 @@ public class JwtTokenServiceTest {
     }
 
     @Test
-    public void testParseUser() throws Exception {
+    public void testParseUser() {
         JwtTokenService service = getService();
 
         String token = JwtTokens.VALID;
@@ -239,7 +243,7 @@ public class JwtTokenServiceTest {
     }
 
     @Test
-    public void testParseUserInvalid() throws Exception {
+    public void testParseUserInvalid() {
         JwtTokenService service = getService();
 
         String tokenInvalidSignature = JwtTokens.INVALID_SIGNATURE;
@@ -253,7 +257,7 @@ public class JwtTokenServiceTest {
 
 
     @Test
-    public void testValidateToken() throws Exception {
+    public void testValidateToken() {
         JwtTokenService service = getService();
 
         // regular already handled by testParseUser
@@ -276,7 +280,7 @@ public class JwtTokenServiceTest {
     }
 
     @Test
-    public void testValidateTokenInvalid() throws Exception {
+    public void testValidateTokenInvalid() {
         JwtTokenService service = getService();
 
         String token = JwtTokens.INVALID_BODY;
@@ -284,7 +288,7 @@ public class JwtTokenServiceTest {
     }
 
     @Test
-    public void testValidateTokenParseException() throws Exception {
+    public void testValidateTokenParseException() {
         JwtTokenService service = getService();
 
         String token = "ö";
@@ -292,7 +296,7 @@ public class JwtTokenServiceTest {
     }
 
     @Test
-    public void testGetToken() throws Exception {
+    public void testGetToken() {
         JwtTokenService service = getService();
 
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
@@ -304,7 +308,7 @@ public class JwtTokenServiceTest {
     }
 
     @Test
-    public void testGetTokenCookie() throws Exception {
+    public void testGetTokenCookie() {
         TokenCookieProperties tokenCookieProperties = new TokenCookieProperties();
         tokenCookieProperties.setEnabled(true);
         JwtTokenService service = getService(tokenCookieProperties);
@@ -326,7 +330,7 @@ public class JwtTokenServiceTest {
     }
 
     @Test
-    public void testGetTokenWhenBothThenHeaderPrimary() throws Exception {
+    public void testGetTokenWhenBothThenHeaderPrimary() {
         TokenCookieProperties tokenCookieProperties = new TokenCookieProperties();
         tokenCookieProperties.setEnabled(true);
         JwtTokenService service = getService(tokenCookieProperties);
@@ -398,7 +402,7 @@ public class JwtTokenServiceTest {
     }
 
     @Test(expected = FeatureNotConfiguredException.class)
-    public void testUseRefreshTokenNoPriv() throws Exception {
+    public void testUseRefreshTokenNoPriv() {
         JwtTokenService service = getNoPrivService();
 
         try {
@@ -414,7 +418,7 @@ public class JwtTokenServiceTest {
     }
 
     @Test
-    public void testUseRefreshToken() throws Exception {
+    public void testUseRefreshToken() {
         JwtTokenService service = getService();
 
         RefreshToken token = new RefreshToken("foobar", -1);

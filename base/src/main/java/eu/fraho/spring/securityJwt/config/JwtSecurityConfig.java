@@ -9,8 +9,10 @@ package eu.fraho.spring.securityJwt.config;
 import eu.fraho.spring.securityJwt.JwtAuthenticationEntryPoint;
 import eu.fraho.spring.securityJwt.JwtAuthenticationTokenFilter;
 import eu.fraho.spring.securityJwt.service.JwtTokenService;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -31,32 +33,34 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 @Order(90)
 @Slf4j
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@NoArgsConstructor
+@AllArgsConstructor
 public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
-    @NonNull
-    private final UserDetailsService userDetailsService;
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
+    private UserDetailsService userDetailsService;
 
-    @NonNull
-    private final PasswordEncoder passwordEncoder;
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
+    private PasswordEncoder passwordEncoder;
 
-    @NonNull
-    private final JwtTokenService jwtTokenUtil;
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
+    private JwtTokenService jwtTokenService;
 
-    @NonNull
-    private final JwtAuthenticationEntryPoint unauthorizedHandler;
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-    @Autowired
     public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         log.debug("Configuring AuthenticationManagerBuilder");
         authenticationManagerBuilder
-                .userDetailsService(this.userDetailsService)
+                .userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder);
     }
 
     @Bean
     public JwtAuthenticationTokenFilter authenticationTokenFilterBean() {
         log.debug("Creating JwtAuthenticationTokenFilter");
-        return new JwtAuthenticationTokenFilter(jwtTokenUtil);
+        JwtAuthenticationTokenFilter filter = new JwtAuthenticationTokenFilter();
+        filter.setJwtTokenService(jwtTokenService);
+        return filter;
     }
 
     @Override
@@ -68,7 +72,7 @@ public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
                 // we don't need CSRF because our token is invulnerable
                 .csrf().disable()
                 // use our unauthorized handler
-                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
+                .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .and()
                 // don't create session
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

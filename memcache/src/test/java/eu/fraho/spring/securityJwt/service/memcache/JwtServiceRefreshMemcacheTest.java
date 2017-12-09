@@ -35,11 +35,15 @@ import java.util.stream.Collectors;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class JwtServiceRefreshMemcacheTest extends AbstractJwtTokenServiceWithRefreshTest {
     private final RefreshProperties refreshProperties;
-    private final RefreshTokenStore refreshTokenStore;
+    private final MemcacheTokenStore refreshTokenStore;
 
     public JwtServiceRefreshMemcacheTest() throws Exception {
         refreshProperties = getRefreshProperties();
-        refreshTokenStore = new MemcacheTokenStore(refreshProperties, new MemcacheProperties(), getUserdetailsService());
+        refreshTokenStore = new MemcacheTokenStore();
+        refreshTokenStore.setRefreshProperties(refreshProperties);
+        refreshTokenStore.setMemcacheProperties(new MemcacheProperties());
+        refreshTokenStore.setUserDetailsService(getUserdetailsService());
+
         refreshTokenStore.afterPropertiesSet();
     }
 

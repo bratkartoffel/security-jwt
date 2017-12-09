@@ -15,8 +15,8 @@ import eu.fraho.spring.securityJwt.dto.AccessToken;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.exceptions.FeatureNotConfiguredException;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -36,27 +36,27 @@ import java.util.*;
 
 @Component
 @Slf4j
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@NoArgsConstructor
 public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     private final SecureRandom random = new SecureRandom();
 
-    @NonNull
-    private final TokenProperties tokenProperties;
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
+    private TokenProperties tokenProperties;
 
-    @NonNull
-    private final RefreshProperties refreshProperties;
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
+    private RefreshProperties refreshProperties;
 
-    @NonNull
-    private final TokenCookieProperties tokenCookieProperties;
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
+    private TokenCookieProperties tokenCookieProperties;
 
-    @NonNull
-    private final TokenHeaderProperties tokenHeaderProperties;
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
+    private TokenHeaderProperties tokenHeaderProperties;
 
-    @NonNull
-    private final RefreshCookieProperties refreshCookieProperties;
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
+    private RefreshCookieProperties refreshCookieProperties;
 
-    @NonNull
-    private final ObjectFactory<JwtUser> jwtUser;
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
+    private ObjectFactory<JwtUser> jwtUser;
 
     // not possible otherwise, as the RegisterRefreshTokenStore comes pretty late
     @SuppressWarnings("SpringAutowiredFieldsWarningInspection")
@@ -64,6 +64,17 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     @Lazy
     @Setter
     private RefreshTokenStore refreshTokenStore;
+
+    public JwtTokenServiceImpl(TokenProperties tokenProperties, RefreshProperties refreshProperties,
+                               TokenCookieProperties tokenCookieProperties, TokenHeaderProperties tokenHeaderProperties,
+                               RefreshCookieProperties refreshCookieProperties, ObjectFactory<JwtUser> jwtUser) {
+        this.tokenProperties = tokenProperties;
+        this.refreshProperties = refreshProperties;
+        this.tokenCookieProperties = tokenCookieProperties;
+        this.tokenHeaderProperties = tokenHeaderProperties;
+        this.refreshCookieProperties = refreshCookieProperties;
+        this.jwtUser = jwtUser;
+    }
 
     @Override
     public void afterPropertiesSet() {

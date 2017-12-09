@@ -10,6 +10,8 @@ import eu.fraho.spring.securityJwt.hibernate.spring.TestHibernateApiApplication;
 import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
 import eu.fraho.spring.securityJwt.ut.service.AbstractJwtTokenServiceWithRefreshTest;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.junit.runner.RunWith;
@@ -25,7 +27,7 @@ import java.io.IOException;
         classes = TestHibernateApiApplication.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 public class JwtServiceRefreshHibernateTest extends AbstractJwtTokenServiceWithRefreshTest {
-    @Autowired
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
     private RefreshTokenStore refreshTokenStore;
 
     public JwtServiceRefreshHibernateTest() throws IOException {

@@ -10,6 +10,8 @@ import eu.fraho.spring.securityJwt.it.spring.UserDetailsServiceTestImpl;
 import eu.fraho.spring.securityJwt.service.TotpServiceImpl;
 import eu.fraho.spring.securityJwt.ut.service.TotpServiceTest;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,14 +30,14 @@ abstract class AbstractAuthControllerTest {
 
     public static final String AUTH_REFRESH = "/auth/refresh";
 
-    @Autowired
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
     @Getter
     private WebApplicationContext webApplicationContext;
 
-    @Autowired
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
     private Filter springSecurityFilterChain;
 
-    @Autowired
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
     @Getter
     private TotpServiceImpl totpService;
 
@@ -43,7 +45,7 @@ abstract class AbstractAuthControllerTest {
     private MockMvc mockMvc;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         if (mockMvc == null) {
             synchronized (this) {
                 if (mockMvc == null) {

@@ -9,6 +9,8 @@ package eu.fraho.spring.securityJwt.it;
 import eu.fraho.spring.securityJwt.config.RefreshCookieProperties;
 import eu.fraho.spring.securityJwt.it.spring.TestApiApplication;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,21 +36,21 @@ import javax.servlet.Filter;
 public class AuthControllerWithCookiesTest {
     public static final String AUTH_LOGIN = "/auth/login";
 
-    @Autowired
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
     @Getter
     private WebApplicationContext webApplicationContext;
 
-    @Autowired
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
     private Filter springSecurityFilterChain;
 
-    @Autowired
+    @Setter(onMethod = @__({@Autowired, @NonNull}))
     private RefreshCookieProperties refreshCookieProperties;
 
     @Getter
     private MockMvc mockMvc;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         if (mockMvc == null) {
             synchronized (this) {
                 if (mockMvc == null) {

@@ -11,13 +11,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.aspectj.EnableSpringConfigured;
 
-import java.io.IOException;
-
 @SpringBootApplication(scanBasePackages = {"eu.fraho.spring.securityJwt"})
 @EnableSpringConfigured
 @Slf4j
 public class TestApiApplication {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         log.info("Starting spring context");
         SpringApplication.run(TestApiApplication.class, args);
     }
