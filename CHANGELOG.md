@@ -3,6 +3,7 @@
 ### 3.0.0 (not yet released)
 * (all) Add support for spring boot 2
 * (all) Set minimum required boot version to 2.x
+* (base) Update nimbus library to at least 5.7
 
 ### 2.0.1 (2017-12-09)
 * (all) Replaced beans constructor-based autowiring with setters
