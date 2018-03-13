@@ -59,7 +59,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     private ObjectFactory<JwtUser> jwtUser;
 
     // not possible otherwise, as the RegisterRefreshTokenStore comes pretty late
-    @SuppressWarnings("SpringAutowiredFieldsWarningInspection")
+    @SuppressWarnings({"SpringAutowiredFieldsWarningInspection", "SpringJavaAutowiredFieldsWarningInspection"})
     @Autowired
     @Lazy
     @Setter

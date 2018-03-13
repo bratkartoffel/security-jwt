@@ -21,11 +21,11 @@ The default configuration should be sufficient for the most use cases.
   * JWT Integration into Spring Security (including a [REST-Controller](base/src/main/java/eu/fraho/spring/securityJwt/controller/AuthenticationRestController.java) to authenticate against)
   * A [CryptPasswordEncoder](base/src/main/java/eu/fraho/spring/securityJwt/password/CryptPasswordEncoder.java) to generate / use linux system crypt(1)-hashes (supporting new $5$ and $6$ hashes and rounds)
   * Full support for [Swagger 2](https://github.com/springfox/springfox) documentation (REST Controller and DTO are annotated and described)
-* module [internal](internal/):
+* module [internal](internal):
   * Refresh token support through an internal, in-memory map
-* module [memcache](memcache/):
+* module [memcache](memcache):
   * Refresh token support through an external memcache server
-* module [hibernate](hibernate/):
+* module [hibernate](hibernate):
 	* Refresh token support using hibernate and a database table
 * various *-spring-boot-starter:
     * Spring boot starter modules to integrate into the autoconfiguration ecosystem
@@ -166,7 +166,7 @@ gradlew.bat assemble
 * Changes are welcome, but please use pull requests with separate branches
 * TravisCI has to pass before merging
 * Code coverage should stay about the same level (please write tests for new features!)
-* When writing new modules please use my abstract testclasses which provide a great base (see [internal](internal/src/test/java/eu/fraho/spring/securityJwt/service) for an example)
+* When writing new modules please use my abstract testclasses which provide a great base (see [internal](internal/src/test/java/eu/fraho/spring/securityJwt/internal/service) for an example)
 
 # Releasing
 ```bash

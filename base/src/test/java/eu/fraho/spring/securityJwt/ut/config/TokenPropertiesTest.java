@@ -9,7 +9,6 @@ package eu.fraho.spring.securityJwt.ut.config;
 import com.nimbusds.jose.KeyLengthException;
 import com.nimbusds.jose.crypto.*;
 import com.nimbusds.jose.jwk.Curve;
-import com.nimbusds.jose.jwk.ECKey;
 import eu.fraho.spring.securityJwt.config.TokenProperties;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Assert;
