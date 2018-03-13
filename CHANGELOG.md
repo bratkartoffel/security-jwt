@@ -1,6 +1,8 @@
 # Changelog
 
-### 2.0.2 (not yet released)
+### 3.0.0 (not yet released)
+* (all) Add support for spring boot 2
+* (all) Set minimum required boot version to 2.x
 
 ### 2.0.1 (2017-12-09)
 * (all) Replaced beans constructor-based autowiring with setters
