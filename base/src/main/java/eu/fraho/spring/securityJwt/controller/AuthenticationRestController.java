@@ -125,7 +125,7 @@ public class AuthenticationRestController {
 
         // Return the token
         log.info("Successfully used refresh token for {}", userDetails.getUsername());
-        return ResponseEntity.ok(new AuthenticationResponse(accessToken, refreshToken));
+        return ResponseEntity.ok(AuthenticationResponse.builder().accessToken(accessToken).refreshToken(refreshToken).build());
     }
 
     @SuppressWarnings("MVCPathVariableInspection")
@@ -182,7 +182,7 @@ public class AuthenticationRestController {
 
         // Return the token
         log.info("Successfully created token for {}", userDetails.getUsername());
-        return ResponseEntity.ok(new AuthenticationResponse(accessToken, refreshToken));
+        return ResponseEntity.ok(AuthenticationResponse.builder().accessToken(accessToken).refreshToken(refreshToken).build());
     }
 
     private boolean isTotpOk(AuthenticationRequest authenticationRequest, JwtUser userDetails) {

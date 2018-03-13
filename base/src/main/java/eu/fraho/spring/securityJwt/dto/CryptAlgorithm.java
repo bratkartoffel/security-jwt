@@ -21,12 +21,18 @@ import lombok.Getter;
 public enum CryptAlgorithm {
     /**
      * Use classic DES crypt (insecure, no rounds supported)
+     *
+     * @deprecated Do not use!
      */
+    @Deprecated
     DES(true, false, "", 2),
 
     /**
      * Use MD5 based crypt (insecure, no rounds supported)
+     *
+     * @deprecated Do not use!
      */
+    @Deprecated
     MD5(true, false, "$1$", 8),
 
     /**

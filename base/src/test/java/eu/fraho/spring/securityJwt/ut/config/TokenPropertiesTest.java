@@ -8,6 +8,7 @@ package eu.fraho.spring.securityJwt.ut.config;
 
 import com.nimbusds.jose.KeyLengthException;
 import com.nimbusds.jose.crypto.*;
+import com.nimbusds.jose.jwk.Curve;
 import com.nimbusds.jose.jwk.ECKey;
 import eu.fraho.spring.securityJwt.config.TokenProperties;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -263,7 +264,7 @@ public class TokenPropertiesTest {
     private TokenProperties withEcdsa(final TokenProperties conf) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException, InvalidAlgorithmParameterException {
         // initialize generator
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("ECDSA");
-        keyPairGenerator.initialize(ECKey.Curve.P_256.toECParameterSpec());
+        keyPairGenerator.initialize(Curve.P_256.toECParameterSpec());
 
         // generate the key pair
         KeyPair keyPair = keyPairGenerator.genKeyPair();

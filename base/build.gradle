@@ -22,6 +22,6 @@ dependencies {
 
     optional("org.bouncycastle:bcprov-jdk15on:${bouncyCastleVersion}")
 
-    testCompile("org.powermock:powermock-api-mockito:${powerMockVersion}")
+    testCompile("org.powermock:powermock-api-mockito2:${powerMockVersion}")
     testCompile("org.powermock:powermock-module-junit4:${powerMockVersion}")
 }

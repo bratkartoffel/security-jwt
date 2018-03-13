@@ -15,10 +15,11 @@ import eu.fraho.spring.securityJwt.service.JwtTokenServiceImpl;
 import eu.fraho.spring.securityJwt.service.TotpService;
 import eu.fraho.spring.securityJwt.service.TotpServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -26,8 +27,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.crypto.password.StandardPasswordEncoder;
 
 @Configuration
 @AutoConfigureAfter(SecurityAutoConfiguration.class)
@@ -101,10 +102,11 @@ public class SecurityJwtBaseAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public PasswordEncoder passwordEncoder() {
-        log.debug("Register StandardPasswordEncoder");
-        return new StandardPasswordEncoder();
+        log.debug("Register BCryptPasswordEncoder");
+        return new BCryptPasswordEncoder();
     }
 
+    @NotNull
     @Bean
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
     @ConditionalOnMissingBean
