@@ -16,6 +16,7 @@ import eu.fraho.spring.securityJwt.service.TotpService;
 import eu.fraho.spring.securityJwt.service.TotpServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -24,6 +25,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -60,6 +62,11 @@ public class SecurityJwtBaseAutoConfiguration {
     public RefreshProperties refreshProperties() {
         log.debug("Register RefreshProperties");
         return new RefreshProperties();
+    }
+
+    @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
+    public AuthenticationManager authenticationManagerBean(@Autowired JwtSecurityConfig config) throws Exception {
+        return config.authenticationManagerBean();
     }
 
     @Bean
