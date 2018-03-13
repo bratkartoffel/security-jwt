@@ -29,6 +29,7 @@ public class CryptPasswordEncoderTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testEncodeDes() {
         CryptProperties config = getConfig();
         config.setAlgorithm(CryptAlgorithm.DES);
@@ -42,6 +43,7 @@ public class CryptPasswordEncoderTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testEncodeMd5() {
         CryptProperties config = getConfig();
         config.setAlgorithm(CryptAlgorithm.MD5);
