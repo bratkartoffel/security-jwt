@@ -27,14 +27,24 @@ The default configuration should be sufficient for the most use cases.
   * Refresh token support through an external memcache server
 * module [hibernate](hibernate/):
 	* Refresh token support using hibernate and a database table
+* various *-spring-boot-starter:
+    * Spring boot starter modules to integrate into the autoconfiguration ecosystem
 
 # Dependencies
 ```xml
-<dependency>
-    <groupId>eu.fraho.spring</groupId>
-    <artifactId>security-jwt-base</artifactId>
-    <version>2.0.1</version>
-</dependency>
+<dependencies>
+    <dependency>
+        <groupId>eu.fraho.spring</groupId>
+        <artifactId>security-jwt-base</artifactId>
+        <version>2.0.1</version>
+    </dependency>
+    <!-- or -->
+    <dependency>
+        <groupId>eu.fraho.spring</groupId>
+        <artifactId>security-jwt-base-spring-boot-starter</artifactId>
+        <version>2.0.1</version>
+    </dependency>
+</dependencies>
 ```
 
 When you want to add refresh token support, then choose one of the following dependencies:
@@ -66,6 +76,10 @@ The old way is by directly using the libraries as dependencies and doing some ma
 The newer way used spring boot autoconfiguration and reduced the needed configuration a lot.
 
 To see this library "in action", please take a look at [the examples](https://github.com/bratkartoffel/security-jwt-examples).
+
+# Spring boot and library versions
+* The 2.x versions are compatible with spring boot 1.5.x
+* The 3.x versions are compatible with spring boot 2.x
 
 ## Spring Boot Autoconfig (recommended):
 * Use any *-spring-boot-starter dependency you like
