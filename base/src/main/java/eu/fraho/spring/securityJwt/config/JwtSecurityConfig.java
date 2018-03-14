@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,7 +51,7 @@ public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
     @Setter(onMethod = @__({@Autowired, @NonNull}))
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-    public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
+    public void configureAuthentication(@NotNull AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         log.debug("Configuring AuthenticationManagerBuilder");
         authenticationManagerBuilder
                 .userDetailsService(userDetailsService)
@@ -58,6 +59,7 @@ public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
+    @NotNull
     public JwtAuthenticationTokenFilter authenticationTokenFilterBean() {
         log.debug("Creating JwtAuthenticationTokenFilter");
         JwtAuthenticationTokenFilter filter = new JwtAuthenticationTokenFilter();
@@ -68,12 +70,14 @@ public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
     @SuppressWarnings("EmptyMethod")
     @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
     @Override
+    @NotNull
     public AuthenticationManager authenticationManagerBean() throws Exception {
+        log.debug("Creating AuthenticationManager");
         return super.authenticationManagerBean();
     }
 
     @Override
-    public void configure(HttpSecurity httpSecurity) throws Exception {
+    public void configure(@NotNull HttpSecurity httpSecurity) throws Exception {
         log.info("Loading fraho security-jwt version {}", JwtSecurityConfig.class.getPackage().getImplementationVersion());
         log.debug("Configuring HttpSecurity");
 

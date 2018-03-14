@@ -14,9 +14,11 @@ import com.nimbusds.jose.crypto.*;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
@@ -42,6 +44,8 @@ public class TokenProperties implements InitializingBean {
      * How long are access tokens valid? For details please on how to specifiy this value please see the
      * documentation of the value class behind this field.
      */
+    @NotNull
+    @NonNull
     private TimeWithPeriod expiration = new TimeWithPeriod("1 hour");
 
     /**
@@ -49,12 +53,15 @@ public class TokenProperties implements InitializingBean {
      * <a href="https://tools.ietf.org/html/rfc7518#section-3">JWT spec</a> or
      * <a href="https://bitbucket.org/connect2id/nimbus-jose-jwt/src/master/src/main/java/com/nimbusds/jose/JWSAlgorithm.java">JWSAlgorithm</a>
      */
+    @NotNull
+    @NonNull
     private String algorithm = "HS256";
 
     /**
      * Defines the public key file when using a public / private key signature method
      */
-    private Path pub = null;
+    @Nullable
+    private Path pub;
 
     /**
      * Defines the private key file when using a public / private key signature method.
@@ -62,21 +69,27 @@ public class TokenProperties implements InitializingBean {
      * In this case, any calls to generateToken or generateRefreshToken will throw an FeatureNotConfiguredException.
      * To the caller, it will be shown as a UNAUTHORIZED Http StatusCode.
      */
-    private Path priv = null;
+    @Nullable
+    private Path priv;
 
     /**
      * Defines the key file when using a hmac signature method
      */
-    private Path hmac = null;
+    @Nullable
+    private Path hmac;
 
     /**
      * Sets the issuer of the token. The issuer is used in the tokens iss field
      */
+    @NotNull
+    @NonNull
     private String issuer = "fraho-security";
 
     /**
      * Sets the path for the RestController, defining the endpoint for login requests.
      */
+    @NotNull
+    @NonNull
     private String path = "/auth/login";
 
     @Setter(AccessLevel.NONE)
@@ -208,7 +221,7 @@ public class TokenProperties implements InitializingBean {
         }
     }
 
-    private void assertKeyPresent(byte[] key) {
+    private void assertKeyPresent(@NotNull byte[] key) {
         if (key.length == 0) {
             throw new IllegalArgumentException("No public key configured");
         }

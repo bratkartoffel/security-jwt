@@ -76,12 +76,14 @@ public class AuthenticationRestController {
     public ResponseEntity<AuthenticationResponse> refresh(HttpServletResponse response,
                                                           HttpServletRequest request,
                                                           @RequestBody(required = false) @Nullable RefreshRequest refreshRequest) {
+        log.debug("Starting refresh");
         if (!jwtTokenService.isRefreshTokenSupported()) {
             log.info("Refresh token support is disabled");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         // extract the refreshtoken from the body
+        log.debug("Extracting token from request body");
         Optional<String> token = Optional.ofNullable(refreshRequest).map(RefreshRequest::getRefreshToken);
         if (!token.isPresent()) {
             log.debug("No refreshtoken in body found, trying to read it from the cookies");
@@ -95,11 +97,13 @@ public class AuthenticationRestController {
         }
 
         // use the refresh token to get the underlying userdetails
+        log.debug("Using refresh token");
         Optional<JwtUser> jwtUser = jwtTokenService.useRefreshToken(token.get());
         if (!jwtUser.isPresent()) {
             log.info("Using refresh token failed (unknown refreshtoken?)");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
+
         final JwtUser userDetails = jwtUser.get();
         log.debug("User {} successfully used refresh token, checking database", userDetails.getUsername());
 
@@ -108,7 +112,7 @@ public class AuthenticationRestController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        log.debug("Generating new tokens for {}", userDetails.getUsername());
+        log.debug("User may access api, generating new access token");
         final AccessToken accessToken;
         try {
             accessToken = jwtTokenService.generateToken(userDetails);
@@ -117,6 +121,7 @@ public class AuthenticationRestController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
+        log.debug("Generating new refresh token");
         final RefreshToken refreshToken = jwtTokenService.generateRefreshToken(userDetails);
 
         log.debug("Sending cookies if enabled");
@@ -138,6 +143,7 @@ public class AuthenticationRestController {
     })
     public ResponseEntity<AuthenticationResponse> login(HttpServletResponse response,
                                                         @RequestBody AuthenticationRequest authenticationRequest) {
+        log.debug("Starting login");
         // Perform the basic security
         final Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -148,18 +154,20 @@ public class AuthenticationRestController {
         log.info("Successfully authenticated against database for {}", authenticationRequest.getUsername());
 
         // Load the userdetails from the backend
+        log.info("Fetching userdetails from backend");
         final JwtUser userDetails = (JwtUser) userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
 
         // Verify that the user may access this api and his TOTP (if present / provided) is valid
+        log.info("Checking api access right and totp");
         if (!userDetails.isApiAccessAllowed() || !isTotpOk(authenticationRequest, userDetails)) {
             log.info("User {} may not access api or the provided TOTP is invalid", userDetails.getUsername());
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        log.debug("Setting SecurityContext");
+        log.debug("Everything ok, setting SecurityContext");
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        log.debug("Generating tokens");
+        log.debug("Generating access token");
         final AccessToken accessToken;
         try {
             accessToken = jwtTokenService.generateToken(userDetails);
@@ -170,13 +178,15 @@ public class AuthenticationRestController {
 
         final RefreshToken refreshToken;
         if (jwtTokenService.isRefreshTokenSupported()) {
-            log.debug("Generating refreshtoken");
+            log.debug("Generating refresh token");
             refreshToken = jwtTokenService.generateRefreshToken(userDetails);
         } else {
+            log.debug("Refresh tokens are disabled");
             refreshToken = null;
         }
 
         // Send the cookies if enabled by configuration
+        log.debug("Sending cookies if enabled");
         addTokenCookieIfEnabled(response, accessToken, tokenProperties.getCookie());
         addTokenCookieIfEnabled(response, refreshToken, refreshProperties.getCookie());
 
@@ -186,10 +196,15 @@ public class AuthenticationRestController {
     }
 
     private boolean isTotpOk(AuthenticationRequest authenticationRequest, JwtUser userDetails) {
-        return userDetails.getTotpSecret().map(secret ->
-                authenticationRequest.getTotp().map(code ->
-                        totpService.verifyCode(secret, code)
-                ).orElse(false) // user has totp, but none in request = nok
+        return userDetails.getTotpSecret().map(secret -> {
+                    log.debug("User has a totp secret set, let's check the supplied pin");
+                    return authenticationRequest.getTotp().map(code -> {
+                                boolean result = totpService.verifyCode(secret, code);
+                                log.debug("Pin verification returned {}", result);
+                                return result;
+                            }
+                    ).orElse(false); // user has totp, but none in request = nok
+                }
         ).orElse(true); // user has no secret = ok
     }
 

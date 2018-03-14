@@ -112,7 +112,10 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
                 claims);
         token.sign(tokenProperties.getSigner());
 
-        return new AccessToken(token.serialize(), tokenProperties.getExpiration().toSeconds());
+        return AccessToken.builder()
+                .token(token.serialize())
+                .expiresIn(tokenProperties.getExpiration().toSeconds())
+                .build();
     }
 
     @NotNull
@@ -225,7 +228,10 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
         final String token = Base64.getEncoder().encodeToString(data);
         log.debug("Generated refresh token, storing at configured store");
         refreshTokenStore.saveToken(user, token);
-        return new RefreshToken(token, refreshProperties.getExpiration().toSeconds());
+        return RefreshToken.builder()
+                .token(token)
+                .expiresIn(refreshProperties.getExpiration().toSeconds())
+                .build();
     }
 
     @Override

@@ -14,17 +14,20 @@ import lombok.NonNull;
 import lombok.Value;
 import net.jcip.annotations.Immutable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-@Immutable
 @JsonDeserialize(builder = AuthenticationResponse.AuthenticationResponseBuilder.class)
 @Builder
+@Immutable
 @Value
 public final class AuthenticationResponse {
+    @JsonProperty(required = true)
     @NotNull
     @NonNull
-    @JsonProperty(required = true)
-    private AccessToken accessToken;
-    private RefreshToken refreshToken;
+    private final AccessToken accessToken;
+
+    @Nullable
+    private final RefreshToken refreshToken;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static final class AuthenticationResponseBuilder {

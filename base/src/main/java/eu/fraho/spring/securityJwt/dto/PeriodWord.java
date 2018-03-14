@@ -6,6 +6,8 @@
  */
 package eu.fraho.spring.securityJwt.dto;
 
+import lombok.Getter;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -21,6 +23,7 @@ import java.util.concurrent.TimeUnit;
  * @see #days
  */
 @SuppressWarnings("unused")
+@Getter
 enum PeriodWord {
     second(TimeUnit.SECONDS),
     seconds(TimeUnit.SECONDS),
@@ -38,9 +41,5 @@ enum PeriodWord {
 
     PeriodWord(TimeUnit timeUnit) {
         this.timeUnit = timeUnit;
-    }
-
-    public TimeUnit getTimeUnit() {
-        return timeUnit;
     }
 }

@@ -6,9 +6,12 @@
  */
 package eu.fraho.spring.securityJwt.dto;
 
-import lombok.Getter;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import net.jcip.annotations.Immutable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 
@@ -28,9 +31,9 @@ import java.util.concurrent.TimeUnit;
  * @see #TimeWithPeriod(String)
  * @see #TimeWithPeriod(int, TimeUnit)
  */
-@Getter
-@Slf4j
+@Value
 @Immutable
+@Slf4j
 public final class TimeWithPeriod {
     /**
      * Quantity of the {@link #timeUnit}
@@ -40,6 +43,8 @@ public final class TimeWithPeriod {
     /**
      * The timeUnit to use
      */
+    @NotNull
+    @NonNull
     private final TimeUnit timeUnit;
 
     /**
@@ -60,6 +65,7 @@ public final class TimeWithPeriod {
      * @param quantity Quantitiy of the timeUnit
      * @param timeUnit The timeUnit to use
      */
+    @Builder
     public TimeWithPeriod(int quantity, TimeUnit timeUnit) {
         this.quantity = quantity;
         this.timeUnit = timeUnit;

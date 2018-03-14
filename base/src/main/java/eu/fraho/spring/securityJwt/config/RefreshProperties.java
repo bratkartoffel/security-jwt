@@ -10,7 +10,9 @@ import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 import eu.fraho.spring.securityJwt.service.NullTokenStore;
 import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
 import lombok.Data;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
@@ -25,6 +27,8 @@ public class RefreshProperties implements InitializingBean {
      * How long are refresh tokens valid? For details please on how to specifiy this value please see the
      * documentation of the value class behind this field.
      */
+    @NotNull
+    @NonNull
     private TimeWithPeriod expiration = new TimeWithPeriod("1 day");
 
     /**
@@ -40,11 +44,15 @@ public class RefreshProperties implements InitializingBean {
      * <p>
      * This field has only to be set if you are not using the provided starters.
      */
+    @NotNull
+    @NonNull
     private Class<? extends RefreshTokenStore> cacheImpl = NullTokenStore.class;
 
     /**
      * Sets the path for the RestController, defining the endpoint for refresh requests.
      */
+    @NotNull
+    @NonNull
     private String path = "/auth/refresh";
 
     @NestedConfigurationProperty
@@ -58,12 +66,9 @@ public class RefreshProperties implements InitializingBean {
                     12, length, 48, 24);
             length = 24;
         }
-        if (cacheImpl == null) {
-            cacheImpl = NullTokenStore.class;
-        }
 
         // cookie path may not be empty (required for controller)
-        if (path == null || path.isEmpty()) {
+        if (path.isEmpty()) {
             throw new IllegalArgumentException("The path for refresh cookies may not be empty");
         }
     }

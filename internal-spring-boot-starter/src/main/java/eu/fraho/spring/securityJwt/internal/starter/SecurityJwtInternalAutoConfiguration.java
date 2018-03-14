@@ -24,6 +24,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 @AutoConfigureBefore(SecurityJwtNoRefreshStoreAutoConfiguration.class)
 @Slf4j
 public class SecurityJwtInternalAutoConfiguration {
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Bean
     @ConditionalOnMissingBean
     public RefreshTokenStore refreshTokenStore(final RefreshProperties refreshProperties,

@@ -83,7 +83,10 @@ public class HibernateTokenStore implements RefreshTokenStore {
 
         List<RefreshTokenEntity> result = query.getResultList();
         return result.stream()
-                .map(e -> new RefreshToken(e.getToken(), calculateExpiration(e.getCreated())))
+                .map(e -> RefreshToken.builder()
+                        .token(e.getToken())
+                        .expiresIn(calculateExpiration(e.getCreated()))
+                        .build())
                 .collect(Collectors.toList());
     }
 
@@ -116,7 +119,10 @@ public class HibernateTokenStore implements RefreshTokenStore {
 
         tokens.forEach(e ->
                 result.computeIfAbsent(e.getUserId(), s -> new ArrayList<>())
-                        .add(new RefreshToken(e.getToken(), calculateExpiration(e.getCreated())))
+                        .add(RefreshToken.builder()
+                                .token(e.getToken())
+                                .expiresIn(calculateExpiration(e.getCreated()))
+                                .build())
         );
         result.replaceAll((s, t) -> Collections.unmodifiableList(t));
         return Collections.unmodifiableMap(result);

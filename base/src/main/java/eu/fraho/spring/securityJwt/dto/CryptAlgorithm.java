@@ -16,7 +16,7 @@ import lombok.Getter;
  * @see #SHA256
  * @see #SHA512
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "DeprecatedIsStillUsed"})
 @Getter
 public enum CryptAlgorithm {
     /**

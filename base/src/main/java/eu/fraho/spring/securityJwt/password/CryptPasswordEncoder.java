@@ -74,7 +74,7 @@ public class CryptPasswordEncoder implements PasswordEncoder {
         String salt = encoder.encodeToString(bytes);
         salt = salt.replaceAll("[-_]", "");
         String realSalt = salt.substring(0, algorithm.getSaltLength());
-        log.trace("Generated salt for encoding, length={}", realSalt.length());
+        log.trace("Generated salt with length={}", realSalt.length());
         return realSalt;
     }
 }

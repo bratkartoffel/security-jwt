@@ -105,9 +105,11 @@ public class MemcacheTokenStore implements RefreshTokenStore {
         for (Map.Entry<String, Object> entry : entries.entrySet()) {
             MemcacheEntry dto = MemcacheEntry.from((String) entry.getValue());
             int expiresIn = -1;
-
+            String token = entry.getKey().substring(prefixLen);
             result.computeIfAbsent(dto.getId(), s -> new ArrayList<>()).add(
-                    new RefreshToken(entry.getKey().substring(prefixLen), expiresIn)
+                    RefreshToken.builder()
+                            .token(token)
+                            .expiresIn(expiresIn).build()
             );
         }
 

@@ -8,7 +8,10 @@ package eu.fraho.spring.securityJwt.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nimbusds.jwt.JWTClaimsSet;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -26,8 +29,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-@Getter
-@Setter
+@Data
 @EqualsAndHashCode(of = {"id", "username"})
 @ToString(of = {"id", "username", "apiAccessAllowed", "authorities"})
 @NoArgsConstructor

@@ -6,21 +6,28 @@
  */
 package eu.fraho.spring.securityJwt.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.Value;
 import net.jcip.annotations.Immutable;
 
-@Getter
+@JsonDeserialize(builder = AccessToken.AccessTokenBuilder.class)
+@Value
 @Immutable
 @EqualsAndHashCode(callSuper = true)
 public final class AccessToken extends AbstractToken {
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private final String type = "Bearer";
 
-    @JsonCreator
-    public AccessToken(@JsonProperty("token") String token, @JsonProperty("expiresIn") int expiresIn) {
+    @Builder
+    public AccessToken(String token, int expiresIn) {
         super(token, expiresIn);
+    }
+
+    @JsonPOJOBuilder(withPrefix = "")
+    public static final class AccessTokenBuilder {
     }
 }

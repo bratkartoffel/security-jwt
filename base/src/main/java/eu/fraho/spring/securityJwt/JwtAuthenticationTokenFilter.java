@@ -39,12 +39,12 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         chain.doFilter(request, response);
     }
 
-    protected void handleToken(String token, HttpServletRequest request) {
+    protected void handleToken(@NotNull String token, @NotNull HttpServletRequest request) {
         log.debug("AccessToken was present in request, extracting userdetails");
         jwtTokenService.parseUser(token).ifPresent(u -> handleUser(u, request));
     }
 
-    protected void handleUser(JwtUser jwtUser, HttpServletRequest request) {
+    protected void handleUser(@NotNull JwtUser jwtUser, @NotNull HttpServletRequest request) {
         log.debug("Successfully used token to authenticate {}", jwtUser.getUsername());
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(jwtUser, "JWT", jwtUser.getAuthorities());
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

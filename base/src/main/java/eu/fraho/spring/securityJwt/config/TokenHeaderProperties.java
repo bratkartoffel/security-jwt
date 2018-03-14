@@ -7,7 +7,9 @@
 package eu.fraho.spring.securityJwt.config;
 
 import lombok.Data;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -25,6 +27,8 @@ public class TokenHeaderProperties implements InitializingBean {
     /**
      * Sets the name of the headers which may contain the token.
      */
+    @NotNull
+    @NonNull
     private String[] names = new String[]{"Authorization"};
 
     @Override

@@ -34,6 +34,7 @@ public class SecurityJwtMemcacheAutoConfiguration {
     }
 
     @Bean
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @ConditionalOnMissingBean
     public RefreshTokenStore refreshTokenStore(final RefreshProperties refreshProperties,
                                                final MemcacheProperties memcacheProperties,

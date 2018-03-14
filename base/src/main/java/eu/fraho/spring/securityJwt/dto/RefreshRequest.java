@@ -6,18 +6,24 @@
  */
 package eu.fraho.spring.securityJwt.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import jdk.nashorn.internal.ir.annotations.Immutable;
 import lombok.Builder;
+import lombok.NonNull;
 import lombok.Value;
-import net.jcip.annotations.Immutable;
+import org.jetbrains.annotations.NotNull;
 
-@Immutable
 @JsonDeserialize(builder = RefreshRequest.RefreshRequestBuilder.class)
 @Builder
+@Immutable
 @Value
 public final class RefreshRequest {
-    private String refreshToken;
+    @JsonProperty(required = true)
+    @NotNull
+    @NonNull
+    private final String refreshToken;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static final class RefreshRequestBuilder {

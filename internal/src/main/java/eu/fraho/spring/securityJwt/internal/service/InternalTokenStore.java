@@ -69,7 +69,7 @@ public class InternalTokenStore implements RefreshTokenStore {
             int expiresIn = (int) refreshTokenMap.getExpiration(entry.getKey());
 
             result.computeIfAbsent(entry.getValue().getId(), s -> new ArrayList<>()).add(
-                    new RefreshToken(token, expiresIn)
+                    RefreshToken.builder().token(token).expiresIn(expiresIn).build()
             );
         }
         result.replaceAll((s, t) -> Collections.unmodifiableList(t));
