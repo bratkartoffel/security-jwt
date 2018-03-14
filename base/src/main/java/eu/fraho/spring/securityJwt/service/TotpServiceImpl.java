@@ -41,11 +41,7 @@ public class TotpServiceImpl implements TotpService {
         final SecretKeySpec signKey = new SecretKeySpec(secret, "HmacSHA1");
         final ByteBuffer buffer = ByteBuffer.allocate(8).putLong(timeIndex);
         final byte[] timeBytes = buffer.array();
-
-        final Mac mac = Mac.getInstance("HmacSHA1");
-        mac.init(signKey);
-        final byte[] hash = mac.doFinal(timeBytes);
-
+        final byte[] hash = computeMac(signKey, timeBytes);
         final int offset = hash[19] & 0xf;
         long truncatedHash = hash[offset] & 0x7f;
         for (int i = 1; i < 4; i++) {
@@ -53,6 +49,12 @@ public class TotpServiceImpl implements TotpService {
             truncatedHash |= hash[offset + i] & 0xff;
         }
         return (int) (truncatedHash % 1000000);
+    }
+
+    private byte[] computeMac(SecretKeySpec signKey, byte[] data) throws NoSuchAlgorithmException, InvalidKeyException {
+        final Mac mac = Mac.getInstance("HmacSHA1");
+        mac.init(signKey);
+        return mac.doFinal(data);
     }
 
     @Override
