@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 @Immutable
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"expiresIn"})
+@EqualsAndHashCode(of = {"token"})
 public abstract class AbstractToken {
     @JsonProperty(required = true)
     @NotNull

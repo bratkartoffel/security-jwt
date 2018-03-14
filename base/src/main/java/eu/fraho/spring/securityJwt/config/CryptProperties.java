@@ -7,7 +7,8 @@
 package eu.fraho.spring.securityJwt.config;
 
 import eu.fraho.spring.securityJwt.dto.CryptAlgorithm;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -15,7 +16,8 @@ import org.springframework.stereotype.Component;
 
 @ConfigurationProperties(prefix = "fraho.crypt")
 @Component
-@Data
+@Getter
+@Setter
 @Slf4j
 public class CryptProperties implements InitializingBean {
     /**

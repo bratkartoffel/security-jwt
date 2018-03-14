@@ -13,7 +13,7 @@ import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.*;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 import lombok.AccessLevel;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +37,8 @@ import java.security.spec.X509EncodedKeySpec;
 
 @ConfigurationProperties(prefix = "fraho.jwt.token")
 @Component
-@Data
+@Getter
+@Setter
 @Slf4j
 public class TokenProperties implements InitializingBean {
     /**

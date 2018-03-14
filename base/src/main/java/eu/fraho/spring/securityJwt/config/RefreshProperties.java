@@ -9,8 +9,9 @@ package eu.fraho.spring.securityJwt.config;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
 import eu.fraho.spring.securityJwt.service.NullTokenStore;
 import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.InitializingBean;
@@ -20,7 +21,8 @@ import org.springframework.stereotype.Component;
 
 @ConfigurationProperties(prefix = "fraho.jwt.refresh")
 @Component
-@Data
+@Getter
+@Setter
 @Slf4j
 public class RefreshProperties implements InitializingBean {
     /**

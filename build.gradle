@@ -30,22 +30,21 @@ buildscript {
     }
 }
 
-configure(allprojects) {
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'jacoco'
     apply plugin: 'propdeps'
     apply plugin: 'propdeps-maven'
     apply plugin: 'propdeps-idea'
     apply plugin: 'propdeps-eclipse'
-}
-
-
-subprojects {
-    apply plugin: 'java'
 
     repositories {
         mavenLocal()
         mavenCentral()
     }
+}
 
+subprojects {
     group = 'eu.fraho.spring'
     archivesBaseName = "security-jwt-${project.name}"
     version = "${projectVersion}"
@@ -54,8 +53,10 @@ subprojects {
     jar {
         version = "${project.version}"
         manifest {
-            attributes("Implementation-Title": "Gradle",
-                    "Implementation-Version": version)
+            attributes(
+                    "Implementation-Title": "Gradle",
+                    "Implementation-Version": version
+            )
         }
     }
 
@@ -120,6 +121,27 @@ subprojects {
     }
 
     check.dependsOn jacocoTestReport
+}
+
+task jacocoRootReport(type: org.gradle.testing.jacoco.tasks.JacocoReport) {
+    dependsOn = subprojects.test
+    additionalSourceDirs = files(subprojects.sourceSets.main.allSource.srcDirs)
+    sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
+    classDirectories = files(subprojects.sourceSets.main.output)
+    executionData = files(subprojects.jacocoTestReport.executionData)
+    reports {
+        html.enabled = true
+        xml.enabled = true
+        csv.enabled = false
+    }
+    onlyIf = {
+        true
+    }
+    doFirst {
+        executionData = files(executionData.findAll {
+            it.exists()
+        })
+    }
 }
 
 if (project.hasProperty('release')) {

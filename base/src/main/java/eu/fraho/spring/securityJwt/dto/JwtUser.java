@@ -77,19 +77,11 @@ public class JwtUser implements UserDetails, CredentialsContainer {
     }
 
     @SuppressWarnings("unchecked")
-    public void applyClaims(JWTClaimsSet claims) {
+    public void applyClaims(JWTClaimsSet claims) throws ParseException {
         setUsername(claims.getSubject());
-        try {
-            setId(claims.getLongClaim("uid"));
-        } catch (ParseException e) {
-            log.error("Unable to parse uid claim", e);
-        }
-        try {
-            Optional.ofNullable(claims.getStringListClaim("authorities"))
-                    .ifPresent(a -> setAuthorities(a.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList())));
-        } catch (ParseException e) {
-            log.error("Unable to parse authorities", e);
-        }
+        setId(claims.getLongClaim("uid"));
+        Optional.ofNullable(claims.getStringListClaim("authorities"))
+                .ifPresent(a -> setAuthorities(a.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList())));
     }
 
     public Optional<String> getTotpSecret() {

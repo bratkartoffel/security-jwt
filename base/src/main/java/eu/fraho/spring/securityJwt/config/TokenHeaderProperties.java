@@ -6,8 +6,9 @@
  */
 package eu.fraho.spring.securityJwt.config;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.InitializingBean;
@@ -16,7 +17,8 @@ import org.springframework.stereotype.Component;
 
 @ConfigurationProperties(prefix = "fraho.jwt.token.header")
 @Component
-@Data
+@Getter
+@Setter
 @Slf4j
 public class TokenHeaderProperties implements InitializingBean {
     /**

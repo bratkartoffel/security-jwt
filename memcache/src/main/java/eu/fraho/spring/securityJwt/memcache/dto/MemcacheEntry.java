@@ -7,22 +7,27 @@
 package eu.fraho.spring.securityJwt.memcache.dto;
 
 import eu.fraho.spring.securityJwt.dto.JwtUser;
-import lombok.Value;
-import lombok.extern.slf4j.Slf4j;
+import jdk.nashorn.internal.ir.annotations.Immutable;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 
-@Slf4j
-@Value
+@Getter
+@Immutable
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemcacheEntry {
-    private Long id;
-    private String username;
+    private final Long id;
+    private final String username;
 
     public static MemcacheEntry from(JwtUser user) {
-        return new MemcacheEntry(user.getId(), user.getUsername());
+        return MemcacheEntry.builder().id(user.getId()).username(user.getUsername()).build();
     }
 
     public static MemcacheEntry from(String entry) {
         String[] parts = entry.split(",", 2);
-        return new MemcacheEntry(Long.valueOf(parts[0]), parts[1]);
+        return MemcacheEntry.builder().id(Long.valueOf(parts[0])).username(parts[1]).build();
     }
 
     public String toString() {

@@ -14,5 +14,8 @@ branches:
   only:
     - master
     - develop
+script:
+  - ./gradlew check
+  - ./gradlew jacocoRootReport
 after_success:
   - bash <(curl -s https://codecov.io/bash)

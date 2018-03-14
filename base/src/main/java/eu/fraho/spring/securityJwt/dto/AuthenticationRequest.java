@@ -10,8 +10,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NonNull;
-import lombok.Value;
 import net.jcip.annotations.Immutable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,9 +19,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 @JsonDeserialize(builder = AuthenticationRequest.AuthenticationRequestBuilder.class)
-@Value
-@Immutable
+@Getter
 @Builder
+@Immutable
 public final class AuthenticationRequest {
     @JsonProperty(required = true)
     @NotNull

@@ -57,7 +57,7 @@ public class JwtUserTest {
     }
 
     @Test
-    public void testToAndFromClaimsSymetric() {
+    public void testToAndFromClaimsSymetric() throws ParseException {
         JwtUser user = newInstance();
         JWTClaimsSet claims1 = user.toClaims().build();
         JwtUser user2 = new JwtUser();
@@ -84,19 +84,46 @@ public class JwtUserTest {
         Assert.assertFalse("Password in toString present", user.toString().contains("winteriscoming"));
     }
 
-    @Test
-    public void testNoUid() {
+    @Test(expected = ParseException.class)
+    public void testInvalidUid() throws ParseException {
         JwtUser user = newInstance();
 
         JWTClaimsSet claims = new JWTClaimsSet.Builder()
                 .subject("foobar")
                 .claim("uid", "foobar")
+                .claim("authorities", Collections.singletonList("foobar"))
+                .build();
+        user.applyClaims(claims);
+    }
+
+    @Test(expected = ParseException.class)
+    public void testInvalidAuthorities() throws ParseException {
+        JwtUser user = newInstance();
+
+        JWTClaimsSet claims = new JWTClaimsSet.Builder()
+                .subject("foobar")
+                .claim("uid", 42L)
                 .claim("authorities", "foobar")
                 .build();
         user.applyClaims(claims);
+    }
 
-        Assert.assertEquals("UserID changed", Long.valueOf(42L), user.getId());
-        Assert.assertEquals("Authorities changed", 1, user.getAuthorities().size());
-        Assert.assertEquals("Wrong username parsed", "foobar", user.getUsername());
+    @Test
+    public void testToString() {
+        JwtUser user = newInstance();
+        Assert.assertFalse("toString contains password", user.toString().toLowerCase().contains("password"));
+    }
+
+    @Test
+    public void testEquals() {
+        JwtUser userA = newInstance();
+        JwtUser userB = newInstance();
+        Assert.assertEquals("Didn't equal", userA, userB);
+
+        userA.setPassword("xxxx");
+        Assert.assertEquals("Changed password should equal", userA, userB);
+
+        userA.setUsername("xxxx");
+        Assert.assertNotEquals("Changed username should not equals", userA, userB);
     }
 }

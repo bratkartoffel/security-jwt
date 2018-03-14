@@ -102,8 +102,11 @@ public class HibernateTokenStore implements RefreshTokenStore {
     @Override
     @Transactional
     public void saveToken(@NotNull JwtUser user, @NotNull String token) {
-        RefreshTokenEntity entity = new RefreshTokenEntity(user.getId(), user.getUsername(), token);
-        entityManager.persist(entity);
+        entityManager.persist(RefreshTokenEntity.builder()
+                .userId(user.getId())
+                .username(user.getUsername())
+                .token(token)
+                .build());
     }
 
     @NotNull
