@@ -210,8 +210,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
         Optional<String> result = Optional.empty();
         if (cookies != null) {
             result = Arrays.stream(names)
-                    .map(String::toLowerCase)
-                    .flatMap(name -> Arrays.stream(cookies).filter(c -> Objects.equals(c.getName().toLowerCase(), name)))
+                    .flatMap(name -> Arrays.stream(cookies).filter(c -> Objects.equals(c.getName(), name)))
                     .findFirst()
                     .map(Cookie::getValue);
         }
