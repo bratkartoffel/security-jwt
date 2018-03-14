@@ -65,17 +65,6 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     @Setter
     private RefreshTokenStore refreshTokenStore;
 
-    public JwtTokenServiceImpl(TokenProperties tokenProperties, RefreshProperties refreshProperties,
-                               TokenCookieProperties tokenCookieProperties, TokenHeaderProperties tokenHeaderProperties,
-                               RefreshCookieProperties refreshCookieProperties, ObjectFactory<JwtUser> jwtUser) {
-        this.tokenProperties = tokenProperties;
-        this.refreshProperties = refreshProperties;
-        this.tokenCookieProperties = tokenCookieProperties;
-        this.tokenHeaderProperties = tokenHeaderProperties;
-        this.refreshCookieProperties = refreshCookieProperties;
-        this.jwtUser = jwtUser;
-    }
-
     @Override
     public void afterPropertiesSet() {
         if (tokenProperties.getSigner() == null) {
@@ -138,13 +127,14 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
 
     @Override
     public boolean validateToken(@NotNull String token) {
-        boolean result = false;
+        SignedJWT signedJWT;
         try {
-            result = validateToken(SignedJWT.parse(token));
+            signedJWT = SignedJWT.parse(token);
         } catch (ParseException e) {
             log.error("Supplied token did not validate", e);
+            return false;
         }
-        return result;
+        return validateToken(signedJWT);
     }
 
     @Override
