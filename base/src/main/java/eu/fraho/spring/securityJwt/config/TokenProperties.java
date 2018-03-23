@@ -42,6 +42,13 @@ import java.security.spec.X509EncodedKeySpec;
 @Slf4j
 public class TokenProperties implements InitializingBean {
     /**
+     * Set this field to {@code false} when you want to call the {@link #loadKeys()} independently
+     * from the normal spring startup sequence.
+     * This way you can create keys dynamically on startup.
+     */
+    public static boolean loadEager = true;
+
+    /**
      * How long are access tokens valid? For details please on how to specifiy this value please see the
      * documentation of the value class behind this field.
      */
@@ -200,6 +207,12 @@ public class TokenProperties implements InitializingBean {
             throw new IllegalArgumentException("Please enable at least one of header or cookie authentication.");
         }
 
+        if (loadEager) {
+            loadKeys();
+        }
+    }
+
+    public void loadKeys() {
         // load the keys
         signer = null;
         verifier = null;
