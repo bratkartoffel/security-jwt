@@ -5,6 +5,7 @@
 * (all) Set minimum required boot version to 2.x
 * (base) Update nimbus library to at least 5.7
 * (base) Add logout endpoint to clear cookies
+* (base) Reworked TimeWithPeriod to support greater units than "days"
 
 ### 2.0.1 (2017-12-09)
 * (all) Replaced beans constructor-based autowiring with setters

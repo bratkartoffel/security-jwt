@@ -41,10 +41,10 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 public class JwtTokenServiceTest {
     /**
@@ -105,7 +105,7 @@ public class JwtTokenServiceTest {
     @NotNull
     protected RefreshProperties getRefreshProperties() {
         RefreshProperties configuration = new RefreshProperties();
-        configuration.setExpiration(new TimeWithPeriod(2, TimeUnit.SECONDS));
+        configuration.setExpiration(new TimeWithPeriod(2, ChronoUnit.SECONDS));
         configuration.afterPropertiesSet();
         return configuration;
     }
