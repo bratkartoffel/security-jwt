@@ -30,7 +30,6 @@ import javax.persistence.EntityManager;
 public class SecurityJwtHibernateAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     public RefreshTokenStore refreshTokenStore(final RefreshProperties refreshProperties,
                                                final UserDetailsService userDetailsService,
                                                final EntityManager entityManager) {

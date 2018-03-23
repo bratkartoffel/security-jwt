@@ -46,13 +46,6 @@ public class MemcacheTokenStore implements RefreshTokenStore {
 
     private MemcachedClient memcachedClient;
 
-    @SuppressWarnings("unused")
-    public MemcacheTokenStore(RefreshProperties refreshProperties, MemcacheProperties memcacheProperties, UserDetailsService userDetailsService) {
-        this.refreshProperties = refreshProperties;
-        this.memcacheProperties = memcacheProperties;
-        this.userDetailsService = userDetailsService;
-    }
-
     private <T> T getAndWait(@NotNull String message, @NotNull Supplier<OperationFuture<T>> action) {
         try {
             return action.get().get(memcacheProperties.getTimeout(), TimeUnit.SECONDS);
@@ -71,7 +64,6 @@ public class MemcacheTokenStore implements RefreshTokenStore {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <T extends JwtUser> Optional<T> useToken(@NotNull String token) {
         String key = memcacheProperties.getPrefix() + token;
         // will be "null" if invalid token

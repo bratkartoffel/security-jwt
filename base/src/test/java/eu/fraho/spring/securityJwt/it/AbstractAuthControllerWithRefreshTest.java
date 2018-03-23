@@ -21,7 +21,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Map;
 
-@SuppressWarnings("unused")
 @Slf4j
 public abstract class AbstractAuthControllerWithRefreshTest extends AbstractAuthControllerTest {
     private final ObjectMapper objectMapper = new ObjectMapper();

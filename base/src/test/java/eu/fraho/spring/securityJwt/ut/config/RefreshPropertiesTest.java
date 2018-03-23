@@ -34,7 +34,6 @@ public class RefreshPropertiesTest {
         Assert.assertEquals("Length did not reset to default", 24, conf.getLength());
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Test
     public void testNullImpl() {
         RefreshProperties conf = getNewInstance();
@@ -61,7 +60,6 @@ public class RefreshPropertiesTest {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Test
     public void testNullPath() {
         RefreshProperties conf = getNewInstance();

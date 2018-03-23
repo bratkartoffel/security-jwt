@@ -48,7 +48,6 @@ public class JwtSecurityConfigTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testConfigureAuthentication() throws Exception {
         DaoAuthenticationConfigurer daoAuthenticationConfigurer = Mockito.mock(DaoAuthenticationConfigurer.class);
         AuthenticationManagerBuilder authenticationManagerBuilder = Mockito.mock(AuthenticationManagerBuilder.class);
@@ -62,7 +61,6 @@ public class JwtSecurityConfigTest {
 
     @Ignore("wait for powermockito2 to be stable (see https://github.com/mockito/mockito/issues/1207)")
     @Test
-    @SuppressWarnings("unchecked")
     public void testConfigure() throws Exception {
         JwtAuthenticationEntryPoint authenticationEntryPoint = Mockito.mock(JwtAuthenticationEntryPoint.class);
         HttpSecurity httpSecurity = PowerMockito.mock(HttpSecurity.class);

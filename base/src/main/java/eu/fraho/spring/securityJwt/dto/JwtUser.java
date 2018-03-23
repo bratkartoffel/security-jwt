@@ -76,7 +76,6 @@ public class JwtUser implements UserDetails, CredentialsContainer {
                 .claim("authorities", authorities);
     }
 
-    @SuppressWarnings("unchecked")
     public void applyClaims(JWTClaimsSet claims) throws ParseException {
         setUsername(claims.getSubject());
         setId(claims.getLongClaim("uid"));

@@ -67,7 +67,6 @@ public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
         return filter;
     }
 
-    @SuppressWarnings("EmptyMethod")
     @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
     @Override
     @NotNull

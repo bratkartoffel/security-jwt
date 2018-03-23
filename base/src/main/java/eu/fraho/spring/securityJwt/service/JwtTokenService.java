@@ -58,7 +58,6 @@ public interface JwtTokenService {
      * @param token The token to validate
      * @return {@code true} if the token passed all checks (is valid and trusted) or otherwise {@code false}
      */
-    @SuppressWarnings("unused")
     boolean validateToken(@NotNull SignedJWT token);
 
     /**
@@ -170,7 +169,6 @@ public interface JwtTokenService {
      * @param token The token to revoke
      * @return {@code true} if the token was revoked
      */
-    @SuppressWarnings("unused")
     boolean revokeRefreshToken(@NotNull String token);
 
     /**

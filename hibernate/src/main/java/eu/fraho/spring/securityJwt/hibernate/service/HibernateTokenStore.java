@@ -45,7 +45,6 @@ public class HibernateTokenStore implements RefreshTokenStore {
 
     @Override
     @Transactional
-    @SuppressWarnings("unchecked")
     public <T extends JwtUser> Optional<T> useToken(@NotNull String token) {
         // first load the token from the database
         final TypedQuery<RefreshTokenEntity> queryLoad = entityManager.createQuery("SELECT o FROM RefreshTokenEntity o WHERE " +

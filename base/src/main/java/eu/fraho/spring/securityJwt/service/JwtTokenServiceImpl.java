@@ -59,7 +59,6 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     private ObjectFactory<JwtUser> jwtUser;
 
     // not possible otherwise, as the RegisterRefreshTokenStore comes pretty late
-    @SuppressWarnings({"SpringAutowiredFieldsWarningInspection", "SpringJavaAutowiredFieldsWarningInspection"})
     @Autowired
     @Lazy
     @Setter
@@ -73,7 +72,6 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <T extends JwtUser> Optional<T> parseUser(@NotNull String token) {
         Optional<T> result = Optional.empty();
         try {
