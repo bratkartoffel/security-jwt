@@ -65,7 +65,6 @@ public class AuthenticationRestController {
     @Setter(onMethod = @__({@Autowired, @NonNull}))
     private RefreshProperties refreshProperties;
 
-    @SuppressWarnings("MVCPathVariableInspection")
     @RequestMapping("${fraho.jwt.refresh.path:/auth/refresh}")
     @ApiOperation("Use a previously fetched refresh token to create a new access token")
     @ApiResponses({
@@ -133,7 +132,6 @@ public class AuthenticationRestController {
         return ResponseEntity.ok(AuthenticationResponse.builder().accessToken(accessToken).refreshToken(refreshToken).build());
     }
 
-    @SuppressWarnings("MVCPathVariableInspection")
     @RequestMapping("${fraho.jwt.token.path:/auth/login}")
     @ApiOperation("Create a new token using the supplied credentials")
     @ApiResponses({
@@ -193,6 +191,23 @@ public class AuthenticationRestController {
         // Return the token
         log.info("Successfully created token for {}", userDetails.getUsername());
         return ResponseEntity.ok(AuthenticationResponse.builder().accessToken(accessToken).refreshToken(refreshToken).build());
+    }
+
+    @RequestMapping("${fraho.jwt.logout.path:/auth/logout}")
+    @ApiOperation("Deleted the sent out cookies, thus resulting in an logout")
+    @ApiResponses({
+            @ApiResponse(code = 204, message = "Logout successfull"),
+    })
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        log.debug("Starting logout");
+
+        // Send the cookies if enabled by configuration
+        log.debug("Sending cookies if enabled");
+        addTokenCookieIfEnabled(response, AccessToken.builder().token("dummy").expiresIn(0).build(), tokenProperties.getCookie());
+        addTokenCookieIfEnabled(response, RefreshToken.builder().token("dummy").expiresIn(0).build(), refreshProperties.getCookie());
+        log.debug("Logout finished");
+
+        return ResponseEntity.noContent().build();
     }
 
     private boolean isTotpOk(AuthenticationRequest authenticationRequest, JwtUser userDetails) {
