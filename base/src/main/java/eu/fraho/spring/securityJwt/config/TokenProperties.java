@@ -44,9 +44,15 @@ public class TokenProperties implements InitializingBean {
     /**
      * Set this field to {@code false} when you want to call the {@link #loadKeys()} independently
      * from the normal spring startup sequence.
-     * This way you can create keys dynamically on startup.
+     * This way you can create keys dynamically on startup.<br>
+     * You can use the system property {@code eu.fraho.spring.securityJwt.config.TokenProperties.loadEager} to set this field.
      */
-    public static boolean loadEager = true;
+    public static boolean loadEager;
+
+    static {
+        String s = System.getProperties().getProperty("eu.fraho.spring.securityJwt.config.TokenProperties.loadEager", "true");
+        loadEager = Boolean.valueOf(s);
+    }
 
     /**
      * How long are access tokens valid? For details please on how to specifiy this value please see the
