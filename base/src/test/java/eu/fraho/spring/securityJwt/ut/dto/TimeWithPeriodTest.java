@@ -17,12 +17,14 @@ public class TimeWithPeriodTest {
     public void testStringConstructor() {
         Assert.assertEquals("1 Days", new TimeWithPeriod("1 day").toString());
         Assert.assertEquals("7 Hours", new TimeWithPeriod("7 hours").toString());
+        Assert.assertEquals("2 Months", new TimeWithPeriod("2 months").toString());
     }
 
     @Test
     public void testToString() {
         Assert.assertEquals("1 Days", new TimeWithPeriod(1, ChronoUnit.DAYS).toString());
         Assert.assertEquals("7 Hours", new TimeWithPeriod(7, ChronoUnit.HOURS).toString());
+        Assert.assertEquals("2 Months", new TimeWithPeriod(2, ChronoUnit.MONTHS).toString());
     }
 
     @Test
