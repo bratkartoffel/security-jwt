@@ -17,7 +17,7 @@ import lombok.Value;
 @EqualsAndHashCode(callSuper = true)
 public final class RefreshToken extends AbstractToken {
     @Builder
-    public RefreshToken(String token, int expiresIn) {
+    public RefreshToken(String token, long expiresIn) {
         super(token, expiresIn);
     }
 

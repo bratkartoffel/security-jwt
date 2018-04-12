@@ -82,8 +82,8 @@ public final class TimeWithPeriod {
      *
      * @return count of seconds
      */
-    public int toSeconds() {
-        return (int) chronoUnit.getDuration().multipliedBy(quantity).getSeconds();
+    public long toSeconds() {
+        return chronoUnit.getDuration().multipliedBy(quantity).getSeconds();
     }
 
     public String toString() {
@@ -92,7 +92,7 @@ public final class TimeWithPeriod {
 
     @Override
     public int hashCode() {
-        return toSeconds();
+        return Long.hashCode(toSeconds());
     }
 
     public boolean equals(Object o) {

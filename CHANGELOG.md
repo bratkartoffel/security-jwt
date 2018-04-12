@@ -7,6 +7,8 @@
 * (base) Add logout endpoint to clear cookies
 * (base) Reworked TimeWithPeriod to support greater units than "days"
 * (base) TokenProperties can now load the files "lazy" by changing the static field "loadEager" to false. This way you control when you load the keys by invoking the "loadKeys" method on the instance. An use case for this feature would be, if you would like to generate the jwt keys on the fly on startup.
+* (base) TimeWithPeriod and expiresIn in Auth-Responses now use long instead of int
+* (base) Lombok is no longer a runtime dependency
 
 ### 2.0.1 (2017-12-09)
 * (all) Replaced beans constructor-based autowiring with setters

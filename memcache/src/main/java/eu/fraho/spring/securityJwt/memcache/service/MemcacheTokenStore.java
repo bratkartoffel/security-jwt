@@ -59,7 +59,7 @@ public class MemcacheTokenStore implements RefreshTokenStore {
         String key = memcacheProperties.getPrefix() + token;
         String entry = MemcacheEntry.from(user).toString();
         getAndWait("Error while saving refresh token on memcache server", () ->
-                memcachedClient.set(key, refreshProperties.getExpiration().toSeconds(), entry)
+                memcachedClient.set(key, (int) refreshProperties.getExpiration().toSeconds(), entry)
         );
     }
 

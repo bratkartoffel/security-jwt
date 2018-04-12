@@ -230,9 +230,11 @@ public class AuthenticationRestController {
             Optional.ofNullable(configuration.getPath()).ifPresent(cookie::setPath);
             cookie.setSecure(configuration.isSecure());
             cookie.setHttpOnly(configuration.isHttpOnly());
-            cookie.setMaxAge(token.getExpiresIn());
+            if (token.getExpiresIn() <= Integer.MAX_VALUE) {
+                cookie.setMaxAge((int) token.getExpiresIn());
+            }
             response.addCookie(cookie);
-            log.debug("Sending cookie: name={}, secure={}, path={}, httponly={}", cookie.getName(), cookie.getSecure(), cookie.getPath(), cookie.isHttpOnly());
+            log.debug("Sending cookie: name={}, secure={}, path={}, httponly={}, maxAge=", cookie.getName(), cookie.getSecure(), cookie.getPath(), cookie.isHttpOnly(), cookie.getMaxAge());
         }
     }
 }

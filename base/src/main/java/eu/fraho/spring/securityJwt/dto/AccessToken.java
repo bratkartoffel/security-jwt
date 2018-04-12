@@ -23,7 +23,7 @@ public final class AccessToken extends AbstractToken {
     private final String type = "Bearer";
 
     @Builder
-    public AccessToken(String token, int expiresIn) {
+    public AccessToken(String token, long expiresIn) {
         super(token, expiresIn);
     }
 

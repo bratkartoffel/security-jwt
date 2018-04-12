@@ -25,5 +25,5 @@ public abstract class AbstractToken {
     private final String token;
 
     @JsonProperty(required = true)
-    private final int expiresIn;
+    private final long expiresIn;
 }
