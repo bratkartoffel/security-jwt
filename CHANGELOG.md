@@ -1,6 +1,6 @@
 # Changelog
 
-### 3.0.0 (not yet released)
+### 3.0.0 (2018-04-17)
 * (all) Add support for spring boot 2
 * (all) Set minimum required boot version to 2.x
 * (base) Update nimbus library to at least 5.7
