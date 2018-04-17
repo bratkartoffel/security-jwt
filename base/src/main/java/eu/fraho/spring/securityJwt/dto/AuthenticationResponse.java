@@ -6,14 +6,30 @@
  */
 package eu.fraho.spring.securityJwt.dto;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NonNull;
 import net.jcip.annotations.Immutable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-@Immutable
+@JsonDeserialize(builder = AuthenticationResponse.AuthenticationResponseBuilder.class)
 @Getter
-@AllArgsConstructor
+@Builder
+@Immutable
 public final class AuthenticationResponse {
-    private AccessToken accessToken;
-    private RefreshToken refreshToken;
+    @JsonProperty(required = true)
+    @NotNull
+    @NonNull
+    private final AccessToken accessToken;
+
+    @Nullable
+    private final RefreshToken refreshToken;
+
+    @JsonPOJOBuilder(withPrefix = "")
+    public static final class AuthenticationResponseBuilder {
+    }
 }

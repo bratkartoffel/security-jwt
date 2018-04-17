@@ -8,7 +8,10 @@ package eu.fraho.spring.securityJwt.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nimbusds.jwt.JWTClaimsSet;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -26,8 +29,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-@Getter
-@Setter
+@Data
 @EqualsAndHashCode(of = {"id", "username"})
 @ToString(of = {"id", "username", "apiAccessAllowed", "authorities"})
 @NoArgsConstructor
@@ -74,20 +76,11 @@ public class JwtUser implements UserDetails, CredentialsContainer {
                 .claim("authorities", authorities);
     }
 
-    @SuppressWarnings("unchecked")
-    public void applyClaims(JWTClaimsSet claims) {
+    public void applyClaims(JWTClaimsSet claims) throws ParseException {
         setUsername(claims.getSubject());
-        try {
-            setId(claims.getLongClaim("uid"));
-        } catch (ParseException e) {
-            log.error("Unable to parse uid claim", e);
-        }
-        try {
-            Optional.ofNullable(claims.getStringListClaim("authorities"))
-                    .ifPresent(a -> setAuthorities(a.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList())));
-        } catch (ParseException e) {
-            log.error("Unable to parse authorities", e);
-        }
+        setId(claims.getLongClaim("uid"));
+        Optional.ofNullable(claims.getStringListClaim("authorities"))
+                .ifPresent(a -> setAuthorities(a.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList())));
     }
 
     public Optional<String> getTotpSecret() {

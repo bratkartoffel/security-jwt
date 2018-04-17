@@ -37,7 +37,12 @@ public class RefreshPropertiesTest {
     @Test
     public void testNullImpl() {
         RefreshProperties conf = getNewInstance();
-        conf.setCacheImpl(null);
+        try {
+            conf.setCacheImpl(null);
+            Assert.fail("Setting null on cache impl worked");
+        } catch (NullPointerException npe) {
+            // just ignore, we expect that here
+        }
         conf.afterPropertiesSet();
         Assert.assertEquals("CacheImapl may not be null", NullTokenStore.class, conf.getCacheImpl());
     }
@@ -55,16 +60,17 @@ public class RefreshPropertiesTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testNullPath() {
         RefreshProperties conf = getNewInstance();
-        conf.setPath(null);
         try {
-            conf.afterPropertiesSet();
-        } catch (IllegalArgumentException iae) {
-            Assert.assertEquals("Wrong message text",
-                    "The path for refresh cookies may not be empty", iae.getMessage());
-            throw iae;
+            conf.setPath(null);
+            Assert.fail("Setting null on cache impl worked");
+        } catch (NullPointerException npe) {
+            // just ignore, we expect that here
         }
+
+        conf.afterPropertiesSet();
+        Assert.assertNotNull("Path may not be null", conf.getPath());
     }
 }

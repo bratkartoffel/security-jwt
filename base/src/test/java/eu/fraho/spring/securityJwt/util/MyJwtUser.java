@@ -15,13 +15,9 @@ public class MyJwtUser extends JwtUser {
     private String foobar;
 
     @Override
-    public void applyClaims(JWTClaimsSet claims) {
+    public void applyClaims(JWTClaimsSet claims) throws ParseException {
         super.applyClaims(claims);
-        try {
-            setFoobar(claims.getStringClaim("foobar"));
-        } catch (ParseException e) {
-            log.error("Unable to parse foobar claim", e);
-        }
+        setFoobar(claims.getStringClaim("foobar"));
     }
 
     public JWTClaimsSet.Builder toClaims() {

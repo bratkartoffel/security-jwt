@@ -7,28 +7,40 @@
 package eu.fraho.spring.securityJwt.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NonNull;
 import net.jcip.annotations.Immutable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
-@Immutable
+@JsonDeserialize(builder = AuthenticationRequest.AuthenticationRequestBuilder.class)
 @Getter
-@AllArgsConstructor
+@Builder
+@Immutable
 public final class AuthenticationRequest {
-    @NotNull
     @JsonProperty(required = true)
-    private String username;
-
     @NotNull
-    @JsonProperty(required = true)
-    private String password;
+    @NonNull
+    private final String username;
 
-    private Integer totp;
+    @JsonProperty(required = true)
+    @NotNull
+    @NonNull
+    private final String password;
+
+    @Nullable
+    private final Integer totp;
 
     public Optional<Integer> getTotp() {
         return Optional.ofNullable(totp);
+    }
+
+    @JsonPOJOBuilder(withPrefix = "")
+    public static final class AuthenticationRequestBuilder {
     }
 }

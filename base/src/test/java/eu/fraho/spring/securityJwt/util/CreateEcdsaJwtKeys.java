@@ -6,6 +6,7 @@
  */
 package eu.fraho.spring.securityJwt.util;
 
+import com.nimbusds.jose.jwk.Curve;
 import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.JWK;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,7 @@ public class CreateEcdsaJwtKeys {
 
     private static final String OUT_PRIV_JWK = "build/jwk_priv.json";
 
-    private static final ECKey.Curve CURVE = ECKey.Curve.P_256;
+    private static final Curve CURVE = Curve.P_256;
 
     public static void main(String[] args) throws Throwable {
         Security.addProvider(new BouncyCastleProvider());

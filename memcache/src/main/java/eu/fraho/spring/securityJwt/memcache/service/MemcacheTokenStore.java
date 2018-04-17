@@ -46,13 +46,6 @@ public class MemcacheTokenStore implements RefreshTokenStore {
 
     private MemcachedClient memcachedClient;
 
-    @SuppressWarnings("unused")
-    public MemcacheTokenStore(RefreshProperties refreshProperties, MemcacheProperties memcacheProperties, UserDetailsService userDetailsService) {
-        this.refreshProperties = refreshProperties;
-        this.memcacheProperties = memcacheProperties;
-        this.userDetailsService = userDetailsService;
-    }
-
     private <T> T getAndWait(@NotNull String message, @NotNull Supplier<OperationFuture<T>> action) {
         try {
             return action.get().get(memcacheProperties.getTimeout(), TimeUnit.SECONDS);
@@ -66,12 +59,11 @@ public class MemcacheTokenStore implements RefreshTokenStore {
         String key = memcacheProperties.getPrefix() + token;
         String entry = MemcacheEntry.from(user).toString();
         getAndWait("Error while saving refresh token on memcache server", () ->
-                memcachedClient.set(key, refreshProperties.getExpiration().toSeconds(), entry)
+                memcachedClient.set(key, (int) refreshProperties.getExpiration().toSeconds(), entry)
         );
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <T extends JwtUser> Optional<T> useToken(@NotNull String token) {
         String key = memcacheProperties.getPrefix() + token;
         // will be "null" if invalid token
@@ -105,9 +97,11 @@ public class MemcacheTokenStore implements RefreshTokenStore {
         for (Map.Entry<String, Object> entry : entries.entrySet()) {
             MemcacheEntry dto = MemcacheEntry.from((String) entry.getValue());
             int expiresIn = -1;
-
+            String token = entry.getKey().substring(prefixLen);
             result.computeIfAbsent(dto.getId(), s -> new ArrayList<>()).add(
-                    new RefreshToken(entry.getKey().substring(prefixLen), expiresIn)
+                    RefreshToken.builder()
+                            .token(token)
+                            .expiresIn(expiresIn).build()
             );
         }
 

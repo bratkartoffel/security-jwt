@@ -1,20 +1,21 @@
 buildscript {
     ext {
-        projectVersion = '2.0.1'
+        projectVersion = '3.0.0'
 
-        springBootVersion = '1.5.9.RELEASE'
+        springBootVersion = '2.0.0.RELEASE'
         springDependencyManagementVersion = '[1.0,2.0['
 
         lombokVersion = '[1.16,2.0['
         swaggerAnnotationsVersion = '[1.5,2.0['
-        nimbusJwtVersion = '[4.37,5.0['
+        nimbusJwtVersion = '[5.7,6.0['
         commonsCodecVersion = '[1.10,2.0['
         bouncyCastleVersion = '[1.57,2.0['
         spyMemcachedVersion = '[2.12,3.0['
         expiringMapVersion = '[0.5,1.0['
         h2Version = '[1.4,2.0['
-        jetbrainsAnnotationsVersion = '[15.0,16.0['
+        jetbrainsAnnotationsVersion = '[16.0,17.0['
         powerMockVersion = '[1.7,2.0['
+        //powerMockVersion = '2.0.0-beta.5'
     }
     repositories {
         mavenLocal()
@@ -29,22 +30,24 @@ buildscript {
     }
 }
 
-configure(allprojects) {
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'jacoco'
     apply plugin: 'propdeps'
     apply plugin: 'propdeps-maven'
     apply plugin: 'propdeps-idea'
     apply plugin: 'propdeps-eclipse'
-}
-
-
-subprojects {
-    apply plugin: 'java'
 
     repositories {
         mavenLocal()
         mavenCentral()
     }
 
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+}
+
+subprojects {
     group = 'eu.fraho.spring'
     archivesBaseName = "security-jwt-${project.name}"
     version = "${projectVersion}"
@@ -53,8 +56,10 @@ subprojects {
     jar {
         version = "${project.version}"
         manifest {
-            attributes("Implementation-Title": "Gradle",
-                    "Implementation-Version": version)
+            attributes(
+                    "Implementation-Title": "Gradle",
+                    "Implementation-Version": version
+            )
         }
     }
 
@@ -66,14 +71,15 @@ subprojects {
     }
 
     dependencies {
-        compile("org.projectlombok:lombok:${lombokVersion}")
         compile("org.jetbrains:annotations:${jetbrainsAnnotationsVersion}")
+        compileOnly("org.projectlombok:lombok:${lombokVersion}")
 
         optional "org.springframework.boot:spring-boot-configuration-processor"
 
         testCompile('org.springframework.boot:spring-boot-starter-test')
         testCompile('org.springframework:spring-aspects')
         testCompile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+        testCompileOnly("org.projectlombok:lombok:${lombokVersion}")
     }
 
     // do not abort on test failures
@@ -119,6 +125,27 @@ subprojects {
     }
 
     check.dependsOn jacocoTestReport
+}
+
+task jacocoRootReport(type: org.gradle.testing.jacoco.tasks.JacocoReport) {
+    dependsOn = subprojects.test
+    additionalSourceDirs = files(subprojects.sourceSets.main.allSource.srcDirs)
+    sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
+    classDirectories = files(subprojects.sourceSets.main.output)
+    executionData = files(subprojects.jacocoTestReport.executionData)
+    reports {
+        html.enabled = true
+        xml.enabled = true
+        csv.enabled = false
+    }
+    onlyIf = {
+        true
+    }
+    doFirst {
+        executionData = files(executionData.findAll {
+            it.exists()
+        })
+    }
 }
 
 if (project.hasProperty('release')) {

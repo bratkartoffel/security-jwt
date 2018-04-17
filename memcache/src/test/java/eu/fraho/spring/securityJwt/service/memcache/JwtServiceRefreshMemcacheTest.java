@@ -24,11 +24,11 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.lang.reflect.Field;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -90,7 +90,7 @@ public class JwtServiceRefreshMemcacheTest extends AbstractJwtTokenServiceWithRe
         expiration.setAccessible(true);
         Object oldValue = expiration.get(refreshProperties);
         try {
-            expiration.set(refreshProperties, new TimeWithPeriod(31, TimeUnit.DAYS));
+            expiration.set(refreshProperties, new TimeWithPeriod(31, ChronoUnit.DAYS));
             refreshTokenStore.afterPropertiesSet();
         } finally {
             expiration.set(refreshProperties, oldValue);

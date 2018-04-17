@@ -9,7 +9,7 @@ package eu.fraho.spring.securityJwt.ut.service;
 import eu.fraho.spring.securityJwt.config.RefreshProperties;
 import eu.fraho.spring.securityJwt.service.RegisterRefreshTokenStore;
 import org.junit.Test;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -27,6 +27,6 @@ public class RegisterRefreshTokenStoreTest {
         service.afterPropertiesSet();
 
         Mockito.verify(registry, Mockito.times(1))
-                .registerBeanDefinition(Matchers.eq("refreshTokenStore"), Matchers.any());
+                .registerBeanDefinition(ArgumentMatchers.eq("refreshTokenStore"), ArgumentMatchers.any());
     }
 }

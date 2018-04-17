@@ -25,8 +25,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.crypto.password.StandardPasswordEncoder;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -41,10 +41,10 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 public class JwtTokenServiceTest {
     /**
@@ -105,7 +105,7 @@ public class JwtTokenServiceTest {
     @NotNull
     protected RefreshProperties getRefreshProperties() {
         RefreshProperties configuration = new RefreshProperties();
-        configuration.setExpiration(new TimeWithPeriod(2, TimeUnit.SECONDS));
+        configuration.setExpiration(new TimeWithPeriod(2, ChronoUnit.SECONDS));
         configuration.afterPropertiesSet();
         return configuration;
     }
@@ -193,7 +193,7 @@ public class JwtTokenServiceTest {
 
     @NotNull
     protected PasswordEncoder getPasswordEncoder() {
-        return new StandardPasswordEncoder();
+        return new BCryptPasswordEncoder();
     }
 
     @NotNull

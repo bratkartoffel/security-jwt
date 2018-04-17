@@ -11,3 +11,4 @@ spring:
     driver-class-name: org.h2.Driver
 
 fraho.jwt.refresh.cache-impl: eu.fraho.spring.securityJwt.hibernate.service.HibernateTokenStore
+fraho.jwt.refresh.expiration: 2 seconds

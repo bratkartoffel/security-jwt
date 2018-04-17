@@ -35,6 +35,7 @@ import javax.servlet.Filter;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class AuthControllerWithCookiesTest {
     public static final String AUTH_LOGIN = "/auth/login";
+    public static final String AUTH_LOGOUT = "/auth/logout";
 
     @Setter(onMethod = @__({@Autowired, @NonNull}))
     @Getter
@@ -75,5 +76,17 @@ public class AuthControllerWithCookiesTest {
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(MockMvcResultMatchers.cookie().exists("access"))
                 .andReturn().getResponse().getContentAsString();
+    }
+
+    @Test
+    public void testLogout() throws Exception {
+        MockHttpServletRequestBuilder req;
+
+        req = MockMvcRequestBuilders.post(AUTH_LOGOUT);
+        getMockMvc().perform(req)
+                .andExpect(MockMvcResultMatchers.status().isNoContent())
+                .andExpect(MockMvcResultMatchers.cookie().exists("access"))
+                .andExpect(MockMvcResultMatchers.cookie().exists("refresh"))
+                .andExpect(MockMvcResultMatchers.content().string(""));
     }
 }

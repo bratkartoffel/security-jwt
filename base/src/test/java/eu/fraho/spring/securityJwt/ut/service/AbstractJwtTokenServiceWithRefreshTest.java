@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 
 @Getter
 @Slf4j
-@SuppressWarnings("unused")
 public abstract class AbstractJwtTokenServiceWithRefreshTest extends JwtTokenServiceTest {
     public AbstractJwtTokenServiceWithRefreshTest() throws IOException {
         super();

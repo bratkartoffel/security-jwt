@@ -6,18 +6,22 @@
  */
 package eu.fraho.spring.securityJwt.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import net.jcip.annotations.Immutable;
+import lombok.Value;
 
-@Getter
-@Immutable
+@JsonDeserialize(builder = RefreshToken.RefreshTokenBuilder.class)
+@Value
 @EqualsAndHashCode(callSuper = true)
 public final class RefreshToken extends AbstractToken {
-    @JsonCreator
-    public RefreshToken(@JsonProperty("token") String token, @JsonProperty("expiresIn") int expiresIn) {
+    @Builder
+    public RefreshToken(String token, long expiresIn) {
         super(token, expiresIn);
+    }
+
+    @JsonPOJOBuilder(withPrefix = "")
+    public static final class RefreshTokenBuilder {
     }
 }

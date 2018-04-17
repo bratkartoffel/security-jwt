@@ -34,11 +34,6 @@ public class RegisterRefreshTokenStore implements InitializingBean {
     @Setter(onMethod = @__({@NonNull}))
     private BeanDefinitionRegistry registry;
 
-    public RegisterRefreshTokenStore(ConfigurableListableBeanFactory factory, RefreshProperties refreshProperties) {
-        this.factory = factory;
-        this.refreshProperties = refreshProperties;
-    }
-
     @Override
     public void afterPropertiesSet() {
         if (registry == null) registry = ((BeanDefinitionRegistry) factory);

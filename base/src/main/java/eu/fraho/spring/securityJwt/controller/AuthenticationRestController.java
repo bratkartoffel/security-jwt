@@ -65,7 +65,6 @@ public class AuthenticationRestController {
     @Setter(onMethod = @__({@Autowired, @NonNull}))
     private RefreshProperties refreshProperties;
 
-    @SuppressWarnings("MVCPathVariableInspection")
     @RequestMapping("${fraho.jwt.refresh.path:/auth/refresh}")
     @ApiOperation("Use a previously fetched refresh token to create a new access token")
     @ApiResponses({
@@ -76,12 +75,14 @@ public class AuthenticationRestController {
     public ResponseEntity<AuthenticationResponse> refresh(HttpServletResponse response,
                                                           HttpServletRequest request,
                                                           @RequestBody(required = false) @Nullable RefreshRequest refreshRequest) {
+        log.debug("Starting refresh");
         if (!jwtTokenService.isRefreshTokenSupported()) {
             log.info("Refresh token support is disabled");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         // extract the refreshtoken from the body
+        log.debug("Extracting token from request body");
         Optional<String> token = Optional.ofNullable(refreshRequest).map(RefreshRequest::getRefreshToken);
         if (!token.isPresent()) {
             log.debug("No refreshtoken in body found, trying to read it from the cookies");
@@ -95,11 +96,13 @@ public class AuthenticationRestController {
         }
 
         // use the refresh token to get the underlying userdetails
+        log.debug("Using refresh token");
         Optional<JwtUser> jwtUser = jwtTokenService.useRefreshToken(token.get());
         if (!jwtUser.isPresent()) {
             log.info("Using refresh token failed (unknown refreshtoken?)");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
+
         final JwtUser userDetails = jwtUser.get();
         log.debug("User {} successfully used refresh token, checking database", userDetails.getUsername());
 
@@ -108,7 +111,7 @@ public class AuthenticationRestController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        log.debug("Generating new tokens for {}", userDetails.getUsername());
+        log.debug("User may access api, generating new access token");
         final AccessToken accessToken;
         try {
             accessToken = jwtTokenService.generateToken(userDetails);
@@ -117,6 +120,7 @@ public class AuthenticationRestController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
+        log.debug("Generating new refresh token");
         final RefreshToken refreshToken = jwtTokenService.generateRefreshToken(userDetails);
 
         log.debug("Sending cookies if enabled");
@@ -125,10 +129,9 @@ public class AuthenticationRestController {
 
         // Return the token
         log.info("Successfully used refresh token for {}", userDetails.getUsername());
-        return ResponseEntity.ok(new AuthenticationResponse(accessToken, refreshToken));
+        return ResponseEntity.ok(AuthenticationResponse.builder().accessToken(accessToken).refreshToken(refreshToken).build());
     }
 
-    @SuppressWarnings("MVCPathVariableInspection")
     @RequestMapping("${fraho.jwt.token.path:/auth/login}")
     @ApiOperation("Create a new token using the supplied credentials")
     @ApiResponses({
@@ -138,6 +141,7 @@ public class AuthenticationRestController {
     })
     public ResponseEntity<AuthenticationResponse> login(HttpServletResponse response,
                                                         @RequestBody AuthenticationRequest authenticationRequest) {
+        log.debug("Starting login");
         // Perform the basic security
         final Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -148,18 +152,20 @@ public class AuthenticationRestController {
         log.info("Successfully authenticated against database for {}", authenticationRequest.getUsername());
 
         // Load the userdetails from the backend
+        log.info("Fetching userdetails from backend");
         final JwtUser userDetails = (JwtUser) userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
 
         // Verify that the user may access this api and his TOTP (if present / provided) is valid
+        log.info("Checking api access right and totp");
         if (!userDetails.isApiAccessAllowed() || !isTotpOk(authenticationRequest, userDetails)) {
             log.info("User {} may not access api or the provided TOTP is invalid", userDetails.getUsername());
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        log.debug("Setting SecurityContext");
+        log.debug("Everything ok, setting SecurityContext");
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        log.debug("Generating tokens");
+        log.debug("Generating access token");
         final AccessToken accessToken;
         try {
             accessToken = jwtTokenService.generateToken(userDetails);
@@ -170,26 +176,50 @@ public class AuthenticationRestController {
 
         final RefreshToken refreshToken;
         if (jwtTokenService.isRefreshTokenSupported()) {
-            log.debug("Generating refreshtoken");
+            log.debug("Generating refresh token");
             refreshToken = jwtTokenService.generateRefreshToken(userDetails);
         } else {
+            log.debug("Refresh tokens are disabled");
             refreshToken = null;
         }
 
         // Send the cookies if enabled by configuration
+        log.debug("Sending cookies if enabled");
         addTokenCookieIfEnabled(response, accessToken, tokenProperties.getCookie());
         addTokenCookieIfEnabled(response, refreshToken, refreshProperties.getCookie());
 
         // Return the token
         log.info("Successfully created token for {}", userDetails.getUsername());
-        return ResponseEntity.ok(new AuthenticationResponse(accessToken, refreshToken));
+        return ResponseEntity.ok(AuthenticationResponse.builder().accessToken(accessToken).refreshToken(refreshToken).build());
+    }
+
+    @RequestMapping("${fraho.jwt.logout.path:/auth/logout}")
+    @ApiOperation("Deleted the sent out cookies, thus resulting in an logout")
+    @ApiResponses({
+            @ApiResponse(code = 204, message = "Logout successfull"),
+    })
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        log.debug("Starting logout");
+
+        // Send the cookies if enabled by configuration
+        log.debug("Sending cookies if enabled");
+        addTokenCookieIfEnabled(response, AccessToken.builder().token("dummy").expiresIn(0).build(), tokenProperties.getCookie());
+        addTokenCookieIfEnabled(response, RefreshToken.builder().token("dummy").expiresIn(0).build(), refreshProperties.getCookie());
+        log.debug("Logout finished");
+
+        return ResponseEntity.noContent().build();
     }
 
     private boolean isTotpOk(AuthenticationRequest authenticationRequest, JwtUser userDetails) {
-        return userDetails.getTotpSecret().map(secret ->
-                authenticationRequest.getTotp().map(code ->
-                        totpService.verifyCode(secret, code)
-                ).orElse(false) // user has totp, but none in request = nok
+        return userDetails.getTotpSecret().map(secret -> {
+                    log.debug("User has a totp secret set, let's check the supplied pin");
+                    return authenticationRequest.getTotp().map(code -> {
+                                boolean result = totpService.verifyCode(secret, code);
+                                log.debug("Pin verification returned {}", result);
+                                return result;
+                            }
+                    ).orElse(false); // user has totp, but none in request = nok
+                }
         ).orElse(true); // user has no secret = ok
     }
 
@@ -200,9 +230,11 @@ public class AuthenticationRestController {
             Optional.ofNullable(configuration.getPath()).ifPresent(cookie::setPath);
             cookie.setSecure(configuration.isSecure());
             cookie.setHttpOnly(configuration.isHttpOnly());
-            cookie.setMaxAge(token.getExpiresIn());
+            if (token.getExpiresIn() <= Integer.MAX_VALUE) {
+                cookie.setMaxAge((int) token.getExpiresIn());
+            }
             response.addCookie(cookie);
-            log.debug("Sending cookie: name={}, secure={}, path={}, httponly={}", cookie.getName(), cookie.getSecure(), cookie.getPath(), cookie.isHttpOnly());
+            log.debug("Sending cookie: name={}, secure={}, path={}, httponly={}, maxAge=", cookie.getName(), cookie.getSecure(), cookie.getPath(), cookie.isHttpOnly(), cookie.getMaxAge());
         }
     }
 }

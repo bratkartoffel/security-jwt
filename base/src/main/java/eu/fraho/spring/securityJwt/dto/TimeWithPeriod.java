@@ -6,10 +6,14 @@
  */
 package eu.fraho.spring.securityJwt.dto;
 
-import lombok.Getter;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import net.jcip.annotations.Immutable;
+import org.jetbrains.annotations.NotNull;
 
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -23,71 +27,99 @@ import java.util.concurrent.TimeUnit;
  * <li>42 seconds</li>
  * <li>1 day</li>
  * <li>7 days</li>
+ * <li>1 week</li>
  * </ul>
  *
  * @see #TimeWithPeriod(String)
- * @see #TimeWithPeriod(int, TimeUnit)
+ * @see #TimeWithPeriod(int, ChronoUnit)
  */
-@Getter
-@Slf4j
+@Value
 @Immutable
+@Slf4j
 public final class TimeWithPeriod {
     /**
-     * Quantity of the {@link #timeUnit}
+     * Quantity of the {@link #chronoUnit}
      */
     private final int quantity;
 
     /**
-     * The timeUnit to use
+     * The chronoUnit to use
      */
-    private final TimeUnit timeUnit;
+    @NotNull
+    @NonNull
+    private final ChronoUnit chronoUnit;
 
     /**
-     * Parse the given configuration value and extract the {@link #quantity} and {@link #timeUnit}.<br>
+     * Parse the given configuration value and extract the {@link #quantity} and {@link #chronoUnit}.<br>
      *
-     * @param value A string representation like &quot;&lt;quantity&gt; &lt;timeUnit&gt;&quot;
+     * @param value A string representation like &quot;&lt;quantity&gt; &lt;chronoUnit&gt;&quot;
      */
-    public TimeWithPeriod(final String value) {
+    public TimeWithPeriod(@NotNull final String value) {
         final String[] parts = value.split("\\s", 2);
+        String period = parts[1].toUpperCase();
+        if (!period.endsWith("S")) {
+            period = period + "S";
+        }
 
         quantity = Integer.valueOf(parts[0]);
-        timeUnit = PeriodWord.valueOf(parts[1]).getTimeUnit();
+        chronoUnit = ChronoUnit.valueOf(period);
     }
 
     /**
      * Create a new instance using the given values.
      *
-     * @param quantity Quantitiy of the timeUnit
-     * @param timeUnit The timeUnit to use
+     * @param quantity   Quantitiy of the chronoUnit
+     * @param chronoUnit The chronoUnit to use
      */
-    public TimeWithPeriod(int quantity, TimeUnit timeUnit) {
+    @Builder
+    public TimeWithPeriod(int quantity, @NotNull ChronoUnit chronoUnit) {
         this.quantity = quantity;
-        this.timeUnit = timeUnit;
+        this.chronoUnit = chronoUnit;
     }
 
     /**
-     * Convert this objects quantity and timeUnit to seconds.
+     * Convert this objects quantity and chronoUnit to seconds.
      *
      * @return count of seconds
      */
-    public int toSeconds() {
-        return (int) timeUnit.toSeconds(quantity);
+    public long toSeconds() {
+        return chronoUnit.getDuration().multipliedBy(quantity).getSeconds();
     }
 
     public String toString() {
-        return String.format("%d %s", quantity, timeUnit);
+        return String.format("%d %s", quantity, chronoUnit);
     }
 
     @Override
     public int hashCode() {
-        return toSeconds();
+        return Long.hashCode(toSeconds());
     }
 
-    @SuppressWarnings("SimplifiableIfStatement")
     public boolean equals(Object o) {
         if (o == null || !(o instanceof TimeWithPeriod)) {
             return false;
         }
         return (toSeconds() == ((TimeWithPeriod) o).toSeconds());
+    }
+
+    public TimeUnit getTimeUnit() {
+        switch (chronoUnit) {
+            case NANOS:
+                return TimeUnit.NANOSECONDS;
+            case MICROS:
+                return TimeUnit.MICROSECONDS;
+            case MILLIS:
+                return TimeUnit.MILLISECONDS;
+            case SECONDS:
+                return TimeUnit.SECONDS;
+            case MINUTES:
+                return TimeUnit.MINUTES;
+            case HOURS:
+                return TimeUnit.HOURS;
+            case DAYS:
+                return TimeUnit.DAYS;
+            default:
+                throw new IllegalArgumentException("No TimeUnit equivalent for " + chronoUnit);
+        }
     }
 }

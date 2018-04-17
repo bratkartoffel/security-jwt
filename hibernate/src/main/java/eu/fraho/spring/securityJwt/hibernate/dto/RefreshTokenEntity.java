@@ -41,7 +41,8 @@ public class RefreshTokenEntity {
     @Column(unique = true)
     private String token;
 
-    public RefreshTokenEntity(Long userId, String username, String token) {
+    @Builder
+    private RefreshTokenEntity(Long userId, String username, String token) {
         this.userId = userId;
         this.username = username;
         this.token = token;

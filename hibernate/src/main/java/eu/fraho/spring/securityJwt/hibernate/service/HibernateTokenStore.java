@@ -45,7 +45,6 @@ public class HibernateTokenStore implements RefreshTokenStore {
 
     @Override
     @Transactional
-    @SuppressWarnings("unchecked")
     public <T extends JwtUser> Optional<T> useToken(@NotNull String token) {
         // first load the token from the database
         final TypedQuery<RefreshTokenEntity> queryLoad = entityManager.createQuery("SELECT o FROM RefreshTokenEntity o WHERE " +
@@ -83,7 +82,10 @@ public class HibernateTokenStore implements RefreshTokenStore {
 
         List<RefreshTokenEntity> result = query.getResultList();
         return result.stream()
-                .map(e -> new RefreshToken(e.getToken(), calculateExpiration(e.getCreated())))
+                .map(e -> RefreshToken.builder()
+                        .token(e.getToken())
+                        .expiresIn(calculateExpiration(e.getCreated()))
+                        .build())
                 .collect(Collectors.toList());
     }
 
@@ -99,8 +101,11 @@ public class HibernateTokenStore implements RefreshTokenStore {
     @Override
     @Transactional
     public void saveToken(@NotNull JwtUser user, @NotNull String token) {
-        RefreshTokenEntity entity = new RefreshTokenEntity(user.getId(), user.getUsername(), token);
-        entityManager.persist(entity);
+        entityManager.persist(RefreshTokenEntity.builder()
+                .userId(user.getId())
+                .username(user.getUsername())
+                .token(token)
+                .build());
     }
 
     @NotNull
@@ -116,7 +121,10 @@ public class HibernateTokenStore implements RefreshTokenStore {
 
         tokens.forEach(e ->
                 result.computeIfAbsent(e.getUserId(), s -> new ArrayList<>())
-                        .add(new RefreshToken(e.getToken(), calculateExpiration(e.getCreated())))
+                        .add(RefreshToken.builder()
+                                .token(e.getToken())
+                                .expiresIn(calculateExpiration(e.getCreated()))
+                                .build())
         );
         result.replaceAll((s, t) -> Collections.unmodifiableList(t));
         return Collections.unmodifiableMap(result);

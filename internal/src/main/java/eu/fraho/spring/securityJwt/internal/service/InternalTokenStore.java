@@ -34,19 +34,12 @@ public class InternalTokenStore implements RefreshTokenStore {
     //                  AbstractToken   User
     private ExpiringMap<String, JwtUser> refreshTokenMap;
 
-    @SuppressWarnings("unused")
-    public InternalTokenStore(RefreshProperties refreshProperties, UserDetailsService userDetailsService) {
-        this.refreshProperties = refreshProperties;
-        this.userDetailsService = userDetailsService;
-    }
-
     @Override
     public synchronized void saveToken(@NotNull JwtUser user, @NotNull String token) {
         refreshTokenMap.put(token, user);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public synchronized <T extends JwtUser> Optional<T> useToken(@NotNull String token) {
         return Optional.ofNullable(refreshTokenMap.remove(token))
                 .map(JwtUser::getUsername)
@@ -69,7 +62,7 @@ public class InternalTokenStore implements RefreshTokenStore {
             int expiresIn = (int) refreshTokenMap.getExpiration(entry.getKey());
 
             result.computeIfAbsent(entry.getValue().getId(), s -> new ArrayList<>()).add(
-                    new RefreshToken(token, expiresIn)
+                    RefreshToken.builder().token(token).expiresIn(expiresIn).build()
             );
         }
         result.replaceAll((s, t) -> Collections.unmodifiableList(t));

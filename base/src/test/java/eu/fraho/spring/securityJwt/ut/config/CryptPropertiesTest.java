@@ -35,6 +35,7 @@ public class CryptPropertiesTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testRoundsIgnore() {
         CryptProperties conf = getNewInstance();
         conf.setAlgorithm(CryptAlgorithm.MD5);

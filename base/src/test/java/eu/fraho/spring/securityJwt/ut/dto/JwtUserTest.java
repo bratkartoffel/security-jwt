@@ -10,11 +10,6 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -23,8 +18,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({JWTClaimsSet.class})
 public class JwtUserTest {
     public JwtUser newInstance() {
         JwtUser user = new JwtUser();
@@ -64,7 +57,7 @@ public class JwtUserTest {
     }
 
     @Test
-    public void testToAndFromClaimsSymetric() {
+    public void testToAndFromClaimsSymetric() throws ParseException {
         JwtUser user = newInstance();
         JWTClaimsSet claims1 = user.toClaims().build();
         JwtUser user2 = new JwtUser();
@@ -91,19 +84,46 @@ public class JwtUserTest {
         Assert.assertFalse("Password in toString present", user.toString().contains("winteriscoming"));
     }
 
-    @Test
-    public void testNoUid() throws ParseException {
+    @Test(expected = ParseException.class)
+    public void testInvalidUid() throws ParseException {
         JwtUser user = newInstance();
 
-        JWTClaimsSet claims = PowerMockito.mock(JWTClaimsSet.class);
-        Mockito.when(claims.getSubject()).thenReturn("foobar");
-        Mockito.doThrow(new ParseException("foobar", 0)).when(claims).getLongClaim("uid");
-        Mockito.doThrow(new ParseException("foobar", 0)).when(claims).getStringListClaim("authorities");
-
+        JWTClaimsSet claims = new JWTClaimsSet.Builder()
+                .subject("foobar")
+                .claim("uid", "foobar")
+                .claim("authorities", Collections.singletonList("foobar"))
+                .build();
         user.applyClaims(claims);
+    }
 
-        Assert.assertEquals("UserID changed", Long.valueOf(42L), user.getId());
-        Assert.assertEquals("Authorities changed", 1, user.getAuthorities().size());
-        Assert.assertEquals("Wrong username parsed", "foobar", user.getUsername());
+    @Test(expected = ParseException.class)
+    public void testInvalidAuthorities() throws ParseException {
+        JwtUser user = newInstance();
+
+        JWTClaimsSet claims = new JWTClaimsSet.Builder()
+                .subject("foobar")
+                .claim("uid", 42L)
+                .claim("authorities", "foobar")
+                .build();
+        user.applyClaims(claims);
+    }
+
+    @Test
+    public void testToString() {
+        JwtUser user = newInstance();
+        Assert.assertFalse("toString contains password", user.toString().toLowerCase().contains("password"));
+    }
+
+    @Test
+    public void testEquals() {
+        JwtUser userA = newInstance();
+        JwtUser userB = newInstance();
+        Assert.assertEquals("Didn't equal", userA, userB);
+
+        userA.setPassword("xxxx");
+        Assert.assertEquals("Changed password should equal", userA, userB);
+
+        userA.setUsername("xxxx");
+        Assert.assertNotEquals("Changed username should not equals", userA, userB);
     }
 }

@@ -6,15 +6,20 @@
  */
 package eu.fraho.spring.securityJwt.config;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @ConfigurationProperties(prefix = "fraho.jwt.refresh.cookie")
 @Component
-@Data
+@Getter
+@Setter
 @Slf4j
 public class RefreshCookieProperties implements CookieProperties {
     /**
@@ -30,6 +35,8 @@ public class RefreshCookieProperties implements CookieProperties {
      * The first entry in this list is used when sending out the cookie, any other
      * names are optionally taken when validating incoming requests.
      */
+    @NotNull
+    @NonNull
     private String[] names = new String[]{"JWT-REFRESHTOKEN"};
 
     /**
@@ -37,6 +44,7 @@ public class RefreshCookieProperties implements CookieProperties {
      *
      * @see javax.servlet.http.Cookie#setDomain(String)
      */
+    @Nullable
     private String domain;
 
     /**
@@ -60,6 +68,8 @@ public class RefreshCookieProperties implements CookieProperties {
      *
      * @see javax.servlet.http.Cookie#setPath(String)
      */
+    @NotNull
+    @NonNull
     private String path = "/auth/refresh";
 
     public Logger getLog() {

@@ -59,22 +59,10 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     private ObjectFactory<JwtUser> jwtUser;
 
     // not possible otherwise, as the RegisterRefreshTokenStore comes pretty late
-    @SuppressWarnings("SpringAutowiredFieldsWarningInspection")
     @Autowired
     @Lazy
     @Setter
     private RefreshTokenStore refreshTokenStore;
-
-    public JwtTokenServiceImpl(TokenProperties tokenProperties, RefreshProperties refreshProperties,
-                               TokenCookieProperties tokenCookieProperties, TokenHeaderProperties tokenHeaderProperties,
-                               RefreshCookieProperties refreshCookieProperties, ObjectFactory<JwtUser> jwtUser) {
-        this.tokenProperties = tokenProperties;
-        this.refreshProperties = refreshProperties;
-        this.tokenCookieProperties = tokenCookieProperties;
-        this.tokenHeaderProperties = tokenHeaderProperties;
-        this.refreshCookieProperties = refreshCookieProperties;
-        this.jwtUser = jwtUser;
-    }
 
     @Override
     public void afterPropertiesSet() {
@@ -84,7 +72,6 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <T extends JwtUser> Optional<T> parseUser(@NotNull String token) {
         Optional<T> result = Optional.empty();
         try {
@@ -123,7 +110,10 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
                 claims);
         token.sign(tokenProperties.getSigner());
 
-        return new AccessToken(token.serialize(), tokenProperties.getExpiration().toSeconds());
+        return AccessToken.builder()
+                .token(token.serialize())
+                .expiresIn(tokenProperties.getExpiration().toSeconds())
+                .build();
     }
 
     @NotNull
@@ -138,13 +128,14 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
 
     @Override
     public boolean validateToken(@NotNull String token) {
-        boolean result = false;
+        SignedJWT signedJWT;
         try {
-            result = validateToken(SignedJWT.parse(token));
+            signedJWT = SignedJWT.parse(token);
         } catch (ParseException e) {
             log.error("Supplied token did not validate", e);
+            return false;
         }
-        return result;
+        return validateToken(signedJWT);
     }
 
     @Override
@@ -220,8 +211,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
         Optional<String> result = Optional.empty();
         if (cookies != null) {
             result = Arrays.stream(names)
-                    .map(String::toLowerCase)
-                    .flatMap(name -> Arrays.stream(cookies).filter(c -> Objects.equals(c.getName().toLowerCase(), name)))
+                    .flatMap(name -> Arrays.stream(cookies).filter(c -> Objects.equals(c.getName(), name)))
                     .findFirst()
                     .map(Cookie::getValue);
         }
@@ -236,7 +226,10 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
         final String token = Base64.getEncoder().encodeToString(data);
         log.debug("Generated refresh token, storing at configured store");
         refreshTokenStore.saveToken(user, token);
-        return new RefreshToken(token, refreshProperties.getExpiration().toSeconds());
+        return RefreshToken.builder()
+                .token(token)
+                .expiresIn(refreshProperties.getExpiration().toSeconds())
+                .build();
     }
 
     @Override

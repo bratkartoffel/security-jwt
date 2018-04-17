@@ -6,20 +6,24 @@
  */
 package eu.fraho.spring.securityJwt.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NonNull;
 import net.jcip.annotations.Immutable;
+import org.jetbrains.annotations.NotNull;
 
 @Getter
 @Immutable
-@EqualsAndHashCode(exclude = {"expiresIn"})
+@AllArgsConstructor
+@EqualsAndHashCode(of = {"token"})
 public abstract class AbstractToken {
+    @JsonProperty(required = true)
+    @NotNull
+    @NonNull
     private final String token;
 
-    private final int expiresIn;
-
-    public AbstractToken(String token, int expiresIn) {
-        this.token = token;
-        this.expiresIn = expiresIn;
-    }
+    @JsonProperty(required = true)
+    private final long expiresIn;
 }
