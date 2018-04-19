@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+eu.fraho.spring.securityJwt.redis.starter.SecurityJwtRedisAutoConfiguration
