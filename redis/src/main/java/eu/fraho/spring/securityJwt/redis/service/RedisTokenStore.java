@@ -19,7 +19,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import redis.clients.jedis.*;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.Response;
+import redis.clients.jedis.Transaction;
 
 import java.util.*;
 
@@ -141,6 +144,6 @@ public class RedisTokenStore implements RefreshTokenStore {
     public void afterPropertiesSet() {
         log.info("Using redis implementation to handle refresh tokens");
         log.info("Startingredis connection pool to {}:{}", redisProperties.getHost(), redisProperties.getPort());
-        redisPool = new JedisPool(new JedisPoolConfig(), redisProperties.getHost(), redisProperties.getPort());
+        redisPool = new JedisPool(redisProperties.getPoolConfig(), redisProperties.getHost(), redisProperties.getPort());
     }
 }

@@ -44,7 +44,7 @@ public class RedisProperties implements InitializingBean {
     private boolean fetchExpiration = true;
 
     @NestedConfigurationProperty
-    private JedisPoolConfig poolConfig;
+    private JedisPoolConfig poolConfig = new JedisPoolConfig();
 
     @Override
     public void afterPropertiesSet() {
