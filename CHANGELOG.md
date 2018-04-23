@@ -2,6 +2,7 @@
 
 ### 3.1.0 (not yet released)
 * (redis) Add support for redis as backend
+* (base) TimeWithPeriod is now serializable with Jackson
 
 ### 3.0.0 (2018-04-17)
 * (all) Add support for spring boot 2

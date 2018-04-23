@@ -6,6 +6,8 @@
  */
 package eu.fraho.spring.securityJwt.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import eu.fraho.spring.securityJwt.service.TimeWithPeriodSerializer;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -36,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 @Value
 @Immutable
 @Slf4j
+@JsonSerialize(using = TimeWithPeriodSerializer.class)
 public final class TimeWithPeriod {
     /**
      * Quantity of the {@link #chronoUnit}
