@@ -45,12 +45,7 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public AuthenticationResponse checkLogin(AuthenticationRequest authenticationRequest) throws AuthenticationException {
         // Perform the basic security
-        final Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        authenticationRequest.getUsername(),
-                        authenticationRequest.getPassword()
-                )
-        );
+        final Authentication authentication = tryAuthentication(authenticationRequest);
         log.info("Successfully authenticated against database for {}", authenticationRequest.getUsername());
 
         // Load the userdetails from the backend
@@ -88,8 +83,16 @@ public class LoginServiceImpl implements LoginService {
         return AuthenticationResponse.builder().accessToken(accessToken).refreshToken(refreshToken).build();
     }
 
-    @Override
-    public boolean isTotpOk(@Nullable Integer totp, @NotNull @NonNull JwtUser userDetails) {
+    protected Authentication tryAuthentication(AuthenticationRequest authenticationRequest) {
+        return authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        authenticationRequest.getUsername(),
+                        authenticationRequest.getPassword()
+                )
+        );
+    }
+
+    protected boolean isTotpOk(@Nullable Integer totp, @NotNull @NonNull JwtUser userDetails) {
         return userDetails.getTotpSecret().map(secret -> {
                     log.debug("User has a totp secret set, let's check the supplied pin");
                     return Optional.ofNullable(totp).map(code -> {
