@@ -47,9 +47,9 @@ public class LoginRestController implements CookieSupport {
     @RequestMapping("${fraho.jwt.token.path:/auth/login}")
     @ApiOperation("Create a new token using the supplied credentials")
     @ApiResponses({
-            @ApiResponse(code = 200, message = "Generated token"),
-            @ApiResponse(code = 400, message = "Missing a required field in the request"),
-            @ApiResponse(code = 401, message = "Either the credentials are wrong or the user has no access to this api"),
+            @ApiResponse(code = HttpServletResponse.SC_OK, message = "Generated token"),
+            @ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = "Missing a required field in the request"),
+            @ApiResponse(code = HttpServletResponse.SC_UNAUTHORIZED, message = "Either the credentials are wrong or the user has no access to this api"),
     })
     public ResponseEntity<AuthenticationResponse> login(HttpServletResponse response,
                                                         @RequestBody AuthenticationRequest authenticationRequest) {

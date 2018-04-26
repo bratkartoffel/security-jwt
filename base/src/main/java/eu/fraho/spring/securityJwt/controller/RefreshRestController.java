@@ -56,9 +56,9 @@ public class RefreshRestController implements CookieSupport {
     @RequestMapping("${fraho.jwt.refresh.path:/auth/refresh}")
     @ApiOperation("Use a previously fetched refresh token to create a new access token")
     @ApiResponses({
-            @ApiResponse(code = 200, message = "Generated token"),
-            @ApiResponse(code = 400, message = "Missing a required field in the request or refresh tokens not supported"),
-            @ApiResponse(code = 401, message = "Either the token expired, or the user has no longer access to this api"),
+            @ApiResponse(code = HttpServletResponse.SC_OK, message = "Generated token"),
+            @ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = "Missing a required field in the request or refresh tokens not supported"),
+            @ApiResponse(code = HttpServletResponse.SC_UNAUTHORIZED, message = "Either the token expired, or the user has no longer access to this api"),
     })
     public ResponseEntity<AuthenticationResponse> refresh(HttpServletResponse response,
                                                           HttpServletRequest request,

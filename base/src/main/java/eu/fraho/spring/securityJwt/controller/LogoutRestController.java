@@ -45,7 +45,7 @@ public class LogoutRestController implements CookieSupport {
     @RequestMapping("${fraho.jwt.logout.path:/auth/logout}")
     @ApiOperation("Deleted the sent out cookies, thus resulting in an logout")
     @ApiResponses({
-            @ApiResponse(code = 204, message = "Logout successfull"),
+            @ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "Logout successfull"),
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout(HttpServletResponse response) {
