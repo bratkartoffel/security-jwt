@@ -42,7 +42,6 @@ public class JwtServiceRefreshRedisTest extends AbstractJwtTokenServiceWithRefre
         refreshTokenStore.setRefreshProperties(refreshProperties);
         refreshTokenStore.setRedisProperties(new RedisProperties());
         refreshTokenStore.setUserDetailsService(getUserdetailsService());
-
         refreshTokenStore.afterPropertiesSet();
     }
 

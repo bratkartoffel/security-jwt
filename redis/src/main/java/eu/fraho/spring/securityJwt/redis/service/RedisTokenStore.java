@@ -19,10 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.Response;
-import redis.clients.jedis.Transaction;
+import redis.clients.jedis.*;
 
 import java.util.*;
 
@@ -45,7 +42,10 @@ public class RedisTokenStore implements RefreshTokenStore {
         String key = redisProperties.getPrefix() + token;
         String entry = RedisEntry.from(user).toString();
         try (Jedis jedis = redisPool.getResource()) {
-            jedis.set(key, entry, "NX", "EX", refreshProperties.getExpiration().toSeconds());
+            Transaction t = jedis.multi();
+            t.set(key, entry);
+            t.pexpire(key, refreshProperties.getExpiration().toMillis());
+            t.exec();
         }
     }
 
@@ -73,33 +73,54 @@ public class RedisTokenStore implements RefreshTokenStore {
         return listTokens().getOrDefault(user.getId(), Collections.emptyList());
     }
 
+    private <K, V> Map<K, V> zipToMap(List<K> keys, List<V> values) {
+        Iterator<K> keyIter = keys.iterator();
+        Iterator<V> valIter = values.iterator();
+        Map<K, V> result = new HashMap<>();
+        while (keyIter.hasNext() && valIter.hasNext()) {
+            K key = keyIter.next();
+            V val = valIter.next();
+
+            if (key != null && val != null) {
+                result.put(key, val);
+            }
+        }
+        return result;
+    }
+
+    private Map<String, String> listKeysWithValues(Jedis jedis) {
+        List<String> keys = new ArrayList<>(jedis.keys(redisProperties.getPrefix() + "*"));
+        if (keys.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        List<String> values = jedis.mget(keys.toArray(new String[0]));
+        return zipToMap(keys, values);
+    }
+
     @NotNull
     @Override
     public Map<Long, List<RefreshToken>> listTokens() {
-        Map<Long, List<RefreshToken>> result = new HashMap<>();
+        final Map<Long, List<RefreshToken>> result = new HashMap<>();
         final int prefixLen = redisProperties.getPrefix().length();
         try (Jedis jedis = redisPool.getResource()) {
-            List<String> keys = new ArrayList<>(jedis.keys(redisProperties.getPrefix() + "*"));
-            if (keys.isEmpty()) {
-                return Collections.emptyMap();
-            }
-            List<String> values = jedis.mget(keys.toArray(new String[0]));
-
-            for (int i = 0; i < keys.size(); i++) {
-                if (values.get(i) == null) continue;
-                RedisEntry dto = RedisEntry.from(values.get(i));
-                long expiresIn = -1L;
-                if (redisProperties.isFetchExpiration()) {
-                    expiresIn = jedis.ttl(values.get(i));
-                }
-                String token = keys.get(i).substring(prefixLen);
-                result.computeIfAbsent(dto.getId(), s -> new ArrayList<>()).add(
+            Map<String, String> entries = listKeysWithValues(jedis);
+            List<Runnable> resultBuilder = new ArrayList<>();
+            Pipeline p = jedis.pipelined();
+            for (Map.Entry<String, String> entry : entries.entrySet()) {
+                Long id = RedisEntry.from(entry.getValue()).getId();
+                String token = entry.getKey().substring(prefixLen);
+                List<RefreshToken> tokenList = result.computeIfAbsent(id, s -> new ArrayList<>());
+                Response<Long> expiresIn = p.ttl(entry.getKey());
+                resultBuilder.add(() -> tokenList.add(
                         RefreshToken.builder()
                                 .token(token)
-                                .expiresIn(expiresIn)
+                                .expiresIn(expiresIn.get())
                                 .build()
+                        )
                 );
             }
+            p.sync();
+            resultBuilder.forEach(Runnable::run);
         }
         return Collections.unmodifiableMap(result);
     }

@@ -36,13 +36,6 @@ public class RedisProperties implements InitializingBean {
      */
     private Integer port = 6379;
 
-    /**
-     * Also query for expiration when listing the tokens.
-     * When this value is <code>true</code>, then an extra request is made for each token found to determine the
-     * remaining time to live. You should set this parameter to <code>false</code> when running on an heavy traffic site.
-     */
-    private boolean fetchExpiration = true;
-
     @NestedConfigurationProperty
     private JedisPoolConfig poolConfig = new JedisPoolConfig();
 
