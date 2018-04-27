@@ -17,7 +17,8 @@ import java.util.Optional;
 
 public interface RefreshTokenStore extends InitializingBean {
     /**
-     * Save the given token to the underlying backend.
+     * Save the given token to the underlying backend.<br>
+     * If the token is already registered at the store, it is overwritten and the expiration time restarts.
      *
      * @param user  The token is valid for the given user
      * @param token The token to save

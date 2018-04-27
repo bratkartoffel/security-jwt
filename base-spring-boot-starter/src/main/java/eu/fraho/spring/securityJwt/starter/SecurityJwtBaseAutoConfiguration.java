@@ -8,17 +8,16 @@ package eu.fraho.spring.securityJwt.starter;
 
 import eu.fraho.spring.securityJwt.JwtAuthenticationEntryPoint;
 import eu.fraho.spring.securityJwt.config.*;
-import eu.fraho.spring.securityJwt.controller.AuthenticationRestController;
+import eu.fraho.spring.securityJwt.controller.LoginRestController;
+import eu.fraho.spring.securityJwt.controller.LogoutRestController;
 import eu.fraho.spring.securityJwt.dto.JwtUser;
-import eu.fraho.spring.securityJwt.service.JwtTokenService;
-import eu.fraho.spring.securityJwt.service.JwtTokenServiceImpl;
-import eu.fraho.spring.securityJwt.service.TotpService;
-import eu.fraho.spring.securityJwt.service.TotpServiceImpl;
+import eu.fraho.spring.securityJwt.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -130,18 +129,45 @@ public class SecurityJwtBaseAutoConfiguration {
     }
 
     @Bean
-    public AuthenticationRestController authenticationRestController(final AuthenticationManager authenticationManager,
-                                                                     final JwtTokenService jwtTokenService,
-                                                                     final UserDetailsService userDetailsService,
-                                                                     final TotpService totpService,
-                                                                     final TokenProperties tokenProperties,
-                                                                     final RefreshProperties refreshProperties) {
-        log.debug("Register AuthenticationRestController");
-        AuthenticationRestController controller = new AuthenticationRestController();
-        controller.setAuthenticationManager(authenticationManager);
-        controller.setJwtTokenService(jwtTokenService);
-        controller.setUserDetailsService(userDetailsService);
-        controller.setTotpService(totpService);
+    @ConditionalOnMissingBean
+    public LoginService loginService(final AuthenticationManager authenticationManager,
+                                     final JwtTokenService jwtTokenService,
+                                     final UserDetailsService userDetailsService,
+                                     final TotpService totpService) {
+        LoginServiceImpl service = new LoginServiceImpl();
+        service.setAuthenticationManager(authenticationManager);
+        service.setJwtTokenService(jwtTokenService);
+        service.setUserDetailsService(userDetailsService);
+        service.setTotpService(totpService);
+        return service;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public RefreshService refreshService(final JwtTokenService jwtTokenService) {
+        RefreshServiceImpl service = new RefreshServiceImpl();
+        service.setJwtTokenService(jwtTokenService);
+        return service;
+    }
+
+    @Bean
+    public LoginRestController loginRestController(final LoginService loginService,
+                                                   final TokenProperties tokenProperties,
+                                                   final RefreshProperties refreshProperties) {
+        log.debug("Register LoginRestController");
+        LoginRestController controller = new LoginRestController();
+        controller.setLoginService(loginService);
+        controller.setTokenProperties(tokenProperties);
+        controller.setRefreshProperties(refreshProperties);
+        return controller;
+    }
+
+    @Bean
+    @ConditionalOnExpression("'${fraho.jwt.token.cookie.enabled}' == 'true' or '${refreshCookieProperties.enabled}' == 'true'")
+    public LogoutRestController logoutRestController(final TokenProperties tokenProperties,
+                                                     final RefreshProperties refreshProperties) {
+        log.debug("Register LogoutRestController");
+        LogoutRestController controller = new LogoutRestController();
         controller.setTokenProperties(tokenProperties);
         controller.setRefreshProperties(refreshProperties);
         return controller;

@@ -89,6 +89,15 @@ public final class TimeWithPeriod {
         return chronoUnit.getDuration().multipliedBy(quantity).getSeconds();
     }
 
+    /**
+     * Convert this objects quantity and chronoUnit to seconds.
+     *
+     * @return count of seconds
+     */
+    public long toMillis() {
+        return toSeconds() * 1_000L;
+    }
+
     public String toString() {
         return String.format("%d %s", quantity, chronoUnit);
     }
