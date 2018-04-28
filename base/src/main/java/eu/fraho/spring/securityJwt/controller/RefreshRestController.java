@@ -15,7 +15,6 @@ import eu.fraho.spring.securityJwt.service.RefreshService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
@@ -38,7 +37,6 @@ import java.util.Optional;
 @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 @NoArgsConstructor
-@AllArgsConstructor
 @ConditionalOnMissingBean(name = "refreshTokenStore", type = "eu.fraho.spring.securityJwt.service.NullTokenStore")
 public class RefreshRestController implements CookieSupport {
     @Setter(onMethod = @__({@Autowired, @NonNull}))

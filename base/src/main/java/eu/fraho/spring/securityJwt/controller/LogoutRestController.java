@@ -13,7 +13,6 @@ import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
@@ -33,7 +32,6 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 @NoArgsConstructor
-@AllArgsConstructor
 @ConditionalOnExpression("'${fraho.jwt.token.cookie.enabled}' == 'true' or '${refreshCookieProperties.enabled}' == 'true'")
 public class LogoutRestController implements CookieSupport {
     @Setter(onMethod = @__({@Autowired, @NonNull}))

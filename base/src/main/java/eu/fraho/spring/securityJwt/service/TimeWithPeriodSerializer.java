@@ -10,11 +10,9 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import eu.fraho.spring.securityJwt.dto.TimeWithPeriod;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
-@Slf4j
 public final class TimeWithPeriodSerializer extends StdSerializer<TimeWithPeriod> {
     @SuppressWarnings("unused")
     public TimeWithPeriodSerializer() {
@@ -27,6 +25,6 @@ public final class TimeWithPeriodSerializer extends StdSerializer<TimeWithPeriod
 
     @Override
     public void serialize(TimeWithPeriod timeWithPeriod, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-        jsonGenerator.writeString(timeWithPeriod.toString());
+        jsonGenerator.writeString(timeWithPeriod.toString().toLowerCase());
     }
 }
