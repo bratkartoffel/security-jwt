@@ -34,10 +34,8 @@ If you need or want to create the table manually, then please take this SQL and 
 CREATE TABLE jwt_refresh (
     id         bigint       AUTO_INCREMENT PRIMARY KEY NOT NULL,
     created    timestamp    NOT NULL,
-    device_id  varchar(255) NOT NULL,
-    token      varchar(255) NOT NULL,
-    username   varchar(255) NOT NULL
+    user_id    bigint       NOT NULL,
+    username   varchar(255) NOT NULL,
+    token      varchar(255) NOT NULL
 );
--- Create a unique index over "username" and "device_id"
-CREATE UNIQUE INDEX UK_JWTR_USDEV ON JWT_REFRESH (USERNAME, DEVICE_ID);
 ```
