@@ -6,8 +6,8 @@
  */
 package eu.fraho.spring.securityJwt.controller;
 
-import eu.fraho.spring.securityJwt.config.RefreshProperties;
-import eu.fraho.spring.securityJwt.config.TokenProperties;
+import eu.fraho.spring.securityJwt.config.RefreshCookieProperties;
+import eu.fraho.spring.securityJwt.config.TokenCookieProperties;
 import eu.fraho.spring.securityJwt.dto.AccessToken;
 import eu.fraho.spring.securityJwt.dto.RefreshToken;
 import io.swagger.annotations.ApiOperation;
@@ -32,13 +32,13 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 @NoArgsConstructor
-@ConditionalOnExpression("'${fraho.jwt.token.cookie.enabled}' == 'true' or '${refreshCookieProperties.enabled}' == 'true'")
+@ConditionalOnExpression("'${tokenCookieProperties.enabled}' == 'true' or '${refreshCookieProperties.enabled}' == 'true'")
 public class LogoutRestController implements CookieSupport {
     @Setter(onMethod = @__({@Autowired, @NonNull}))
-    private TokenProperties tokenProperties;
+    private TokenCookieProperties tokenCookieProperties;
 
     @Setter(onMethod = @__({@Autowired, @NonNull}))
-    private RefreshProperties refreshProperties;
+    private RefreshCookieProperties refreshCookieProperties;
 
     @RequestMapping("${fraho.jwt.logout.path:/auth/logout}")
     @ApiOperation("Deleted the sent out cookies, thus resulting in an logout")
@@ -51,8 +51,8 @@ public class LogoutRestController implements CookieSupport {
 
         // Send the cookies if enabled by configuration
         log.debug("Sending cookies if enabled");
-        addTokenCookieIfEnabled(response, AccessToken.builder().token("dummy").expiresIn(0).build(), tokenProperties.getCookie());
-        addTokenCookieIfEnabled(response, RefreshToken.builder().token("dummy").expiresIn(0).build(), refreshProperties.getCookie());
+        addTokenCookieIfEnabled(response, AccessToken.builder().token("dummy").expiresIn(0).build(), tokenCookieProperties);
+        addTokenCookieIfEnabled(response, RefreshToken.builder().token("dummy").expiresIn(0).build(), refreshCookieProperties);
         log.debug("Logout finished");
     }
 }

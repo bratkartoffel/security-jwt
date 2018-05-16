@@ -152,24 +152,24 @@ public class SecurityJwtBaseAutoConfiguration {
 
     @Bean
     public LoginRestController loginRestController(final LoginService loginService,
-                                                   final TokenProperties tokenProperties,
-                                                   final RefreshProperties refreshProperties) {
+                                                   final TokenCookieProperties tokenCookieProperties,
+                                                   final RefreshCookieProperties refreshCookieProperties) {
         log.debug("Register LoginRestController");
         LoginRestController controller = new LoginRestController();
         controller.setLoginService(loginService);
-        controller.setTokenProperties(tokenProperties);
-        controller.setRefreshProperties(refreshProperties);
+        controller.setTokenCookieProperties(tokenCookieProperties);
+        controller.setRefreshCookieProperties(refreshCookieProperties);
         return controller;
     }
 
     @Bean
     @ConditionalOnExpression("'${fraho.jwt.token.cookie.enabled}' == 'true' or '${refreshCookieProperties.enabled}' == 'true'")
-    public LogoutRestController logoutRestController(final TokenProperties tokenProperties,
-                                                     final RefreshProperties refreshProperties) {
+    public LogoutRestController logoutRestController(final TokenCookieProperties tokenCookieProperties,
+                                                     final RefreshCookieProperties refreshCookieProperties) {
         log.debug("Register LogoutRestController");
         LogoutRestController controller = new LogoutRestController();
-        controller.setTokenProperties(tokenProperties);
-        controller.setRefreshProperties(refreshProperties);
+        controller.setTokenCookieProperties(tokenCookieProperties);
+        controller.setRefreshCookieProperties(refreshCookieProperties);
         return controller;
     }
 

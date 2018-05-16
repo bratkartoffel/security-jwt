@@ -6,8 +6,8 @@
  */
 package eu.fraho.spring.securityJwt.starter;
 
-import eu.fraho.spring.securityJwt.config.RefreshProperties;
-import eu.fraho.spring.securityJwt.config.TokenProperties;
+import eu.fraho.spring.securityJwt.config.RefreshCookieProperties;
+import eu.fraho.spring.securityJwt.config.TokenCookieProperties;
 import eu.fraho.spring.securityJwt.controller.RefreshRestController;
 import eu.fraho.spring.securityJwt.service.JwtTokenService;
 import eu.fraho.spring.securityJwt.service.NullTokenStore;
@@ -32,13 +32,13 @@ public class SecurityJwtNoRefreshStoreAutoConfiguration {
     @Bean
     @Conditional(ConditionalOnRefreshEnabled.class)
     public RefreshRestController refreshRestController(final JwtTokenService jwtTokenService,
-                                                       final TokenProperties tokenProperties,
-                                                       final RefreshProperties refreshProperties) {
+                                                       final TokenCookieProperties tokenCookieProperties,
+                                                       final RefreshCookieProperties refreshCookieProperties) {
         log.debug("Register RefreshRestController");
         RefreshRestController controller = new RefreshRestController();
         controller.setJwtTokenService(jwtTokenService);
-        controller.setTokenProperties(tokenProperties);
-        controller.setRefreshProperties(refreshProperties);
+        controller.setTokenCookieProperties(tokenCookieProperties);
+        controller.setRefreshCookieProperties(refreshCookieProperties);
         return controller;
     }
 }

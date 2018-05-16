@@ -6,8 +6,8 @@
  */
 package eu.fraho.spring.securityJwt.controller;
 
-import eu.fraho.spring.securityJwt.config.RefreshProperties;
-import eu.fraho.spring.securityJwt.config.TokenProperties;
+import eu.fraho.spring.securityJwt.config.RefreshCookieProperties;
+import eu.fraho.spring.securityJwt.config.TokenCookieProperties;
 import eu.fraho.spring.securityJwt.dto.AuthenticationRequest;
 import eu.fraho.spring.securityJwt.dto.AuthenticationResponse;
 import eu.fraho.spring.securityJwt.service.LoginService;
@@ -37,10 +37,10 @@ public class LoginRestController implements CookieSupport {
     private LoginService loginService;
 
     @Setter(onMethod = @__({@Autowired, @NonNull}))
-    private TokenProperties tokenProperties;
+    private TokenCookieProperties tokenCookieProperties;
 
     @Setter(onMethod = @__({@Autowired, @NonNull}))
-    private RefreshProperties refreshProperties;
+    private RefreshCookieProperties refreshCookieProperties;
 
     @RequestMapping("${fraho.jwt.token.path:/auth/login}")
     @ApiOperation("Create a new token using the supplied credentials")
@@ -56,8 +56,8 @@ public class LoginRestController implements CookieSupport {
 
         // Send the cookies if enabled by configuration
         log.debug("Sending cookies if enabled");
-        addTokenCookieIfEnabled(response, tokens.getAccessToken(), tokenProperties.getCookie());
-        addTokenCookieIfEnabled(response, tokens.getRefreshToken(), refreshProperties.getCookie());
+        addTokenCookieIfEnabled(response, tokens.getAccessToken(), tokenCookieProperties);
+        addTokenCookieIfEnabled(response, tokens.getRefreshToken(), refreshCookieProperties);
 
         // Return the token
         log.info("Login successfully completed");

@@ -92,7 +92,7 @@ public class LoginServiceImpl implements LoginService {
         );
     }
 
-    protected boolean isTotpOk(@Nullable Integer totp, @NotNull @NonNull JwtUser userDetails) {
+    protected boolean isTotpOk(@Nullable Integer totp, @NotNull JwtUser userDetails) {
         return userDetails.getTotpSecret().map(secret -> {
                     log.debug("User has a totp secret set, let's check the supplied pin");
                     return Optional.ofNullable(totp).map(code -> {
