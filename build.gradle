@@ -2,7 +2,7 @@ buildscript {
     ext {
         projectVersion = '3.1.0-SNAPSHOT'
 
-        springBootVersion = '2.0.1.RELEASE'
+        springBootVersion = '2.0.2.RELEASE'
         springDependencyManagementVersion = '[1.0,2.0['
 
         lombokVersion = '[1.16,2.0['
@@ -30,7 +30,7 @@ buildscript {
     }
 }
 
-allprojects {
+subprojects {
     apply plugin: 'java'
     apply plugin: 'jacoco'
     apply plugin: 'propdeps'
@@ -45,9 +45,6 @@ allprojects {
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
-}
-
-subprojects {
     group = 'eu.fraho.spring'
     archivesBaseName = "security-jwt-${project.name}"
     version = "${projectVersion}"
@@ -94,7 +91,6 @@ subprojects {
     apply plugin: 'com.github.hauner.jarTest'
 
     // release stuff
-    apply plugin: 'maven'
     task javadocJar(type: Jar) {
         classifier = 'javadoc'
         from javadoc
@@ -123,44 +119,20 @@ subprojects {
             html.enabled = true
         }
     }
-
     check.dependsOn jacocoTestReport
-}
 
-task jacocoRootReport(type: org.gradle.testing.jacoco.tasks.JacocoReport) {
-    dependsOn = subprojects.test
-    additionalSourceDirs = files(subprojects.sourceSets.main.allSource.srcDirs)
-    sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
-    classDirectories = files(subprojects.sourceSets.main.output)
-    executionData = files(subprojects.jacocoTestReport.executionData)
-    reports {
-        html.enabled = true
-        xml.enabled = true
-        csv.enabled = false
-    }
-    onlyIf = {
-        true
-    }
-    doFirst {
-        executionData = files(executionData.findAll {
-            it.exists()
-        })
-    }
-}
-
-if (project.hasProperty('release')) {
-    apply plugin: 'io.codearte.nexus-staging'
-
-    subprojects {
+    // release to central
+    apply plugin: 'signing'
+    apply plugin: 'maven'
+    if (project.hasProperty('release')) {
         // abort on test failures on releasing
         test {
             ignoreFailures = false
         }
 
-        apply plugin: 'signing'
-
         // Signature of artifacts
         signing {
+            useGpgCmd()
             sign configurations.archives
         }
 
@@ -211,9 +183,25 @@ if (project.hasProperty('release')) {
             }
         }
     }
+}
 
-    nexusStaging {
-        username = ossrhUsername
-        password = ossrhPassword
+task jacocoRootReport(type: JacocoReport) {
+    dependsOn = subprojects.test
+    additionalSourceDirs = files(subprojects.sourceSets.main.allSource.srcDirs)
+    sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
+    classDirectories = files(subprojects.sourceSets.main.output)
+    executionData = files(subprojects.jacocoTestReport.executionData)
+    reports {
+        html.enabled = true
+        xml.enabled = true
+        csv.enabled = false
+    }
+    onlyIf = {
+        true
+    }
+    doFirst {
+        executionData = files(executionData.findAll {
+            it.exists()
+        })
     }
 }
