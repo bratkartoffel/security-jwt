@@ -28,7 +28,7 @@ The default configuration should be sufficient for the most use cases.
   * Refresh token support through an external memcache server
 * module [hibernate](hibernate):
 	* Refresh token support using hibernate and a database table
-* module [redis](redos):
+* module [redis](redis):
 	* Refresh token support using a redis server
 * various *-spring-boot-starter:
     * Spring boot starter modules to integrate into the autoconfiguration ecosystem
