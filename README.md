@@ -3,6 +3,7 @@
 [![Code Coverage](https://img.shields.io/codecov/c/github/bratkartoffel/security-jwt/develop.svg)](https://codecov.io/github/bratkartoffel/security-jwt?branch=develop)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/3632c543331d4fe3b98c96a2964d43ae)](https://www.codacy.com/app/bratkartoffel/security-jwt?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bratkartoffel/security-jwt&amp;utm_campaign=Badge_Grade)
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat)](http://doge.mit-license.org)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fbratkartoffel%2Fsecurity-jwt.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fbratkartoffel%2Fsecurity-jwt?ref=badge_shield)
 
 Providing a simple way to integrate [JWT](https://jwt.io/introduction/) into your spring boot application.
 
@@ -260,3 +261,7 @@ Use refresh token when token expired:
 <   }
 < }
 ```
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fbratkartoffel%2Fsecurity-jwt.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fbratkartoffel%2Fsecurity-jwt?ref=badge_large)
