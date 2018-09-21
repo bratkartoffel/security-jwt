@@ -68,10 +68,11 @@ subprojects {
     }
 
     dependencies {
-        compile("org.jetbrains:annotations:${jetbrainsAnnotationsVersion}")
+        compileOnly("org.jetbrains:annotations:${jetbrainsAnnotationsVersion}")
         compileOnly("org.projectlombok:lombok:${lombokVersion}")
-
-        optional "org.springframework.boot:spring-boot-configuration-processor"
+        
+        apt("org.projectlombok:lombok:${lombokVersion}")
+        apt("org.springframework.boot:spring-boot-configuration-processor")
 
         testCompile('org.springframework.boot:spring-boot-starter-test')
         testCompile('org.springframework:spring-aspects')
@@ -85,7 +86,10 @@ subprojects {
     }
 
     // propdeps
-    compileJava.dependsOn(processResources)
+    compileJava {
+        dependsOn(processResources)
+        options.annotationProcessorPath = configurations.apt
+    }
 
     // transitive dependencies for tests
     apply plugin: 'com.github.hauner.jarTest'
