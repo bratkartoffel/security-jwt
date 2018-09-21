@@ -6,12 +6,12 @@
  */
 package eu.fraho.spring.securityJwt.memcache.starter;
 
-import eu.fraho.spring.securityJwt.config.RefreshProperties;
+import eu.fraho.spring.securityJwt.base.config.RefreshProperties;
+import eu.fraho.spring.securityJwt.base.service.RefreshTokenStore;
+import eu.fraho.spring.securityJwt.base.starter.SecurityJwtBaseAutoConfiguration;
+import eu.fraho.spring.securityJwt.base.starter.SecurityJwtNoRefreshStoreAutoConfiguration;
 import eu.fraho.spring.securityJwt.memcache.config.MemcacheProperties;
 import eu.fraho.spring.securityJwt.memcache.service.MemcacheTokenStore;
-import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
-import eu.fraho.spring.securityJwt.starter.SecurityJwtBaseAutoConfiguration;
-import eu.fraho.spring.securityJwt.starter.SecurityJwtNoRefreshStoreAutoConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;

@@ -6,15 +6,14 @@
  */
 package eu.fraho.spring.securityJwt.redis.service;
 
-import eu.fraho.spring.securityJwt.config.RefreshProperties;
-import eu.fraho.spring.securityJwt.dto.JwtUser;
-import eu.fraho.spring.securityJwt.dto.RefreshToken;
+import eu.fraho.spring.securityJwt.base.config.RefreshProperties;
+import eu.fraho.spring.securityJwt.base.dto.JwtUser;
+import eu.fraho.spring.securityJwt.base.dto.RefreshToken;
+import eu.fraho.spring.securityJwt.base.service.RefreshTokenStore;
 import eu.fraho.spring.securityJwt.redis.config.RedisProperties;
 import eu.fraho.spring.securityJwt.redis.dto.RedisEntry;
-import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +25,10 @@ import java.util.*;
 @Slf4j
 @NoArgsConstructor
 public class RedisTokenStore implements RefreshTokenStore {
-    @Setter(onMethod = @__({@Autowired, @NonNull}))
     private RefreshProperties refreshProperties;
 
-    @Setter(onMethod = @__({@Autowired, @NonNull}))
     private RedisProperties redisProperties;
 
-    @Setter(onMethod = @__({@Autowired, @NonNull}))
     private UserDetailsService userDetailsService;
 
     private JedisPool redisPool;
@@ -164,7 +160,22 @@ public class RedisTokenStore implements RefreshTokenStore {
     @Override
     public void afterPropertiesSet() {
         log.info("Using redis implementation to handle refresh tokens");
-        log.info("Startingredis connection pool to {}:{}", redisProperties.getHost(), redisProperties.getPort());
+        log.info("Starting redis connection pool to {}:{}", redisProperties.getHost(), redisProperties.getPort());
         redisPool = new JedisPool(redisProperties.getPoolConfig(), redisProperties.getHost(), redisProperties.getPort());
+    }
+
+    @Autowired
+    public void setRefreshProperties(@NonNull RefreshProperties refreshProperties) {
+        this.refreshProperties = refreshProperties;
+    }
+
+    @Autowired
+    public void setRedisProperties(@NonNull RedisProperties redisProperties) {
+        this.redisProperties = redisProperties;
+    }
+
+    @Autowired
+    public void setUserDetailsService(@NonNull UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
     }
 }

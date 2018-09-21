@@ -1,5 +1,5 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-eu.fraho.spring.securityJwt.starter.SecurityJwtBaseAutoConfiguration,\
-eu.fraho.spring.securityJwt.starter.SecurityJwtNoRefreshStoreAutoConfiguration,\
-eu.fraho.spring.securityJwt.starter.InstallBouncyCastleConfiguration,\
-eu.fraho.spring.securityJwt.starter.SecurityJwtPasswordAutoConfiguration
+eu.fraho.spring.securityJwt.base.starter.SecurityJwtBaseAutoConfiguration,\
+eu.fraho.spring.securityJwt.base.starter.SecurityJwtNoRefreshStoreAutoConfiguration,\
+eu.fraho.spring.securityJwt.base.starter.InstallBouncyCastleConfiguration,\
+eu.fraho.spring.securityJwt.base.starter.SecurityJwtPasswordAutoConfiguration

@@ -6,7 +6,7 @@
  */
 package eu.fraho.spring.securityJwt.hibernate.spring;
 
-import eu.fraho.spring.securityJwt.it.spring.TestApiApplication;
+import eu.fraho.spring.securityJwt.base.it.spring.TestApiApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.aspectj.EnableSpringConfigured;

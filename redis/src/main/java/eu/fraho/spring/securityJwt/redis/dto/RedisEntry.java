@@ -6,12 +6,12 @@
  */
 package eu.fraho.spring.securityJwt.redis.dto;
 
-import eu.fraho.spring.securityJwt.dto.JwtUser;
-import jdk.nashorn.internal.ir.annotations.Immutable;
+import eu.fraho.spring.securityJwt.base.dto.JwtUser;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import net.jcip.annotations.Immutable;
 
 @Getter
 @Immutable

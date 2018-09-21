@@ -6,15 +6,14 @@
  */
 package eu.fraho.spring.securityJwt.hibernate.service;
 
-import eu.fraho.spring.securityJwt.config.RefreshProperties;
-import eu.fraho.spring.securityJwt.dto.JwtUser;
-import eu.fraho.spring.securityJwt.dto.RefreshToken;
+import eu.fraho.spring.securityJwt.base.config.RefreshProperties;
+import eu.fraho.spring.securityJwt.base.dto.JwtUser;
+import eu.fraho.spring.securityJwt.base.dto.RefreshToken;
+import eu.fraho.spring.securityJwt.base.service.RefreshTokenStore;
 import eu.fraho.spring.securityJwt.hibernate.dto.RefreshTokenEntity;
-import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,13 +33,10 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HibernateTokenStore implements RefreshTokenStore {
-    @Setter(onMethod = @__({@Autowired, @NonNull}))
     private RefreshProperties refreshProperties;
 
-    @Setter(onMethod = @__({@Autowired, @NonNull}))
     private UserDetailsService userDetailsService;
 
-    @Setter(onMethod = @__({@PersistenceContext, @NonNull}))
     private EntityManager entityManager;
 
     @Override
@@ -155,6 +151,21 @@ public class HibernateTokenStore implements RefreshTokenStore {
     public int revokeTokens() {
         final Query query = entityManager.createQuery("DELETE FROM RefreshTokenEntity o");
         return query.executeUpdate();
+    }
+
+    @Autowired
+    public void setRefreshProperties(@NonNull RefreshProperties refreshProperties) {
+        this.refreshProperties = refreshProperties;
+    }
+
+    @Autowired
+    public void setUserDetailsService(@NonNull UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
+    @PersistenceContext
+    public void setEntityManager(@NonNull EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
     @Override

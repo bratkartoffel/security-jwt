@@ -6,13 +6,12 @@
  */
 package eu.fraho.spring.securityJwt.internal.service;
 
-import eu.fraho.spring.securityJwt.config.RefreshProperties;
-import eu.fraho.spring.securityJwt.dto.JwtUser;
-import eu.fraho.spring.securityJwt.dto.RefreshToken;
-import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
+import eu.fraho.spring.securityJwt.base.config.RefreshProperties;
+import eu.fraho.spring.securityJwt.base.dto.JwtUser;
+import eu.fraho.spring.securityJwt.base.dto.RefreshToken;
+import eu.fraho.spring.securityJwt.base.service.RefreshTokenStore;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
@@ -25,10 +24,8 @@ import java.util.*;
 @Slf4j
 @NoArgsConstructor
 public class InternalTokenStore implements RefreshTokenStore {
-    @Setter(onMethod = @__({@Autowired, @NonNull}))
     private RefreshProperties refreshProperties;
 
-    @Setter(onMethod = @__({@Autowired, @NonNull}))
     private UserDetailsService userDetailsService;
 
     //                  AbstractToken   User
@@ -96,5 +93,15 @@ public class InternalTokenStore implements RefreshTokenStore {
                 .expirationPolicy(ExpirationPolicy.CREATED)
                 .expiration(refreshProperties.getExpiration().getQuantity(), refreshProperties.getExpiration().getTimeUnit())
                 .build();
+    }
+
+    @Autowired
+    public void setRefreshProperties(@NonNull RefreshProperties refreshProperties) {
+        this.refreshProperties = refreshProperties;
+    }
+
+    @Autowired
+    public void setUserDetailsService(@NonNull UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
     }
 }

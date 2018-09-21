@@ -19,8 +19,8 @@ The default configuration should be sufficient for the most use cases.
 
 # Contents
 * base:
-  * JWT Integration into Spring Security (including a [REST-Controller](base/src/main/java/eu/fraho/spring/securityJwt/controller/AuthenticationRestController.java) to authenticate against)
-  * A [CryptPasswordEncoder](base/src/main/java/eu/fraho/spring/securityJwt/password/CryptPasswordEncoder.java) to generate / use linux system crypt(1)-hashes (supporting new $5$ and $6$ hashes and rounds)
+  * JWT Integration into Spring Security (including some [REST-Controllers](base/src/main/java/eu/fraho/spring/securityJwt/base/controller) to authenticate against)
+  * A [CryptPasswordEncoder](base/src/main/java/eu/fraho/spring/securityJwt/base/password/CryptPasswordEncoder.java) to generate / use linux system crypt(1)-hashes (supporting the newer $5$ and $6$ hashes and rounds)
   * Full support for [Swagger 2](https://github.com/springfox/springfox) documentation (REST Controller and DTO are annotated and described)
 * module [internal](internal):
   * Refresh token support through an internal, in-memory map
@@ -97,13 +97,13 @@ To see this library "in action", please take a look at [the examples](https://gi
 ## Manual configuration (legacy):
 * Add the dependencies to your build script
 * Configure your boot application to pick up our components (add "eu.fraho.spring.securityJwt" to the scanBasePackages field of your ```@SpringBootApplication```)
-* Optionally add the BouncyCastle Provider (e.g. within the [main-Method](base/src/test/java/eu/fraho/spring/securityJwt/util/CreateEcdsaJwtKeys.java))
+* Optionally add the BouncyCastle Provider (e.g. within the [main-Method](base/src/test/java/eu/fraho/spring/securityJwt/base/util/CreateEcdsaJwtKeys.java))
   * **Hint:** This is required if you would like to use the ECDSA signature algorithm!
 * Optionally use my enhanced PasswordEncoder as a ```@Bean```
 * Optionally choose a refresh token store implementation and set it as ```fraho.jwt.refresh.cache-impl```
 
 ## General steps for both methods:
-* Create an implementation of UserDetailsService that returns an instance of [JwtUser](base/src/main/java/eu/fraho/spring/securityJwt/dto/JwtUser.java)
+* Create an implementation of UserDetailsService that returns an instance of [JwtUser](base/src/main/java/eu/fraho/spring/securityJwt/base/dto/JwtUser.java)
 * By default, this service creates a random hmac secret for signatures on each startup. To stay consistent accross service restarts and not kicking clients out please either change the algorithm (recommended) or specifiy at least an hmac keyfile.
 
 # Usage for clients
@@ -118,7 +118,7 @@ This library will run out-of the box, but you should at least take a look at the
 
 By default, this library creates an hmac secret on startup. As this is no problem for testing and running your application you are strongly adviced to define a static key. Otherwise you will render all access tokens invalid upon service restart, thus requiring your clients to login again.
 
-I recommend using ECDSA for tokens (you can use [this](base/src/test/java/eu/fraho/spring/securityJwt/util/CreateEcdsaJwtKeys.java) class for that) and setting the ```algorithm``` field to something like ES256.
+I recommend using ECDSA for tokens (you can use [this](base/src/test/java/eu/fraho/spring/securityJwt/base/util/CreateEcdsaJwtKeys.java) class for that) and setting the ```algorithm``` field to something like ES256.
 
 ## Token configuration (Prefix fraho.jwt.token)
 | Property        | Default                     | Description   |
@@ -130,7 +130,7 @@ I recommend using ECDSA for tokens (you can use [this](base/src/test/java/eu/fra
 | cookie.httpOnly | true                        | The cookie will not be accessible by client JavaScript if enabled (highly recommend)|
 | cookie.path     | /                           | The issued access token cookie will only be sent by the client to URIs matching this pattern|
 | cookie.secure   | true                        | The cookie will only be sent over an encrypted (https) connection (highly recommend)|
-| expiration      | 1 hour                      | The validity period of issued tokens. For details on how this field has to specified see [TimeWithPeriod](base/src/main/java/eu/fraho/spring/securityJwt/dto/TimeWithPeriod.java)|
+| expiration      | 1 hour                      | The validity period of issued tokens. For details on how this field has to specified see [TimeWithPeriod](base/src/main/java/eu/fraho/spring/securityJwt/base/dto/TimeWithPeriod.java)|
 | header.enabled  | true                        | Enables support for tokens sent as a header. (highly recommended)|
 | header.names    | Authorization               | Sets the name of the headers which may contain the token.|
 | hmac            | null                        | Defines the key file when using a hmac signature method|
@@ -142,24 +142,25 @@ I recommend using ECDSA for tokens (you can use [this](base/src/test/java/eu/fra
 ## Refresh configuration (Prefix fraho.jwt.refresh)
 | Property                   | Default             | Description   |
 |----------------------------|---------------------|---------------|
-| cache-impl                 | null                | Defines the implemenation for refresh token storage. The specified class has to implement the [RefreshTokenStore](base/src/main/java/eu/fraho/spring/securityJwt/service/RefreshTokenStore.java) Interface. To disable the refresh tokens at all use null as value.<br>You have to add at least one of the optional dependencies below to add refresh token support.<br>Please see module READMEs for valid values.|
+| cache-impl                 | null                | Defines the implemenation for refresh token storage. The specified class has to implement the [RefreshTokenStore](base/src/main/java/eu/fraho/spring/securityJwt/base/service/RefreshTokenStore.java) Interface. To disable the refresh tokens at all use null as value.<br>You have to add at least one of the optional dependencies below to add refresh token support.<br>Please see module READMEs for valid values.|
 | cookie.enabled             | false               | Enables support for tokens sent as a cookie|
 | cookie.names               | JWT-REFRESHTOKEN    | Sets the name of the cookie with the token. The first entry in this list is used when sending out the cookie, any other names are optionally taken when validating incoming requests.|
 | cookie.domain              | null                | If this value is not specified, then the redirect for refreshing the cookies will be sent only with the {@link #path} specified. Otherweise the domain will be prepended to the redirect, thus allowing to use an external refresh server. See [javax.servlet.http.Cookie#setDomain(String)](https://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setDomain-java.lang.String-)|
 | cookie.httpOnly            | true                | The cookie will not be accessible by client JavaScript if enabled (highly recommend)|
 | cookie.secure              | true                | The cookie will only be sent over an encrypted (https) connection (recommend)|
 | cookie.path                | /auth/refresh       | The issued access token cookie will only be sent by the client to URIs matching this pattern. This path spec has to include the endpoint for refreshing tokens, otherwise this won't work! See [javax.servlet.http.Cookie#setPath(String)](https://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setPath-java.lang.String-)|
-| expiration                 | 1 day               | How long are refresh tokens valid? For details on how this field has to specified see [TimeWithPeriod](base/src/main/java/eu/fraho/spring/securityJwt/dto/TimeWithPeriod.java)|
+| expiration                 | 1 day               | How long are refresh tokens valid? For details on how this field has to specified see [TimeWithPeriod](base/src/main/java/eu/fraho/spring/securityJwt/base/dto/TimeWithPeriod.java)|
 | length                     | 24                  | Defines the length of refresh tokens in bytes, without the base64 encoding|
 | path                       | /auth/refresh       | Sets the path for the RestController, defining the endpoint for refresh requests.|
 
 ## Other configuration properties
-| Property              | Default | Description   |
-|-----------------------|---------|---------------|
-| fraho.totp.length     | 16      | Defines the length of the generated TOTP secrets|
-| fraho.totp.variance   | 3       | Defines the allowed variance / validity of TOTP pins. The number defines how many "old / expired" pins will be considered valid. A value of "3" is the official suggestion for TOTP. This value is used to consider small clock-differences between the client and server.|
-| fraho.crypt.algorithm | SHA512  | Configure the used crypt algorithm. For a list of possible values see [CryptAlgorithm](base/src/main/java/eu/fraho/spring/securityJwt/dto/CryptAlgorithm.java) Please be aware that changing this parameter has a major effect on the strength of the hashed password! Do not use insecure algorithms (as DES or MD5 as time of writing) unless you really know what you do!|
-| fraho.crypt.rounds    | 10,000  | Defines the "strength" of the hashing function. The more rounds used, the more secure the generated hash. But beware that more rounds mean more cpu-load and longer computation times! This parameter is only used if the specified algorithm supports hashing rounds.|
+| Property              | Default      | Description   |
+|-----------------------|--------------|---------------|
+| fraho.jwt.logout.path | /auth/logout | Sets the path for the RestController, defining the endpoint for logging out. This path is only available if cookies are enabled.|
+| fraho.totp.length     | 16           | Defines the length of the generated TOTP secrets|
+| fraho.totp.variance   | 3            | Defines the allowed variance / validity of TOTP pins. The number defines how many "old / expired" pins will be considered valid. A value of "3" is the official suggestion for TOTP. This value is used to consider small clock-differences between the client and server.|
+| fraho.crypt.algorithm | SHA512       | Configure the used crypt algorithm. For a list of possible values see [CryptAlgorithm](base/src/main/java/eu/fraho/spring/securityJwt/base/dto/CryptAlgorithm.java) Please be aware that changing this parameter has a major effect on the strength of the hashed password! Do not use insecure algorithms (as DES or MD5 as time of writing) unless you really know what you do!|
+| fraho.crypt.rounds    | 10,000       | Defines the "strength" of the hashing function. The more rounds used, the more secure the generated hash. But beware that more rounds mean more cpu-load and longer computation times! This parameter is only used if the specified algorithm supports hashing rounds.|
 
 # Building
 ```bash
