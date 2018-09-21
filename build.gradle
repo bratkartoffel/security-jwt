@@ -2,20 +2,21 @@ buildscript {
     ext {
         projectVersion = '3.1.0-SNAPSHOT'
 
-        springBootVersion = '2.0.2.RELEASE'
-        springDependencyManagementVersion = '[1.0,2.0['
+        springBootVersion = '2.0.5.RELEASE'
+        springDependencyManagementVersion = '1.0.6.RELEASE'
 
-        lombokVersion = '[1.16,2.0['
-        swaggerAnnotationsVersion = '[1.5,2.0['
-        nimbusJwtVersion = '[5.7,6.0['
-        commonsCodecVersion = '[1.10,2.0['
-        bouncyCastleVersion = '[1.57,2.0['
-        spyMemcachedVersion = '[2.12,3.0['
-        expiringMapVersion = '[0.5,1.0['
-        h2Version = '[1.4,2.0['
-        jetbrainsAnnotationsVersion = '[16.0,17.0['
-        powerMockVersion = '[1.7,2.0['
-        jedisVersion = '[2.9,3.0['
+        lombokVersion = '1.18.2'
+        swaggerAnnotationsVersion = '1.5.21'
+        nimbusJwtVersion = '6.0.2'
+        commonsCodecVersion = '1.11'
+        bouncyCastleVersion = '1.60'
+        spyMemcachedVersion = '2.12.3'
+        expiringMapVersion = '0.5.8'
+        h2Version = '1.4.197'
+        jetbrainsAnnotationsVersion = '16.0.3'
+        powerMockVersion = '1.7.4'
+        jedisVersion = '2.9.0'
+        embeddedRedisVersion = '0.7.2'
     }
     repositories {
         mavenLocal()
@@ -25,7 +26,7 @@ buildscript {
     }
     dependencies {
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.11.0"
-        classpath 'io.spring.gradle:propdeps-plugin:0.0.9.RELEASE'
+        classpath 'io.spring.gradle:propdeps-plugin:0.0.10.RELEASE'
         classpath "gradle.plugin.gradle-plugins:jartest:1.0.1"
     }
 }
@@ -67,6 +68,10 @@ subprojects {
         }
     }
 
+    configurations {
+        apt
+    }
+    
     dependencies {
         compileOnly("org.jetbrains:annotations:${jetbrainsAnnotationsVersion}")
         compileOnly("org.projectlombok:lombok:${lombokVersion}")
@@ -77,7 +82,6 @@ subprojects {
         testCompile('org.springframework.boot:spring-boot-starter-test')
         testCompile('org.springframework:spring-aspects')
         testCompile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-        testCompileOnly("org.projectlombok:lombok:${lombokVersion}")
     }
 
     // do not abort on test failures
