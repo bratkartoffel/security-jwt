@@ -30,6 +30,8 @@ The default configuration should be sufficient for the most use cases.
 	* Refresh token support using hibernate and a database table
 * module [redis](redis):
 	* Refresh token support using a redis server
+* module [files](files):
+	* Refresh token support using a json file
 * various *-spring-boot-starter:
     * Spring boot starter modules to integrate into the autoconfiguration ecosystem
 
@@ -145,7 +147,7 @@ I recommend using ECDSA for tokens (you can use [this](base/src/test/java/eu/fra
 | cache-impl                 | null                | Defines the implemenation for refresh token storage. The specified class has to implement the [RefreshTokenStore](base/src/main/java/eu/fraho/spring/securityJwt/base/service/RefreshTokenStore.java) Interface. To disable the refresh tokens at all use null as value.<br>You have to add at least one of the optional dependencies below to add refresh token support.<br>Please see module READMEs for valid values.|
 | cookie.enabled             | false               | Enables support for tokens sent as a cookie|
 | cookie.names               | JWT-REFRESHTOKEN    | Sets the name of the cookie with the token. The first entry in this list is used when sending out the cookie, any other names are optionally taken when validating incoming requests.|
-| cookie.domain              | null                | If this value is not specified, then the redirect for refreshing the cookies will be sent only with the {@link #path} specified. Otherweise the domain will be prepended to the redirect, thus allowing to use an external refresh server. See [javax.servlet.http.Cookie#setDomain(String)](https://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setDomain-java.lang.String-)|
+| cookie.domain              | null                | If this value is not specified, then the redirect for refreshing the cookies will be sent only with the path specified. Otherweise the domain will be prepended to the redirect, thus allowing to use an external refresh server. See [javax.servlet.http.Cookie#setDomain(String)](https://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setDomain-java.lang.String-)|
 | cookie.httpOnly            | true                | The cookie will not be accessible by client JavaScript if enabled (highly recommend)|
 | cookie.secure              | true                | The cookie will only be sent over an encrypted (https) connection (recommend)|
 | cookie.path                | /auth/refresh       | The issued access token cookie will only be sent by the client to URIs matching this pattern. This path spec has to include the endpoint for refreshing tokens, otherwise this won't work! See [javax.servlet.http.Cookie#setPath(String)](https://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setPath-java.lang.String-)|

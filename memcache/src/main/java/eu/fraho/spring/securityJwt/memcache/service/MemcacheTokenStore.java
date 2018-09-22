@@ -60,6 +60,7 @@ public class MemcacheTokenStore implements RefreshTokenStore {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T extends JwtUser> Optional<T> useToken(@NotNull String token) {
         String key = memcacheProperties.getPrefix() + token;
         // will be "null" if invalid token

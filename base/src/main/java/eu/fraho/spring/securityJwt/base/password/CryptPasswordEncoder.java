@@ -43,6 +43,7 @@ public class CryptPasswordEncoder implements PasswordEncoder {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public String encode(@NotNull CharSequence rawPassword) {
         final String cryptParam;
         CryptAlgorithm algorithm = cryptProperties.getAlgorithm();

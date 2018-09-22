@@ -46,6 +46,7 @@ public class RedisTokenStore implements RefreshTokenStore {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T extends JwtUser> Optional<T> useToken(@NotNull String token) {
         String key = redisProperties.getPrefix() + token;
         Optional<T> result = Optional.empty();

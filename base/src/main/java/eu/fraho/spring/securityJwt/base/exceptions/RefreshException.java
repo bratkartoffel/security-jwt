@@ -7,6 +7,10 @@
 package eu.fraho.spring.securityJwt.base.exceptions;
 
 public class RefreshException extends SecurityException {
+    public RefreshException(String message) {
+        super(message);
+    }
+
     public RefreshException(String message, Throwable cause) {
         super(message, cause);
     }

@@ -61,6 +61,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T extends JwtUser> Optional<T> parseUser(@NotNull String token) {
         Optional<T> result = Optional.empty();
         try {

@@ -214,7 +214,9 @@ public abstract class AbstractJwtTokenServiceWithRefreshTest extends JwtTokenSer
         Assert.assertEquals("AbstractToken count don't match", 2, tokens.size());
 
         Assert.assertTrue("AbstractToken should be used", service.useRefreshToken(tokenA.getToken()).isPresent());
-        Assert.assertEquals("Wrong token used", tokenB, service.listRefreshTokens(jsmith).get(0));
+        final List<RefreshToken> tokensRead = service.listRefreshTokens(jsmith);
+        Assert.assertEquals("AbstractToken count don't match", 1, tokensRead.size());
+        Assert.assertEquals("Wrong token used", tokenB, tokensRead.get(0));
     }
 
     @Test(expected = FeatureNotConfiguredException.class)

@@ -37,6 +37,7 @@ public class InternalTokenStore implements RefreshTokenStore {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public synchronized <T extends JwtUser> Optional<T> useToken(@NotNull String token) {
         return Optional.ofNullable(refreshTokenMap.remove(token))
                 .map(JwtUser::getUsername)
