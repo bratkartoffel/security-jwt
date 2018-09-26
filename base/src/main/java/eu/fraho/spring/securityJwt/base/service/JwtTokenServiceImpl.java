@@ -18,8 +18,6 @@ import eu.fraho.spring.securityJwt.base.exceptions.FeatureNotConfiguredException
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +60,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends JwtUser> Optional<T> parseUser(@NotNull String token) {
+    public <T extends JwtUser> Optional<T> parseUser(String token) {
         Optional<T> result = Optional.empty();
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
@@ -81,8 +79,8 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     }
 
     @Override
-    @NotNull
-    public <T extends JwtUser> AccessToken generateToken(@NotNull T user) throws JOSEException {
+
+    public <T extends JwtUser> AccessToken generateToken(T user) throws JOSEException {
         if (tokenProperties.getSigner() == null) {
             throw new FeatureNotConfiguredException("Access token signing is not enabled.");
         }
@@ -106,18 +104,18 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
                 .build();
     }
 
-    @NotNull
+
     private Date generateExpirationDate() {
         return Date.from(ZonedDateTime.now().plusSeconds(tokenProperties.getExpiration().toSeconds()).toInstant());
     }
 
     @Override
-    public boolean validateToken(@NotNull AccessToken token) {
+    public boolean validateToken(AccessToken token) {
         return validateToken(token.getToken());
     }
 
     @Override
-    public boolean validateToken(@NotNull String token) {
+    public boolean validateToken(String token) {
         SignedJWT signedJWT;
         try {
             signedJWT = SignedJWT.parse(token);
@@ -129,7 +127,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     }
 
     @Override
-    public boolean validateToken(@NotNull SignedJWT signedJWT) {
+    public boolean validateToken(SignedJWT signedJWT) {
         boolean result;
         try {
             result = signedJWT.verify(tokenProperties.getVerifier());
@@ -143,7 +141,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
         return result;
     }
 
-    private boolean areClaimsValid(@NotNull JWTClaimsSet claims) {
+    private boolean areClaimsValid(JWTClaimsSet claims) {
         Date now = new Date();
         Date exp = Optional.ofNullable(claims.getExpirationTime()).orElse(new Date(0));
         Date nbf = Optional.ofNullable(claims.getNotBeforeTime()).orElse(new Date(0));
@@ -161,12 +159,12 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
 
     @Override
     @Deprecated
-    public Optional<String> getToken(@NotNull HttpServletRequest request) {
+    public Optional<String> getToken(HttpServletRequest request) {
         return getAccessToken(request);
     }
 
     @Override
-    public Optional<String> getAccessToken(@NotNull HttpServletRequest request) {
+    public Optional<String> getAccessToken(HttpServletRequest request) {
         Optional<String> result = Optional.empty();
         if (tokenHeaderProperties.isEnabled()) {
             log.debug("Extracting token from header");
@@ -180,7 +178,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     }
 
     @Override
-    public Optional<String> getRefreshToken(@NotNull HttpServletRequest request) {
+    public Optional<String> getRefreshToken(HttpServletRequest request) {
         Optional<String> result = Optional.empty();
         if (refreshCookieProperties.isEnabled()) {
             log.debug("Extracting refreshtoken from cookies");
@@ -189,7 +187,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
         return result;
     }
 
-    private Optional<String> extractHeaderToken(@NotNull String[] names, @NotNull HttpServletRequest request) {
+    private Optional<String> extractHeaderToken(String[] names, HttpServletRequest request) {
         return Arrays.stream(names)
                 .map(request::getHeader)
                 .filter(Objects::nonNull)
@@ -197,7 +195,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
                 .map(e -> e.startsWith("Bearer ") ? e.substring(7) : e);
     }
 
-    private Optional<String> extractCookieToken(@NotNull String[] names, @Nullable Cookie[] cookies) {
+    private Optional<String> extractCookieToken(String[] names, Cookie[] cookies) {
         Optional<String> result = Optional.empty();
         if (cookies != null) {
             result = Arrays.stream(names)
@@ -209,7 +207,7 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     }
 
     @Override
-    @NotNull
+
     public RefreshToken generateRefreshToken(JwtUser user) {
         byte[] data = new byte[refreshProperties.getLength()];
         random.nextBytes(data);
@@ -228,12 +226,12 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     }
 
     @Override
-    public <T extends JwtUser> Optional<T> useRefreshToken(@NotNull RefreshToken token) {
+    public <T extends JwtUser> Optional<T> useRefreshToken(RefreshToken token) {
         return useRefreshToken(token.getToken());
     }
 
     @Override
-    public <T extends JwtUser> Optional<T> useRefreshToken(@NotNull String token) {
+    public <T extends JwtUser> Optional<T> useRefreshToken(String token) {
         if (tokenProperties.getSigner() == null) {
             throw new FeatureNotConfiguredException("Access token signing is not enabled.");
         }
@@ -242,29 +240,29 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     }
 
     @Override
-    @NotNull
+
     public Map<Long, List<RefreshToken>> listRefreshTokens() {
         return refreshTokenStore.listTokens();
     }
 
     @Override
-    @NotNull
-    public List<RefreshToken> listRefreshTokens(@NotNull JwtUser user) {
+
+    public List<RefreshToken> listRefreshTokens(JwtUser user) {
         return refreshTokenStore.listTokens(user);
     }
 
     @Override
-    public boolean revokeRefreshToken(@NotNull RefreshToken token) {
+    public boolean revokeRefreshToken(RefreshToken token) {
         return refreshTokenStore.revokeToken(token.getToken());
     }
 
     @Override
-    public boolean revokeRefreshToken(@NotNull String token) {
+    public boolean revokeRefreshToken(String token) {
         return refreshTokenStore.revokeToken(token);
     }
 
     @Override
-    public int revokeRefreshTokens(@NotNull JwtUser user) {
+    public int revokeRefreshTokens(JwtUser user) {
         return refreshTokenStore.revokeTokens(user);
     }
 

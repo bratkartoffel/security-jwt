@@ -15,7 +15,6 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +41,7 @@ public class HibernateTokenStore implements RefreshTokenStore {
     @Override
     @Transactional
     @SuppressWarnings("unchecked")
-    public <T extends JwtUser> Optional<T> useToken(@NotNull String token) {
+    public <T extends JwtUser> Optional<T> useToken(String token) {
         // first load the token from the database
         final TypedQuery<RefreshTokenEntity> queryLoad = entityManager.createQuery("SELECT o FROM RefreshTokenEntity o WHERE " +
                 "o.token = :token AND o.created >= :expiration", RefreshTokenEntity.class);
@@ -68,10 +67,10 @@ public class HibernateTokenStore implements RefreshTokenStore {
         return resultUser;
     }
 
-    @NotNull
+
     @Override
     @Transactional(readOnly = true)
-    public List<RefreshToken> listTokens(@NotNull JwtUser user) {
+    public List<RefreshToken> listTokens(JwtUser user) {
         final TypedQuery<RefreshTokenEntity> query = entityManager.createQuery("SELECT o FROM RefreshTokenEntity o WHERE " +
                 "o.userId = :userId AND o.created >= :expiration", RefreshTokenEntity.class);
         query.setParameter("userId", user.getId());
@@ -86,18 +85,18 @@ public class HibernateTokenStore implements RefreshTokenStore {
                 .collect(Collectors.toList());
     }
 
-    private int calculateExpiration(@NotNull ZonedDateTime created) {
+    private int calculateExpiration(ZonedDateTime created) {
         return (int) ChronoUnit.SECONDS.between(created, ZonedDateTime.now());
     }
 
-    private void setQueryExpiration(@NotNull Query query) {
+    private void setQueryExpiration(Query query) {
         final ZonedDateTime expiration = ZonedDateTime.now().minusSeconds(refreshProperties.getExpiration().toSeconds());
         query.setParameter("expiration", expiration);
     }
 
     @Override
     @Transactional
-    public void saveToken(@NotNull JwtUser user, @NotNull String token) {
+    public void saveToken(JwtUser user, String token) {
         entityManager.persist(RefreshTokenEntity.builder()
                 .userId(user.getId())
                 .username(user.getUsername())
@@ -105,7 +104,7 @@ public class HibernateTokenStore implements RefreshTokenStore {
                 .build());
     }
 
-    @NotNull
+
     @Override
     @Transactional(readOnly = true)
     public Map<Long, List<RefreshToken>> listTokens() {
@@ -129,7 +128,7 @@ public class HibernateTokenStore implements RefreshTokenStore {
 
     @Override
     @Transactional
-    public boolean revokeToken(@NotNull String token) {
+    public boolean revokeToken(String token) {
         final Query query = entityManager.createQuery("DELETE FROM RefreshTokenEntity o WHERE " +
                 "o.token = :token ");
         query.setParameter("token", token);
@@ -139,7 +138,7 @@ public class HibernateTokenStore implements RefreshTokenStore {
 
     @Override
     @Transactional
-    public int revokeTokens(@NotNull JwtUser user) {
+    public int revokeTokens(JwtUser user) {
         final Query query = entityManager.createQuery("DELETE FROM RefreshTokenEntity o WHERE " +
                 "o.userId = :userId");
         query.setParameter("userId", user.getId());

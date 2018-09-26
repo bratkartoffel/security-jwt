@@ -13,7 +13,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import net.jcip.annotations.Immutable;
-import org.jetbrains.annotations.NotNull;
 
 @JsonDeserialize(builder = RefreshRequest.RefreshRequestBuilder.class)
 @Getter
@@ -21,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 @Immutable
 public final class RefreshRequest {
     @JsonProperty(required = true)
-    @NotNull
+
     @NonNull
     private final String refreshToken;
 

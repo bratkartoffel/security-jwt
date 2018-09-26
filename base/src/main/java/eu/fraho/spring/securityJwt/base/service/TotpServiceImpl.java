@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base32;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -56,7 +55,7 @@ public class TotpServiceImpl implements TotpService {
     }
 
     @Override
-    public boolean verifyCode(@NotNull String secret, int code) {
+    public boolean verifyCode(String secret, int code) {
         final long timeIndex = System.currentTimeMillis() / 1000 / 30;
         final byte[] secretBytes = base32.decode(secret);
         if (secretBytes.length == 0) {

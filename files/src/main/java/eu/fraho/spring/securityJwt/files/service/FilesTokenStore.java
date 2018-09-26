@@ -19,7 +19,6 @@ import eu.fraho.spring.securityJwt.files.dto.DatabaseEntry;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -103,7 +102,7 @@ public class FilesTokenStore implements RefreshTokenStore {
     }
 
     @Override
-    public void saveToken(@NotNull JwtUser user, @NotNull String token) {
+    public void saveToken(JwtUser user, String token) {
         withLock(db -> {
             TimeWithPeriod expiration = refreshProperties.getExpiration();
             db.add(
@@ -119,7 +118,7 @@ public class FilesTokenStore implements RefreshTokenStore {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends JwtUser> Optional<T> useToken(@NotNull String token) {
+    public <T extends JwtUser> Optional<T> useToken(String token) {
         return withLock(db -> {
             return db.stream().filter(e -> Objects.equals(e.getToken(), token)).findAny().map(e -> {
                 T user = (T) userDetailsService.loadUserByUsername(e.getUsername());
@@ -133,9 +132,9 @@ public class FilesTokenStore implements RefreshTokenStore {
         });
     }
 
-    @NotNull
+
     @Override
-    public List<RefreshToken> listTokens(@NotNull JwtUser user) {
+    public List<RefreshToken> listTokens(JwtUser user) {
         return withLock(db -> {
             long now = ZonedDateTime.now().toEpochSecond();
             return Collections.unmodifiableList(db.stream()
@@ -145,7 +144,7 @@ public class FilesTokenStore implements RefreshTokenStore {
         });
     }
 
-    @NotNull
+
     @Override
     public Map<Long, List<RefreshToken>> listTokens() {
         return withLock(db -> {
@@ -160,7 +159,7 @@ public class FilesTokenStore implements RefreshTokenStore {
     }
 
     @Override
-    public boolean revokeToken(@NotNull String token) {
+    public boolean revokeToken(String token) {
         return withLock(db -> {
             Optional<DatabaseEntry> entry = db.stream().filter(e -> Objects.equals(e.getToken(), token)).findAny();
             if (entry.isPresent()) {
@@ -172,7 +171,7 @@ public class FilesTokenStore implements RefreshTokenStore {
     }
 
     @Override
-    public int revokeTokens(@NotNull JwtUser user) {
+    public int revokeTokens(JwtUser user) {
         return withLock(db -> {
             List<DatabaseEntry> entries = db.stream().filter(e -> Objects.equals(e.getUserId(), user.getId())).collect(Collectors.toList());
             entries.forEach(db::remove);

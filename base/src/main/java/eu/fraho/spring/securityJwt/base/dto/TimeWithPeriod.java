@@ -13,7 +13,6 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import net.jcip.annotations.Immutable;
-import org.jetbrains.annotations.NotNull;
 
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
@@ -48,7 +47,7 @@ public final class TimeWithPeriod {
     /**
      * The chronoUnit to use
      */
-    @NotNull
+
     @NonNull
     private final ChronoUnit chronoUnit;
 
@@ -57,7 +56,7 @@ public final class TimeWithPeriod {
      *
      * @param value A string representation like &quot;&lt;quantity&gt; &lt;chronoUnit&gt;&quot;
      */
-    public TimeWithPeriod(@NotNull final String value) {
+    public TimeWithPeriod(final String value) {
         final String[] parts = value.split("\\s", 2);
         String period = parts[1].toUpperCase();
         if (!period.endsWith("S")) {
@@ -75,7 +74,7 @@ public final class TimeWithPeriod {
      * @param chronoUnit The chronoUnit to use
      */
     @Builder
-    public TimeWithPeriod(int quantity, @NotNull ChronoUnit chronoUnit) {
+    public TimeWithPeriod(int quantity, ChronoUnit chronoUnit) {
         this.quantity = quantity;
         this.chronoUnit = chronoUnit;
     }

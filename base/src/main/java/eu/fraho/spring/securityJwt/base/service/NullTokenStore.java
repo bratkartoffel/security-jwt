@@ -10,7 +10,6 @@ import eu.fraho.spring.securityJwt.base.dto.JwtUser;
 import eu.fraho.spring.securityJwt.base.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.base.exceptions.FeatureNotConfiguredException;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -19,33 +18,33 @@ import java.util.Optional;
 @Slf4j
 public class NullTokenStore implements RefreshTokenStore {
     @Override
-    public void saveToken(@NotNull JwtUser user, @NotNull String token) {
+    public void saveToken(JwtUser user, String token) {
         throw new FeatureNotConfiguredException("No implementation configured");
     }
 
     @Override
-    public <T extends JwtUser> Optional<T> useToken(@NotNull String token) {
+    public <T extends JwtUser> Optional<T> useToken(String token) {
         throw new FeatureNotConfiguredException("No implementation configured");
     }
 
     @Override
-    public @NotNull List<RefreshToken> listTokens(@NotNull JwtUser user) {
+    public List<RefreshToken> listTokens(JwtUser user) {
         throw new FeatureNotConfiguredException("No implementation configured");
     }
 
-    @NotNull
+
     @Override
     public Map<Long, List<RefreshToken>> listTokens() {
         throw new FeatureNotConfiguredException("No implementation configured");
     }
 
     @Override
-    public boolean revokeToken(@NotNull String token) {
+    public boolean revokeToken(String token) {
         throw new FeatureNotConfiguredException("No implementation configured");
     }
 
     @Override
-    public int revokeTokens(@NotNull JwtUser user) {
+    public int revokeTokens(JwtUser user) {
         throw new FeatureNotConfiguredException("No implementation configured");
     }
 

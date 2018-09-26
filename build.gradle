@@ -6,17 +6,16 @@ buildscript {
         springDependencyManagementVersion = '1.0.6.RELEASE'
 
         lombokVersion = '1.18.2'
-        swaggerAnnotationsVersion = '1.5.21'
+        swaggerAnnotations2Version = '1.5.21'
+        swaggerAnnotations3Version = '2.0.5'
         nimbusJwtVersion = '6.0.2'
         commonsCodecVersion = '1.11'
         bouncyCastleVersion = '1.60'
         spyMemcachedVersion = '2.12.3'
         expiringMapVersion = '0.5.8'
         h2Version = '1.4.197'
-        jetbrainsAnnotationsVersion = '16.0.3'
         powerMockVersion = '1.7.4'
         jedisVersion = '2.9.0'
-        embeddedRedisVersion = '0.7.2'
     }
     repositories {
         mavenLocal()
@@ -73,7 +72,6 @@ subprojects {
     }
     
     dependencies {
-        compileOnly("org.jetbrains:annotations:${jetbrainsAnnotationsVersion}")
         compileOnly("org.projectlombok:lombok:${lombokVersion}")
         
         apt("org.projectlombok:lombok:${lombokVersion}")

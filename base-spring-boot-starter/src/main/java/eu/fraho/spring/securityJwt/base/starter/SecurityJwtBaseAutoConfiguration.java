@@ -13,7 +13,6 @@ import eu.fraho.spring.securityJwt.base.controller.LogoutRestController;
 import eu.fraho.spring.securityJwt.base.dto.JwtUser;
 import eu.fraho.spring.securityJwt.base.service.*;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -112,7 +111,7 @@ public class SecurityJwtBaseAutoConfiguration {
         return new BCryptPasswordEncoder();
     }
 
-    @NotNull
+
     @Bean
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
     @ConditionalOnMissingBean

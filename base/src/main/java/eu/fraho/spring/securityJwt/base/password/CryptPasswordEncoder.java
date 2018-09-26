@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.Crypt;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -34,7 +33,7 @@ public class CryptPasswordEncoder implements PasswordEncoder {
 
     private CryptProperties cryptProperties;
 
-    private static boolean slowEquals(@NotNull CharSequence a, @NotNull CharSequence b) {
+    private static boolean slowEquals(CharSequence a, CharSequence b) {
         int diff = a.length() ^ b.length();
         for (int i = 0; i < a.length() && i < b.length(); i++) {
             diff |= a.charAt(i) ^ b.charAt(i);
@@ -44,7 +43,7 @@ public class CryptPasswordEncoder implements PasswordEncoder {
 
     @Override
     @SuppressWarnings("deprecation")
-    public String encode(@NotNull CharSequence rawPassword) {
+    public String encode(CharSequence rawPassword) {
         final String cryptParam;
         CryptAlgorithm algorithm = cryptProperties.getAlgorithm();
         if (algorithm.isRoundsSupported()) {
@@ -64,7 +63,7 @@ public class CryptPasswordEncoder implements PasswordEncoder {
                 && slowEquals(encodedPassword, Crypt.crypt(rawPassword.toString(), encodedPassword));
     }
 
-    @NotNull
+
     protected String generateSalt() {
         CryptAlgorithm algorithm = cryptProperties.getAlgorithm();
         final byte[] bytes = new byte[algorithm.getSaltLength() * 2];

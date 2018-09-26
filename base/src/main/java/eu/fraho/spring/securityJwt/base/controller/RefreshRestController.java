@@ -12,13 +12,12 @@ import eu.fraho.spring.securityJwt.base.dto.AuthenticationResponse;
 import eu.fraho.spring.securityJwt.base.dto.RefreshRequest;
 import eu.fraho.spring.securityJwt.base.service.JwtTokenService;
 import eu.fraho.spring.securityJwt.base.service.RefreshService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.http.MediaType;
@@ -47,15 +46,23 @@ public class RefreshRestController implements CookieSupport {
     private RefreshService refreshService;
 
     @RequestMapping("${fraho.jwt.refresh.path:/auth/refresh}")
-    @ApiOperation("Use a previously fetched refresh token to create a new access token")
+    // OpenAPI 3.0
+    @Operation(description = "Use a previously fetched refresh token to create a new access token")
     @ApiResponses({
-            @ApiResponse(code = HttpServletResponse.SC_OK, message = "Generated token"),
-            @ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = "Missing a required field in the request or refresh tokens not supported"),
-            @ApiResponse(code = HttpServletResponse.SC_UNAUTHORIZED, message = "Either the token expired, or the user has no longer access to this api"),
+            @ApiResponse(responseCode = "200", description = "Generated token"),
+            @ApiResponse(responseCode = "400", description = "Missing a required field in the request or refresh tokens not supported"),
+            @ApiResponse(responseCode = "401", description = "Either the token expired, or the user has no longer access to this api"),
+    })
+    // Swagger 2.0
+    @io.swagger.annotations.ApiOperation("Use a previously fetched refresh token to create a new access token")
+    @io.swagger.annotations.ApiResponses({
+            @io.swagger.annotations.ApiResponse(code = HttpServletResponse.SC_OK, message = "Generated token"),
+            @io.swagger.annotations.ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = "Missing a required field in the request or refresh tokens not supported"),
+            @io.swagger.annotations.ApiResponse(code = HttpServletResponse.SC_UNAUTHORIZED, message = "Either the token expired, or the user has no longer access to this api"),
     })
     public ResponseEntity<AuthenticationResponse> refresh(HttpServletResponse response,
                                                           HttpServletRequest request,
-                                                          @RequestBody(required = false) @Nullable RefreshRequest refreshRequest) {
+                                                          @RequestBody(required = false) RefreshRequest refreshRequest) {
         log.debug("Starting refresh");
 
         // extract the refreshtoken from the body

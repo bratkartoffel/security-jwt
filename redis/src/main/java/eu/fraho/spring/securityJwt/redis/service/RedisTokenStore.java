@@ -15,7 +15,6 @@ import eu.fraho.spring.securityJwt.redis.dto.RedisEntry;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import redis.clients.jedis.*;
@@ -34,7 +33,7 @@ public class RedisTokenStore implements RefreshTokenStore {
     private JedisPool redisPool;
 
     @Override
-    public void saveToken(@NotNull JwtUser user, @NotNull String token) {
+    public void saveToken(JwtUser user, String token) {
         String key = redisProperties.getPrefix() + token;
         String entry = RedisEntry.from(user).toString();
         try (Jedis jedis = redisPool.getResource()) {
@@ -47,7 +46,7 @@ public class RedisTokenStore implements RefreshTokenStore {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends JwtUser> Optional<T> useToken(@NotNull String token) {
+    public <T extends JwtUser> Optional<T> useToken(String token) {
         String key = redisProperties.getPrefix() + token;
         Optional<T> result = Optional.empty();
         try (Jedis jedis = redisPool.getResource()) {
@@ -64,9 +63,9 @@ public class RedisTokenStore implements RefreshTokenStore {
         return result;
     }
 
-    @NotNull
+
     @Override
-    public List<RefreshToken> listTokens(@NotNull JwtUser user) {
+    public List<RefreshToken> listTokens(JwtUser user) {
         return listTokens().getOrDefault(user.getId(), Collections.emptyList());
     }
 
@@ -94,7 +93,7 @@ public class RedisTokenStore implements RefreshTokenStore {
         return zipToMap(keys, values);
     }
 
-    @NotNull
+
     @Override
     public Map<Long, List<RefreshToken>> listTokens() {
         final Map<Long, List<RefreshToken>> result = new HashMap<>();
@@ -123,7 +122,7 @@ public class RedisTokenStore implements RefreshTokenStore {
     }
 
     @Override
-    public boolean revokeToken(@NotNull String token) {
+    public boolean revokeToken(String token) {
         String key = redisProperties.getPrefix() + token;
         try (Jedis jedis = redisPool.getResource()) {
             return jedis.del(key) == 1;
@@ -131,7 +130,7 @@ public class RedisTokenStore implements RefreshTokenStore {
     }
 
     @Override
-    public int revokeTokens(@NotNull JwtUser user) {
+    public int revokeTokens(JwtUser user) {
         try (Jedis jedis = redisPool.getResource()) {
             List<String> keys = new ArrayList<>(jedis.keys(redisProperties.getPrefix() + "*"));
             List<String> values = jedis.mget(keys.toArray(new String[0]));

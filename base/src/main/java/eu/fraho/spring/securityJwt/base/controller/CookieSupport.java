@@ -8,14 +8,13 @@ package eu.fraho.spring.securityJwt.base.controller;
 
 import eu.fraho.spring.securityJwt.base.config.CookieProperties;
 import eu.fraho.spring.securityJwt.base.dto.AbstractToken;
-import org.jetbrains.annotations.Nullable;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
 public interface CookieSupport {
-    default void addTokenCookieIfEnabled(HttpServletResponse response, @Nullable AbstractToken token, CookieProperties configuration) {
+    default void addTokenCookieIfEnabled(HttpServletResponse response, AbstractToken token, CookieProperties configuration) {
         if (configuration.isEnabled() && token != null) {
             Cookie cookie = new Cookie(configuration.getNames()[0], token.getToken());
             Optional.ofNullable(configuration.getDomain()).ifPresent(cookie::setDomain);

@@ -7,7 +7,6 @@
 package eu.fraho.spring.securityJwt.base;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -21,7 +20,7 @@ import java.io.IOException;
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request,
-                         @NotNull HttpServletResponse response,
+                         HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
         // We should just send a 401 Unauthorized response because there is no 'login page' to redirect to
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");

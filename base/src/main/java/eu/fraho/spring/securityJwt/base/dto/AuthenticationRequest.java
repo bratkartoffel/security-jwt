@@ -13,8 +13,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import net.jcip.annotations.Immutable;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -24,16 +22,16 @@ import java.util.Optional;
 @Immutable
 public final class AuthenticationRequest {
     @JsonProperty(required = true)
-    @NotNull
+
     @NonNull
     private final String username;
 
     @JsonProperty(required = true)
-    @NotNull
+
     @NonNull
     private final String password;
 
-    @Nullable
+
     private final Integer totp;
 
     public Optional<Integer> getTotp() {

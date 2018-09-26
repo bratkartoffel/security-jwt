@@ -11,8 +11,6 @@ import eu.fraho.spring.securityJwt.base.dto.*;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -87,7 +85,7 @@ public class LoginServiceImpl implements LoginService {
         );
     }
 
-    protected boolean isTotpOk(@Nullable Integer totp, @NotNull JwtUser userDetails) {
+    protected boolean isTotpOk(Integer totp, JwtUser userDetails) {
         return userDetails.getTotpSecret().map(secret -> {
                     log.debug("User has a totp secret set, let's check the supplied pin");
                     return Optional.ofNullable(totp).map(code -> {

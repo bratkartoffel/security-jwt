@@ -9,7 +9,6 @@ package eu.fraho.spring.securityJwt.hibernate.dto;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
 
 @Entity
@@ -25,19 +24,19 @@ public class RefreshTokenEntity {
     @Setter(AccessLevel.NONE)
     private Long id = 0L;
 
-    @NotNull
+
     @Column(updatable = false)
     @Setter(AccessLevel.NONE)
     @Convert(converter = ZonedDateTimeConverter.class)
     private ZonedDateTime created = ZonedDateTime.now();
 
-    @NotNull
+
     private Long userId;
 
-    @NotNull
+
     private String username;
 
-    @NotNull
+
     @Column(unique = true)
     private String token;
 

@@ -15,7 +15,6 @@ import eu.fraho.spring.securityJwt.base.exceptions.FeatureNotConfiguredException
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
@@ -30,7 +29,7 @@ public class RefreshServiceImpl implements RefreshService {
     private JwtTokenService jwtTokenService;
 
     @Override
-    public AuthenticationResponse checkRefresh(@Nullable String token) throws AuthenticationException {
+    public AuthenticationResponse checkRefresh(String token) throws AuthenticationException {
         if (!jwtTokenService.isRefreshTokenSupported()) {
             log.info("Refresh token support is disabled");
             throw new FeatureNotConfiguredException("Refresh token support is disabled");

@@ -12,7 +12,6 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,17 +31,17 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     private JwtTokenService jwtTokenService;
 
     @Override
-    protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain chain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         jwtTokenService.getAccessToken(request).ifPresent(t -> handleToken(t, request));
         chain.doFilter(request, response);
     }
 
-    protected void handleToken(@NotNull String token, @NotNull HttpServletRequest request) {
+    protected void handleToken(String token, HttpServletRequest request) {
         log.debug("AccessToken was present in request, extracting userdetails");
         jwtTokenService.parseUser(token).ifPresent(u -> handleUser(u, request));
     }
 
-    protected void handleUser(@NotNull JwtUser jwtUser, @NotNull HttpServletRequest request) {
+    protected void handleUser(JwtUser jwtUser, HttpServletRequest request) {
         log.debug("Successfully used token to authenticate {}", jwtUser.getUsername());
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(jwtUser, "JWT", jwtUser.getAuthorities());
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

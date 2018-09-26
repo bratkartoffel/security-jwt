@@ -12,7 +12,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import net.jcip.annotations.Immutable;
-import org.jetbrains.annotations.NotNull;
 
 @Getter
 @Immutable
@@ -20,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 @EqualsAndHashCode(of = {"token"})
 public abstract class AbstractToken {
     @JsonProperty(required = true)
-    @NotNull
+
     @NonNull
     private final String token;
 

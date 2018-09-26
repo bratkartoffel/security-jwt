@@ -12,7 +12,6 @@ import com.nimbusds.jwt.SignedJWT;
 import eu.fraho.spring.securityJwt.base.dto.AccessToken;
 import eu.fraho.spring.securityJwt.base.dto.JwtUser;
 import eu.fraho.spring.securityJwt.base.dto.RefreshToken;
-import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -28,7 +27,7 @@ public interface JwtTokenService {
      * @param <T>   Any configured subtype of JwtUser
      * @return an user object
      */
-    <T extends JwtUser> Optional<T> parseUser(@NotNull String token);
+    <T extends JwtUser> Optional<T> parseUser(String token);
 
     /**
      * Generate a new token for the given user.
@@ -40,7 +39,7 @@ public interface JwtTokenService {
      * @throws JOSEException            When the token could not be signed
      * @throws IllegalArgumentException If no private key is specified (service cannot sign tokens)
      */
-    @NotNull <T extends JwtUser> AccessToken generateToken(@NotNull T user) throws JOSEException;
+    <T extends JwtUser> AccessToken generateToken(T user) throws JOSEException;
 
     /**
      * Parse the token, validate the signature and check that the various date claims from this token
@@ -49,7 +48,7 @@ public interface JwtTokenService {
      * @param token The token to validate
      * @return {@code true} if the token passed all checks (is valid and trusted) or otherwise {@code false}
      */
-    boolean validateToken(@NotNull String token);
+    boolean validateToken(String token);
 
     /**
      * Validate the signature and check that the various date claims from this token
@@ -58,7 +57,7 @@ public interface JwtTokenService {
      * @param token The token to validate
      * @return {@code true} if the token passed all checks (is valid and trusted) or otherwise {@code false}
      */
-    boolean validateToken(@NotNull SignedJWT token);
+    boolean validateToken(SignedJWT token);
 
     /**
      * Parse the token, validate the signature and check notBeforeDate and expirationTime.
@@ -66,7 +65,7 @@ public interface JwtTokenService {
      * @param token The token to validate
      * @return {@code true} if the token passed all checks (is valid and trusted) or otherwise {@code false}
      */
-    boolean validateToken(@NotNull AccessToken token);
+    boolean validateToken(AccessToken token);
 
     /**
      * Helper method to extract the token from the requests headers or cookies.
@@ -76,7 +75,7 @@ public interface JwtTokenService {
      * @deprecated Use {@link #getAccessToken(HttpServletRequest)} instead
      */
     @Deprecated
-    Optional<String> getToken(@NotNull HttpServletRequest request);
+    Optional<String> getToken(HttpServletRequest request);
 
     /**
      * Helper method to extract the token from the requests headers or cookies.
@@ -84,7 +83,7 @@ public interface JwtTokenService {
      * @param request the request
      * @return optional token
      */
-    Optional<String> getAccessToken(@NotNull HttpServletRequest request);
+    Optional<String> getAccessToken(HttpServletRequest request);
 
     /**
      * Helper method to extract the refresh token from the requests headers or cookies.
@@ -92,7 +91,7 @@ public interface JwtTokenService {
      * @param request the request
      * @return optional token
      */
-    Optional<String> getRefreshToken(@NotNull HttpServletRequest request);
+    Optional<String> getRefreshToken(HttpServletRequest request);
 
     /**
      * Gracefully ask this service if refresh token support is enabled
@@ -110,7 +109,7 @@ public interface JwtTokenService {
      * @param user The refresh token will be issued to this user
      * @return The refresh token (Base64 encoded) or {@code null} if property {@code fraho.jwt.refresh.enabled} is set to {@code false}.
      */
-    @NotNull
+
     RefreshToken generateRefreshToken(JwtUser user);
 
     /**
@@ -123,7 +122,7 @@ public interface JwtTokenService {
      * @param <T>          Any configured subtype of JwtUser
      * @return {@code true} only if the refresh token is valid and not been used before
      */
-    <T extends JwtUser> Optional<T> useRefreshToken(@NotNull String refreshToken);
+    <T extends JwtUser> Optional<T> useRefreshToken(String refreshToken);
 
     /**
      * Use and invalidate a refresh token for the given user.
@@ -135,7 +134,7 @@ public interface JwtTokenService {
      * @param <T>   Any configured subtype of JwtUser
      * @return {@code true} only if the refresh token is valid and not been used before
      */
-    <T extends JwtUser> Optional<T> useRefreshToken(@NotNull RefreshToken token);
+    <T extends JwtUser> Optional<T> useRefreshToken(RefreshToken token);
 
     /**
      * List all currently active refresh tokens from the backend cache.
@@ -143,7 +142,7 @@ public interface JwtTokenService {
      * @return a Map with all active refresh tokens.
      * The {@code key} is the username, the {@code value} is the list of tokens for that user
      */
-    @NotNull
+
     Map<Long, List<RefreshToken>> listRefreshTokens();
 
     /**
@@ -152,8 +151,8 @@ public interface JwtTokenService {
      * @param user the user to filter the refresh tokens
      * @return list of refresh tokens
      */
-    @NotNull
-    List<RefreshToken> listRefreshTokens(@NotNull JwtUser user);
+
+    List<RefreshToken> listRefreshTokens(JwtUser user);
 
     /**
      * Revoke the given token from the stored refresh token list
@@ -161,7 +160,7 @@ public interface JwtTokenService {
      * @param token the token to remove
      * @return {@code true} if the token was revoked
      */
-    boolean revokeRefreshToken(@NotNull RefreshToken token);
+    boolean revokeRefreshToken(RefreshToken token);
 
     /**
      * Revoke the given token from the stored refresh token list
@@ -169,7 +168,7 @@ public interface JwtTokenService {
      * @param token The token to revoke
      * @return {@code true} if the token was revoked
      */
-    boolean revokeRefreshToken(@NotNull String token);
+    boolean revokeRefreshToken(String token);
 
     /**
      * Revokes all  refresh tokens from the stored refresh token list for the specified user
@@ -177,7 +176,7 @@ public interface JwtTokenService {
      * @param user The user which tokens should be revoked
      * @return count of revoked tokens
      */
-    int revokeRefreshTokens(@NotNull JwtUser user);
+    int revokeRefreshTokens(JwtUser user);
 
     /**
      * Revoke all tokens from the stored refresh token list

@@ -31,19 +31,6 @@ public class JwtServiceRefreshFilesTest extends AbstractJwtTokenServiceWithRefre
         refreshTokenStore.afterPropertiesSet();
     }
 
-    private FilesProperties getFilesProperties() throws IOException {
-        FilesProperties result = new FilesProperties();
-        result.setDataDir(Paths.get("test_datadir/"));
-        result.setExternalLocks(true);
-        result.afterPropertiesSet();
-        return result;
-    }
-
-    @Override
-    protected RefreshTokenStore getRefreshStore() {
-        return refreshTokenStore;
-    }
-
     @AfterClass
     public static void cleanup() {
         try {
@@ -61,5 +48,18 @@ public class JwtServiceRefreshFilesTest extends AbstractJwtTokenServiceWithRefre
         } catch (IOException e) {
             logger.error("Could not cleanup databaseDir", e);
         }
+    }
+
+    private FilesProperties getFilesProperties() throws IOException {
+        FilesProperties result = new FilesProperties();
+        result.setDataDir(Paths.get("test_datadir/"));
+        result.setExternalLocks(true);
+        result.afterPropertiesSet();
+        return result;
+    }
+
+    @Override
+    protected RefreshTokenStore getRefreshStore() {
+        return refreshTokenStore;
     }
 }

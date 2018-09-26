@@ -13,7 +13,6 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,7 +54,7 @@ public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    @NotNull
+
     public JwtAuthenticationTokenFilter authenticationTokenFilterBean() {
         log.debug("Creating JwtAuthenticationTokenFilter");
         JwtAuthenticationTokenFilter filter = new JwtAuthenticationTokenFilter();
@@ -65,14 +64,14 @@ public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
     @Override
-    @NotNull
+
     public AuthenticationManager authenticationManagerBean() throws Exception {
         log.debug("Creating AuthenticationManager");
         return super.authenticationManagerBean();
     }
 
     @Override
-    public void configure(@NotNull HttpSecurity httpSecurity) throws Exception {
+    public void configure(HttpSecurity httpSecurity) throws Exception {
         log.info("Loading fraho security-jwt version {}", JwtSecurityConfig.class.getPackage().getImplementationVersion());
         log.debug("Configuring HttpSecurity");
 
