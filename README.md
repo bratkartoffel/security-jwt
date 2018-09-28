@@ -13,6 +13,7 @@ This project is split into 4 parts:
 * memcache: Support for memcache to store refresh tokens
 * hibernate: Support for hibernate to store refresh tokens
 * redis: Support for redis to store refresh tokens
+* files: Support for filesystem to store refresh tokens
 
 Simply use the dependencies within your build script, spring boot takes care of the rest.
 The default configuration should be sufficient for the most use cases.
