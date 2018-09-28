@@ -41,13 +41,13 @@ The default configuration should be sufficient for the most use cases.
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-base</artifactId>
-        <version>3.0.0</version>
+        <version>4.0.0</version>
     </dependency>
     <!-- or -->
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-base-spring-boot-starter</artifactId>
-        <version>3.0.0</version>
+        <version>4.0.0</version>
     </dependency>
 </dependencies>
 ```
@@ -58,22 +58,27 @@ When you want to add refresh token support, then choose one of the following dep
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-internal</artifactId>
-        <version>3.0.0</version>
+        <version>4.0.0</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-memcache</artifactId>
-        <version>3.0.0</version>
+        <version>4.0.0</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-hibernate</artifactId>
-        <version>3.0.0</version>
+        <version>4.0.0</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-redis</artifactId>
-        <version>0.0.0</version> <!-- not yet released -->
+        <version>4.0.0</version>
+    </dependency>
+    <dependency>
+        <groupId>eu.fraho.spring</groupId>
+        <artifactId>security-jwt-files</artifactId>
+        <version>4.0.0</version>
     </dependency>
 </dependencies>
 ```
