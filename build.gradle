@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        projectVersion = '4.0.0'
+        projectVersion = '4.0.1-SNAPSHOT'
 
         springBootVersion = '2.0.5.RELEASE'
         springDependencyManagementVersion = '1.0.6.RELEASE'
