@@ -18,7 +18,8 @@ dependencies {
 
     compile("com.nimbusds:nimbus-jose-jwt:${nimbusJwtVersion}")
     compile("commons-codec:commons-codec:${commonsCodecVersion}")
-    compile("io.swagger:swagger-annotations:${swaggerAnnotationsVersion}")
+    optional("io.swagger:swagger-annotations:${swaggerAnnotations2Version}")
+    optional("io.swagger.core.v3:swagger-annotations:${swaggerAnnotations3Version}")
 
     optional("org.bouncycastle:bcprov-jdk15on:${bouncyCastleVersion}")
 

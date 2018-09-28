@@ -6,20 +6,18 @@
  */
 package eu.fraho.spring.securityJwt.memcache.service;
 
-import eu.fraho.spring.securityJwt.config.RefreshProperties;
-import eu.fraho.spring.securityJwt.dto.JwtUser;
-import eu.fraho.spring.securityJwt.dto.RefreshToken;
-import eu.fraho.spring.securityJwt.exceptions.RefreshException;
+import eu.fraho.spring.securityJwt.base.config.RefreshProperties;
+import eu.fraho.spring.securityJwt.base.dto.JwtUser;
+import eu.fraho.spring.securityJwt.base.dto.RefreshToken;
+import eu.fraho.spring.securityJwt.base.exceptions.RefreshException;
+import eu.fraho.spring.securityJwt.base.service.RefreshTokenStore;
 import eu.fraho.spring.securityJwt.memcache.config.MemcacheProperties;
 import eu.fraho.spring.securityJwt.memcache.dto.MemcacheEntry;
-import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.spy.memcached.MemcachedClient;
 import net.spy.memcached.internal.OperationFuture;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -35,18 +33,15 @@ import java.util.stream.Collectors;
 @Slf4j
 @NoArgsConstructor
 public class MemcacheTokenStore implements RefreshTokenStore {
-    @Setter(onMethod = @__({@Autowired, @NonNull}))
     private RefreshProperties refreshProperties;
 
-    @Setter(onMethod = @__({@Autowired, @NonNull}))
     private MemcacheProperties memcacheProperties;
 
-    @Setter(onMethod = @__({@Autowired, @NonNull}))
     private UserDetailsService userDetailsService;
 
     private MemcachedClient memcachedClient;
 
-    private <T> T getAndWait(@NotNull String message, @NotNull Supplier<OperationFuture<T>> action) {
+    private <T> T getAndWait(String message, Supplier<OperationFuture<T>> action) {
         try {
             return action.get().get(memcacheProperties.getTimeout(), TimeUnit.SECONDS);
         } catch (TimeoutException | InterruptedException | ExecutionException e) {
@@ -55,7 +50,7 @@ public class MemcacheTokenStore implements RefreshTokenStore {
     }
 
     @Override
-    public void saveToken(@NotNull JwtUser user, @NotNull String token) {
+    public void saveToken(JwtUser user, String token) {
         String key = memcacheProperties.getPrefix() + token;
         String entry = MemcacheEntry.from(user).toString();
         getAndWait("Error while saving refresh token on memcache server", () ->
@@ -64,7 +59,8 @@ public class MemcacheTokenStore implements RefreshTokenStore {
     }
 
     @Override
-    public <T extends JwtUser> Optional<T> useToken(@NotNull String token) {
+    @SuppressWarnings("unchecked")
+    public <T extends JwtUser> Optional<T> useToken(String token) {
         String key = memcacheProperties.getPrefix() + token;
         // will be "null" if invalid token
         final Object found = memcachedClient.get(key);
@@ -81,13 +77,13 @@ public class MemcacheTokenStore implements RefreshTokenStore {
         return result;
     }
 
-    @NotNull
+
     @Override
-    public List<RefreshToken> listTokens(@NotNull JwtUser user) {
+    public List<RefreshToken> listTokens(JwtUser user) {
         return listTokens().getOrDefault(user.getId(), Collections.emptyList());
     }
 
-    @NotNull
+
     @Override
     public Map<Long, List<RefreshToken>> listTokens() {
         final Map<Long, List<RefreshToken>> result = new HashMap<>();
@@ -110,14 +106,14 @@ public class MemcacheTokenStore implements RefreshTokenStore {
     }
 
     @Override
-    public boolean revokeToken(@NotNull String token) {
+    public boolean revokeToken(String token) {
         String key = memcacheProperties.getPrefix() + token;
         return getAndWait("Error while deleting refresh token on memcache server", () ->
                 memcachedClient.delete(key));
     }
 
     @Override
-    public int revokeTokens(@NotNull JwtUser user) {
+    public int revokeTokens(JwtUser user) {
         List<String> allKeys = listAllKeys();
         final Map<String, Object> entries = memcachedClient.getBulk(allKeys);
 
@@ -139,7 +135,7 @@ public class MemcacheTokenStore implements RefreshTokenStore {
         return count;
     }
 
-    @NotNull
+
     private List<String> listAllKeys() {
         final List<String> result = new ArrayList<>();
         final Set<Integer> slabs = memcachedClient.getStats("items")
@@ -193,5 +189,20 @@ public class MemcacheTokenStore implements RefreshTokenStore {
 
         log.info("Starting memcache connection to {}:{}", memcacheProperties.getHost(), memcacheProperties.getPort());
         memcachedClient = new MemcachedClient(new InetSocketAddress(memcacheProperties.getHost(), memcacheProperties.getPort()));
+    }
+
+    @Autowired
+    public void setRefreshProperties(@NonNull RefreshProperties refreshProperties) {
+        this.refreshProperties = refreshProperties;
+    }
+
+    @Autowired
+    public void setMemcacheProperties(@NonNull MemcacheProperties memcacheProperties) {
+        this.memcacheProperties = memcacheProperties;
+    }
+
+    @Autowired
+    public void setUserDetailsService(@NonNull UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
     }
 }

@@ -1,0 +1,4 @@
+fraho.jwt.refresh:
+  delimiter: "+:~~[@#°§^"
+  cache-impl: eu.fraho.spring.securityJwt.files.service.FilesTokenStore
+  files.dataDir: test_datadir/

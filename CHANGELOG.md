@@ -1,5 +1,12 @@
 # Changelog
 
+### 4.0.0 (not yet released)
+* (redis) Add support for redis as backend
+* (files) Add support for filesystem as backend
+* (base) TimeWithPeriod is now serializable with Jackson
+* (base) Split the all-mighty rest controller into separate ones and extract logic into services (which you may override now)
+* (base) Refactoring of base to ease overriding specific behaviour
+
 ### 3.0.0 (2018-04-17)
 * (all) Add support for spring boot 2
 * (all) Set minimum required boot version to 2.x

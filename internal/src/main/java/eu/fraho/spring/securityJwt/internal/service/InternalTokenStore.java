@@ -6,17 +6,15 @@
  */
 package eu.fraho.spring.securityJwt.internal.service;
 
-import eu.fraho.spring.securityJwt.config.RefreshProperties;
-import eu.fraho.spring.securityJwt.dto.JwtUser;
-import eu.fraho.spring.securityJwt.dto.RefreshToken;
-import eu.fraho.spring.securityJwt.service.RefreshTokenStore;
+import eu.fraho.spring.securityJwt.base.config.RefreshProperties;
+import eu.fraho.spring.securityJwt.base.dto.JwtUser;
+import eu.fraho.spring.securityJwt.base.dto.RefreshToken;
+import eu.fraho.spring.securityJwt.base.service.RefreshTokenStore;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -25,35 +23,34 @@ import java.util.*;
 @Slf4j
 @NoArgsConstructor
 public class InternalTokenStore implements RefreshTokenStore {
-    @Setter(onMethod = @__({@Autowired, @NonNull}))
     private RefreshProperties refreshProperties;
 
-    @Setter(onMethod = @__({@Autowired, @NonNull}))
     private UserDetailsService userDetailsService;
 
     //                  AbstractToken   User
     private ExpiringMap<String, JwtUser> refreshTokenMap;
 
     @Override
-    public synchronized void saveToken(@NotNull JwtUser user, @NotNull String token) {
+    public synchronized void saveToken(JwtUser user, String token) {
         refreshTokenMap.put(token, user);
     }
 
     @Override
-    public synchronized <T extends JwtUser> Optional<T> useToken(@NotNull String token) {
+    @SuppressWarnings("unchecked")
+    public synchronized <T extends JwtUser> Optional<T> useToken(String token) {
         return Optional.ofNullable(refreshTokenMap.remove(token))
                 .map(JwtUser::getUsername)
                 .map(userDetailsService::loadUserByUsername)
                 .map(e -> (T) e);
     }
 
-    @NotNull
+
     @Override
-    public synchronized List<RefreshToken> listTokens(@NotNull JwtUser user) {
+    public synchronized List<RefreshToken> listTokens(JwtUser user) {
         return listTokens().getOrDefault(user.getId(), Collections.emptyList());
     }
 
-    @NotNull
+
     @Override
     public synchronized Map<Long, List<RefreshToken>> listTokens() {
         final Map<Long, List<RefreshToken>> result = new HashMap<>();
@@ -70,12 +67,12 @@ public class InternalTokenStore implements RefreshTokenStore {
     }
 
     @Override
-    public synchronized boolean revokeToken(@NotNull String token) {
+    public synchronized boolean revokeToken(String token) {
         return refreshTokenMap.remove(token) != null;
     }
 
     @Override
-    public synchronized int revokeTokens(@NotNull JwtUser user) {
+    public synchronized int revokeTokens(JwtUser user) {
         return (int) listTokens(user).stream()
                 .map(RefreshToken::getToken)
                 .map(refreshTokenMap::remove)
@@ -96,5 +93,15 @@ public class InternalTokenStore implements RefreshTokenStore {
                 .expirationPolicy(ExpirationPolicy.CREATED)
                 .expiration(refreshProperties.getExpiration().getQuantity(), refreshProperties.getExpiration().getTimeUnit())
                 .build();
+    }
+
+    @Autowired
+    public void setRefreshProperties(@NonNull RefreshProperties refreshProperties) {
+        this.refreshProperties = refreshProperties;
+    }
+
+    @Autowired
+    public void setUserDetailsService(@NonNull UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
     }
 }

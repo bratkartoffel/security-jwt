@@ -1,0 +1,6 @@
+fraho.jwt.refresh:
+  cache-impl: eu.fraho.spring.securityJwt.redis.service.RedisTokenStore
+  delimiter: "+:~~[@#°§^"
+  redis:
+    host: 127.0.0.1
+    port: 6379
