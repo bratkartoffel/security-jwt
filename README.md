@@ -6,7 +6,7 @@
 
 Providing a simple way to integrate [JWT](https://jwt.io/introduction/) into your spring boot application.
 
-This project is split into 4 parts:
+This project is split into multiple parts:
 
 * base: Basic integration of JWT into spring security (without refresh tokens)
 * internal: Support for an in-memory cache (ExpiringMap) for refresh tokens
