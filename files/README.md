@@ -7,7 +7,7 @@ This module adds support for storing refresh tokens within an simple json docume
 <dependency>
     <groupId>eu.fraho.spring</groupId>
     <artifactId>security-jwt-files</artifactId>
-    <version>0.0.0</version> <!-- not yet released -->
+    <version>4.0.0</version>
 </dependency>
 ```
 
