@@ -14,8 +14,9 @@ buildscript {
         spyMemcachedVersion = '2.12.3'
         expiringMapVersion = '0.5.8'
         h2Version = '1.4.197'
-        powerMockVersion = '1.7.4'
+        powerMockVersion = '2.0.0-beta.5'
         jedisVersion = '2.9.0'
+        byteBuddyVersion = '1.9.1'
     }
     repositories {
         mavenLocal()
@@ -27,35 +28,37 @@ buildscript {
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.11.0"
         classpath 'io.spring.gradle:propdeps-plugin:0.0.10.RELEASE'
         classpath "gradle.plugin.gradle-plugins:jartest:1.0.1"
+        classpath "io.spring.gradle:dependency-management-plugin:${springDependencyManagementVersion}"
     }
 }
 
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'jacoco'
-    apply plugin: 'propdeps'
-    apply plugin: 'propdeps-maven'
-    apply plugin: 'propdeps-idea'
-    apply plugin: 'propdeps-eclipse'
 
     repositories {
         mavenLocal()
         mavenCentral()
     }
 
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    sourceCompatibility = 8
+    targetCompatibility = 8
     group = 'eu.fraho.spring'
     archivesBaseName = "security-jwt-${project.name}"
     version = "${projectVersion}"
     description = "Spring boot security integration for JWT"
+
+    configurations {
+        apt
+    }
 
     jar {
         version = "${project.version}"
         manifest {
             attributes(
                     "Implementation-Title": "Gradle",
-                    "Implementation-Version": version
+                    "Implementation-Version": version,
+                    "Build-Jdk": "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
+                    "Compatibility": project.sourceCompatibility,
             )
         }
     }
@@ -67,30 +70,34 @@ subprojects {
         }
     }
 
-    configurations {
-        apt
-    }
-    
     dependencies {
         compileOnly("org.projectlombok:lombok:${lombokVersion}")
-        
+
         apt("org.projectlombok:lombok:${lombokVersion}")
         apt("org.springframework.boot:spring-boot-configuration-processor")
 
         testCompile('org.springframework.boot:spring-boot-starter-test')
         testCompile('org.springframework:spring-aspects')
         testCompile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+        testCompile("net.bytebuddy:byte-buddy:${byteBuddyVersion}")
+        testCompile("net.bytebuddy:byte-buddy-agent:${byteBuddyVersion}")
     }
 
-    // do not abort on test failures
-    test {
-        ignoreFailures = true
+    // spring dependency management
+    apply plugin: 'io.spring.dependency-management'
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.boot:spring-boot-starter-parent:${springBootVersion}"
+        }
     }
 
     // propdeps
+    apply plugin: 'propdeps'
+    apply plugin: 'propdeps-maven'
+    apply plugin: 'propdeps-idea'
+    apply plugin: 'propdeps-eclipse'
     compileJava {
         dependsOn(processResources)
-        options.annotationProcessorPath = configurations.apt
     }
 
     // transitive dependencies for tests
@@ -119,13 +126,18 @@ subprojects {
 
     // code coverage
     apply plugin: 'jacoco'
+    jacoco {
+        toolVersion = "0.8.2"
+    }
     jacocoTestReport {
         reports {
             xml.enabled = true
             html.enabled = true
         }
     }
-    check.dependsOn jacocoTestReport
+    check {
+        dependsOn(jacocoTestReport)
+    }
 
     // release to central
     apply plugin: 'signing'

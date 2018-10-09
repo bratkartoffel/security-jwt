@@ -27,7 +27,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 @Slf4j
 public class SecurityJwtMemcacheAutoConfiguration {
     @Bean
-    @ConditionalOnBean(RefreshTokenStore.class)
     public MemcacheProperties memcacheProperties() {
         log.debug("Register MemcacheProperties");
         return new MemcacheProperties();

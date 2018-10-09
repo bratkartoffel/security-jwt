@@ -28,7 +28,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 @Slf4j
 public class SecurityJwtFilesAutoConfiguration {
     @Bean
-    @ConditionalOnBean(RefreshTokenStore.class)
     public FilesProperties filesProperties() {
         log.debug("Register FilesProperties");
         return new FilesProperties();

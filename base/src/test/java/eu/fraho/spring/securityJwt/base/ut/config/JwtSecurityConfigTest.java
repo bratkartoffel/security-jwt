@@ -59,7 +59,6 @@ public class JwtSecurityConfigTest {
         Mockito.verify(daoAuthenticationConfigurer).passwordEncoder(Mockito.any(PasswordEncoder.class));
     }
 
-    @Ignore("wait for powermockito2 to be stable (see https://github.com/mockito/mockito/issues/1207)")
     @Test
     public void testConfigure() throws Exception {
         JwtAuthenticationEntryPoint authenticationEntryPoint = Mockito.mock(JwtAuthenticationEntryPoint.class);

@@ -27,7 +27,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 @Slf4j
 public class SecurityJwtRedisAutoConfiguration {
     @Bean
-    @ConditionalOnBean(RefreshTokenStore.class)
     public RedisProperties redisProperties() {
         log.debug("Register RedisProperties");
         return new RedisProperties();

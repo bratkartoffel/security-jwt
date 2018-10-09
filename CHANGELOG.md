@@ -1,6 +1,10 @@
 # Changelog
 
-### 4.0.0 (not yet released)
+### 4.0.1 (not yet released)
+* (all) Cleanup gradle build scripts
+* (all) Fix compile / build with Java 11 
+
+### 4.0.0 (2018-09-28)
 * (redis) Add support for redis as backend
 * (files) Add support for filesystem as backend
 * (base) TimeWithPeriod is now serializable with Jackson
