@@ -10,7 +10,6 @@ import eu.fraho.spring.securityJwt.base.JwtAuthenticationEntryPoint;
 import eu.fraho.spring.securityJwt.base.JwtAuthenticationTokenFilter;
 import eu.fraho.spring.securityJwt.base.config.JwtSecurityConfig;
 import eu.fraho.spring.securityJwt.base.service.JwtTokenService;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
