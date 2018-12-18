@@ -2,21 +2,20 @@ buildscript {
     ext {
         projectVersion = '4.0.1-SNAPSHOT'
 
-        springBootVersion = '2.0.5.RELEASE'
+        springBootVersion = '2.1.1.RELEASE'
         springDependencyManagementVersion = '1.0.6.RELEASE'
 
-        lombokVersion = '1.18.2'
+        lombokVersion = '1.18.4'
         swaggerAnnotations2Version = '1.5.21'
-        swaggerAnnotations3Version = '2.0.5'
-        nimbusJwtVersion = '6.0.2'
+        swaggerAnnotations3Version = '2.0.6'
+        nimbusJwtVersion = '6.5'
         commonsCodecVersion = '1.11'
         bouncyCastleVersion = '1.60'
         spyMemcachedVersion = '2.12.3'
         expiringMapVersion = '0.5.8'
         h2Version = '1.4.197'
-        powerMockVersion = '2.0.0-beta.5'
-        jedisVersion = '2.9.0'
-        byteBuddyVersion = '1.9.1'
+        powerMockVersion = '2.0.0-RC.4'
+        jedisVersion = '3.0.0'
     }
     repositories {
         mavenLocal()
@@ -79,8 +78,6 @@ subprojects {
         testCompile('org.springframework.boot:spring-boot-starter-test')
         testCompile('org.springframework:spring-aspects')
         testCompile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-        testCompile("net.bytebuddy:byte-buddy:${byteBuddyVersion}")
-        testCompile("net.bytebuddy:byte-buddy-agent:${byteBuddyVersion}")
     }
 
     // spring dependency management

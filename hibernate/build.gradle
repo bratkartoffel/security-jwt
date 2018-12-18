@@ -2,8 +2,6 @@ dependencies {
     compile project(':base')
     testCompile project(path: ':base', configuration: 'testArchives')
 
-    compile("org.javassist:javassist:3.23.1-GA")
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
-    compile("javax.xml.bind:jaxb-api:2.3.1")
     testCompile("com.h2database:h2:${h2Version}")
 }
