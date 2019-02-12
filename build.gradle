@@ -2,20 +2,20 @@ buildscript {
     ext {
         projectVersion = '4.0.1-SNAPSHOT'
 
-        springBootVersion = '2.1.1.RELEASE'
+        springBootVersion = '2.1.2.RELEASE'
         springDependencyManagementVersion = '1.0.6.RELEASE'
 
-        lombokVersion = '1.18.4'
+        lombokVersion = '1.18.6'
         swaggerAnnotations2Version = '1.5.21'
         swaggerAnnotations3Version = '2.0.6'
-        nimbusJwtVersion = '6.5'
+        nimbusJwtVersion = '7.0'
         commonsCodecVersion = '1.11'
-        bouncyCastleVersion = '1.60'
+        bouncyCastleVersion = '1.61'
         spyMemcachedVersion = '2.12.3'
-        expiringMapVersion = '0.5.8'
+        expiringMapVersion = '0.5.9'
         h2Version = '1.4.197'
-        powerMockVersion = '2.0.0-RC.4'
-        jedisVersion = '3.0.0'
+        powerMockVersion = '2.0.0'
+        jedisVersion = '3.0.1'
     }
     repositories {
         mavenLocal()
@@ -33,7 +33,7 @@ buildscript {
 
 subprojects {
     apply plugin: 'java'
-
+    
     repositories {
         mavenLocal()
         mavenCentral()
@@ -51,7 +51,6 @@ subprojects {
     }
 
     jar {
-        version = "${project.version}"
         manifest {
             attributes(
                     "Implementation-Title": "Gradle",
