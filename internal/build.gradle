@@ -4,3 +4,7 @@ dependencies {
 
     compile("net.jodah:expiringmap:${expiringMapVersion}")
 }
+
+compileModuleInfoJava {
+    inputs.property("moduleName", "fraho.securityJwt.internal")
+}

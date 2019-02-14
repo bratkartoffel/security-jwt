@@ -4,3 +4,7 @@ dependencies {
 
     compile("redis.clients:jedis:${jedisVersion}")
 }
+
+compileModuleInfoJava {
+    inputs.property("moduleName", "fraho.securityJwt.redis")
+}

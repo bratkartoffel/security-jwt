@@ -24,18 +24,14 @@ public class RefreshTokenEntity {
     @Setter(AccessLevel.NONE)
     private Long id = 0L;
 
-
     @Column(updatable = false)
     @Setter(AccessLevel.NONE)
     @Convert(converter = ZonedDateTimeConverter.class)
     private ZonedDateTime created = ZonedDateTime.now();
 
-
     private Long userId;
 
-
     private String username;
-
 
     @Column(unique = true)
     private String token;

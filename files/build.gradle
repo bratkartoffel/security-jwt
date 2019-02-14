@@ -2,3 +2,7 @@ dependencies {
     compile project(':base')
     testCompile project(path: ':base', configuration: 'testArchives')
 }
+
+compileModuleInfoJava {
+    inputs.property("moduleName", "fraho.securityJwt.files")
+}

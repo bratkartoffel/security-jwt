@@ -22,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 import javax.persistence.EntityManager;
 
+@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 @Configuration
 @AutoConfigureAfter(SecurityJwtBaseAutoConfiguration.class)
 @AutoConfigureBefore(SecurityJwtNoRefreshStoreAutoConfiguration.class)

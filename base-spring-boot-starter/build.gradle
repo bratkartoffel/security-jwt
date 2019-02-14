@@ -4,3 +4,7 @@ dependencies {
 
     testCompile project(path: ':base', configuration: 'testArchives')
 }
+
+compileModuleInfoJava {
+    inputs.property("moduleName", "fraho.securityJwt.baseStarter")
+}

@@ -6,10 +6,13 @@ dependencies {
     compile("com.nimbusds:nimbus-jose-jwt:${nimbusJwtVersion}")
     compile("commons-codec:commons-codec:${commonsCodecVersion}")
     optional("io.swagger:swagger-annotations:${swaggerAnnotations2Version}")
-    optional("io.swagger.core.v3:swagger-annotations:${swaggerAnnotations3Version}")
 
     optional("org.bouncycastle:bcprov-jdk15on:${bouncyCastleVersion}")
 
     testCompile("org.powermock:powermock-api-mockito2:${powerMockVersion}")
     testCompile("org.powermock:powermock-module-junit4:${powerMockVersion}")
+}
+
+compileModuleInfoJava {
+    inputs.property("moduleName", "fraho.securityJwt.base")
 }

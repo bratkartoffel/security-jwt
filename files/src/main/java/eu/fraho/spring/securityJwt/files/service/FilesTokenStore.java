@@ -34,6 +34,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("SpringJavaAutowiredMembersInspection")
 @Slf4j
 @NoArgsConstructor
 public class FilesTokenStore implements RefreshTokenStore {

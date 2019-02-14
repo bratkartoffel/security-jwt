@@ -4,3 +4,7 @@ dependencies {
 
     compile("net.spy:spymemcached:${spyMemcachedVersion}")
 }
+
+compileModuleInfoJava {
+    inputs.property("moduleName", "fraho.securityJwt.memcache")
+}

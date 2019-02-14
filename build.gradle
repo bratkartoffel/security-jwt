@@ -1,6 +1,7 @@
 buildscript {
     ext {
         projectVersion = '4.0.1-SNAPSHOT'
+        javaCompabitility = 8
 
         springBootVersion = '2.1.2.RELEASE'
         springDependencyManagementVersion = '1.0.6.RELEASE'
@@ -33,22 +34,18 @@ buildscript {
 
 subprojects {
     apply plugin: 'java'
-    
+
     repositories {
         mavenLocal()
         mavenCentral()
     }
 
-    sourceCompatibility = 8
-    targetCompatibility = 8
     group = 'eu.fraho.spring'
     archivesBaseName = "security-jwt-${project.name}"
     version = "${projectVersion}"
     description = "Spring boot security integration for JWT"
-
-    configurations {
-        apt
-    }
+    sourceCompatibility = javaCompabitility
+    targetCompatibility = javaCompabitility
 
     jar {
         manifest {
@@ -56,10 +53,46 @@ subprojects {
                     "Implementation-Title": "Gradle",
                     "Implementation-Version": version,
                     "Build-Jdk": "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
-                    "Compatibility": project.sourceCompatibility,
+                    "Compatibility": javaCompabitility,
             )
         }
     }
+
+// START java 9 stuff
+    sourceSets {
+        main {
+            java {
+                srcDir 'src/main/java'
+                exclude 'module-info.java'
+            }
+        }
+        moduleInfo {
+            java {
+                srcDir 'src/main/java'
+                include 'module-info.java'
+            }
+            compileClasspath = sourceSets.main.compileClasspath
+        }
+    }
+
+    compileModuleInfoJava {
+        sourceCompatibility = 9
+        targetCompatibility = 9
+        doFirst {
+            options.compilerArgs = [
+                    '--module-path', compileJava.classpath.asPath,
+                    '-d', sourceSets.main.output.classesDirs.asPath
+            ]
+            classpath = files()
+        }
+        dependsOn(compileJava)
+    }
+
+    jar {
+        from sourceSets.moduleInfo.output
+        from sourceSets.main.output
+    }
+// END java 9 stuff
 
     buildscript {
         repositories {
@@ -71,8 +104,8 @@ subprojects {
     dependencies {
         compileOnly("org.projectlombok:lombok:${lombokVersion}")
 
-        apt("org.projectlombok:lombok:${lombokVersion}")
-        apt("org.springframework.boot:spring-boot-configuration-processor")
+        annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+        annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
         testCompile('org.springframework.boot:spring-boot-starter-test')
         testCompile('org.springframework:spring-aspects')
@@ -101,17 +134,17 @@ subprojects {
 
     // release stuff
     task javadocJar(type: Jar) {
-        classifier = 'javadoc'
+        archiveClassifier.set('javadoc')
         from javadoc
     }
 
     task sourcesJar(type: Jar) {
-        classifier = 'sources'
+        archiveClassifier.set('sources')
         from sourceSets.main.allSource
     }
 
     task testsJar(type: Jar) {
-        classifier = 'tests'
+        archiveClassifier.set('tests')
         from sourceSets.test.output
         from sourceSets.test.allSource
     }
@@ -167,7 +200,7 @@ subprojects {
                         }
                     }
                     pom.project {
-                        name project.archivesBaseName
+                        name = project.archivesBaseName
                         description project.description
                         url 'https://github.com/bratkartoffel/security-jwt'
 
@@ -201,10 +234,10 @@ subprojects {
 
 task jacocoRootReport(type: JacocoReport) {
     dependsOn = subprojects.test
-    additionalSourceDirs = files(subprojects.sourceSets.main.allSource.srcDirs)
-    sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
-    classDirectories = files(subprojects.sourceSets.main.output)
-    executionData = files(subprojects.jacocoTestReport.executionData)
+    additionalSourceDirs.from(subprojects.sourceSets.main.allSource.srcDirs,
+            subprojects.sourceSets.main.allSource.srcDirs,
+            subprojects.sourceSets.main.output,
+            subprojects.jacocoTestReport.executionData)
     reports {
         html.enabled = true
         xml.enabled = true
@@ -212,10 +245,5 @@ task jacocoRootReport(type: JacocoReport) {
     }
     onlyIf = {
         true
-    }
-    doFirst {
-        executionData = files(executionData.findAll {
-            it.exists()
-        })
     }
 }

@@ -5,3 +5,7 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
     testCompile("com.h2database:h2:${h2Version}")
 }
+
+compileModuleInfoJava {
+    inputs.property("moduleName", "fraho.securityJwt.hibernate")
+}

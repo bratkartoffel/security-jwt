@@ -46,6 +46,7 @@ public class JwtSecurityConfigTest {
         return config;
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testConfigureAuthentication() throws Exception {
         DaoAuthenticationConfigurer daoAuthenticationConfigurer = Mockito.mock(DaoAuthenticationConfigurer.class);
@@ -58,6 +59,7 @@ public class JwtSecurityConfigTest {
         Mockito.verify(daoAuthenticationConfigurer).passwordEncoder(Mockito.any(PasswordEncoder.class));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testConfigure() throws Exception {
         JwtAuthenticationEntryPoint authenticationEntryPoint = Mockito.mock(JwtAuthenticationEntryPoint.class);
