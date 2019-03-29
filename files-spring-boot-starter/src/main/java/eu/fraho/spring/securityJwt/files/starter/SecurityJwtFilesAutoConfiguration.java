@@ -16,19 +16,18 @@ import eu.fraho.spring.securityJwt.files.service.FilesTokenStore;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 @Configuration
 @AutoConfigureAfter(SecurityJwtBaseAutoConfiguration.class)
 @AutoConfigureBefore(SecurityJwtNoRefreshStoreAutoConfiguration.class)
 @Slf4j
 public class SecurityJwtFilesAutoConfiguration {
     @Bean
-    @ConditionalOnBean(RefreshTokenStore.class)
     public FilesProperties filesProperties() {
         log.debug("Register FilesProperties");
         return new FilesProperties();

@@ -21,6 +21,7 @@ import redis.clients.jedis.*;
 
 import java.util.*;
 
+@SuppressWarnings("SpringJavaAutowiredMembersInspection")
 @Slf4j
 @NoArgsConstructor
 public class RedisTokenStore implements RefreshTokenStore {

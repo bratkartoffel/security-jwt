@@ -28,6 +28,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@SuppressWarnings({"SpringJavaAutowiredMembersInspection", "JpaQlInspection"})
 @Slf4j
 @NoArgsConstructor
 @AllArgsConstructor

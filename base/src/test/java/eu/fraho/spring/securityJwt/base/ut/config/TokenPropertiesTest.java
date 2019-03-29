@@ -239,7 +239,7 @@ public class TokenPropertiesTest {
     private TokenProperties withRsa(final TokenProperties conf) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
         // initialize generator
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        keyPairGenerator.initialize(512);
+        keyPairGenerator.initialize(2048);
 
         // generate the key pair
         KeyPair keyPair = keyPairGenerator.genKeyPair();

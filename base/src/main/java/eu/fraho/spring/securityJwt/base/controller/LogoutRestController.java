@@ -10,9 +10,9 @@ import eu.fraho.spring.securityJwt.base.config.RefreshCookieProperties;
 import eu.fraho.spring.securityJwt.base.config.TokenCookieProperties;
 import eu.fraho.spring.securityJwt.base.dto.AccessToken;
 import eu.fraho.spring.securityJwt.base.dto.RefreshToken;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -38,15 +38,10 @@ public class LogoutRestController implements CookieSupport {
     private RefreshCookieProperties refreshCookieProperties;
 
     @RequestMapping("${fraho.jwt.logout.path:/auth/logout}")
-    // OpenAPI 3.0
-    @Operation(description = "Deleted the sent out cookies, thus resulting in an logout")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Logout successfull"),
-    })
     // Swagger 2.0
-    @io.swagger.annotations.ApiOperation("Deleted the sent out cookies, thus resulting in an logout")
-    @io.swagger.annotations.ApiResponses({
-            @io.swagger.annotations.ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "Logout successfull"),
+    @ApiOperation("Deleted the sent out cookies, thus resulting in an logout")
+    @ApiResponses({
+            @ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "Logout successfull"),
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout(HttpServletResponse response) {

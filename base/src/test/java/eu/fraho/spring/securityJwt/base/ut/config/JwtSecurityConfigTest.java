@@ -10,7 +10,6 @@ import eu.fraho.spring.securityJwt.base.JwtAuthenticationEntryPoint;
 import eu.fraho.spring.securityJwt.base.JwtAuthenticationTokenFilter;
 import eu.fraho.spring.securityJwt.base.config.JwtSecurityConfig;
 import eu.fraho.spring.securityJwt.base.service.JwtTokenService;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -47,6 +46,7 @@ public class JwtSecurityConfigTest {
         return config;
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testConfigureAuthentication() throws Exception {
         DaoAuthenticationConfigurer daoAuthenticationConfigurer = Mockito.mock(DaoAuthenticationConfigurer.class);
@@ -59,7 +59,7 @@ public class JwtSecurityConfigTest {
         Mockito.verify(daoAuthenticationConfigurer).passwordEncoder(Mockito.any(PasswordEncoder.class));
     }
 
-    @Ignore("wait for powermockito2 to be stable (see https://github.com/mockito/mockito/issues/1207)")
+    @SuppressWarnings("unchecked")
     @Test
     public void testConfigure() throws Exception {
         JwtAuthenticationEntryPoint authenticationEntryPoint = Mockito.mock(JwtAuthenticationEntryPoint.class);

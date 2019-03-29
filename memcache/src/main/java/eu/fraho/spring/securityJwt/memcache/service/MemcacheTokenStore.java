@@ -30,6 +30,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("SpringJavaAutowiredMembersInspection")
 @Slf4j
 @NoArgsConstructor
 public class MemcacheTokenStore implements RefreshTokenStore {
@@ -41,9 +42,11 @@ public class MemcacheTokenStore implements RefreshTokenStore {
 
     private MemcachedClient memcachedClient;
 
-    private <T> T getAndWait(String message, Supplier<OperationFuture<T>> action) {
+    private OperationFuture<Boolean> getAndWait(String message, Supplier<OperationFuture<Boolean>> action) {
         try {
-            return action.get().get(memcacheProperties.getTimeout(), TimeUnit.SECONDS);
+            OperationFuture<Boolean> future = action.get();
+            future.get(memcacheProperties.getTimeout(), TimeUnit.SECONDS);
+            return future;
         } catch (TimeoutException | InterruptedException | ExecutionException e) {
             throw new RefreshException(message, e);
         }
@@ -53,9 +56,12 @@ public class MemcacheTokenStore implements RefreshTokenStore {
     public void saveToken(JwtUser user, String token) {
         String key = memcacheProperties.getPrefix() + token;
         String entry = MemcacheEntry.from(user).toString();
-        getAndWait("Error while saving refresh token on memcache server", () ->
+        OperationFuture<Boolean> future = getAndWait("Error while saving refresh token on memcache server", () ->
                 memcachedClient.set(key, (int) refreshProperties.getExpiration().toSeconds(), entry)
         );
+        if (!future.getStatus().isSuccess()) {
+            throw new RefreshException("Could not save the token, memcached responded with '!Status.isSuccess()': " + future.getStatus().getMessage());
+        }
     }
 
     @Override
@@ -70,7 +76,7 @@ public class MemcacheTokenStore implements RefreshTokenStore {
             String username = MemcacheEntry.from((String) found).getUsername();
             result = Optional.ofNullable((T) userDetailsService.loadUserByUsername(username));
         }
-        if (!getAndWait("Error while deleting refresh token on memcache server", () -> memcachedClient.delete(key))) {
+        if (!getAndWait("Error while deleting refresh token on memcache server", () -> memcachedClient.delete(key)).getStatus().isSuccess()) {
             result = Optional.empty();
         }
 
@@ -109,7 +115,7 @@ public class MemcacheTokenStore implements RefreshTokenStore {
     public boolean revokeToken(String token) {
         String key = memcacheProperties.getPrefix() + token;
         return getAndWait("Error while deleting refresh token on memcache server", () ->
-                memcachedClient.delete(key));
+                memcachedClient.delete(key)).getStatus().isSuccess();
     }
 
     @Override
@@ -125,14 +131,7 @@ public class MemcacheTokenStore implements RefreshTokenStore {
             }
         }
 
-        int count = allKeys.size();
-        for (OperationFuture<Boolean> future : futures) {
-            if (!getAndWait("Error while saving refresh token on memcache server", () -> future)) {
-                count--;
-            }
-        }
-
-        return count;
+        return submitAndCountSuccess(allKeys, futures);
     }
 
 
@@ -170,13 +169,16 @@ public class MemcacheTokenStore implements RefreshTokenStore {
             futures.add(memcachedClient.delete(key));
         }
 
+        return submitAndCountSuccess(keys, futures);
+    }
+
+    private int submitAndCountSuccess(List<String> keys, List<OperationFuture<Boolean>> futures) {
         int count = keys.size();
         for (OperationFuture<Boolean> future : futures) {
-            if (!getAndWait("Error while saving refresh token on memcache server", () -> future)) {
+            if (!getAndWait("Error while saving refresh token on memcache server", () -> future).getStatus().isSuccess()) {
                 count--;
             }
         }
-
         return count;
     }
 

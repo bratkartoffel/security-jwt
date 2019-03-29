@@ -6,13 +6,14 @@
 
 Providing a simple way to integrate [JWT](https://jwt.io/introduction/) into your spring boot application.
 
-This project is split into 4 parts:
+This project is split into multiple parts:
 
 * base: Basic integration of JWT into spring security (without refresh tokens)
 * internal: Support for an in-memory cache (ExpiringMap) for refresh tokens
 * memcache: Support for memcache to store refresh tokens
 * hibernate: Support for hibernate to store refresh tokens
 * redis: Support for redis to store refresh tokens
+* files: Support for filesystem to store refresh tokens
 
 Simply use the dependencies within your build script, spring boot takes care of the rest.
 The default configuration should be sufficient for the most use cases.
@@ -41,13 +42,13 @@ The default configuration should be sufficient for the most use cases.
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-base</artifactId>
-        <version>4.0.0</version>
+        <version>4.1.0</version>
     </dependency>
     <!-- or -->
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-base-spring-boot-starter</artifactId>
-        <version>4.0.0</version>
+        <version>4.1.0</version>
     </dependency>
 </dependencies>
 ```
@@ -58,27 +59,27 @@ When you want to add refresh token support, then choose one of the following dep
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-internal</artifactId>
-        <version>4.0.0</version>
+        <version>4.1.0</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-memcache</artifactId>
-        <version>4.0.0</version>
+        <version>4.1.0</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-hibernate</artifactId>
-        <version>4.0.0</version>
+        <version>4.1.0</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-redis</artifactId>
-        <version>4.0.0</version>
+        <version>4.1.0</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-files</artifactId>
-        <version>4.0.0</version>
+        <version>4.1.0</version>
     </dependency>
 </dependencies>
 ```

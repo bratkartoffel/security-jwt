@@ -107,7 +107,7 @@ public final class TimeWithPeriod {
     }
 
     public boolean equals(Object o) {
-        if (o == null || !(o instanceof TimeWithPeriod)) {
+        if (!(o instanceof TimeWithPeriod)) {
             return false;
         }
         return (toSeconds() == ((TimeWithPeriod) o).toSeconds());

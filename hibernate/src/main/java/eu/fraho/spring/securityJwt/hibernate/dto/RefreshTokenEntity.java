@@ -20,22 +20,18 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 public class RefreshTokenEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
     private Long id = 0L;
-
 
     @Column(updatable = false)
     @Setter(AccessLevel.NONE)
     @Convert(converter = ZonedDateTimeConverter.class)
     private ZonedDateTime created = ZonedDateTime.now();
 
-
     private Long userId;
 
-
     private String username;
-
 
     @Column(unique = true)
     private String token;
