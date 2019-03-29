@@ -1,8 +1,9 @@
 # Changelog
 
-### 4.0.1 (not yet released)
+### 4.1.0 (not yet released)
 * (all) Cleanup gradle build scripts
 * (all) Fix compile / build with Java 11 
+* (all) Separate modules for usage (java 9+)
 
 ### 4.0.0 (2018-09-28)
 * (redis) Add support for redis as backend
