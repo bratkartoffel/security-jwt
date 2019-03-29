@@ -1,9 +1,10 @@
 # Changelog
 
-### 4.1.0 (not yet released)
+### 4.1.0 (2019-03-29)
 * (all) Cleanup gradle build scripts
 * (all) Fix compile / build with Java 11 
 * (all) Separate modules for usage (java 9+)
+* (hibernate): Use IDENTITY as strategy for entity 
 
 ### 4.0.0 (2018-09-28)
 * (redis) Add support for redis as backend
