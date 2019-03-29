@@ -20,7 +20,7 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 public class RefreshTokenEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
     private Long id = 0L;
 
