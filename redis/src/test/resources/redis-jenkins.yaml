@@ -1,0 +1,7 @@
+fraho.jwt.refresh:
+  cache-impl: eu.fraho.spring.securityJwt.redis.service.RedisTokenStore
+  delimiter: "+:~~[@#°§^"
+  redis:
+    host: 192.168.1.6
+    pool-config:
+      timeout: 1

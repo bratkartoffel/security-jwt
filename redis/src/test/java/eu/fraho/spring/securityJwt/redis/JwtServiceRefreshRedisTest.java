@@ -22,10 +22,7 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.params.SetParams;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -42,6 +39,7 @@ public class JwtServiceRefreshRedisTest extends AbstractJwtTokenServiceWithRefre
 
     protected RedisProperties getRedisProperties() {
         RedisProperties configuration = new RedisProperties();
+        configuration.setHost(Optional.ofNullable(System.getenv("REDIS_HOST")).orElse("127.0.0.1"));
         configuration.afterPropertiesSet();
         return configuration;
     }

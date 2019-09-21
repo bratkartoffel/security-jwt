@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@SpringBootTest(properties = "spring.config.location=classpath:redis-test.yaml",
+@SpringBootTest(properties = "spring.config.location=classpath:${REDIS_CONFIG:redis-test.yaml}",
         classes = TestApiApplication.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 public class AuthControllerRedisTest extends AbstractAuthControllerWithRefreshTest {

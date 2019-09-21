@@ -23,10 +23,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.lang.reflect.Field;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -38,9 +35,16 @@ public class JwtServiceRefreshMemcacheTest extends AbstractJwtTokenServiceWithRe
         refreshProperties = getRefreshProperties();
         refreshTokenStore = new MemcacheTokenStore();
         refreshTokenStore.setRefreshProperties(refreshProperties);
-        refreshTokenStore.setMemcacheProperties(new MemcacheProperties());
+        refreshTokenStore.setMemcacheProperties(getMemcacheProperties());
         refreshTokenStore.setUserDetailsService(getUserdetailsService());
         refreshTokenStore.afterPropertiesSet();
+    }
+
+    protected MemcacheProperties getMemcacheProperties() {
+        MemcacheProperties configuration = new MemcacheProperties();
+        configuration.setHost(Optional.ofNullable(System.getenv("MEMCACHE_HOST")).orElse("127.0.0.1"));
+        configuration.afterPropertiesSet();
+        return configuration;
     }
 
     @Override
