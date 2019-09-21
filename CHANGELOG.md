@@ -1,5 +1,8 @@
 # Changelog
 
+### 4.1.1 (2019-09-21)
+* (all) Update dependencies
+
 ### 4.1.0 (2019-03-29)
 * (all) Cleanup gradle build scripts
 * (all) Fix compile / build with Java 11 

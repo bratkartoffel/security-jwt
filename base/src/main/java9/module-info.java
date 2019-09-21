@@ -6,7 +6,7 @@ module fraho.securityJwt.base {
     requires jcip.annotations;
     requires nimbus.jose.jwt;
     requires org.apache.commons.codec;
-    requires slf4j.api;
+    requires org.slf4j;
     requires spring.beans;
     requires spring.boot.autoconfigure;
     requires spring.boot;
@@ -17,7 +17,6 @@ module fraho.securityJwt.base {
     requires spring.security.web;
     requires spring.web;
     requires swagger.annotations;
-    requires tomcat.embed.core;
 
     exports eu.fraho.spring.securityJwt.base;
     exports eu.fraho.spring.securityJwt.base.config;
