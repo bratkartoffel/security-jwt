@@ -85,6 +85,9 @@ subprojects {
             classpath = files()
         }
         dependsOn(compileJava)
+        onlyIf {
+            JavaVersion.current() >= JavaVersion.VERSION_1_9
+        }
     }
 
     jar {

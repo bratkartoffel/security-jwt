@@ -17,6 +17,7 @@ import eu.fraho.spring.securityJwt.memcache.config.MemcacheProperties;
 import eu.fraho.spring.securityJwt.memcache.service.MemcacheTokenStore;
 import net.spy.memcached.MemcachedClient;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -24,6 +25,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.lang.reflect.Field;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -47,6 +49,11 @@ public class JwtServiceRefreshMemcacheTest extends AbstractJwtTokenServiceWithRe
         return configuration;
     }
 
+    @Before
+    public void clearCache() throws Exception {
+        Assert.assertTrue(getMemcachedClient().flush().get(1, TimeUnit.SECONDS));
+    }
+
     @Override
     protected RefreshTokenStore getRefreshStore() {
         return refreshTokenStore;
@@ -61,11 +68,11 @@ public class JwtServiceRefreshMemcacheTest extends AbstractJwtTokenServiceWithRe
         JwtUser xsmith = getJwtUser();
         xsmith.setUsername("xsmith");
 
+        MemcachedClient client = getMemcachedClient();
         RefreshToken tokenA = service.generateRefreshToken(jsmith);
         RefreshToken tokenB = service.generateRefreshToken(jsmith);
         RefreshToken tokenC = service.generateRefreshToken(xsmith);
 
-        MemcachedClient client = getMemcachedClient();
         client.set("foobar", 30, "hi").get();
 
         final Map<Long, List<RefreshToken>> tokenMap = service.listRefreshTokens();
