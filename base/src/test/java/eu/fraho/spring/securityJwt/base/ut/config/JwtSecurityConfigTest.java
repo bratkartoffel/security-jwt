@@ -53,7 +53,7 @@ public class JwtSecurityConfigTest {
         AuthenticationManagerBuilder authenticationManagerBuilder = Mockito.mock(AuthenticationManagerBuilder.class);
         Mockito.when(authenticationManagerBuilder.userDetailsService(Mockito.any())).thenReturn(daoAuthenticationConfigurer);
 
-        getNewInstance().configureAuthentication(authenticationManagerBuilder);
+        getNewInstance().configure(authenticationManagerBuilder);
 
         Mockito.verify(authenticationManagerBuilder).userDetailsService(Mockito.any());
         Mockito.verify(daoAuthenticationConfigurer).passwordEncoder(Mockito.any(PasswordEncoder.class));
