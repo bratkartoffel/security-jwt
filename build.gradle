@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        projectVersion = '4.2.0'
+        projectVersion = '4.2.1-SNAPSHOT'
         javaCompabitility = 8
 
         springBootVersion = '2.2.4.RELEASE'
