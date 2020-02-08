@@ -8,3 +8,7 @@ dependencies {
 compileModuleInfoJava {
     inputs.property("moduleName", "fraho.securityJwt.redis")
 }
+
+test {
+    systemProperty "fraho.jwt.refresh.redis.host", System.getProperty("fraho.jwt.refresh.redis.host")
+}

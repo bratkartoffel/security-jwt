@@ -46,7 +46,8 @@ public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @NonNull
-    public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
+    @Override
+    public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         log.debug("Configuring AuthenticationManagerBuilder");
         authenticationManagerBuilder
                 .userDetailsService(userDetailsService)
@@ -54,7 +55,6 @@ public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-
     public JwtAuthenticationTokenFilter authenticationTokenFilterBean() {
         log.debug("Creating JwtAuthenticationTokenFilter");
         JwtAuthenticationTokenFilter filter = new JwtAuthenticationTokenFilter();
@@ -64,7 +64,6 @@ public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
     @Override
-
     public AuthenticationManager authenticationManagerBean() throws Exception {
         log.debug("Creating AuthenticationManager");
         return super.authenticationManagerBean();

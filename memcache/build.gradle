@@ -8,3 +8,7 @@ dependencies {
 compileModuleInfoJava {
     inputs.property("moduleName", "fraho.securityJwt.memcache")
 }
+
+test {
+    systemProperty "fraho.jwt.refresh.memcache.host", System.getProperty("fraho.jwt.refresh.memcache.host")
+}

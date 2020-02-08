@@ -1,5 +1,4 @@
 fraho.jwt.refresh:
   cache-impl: eu.fraho.spring.securityJwt.memcache.service.MemcacheTokenStore
-  delimiter: "+:~~[@#°§^"
   memcache:
-    timeout: 2
+    timeout: 1

@@ -1,34 +1,40 @@
 buildscript {
     ext {
-        projectVersion = '4.1.1'
+        projectVersion = '4.2.0'
         javaCompabitility = 8
 
-        springBootVersion = '2.1.8.RELEASE'
-        springDependencyManagementVersion = '1.0.8.RELEASE'
+        springBootVersion = '2.2.4.RELEASE'
+        springDependencyManagementVersion = '1.0.9.RELEASE'
 
-        lombokVersion = '1.18.10'
-        swaggerAnnotations2Version = '1.5.23'
-        nimbusJwtVersion = '7.8'
-        commonsCodecVersion = '1.13'
-        bouncyCastleVersion = '1.63'
+        lombokVersion = '1.18.12'
+        swaggerAnnotations2Version = '1.6.0'
+        nimbusJwtVersion = '8.5.1'
+        commonsCodecVersion = '1.14'
+        bouncyCastleVersion = '1.64'
         spyMemcachedVersion = '2.12.3'
         expiringMapVersion = '0.5.9'
-        h2Version = '1.4.199'
-        powerMockVersion = '2.0.2'
-        jedisVersion = '3.1.0'
+        h2Version = '1.4.200'
+        powerMockVersion = '2.0.5'
+        jedisVersion = '3.2.0'
     }
     repositories {
         mavenLocal()
         mavenCentral()
-        maven { url 'http://repo.spring.io/plugins-release' }
+        maven { url 'https://repo.spring.io/plugins-release' }
         maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
-        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.1"
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.2"
         classpath 'io.spring.gradle:propdeps-plugin:0.0.10.RELEASE'
         classpath "gradle.plugin.gradle-plugins:jartest:1.0.1"
         classpath "io.spring.gradle:dependency-management-plugin:${springDependencyManagementVersion}"
     }
+}
+
+plugins {
+    id 'com.adarshr.test-logger' version '2.0.0'
+    id 'com.github.ben-manes.versions' version '0.27.0'
+    id 'org.owasp.dependencycheck' version '5.3.0'
 }
 
 subprojects {
@@ -55,6 +61,10 @@ subprojects {
                     "Compatibility": javaCompabitility,
             )
         }
+    }
+
+    test {
+        ignoreFailures = true
     }
 
 // START java 9 stuff
@@ -85,6 +95,9 @@ subprojects {
             classpath = files()
         }
         dependsOn(compileJava)
+        onlyIf {
+            JavaVersion.current() >= JavaVersion.VERSION_1_9
+        }
     }
 
     jar {
@@ -227,6 +240,29 @@ subprojects {
                     }
                 }
             }
+        }
+    }
+
+
+    // dependencyUpdates should only suggest released versions
+    dependencyUpdates.resolutionStrategy {
+        componentSelection { rules ->
+            rules.all { ComponentSelection selection ->
+                boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm', 'preview'].any { qualifier ->
+                    selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
+                }
+                if (rejected) {
+                    selection.reject('Release candidate')
+                }
+            }
+        }
+    }
+
+    // enhancement for jenkins build
+    // do not try to print colors in stdout
+    if (System.getenv("JENKINS_HOME") != null) {
+        testlogger {
+            theme 'plain'
         }
     }
 }

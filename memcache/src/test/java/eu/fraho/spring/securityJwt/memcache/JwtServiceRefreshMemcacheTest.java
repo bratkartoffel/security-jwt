@@ -17,6 +17,7 @@ import eu.fraho.spring.securityJwt.memcache.config.MemcacheProperties;
 import eu.fraho.spring.securityJwt.memcache.service.MemcacheTokenStore;
 import net.spy.memcached.MemcachedClient;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -27,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -38,9 +40,21 @@ public class JwtServiceRefreshMemcacheTest extends AbstractJwtTokenServiceWithRe
         refreshProperties = getRefreshProperties();
         refreshTokenStore = new MemcacheTokenStore();
         refreshTokenStore.setRefreshProperties(refreshProperties);
-        refreshTokenStore.setMemcacheProperties(new MemcacheProperties());
+        refreshTokenStore.setMemcacheProperties(getMemcacheProperties());
         refreshTokenStore.setUserDetailsService(getUserdetailsService());
         refreshTokenStore.afterPropertiesSet();
+    }
+
+    protected MemcacheProperties getMemcacheProperties() {
+        MemcacheProperties configuration = new MemcacheProperties();
+        configuration.setHost(System.getProperty("fraho.jwt.refresh.memcache.host", "127.0.0.1"));
+        configuration.afterPropertiesSet();
+        return configuration;
+    }
+
+    @Before
+    public void clearCache() throws Exception {
+        Assert.assertTrue(getMemcachedClient().flush().get(1, TimeUnit.SECONDS));
     }
 
     @Override
@@ -57,11 +71,11 @@ public class JwtServiceRefreshMemcacheTest extends AbstractJwtTokenServiceWithRe
         JwtUser xsmith = getJwtUser();
         xsmith.setUsername("xsmith");
 
+        MemcachedClient client = getMemcachedClient();
         RefreshToken tokenA = service.generateRefreshToken(jsmith);
         RefreshToken tokenB = service.generateRefreshToken(jsmith);
         RefreshToken tokenC = service.generateRefreshToken(xsmith);
 
-        MemcachedClient client = getMemcachedClient();
         client.set("foobar", 30, "hi").get();
 
         final Map<Long, List<RefreshToken>> tokenMap = service.listRefreshTokens();

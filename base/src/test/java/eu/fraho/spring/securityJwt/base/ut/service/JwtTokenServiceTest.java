@@ -189,7 +189,7 @@ public class JwtTokenServiceTest {
 
     protected JwtUser getJwtUser() {
         JwtUser user = new JwtUser();
-        user.setId(ThreadLocalRandom.current().nextLong());
+        user.setId(ThreadLocalRandom.current().nextLong(1, 10_000_000));
         user.setUsername("John Snow");
         user.setAuthorities(Collections.singletonList(new SimpleGrantedAuthority("HOUSE_STARK")));
         return user;
