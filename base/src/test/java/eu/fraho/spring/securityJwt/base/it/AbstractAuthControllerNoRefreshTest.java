@@ -25,7 +25,7 @@ public abstract class AbstractAuthControllerNoRefreshTest extends AbstractAuthCo
 
         String body = getMockMvc().perform(req)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse().getContentAsString();
 
         Assert.assertTrue("Refresh token was generated", body.contains("\"refreshToken\":null"));

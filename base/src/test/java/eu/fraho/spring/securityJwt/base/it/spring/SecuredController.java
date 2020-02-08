@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class SecuredController {
     @RequestMapping("/user")
     @Secured("ROLE_USER")
-    public ResponseEntity testUser() {
+    public ResponseEntity<String> testUser() {
         return ResponseEntity.ok("Hello world!");
     }
 
     @RequestMapping("/admin")
     @Secured("ROLE_ADMIN")
-    public ResponseEntity testAdmin() {
+    public ResponseEntity<String> testAdmin() {
         return ResponseEntity.ok("Hello world!");
     }
 }

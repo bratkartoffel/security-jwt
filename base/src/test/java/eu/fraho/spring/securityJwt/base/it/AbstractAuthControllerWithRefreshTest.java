@@ -151,6 +151,7 @@ public abstract class AbstractAuthControllerWithRefreshTest extends AbstractAuth
                 .getResponse()
                 .getContentAsByteArray();
 
+        //noinspection rawtypes
         return String.valueOf(((Map) objectMapper.readValue(body, Map.class).get("refreshToken")).get("token"));
     }
 

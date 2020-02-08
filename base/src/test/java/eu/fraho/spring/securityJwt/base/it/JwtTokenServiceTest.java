@@ -56,6 +56,7 @@ public class JwtTokenServiceTest {
         return this.userDetailsService;
     }
 
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     public void setUserDetailsService(UserDetailsService userDetailsService) {
         this.userDetailsService = Objects.requireNonNull(userDetailsService);
