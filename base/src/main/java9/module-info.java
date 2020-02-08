@@ -2,7 +2,7 @@ module fraho.securityJwt.base {
     requires static lombok;
 
     requires com.fasterxml.jackson.databind;
-    requires jackson.annotations;
+    requires com.fasterxml.jackson.annotation;
     requires jcip.annotations;
     requires nimbus.jose.jwt;
     requires org.apache.commons.codec;
