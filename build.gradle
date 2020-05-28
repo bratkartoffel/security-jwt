@@ -70,9 +70,10 @@ subprojects {
         publications {
             mavenJava(MavenPublication) {
                 groupId = project.group
-                artifactId = project.name
+                artifactId = "security-jwt-${project.name}"
                 version = project.version
                 from components.java
+
                 suppressPomMetadataWarningsFor('testFixturesApiElements')
                 suppressPomMetadataWarningsFor('testFixturesRuntimeElements')
 
