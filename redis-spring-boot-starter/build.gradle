@@ -1,11 +1,7 @@
 dependencies {
-    compile project(':base-spring-boot-starter')
-    compile project(':redis')
+    api project(':base-spring-boot-starter')
+    api project(':redis')
 
-    testCompile project(path: ':base', configuration: 'testArchives')
-    testCompile project(path: ':redis', configuration: 'testArchives')
-}
-
-compileModuleInfoJava {
-    inputs.property("moduleName", "fraho.securityJwt.redisStarter")
+    testImplementation testFixtures(project(':base'))
+    testImplementation testFixtures(project(':redis'))
 }

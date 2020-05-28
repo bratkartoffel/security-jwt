@@ -1,18 +1,14 @@
 dependencies {
-    compile('org.springframework.boot:spring-boot-starter-web')
-    compile('org.springframework.boot:spring-boot-starter-security')
-    compile("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
+    api group: "org.springframework.boot", name: "spring-boot-starter-web", version: springBootVersion
+    api group: "org.springframework.boot", name: "spring-boot-starter-security", version: springBootVersion
+    api group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jdk8", version: jacksonVersion
+    api group: "com.nimbusds", name: "nimbus-jose-jwt", version: nimbusJwtVersion
+    api group: "commons-codec", name: "commons-codec", version: commonsCodecVersion
+    api group: "io.swagger", name: "swagger-annotations", version: swaggerAnnotations2Version
 
-    compile("com.nimbusds:nimbus-jose-jwt:${nimbusJwtVersion}")
-    compile("commons-codec:commons-codec:${commonsCodecVersion}")
-    optional("io.swagger:swagger-annotations:${swaggerAnnotations2Version}")
+    implementation group: "org.bouncycastle", name: "bcprov-jdk15on", version: bouncyCastleVersion
 
-    optional("org.bouncycastle:bcprov-jdk15on:${bouncyCastleVersion}")
-
-    testCompile("org.powermock:powermock-api-mockito2:${powerMockVersion}")
-    testCompile("org.powermock:powermock-module-junit4:${powerMockVersion}")
-}
-
-compileModuleInfoJava {
-    inputs.property("moduleName", "fraho.securityJwt.base")
+    testFixturesApi group: "org.powermock", name: "powermock-api-mockito2", version: powerMockVersion
+    testFixturesApi group: "org.powermock", name: "powermock-module-junit4", version: powerMockVersion
+    testFixturesApi group: "org.bouncycastle", name: "bcprov-jdk15on", version: bouncyCastleVersion
 }

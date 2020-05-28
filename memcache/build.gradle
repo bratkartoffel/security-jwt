@@ -1,12 +1,8 @@
 dependencies {
-    compile project(':base')
-    testCompile project(path: ':base', configuration: 'testArchives')
+    api project(':base')
+    api group: "net.spy", name: "spymemcached", version: spyMemcachedVersion
 
-    compile("net.spy:spymemcached:${spyMemcachedVersion}")
-}
-
-compileModuleInfoJava {
-    inputs.property("moduleName", "fraho.securityJwt.memcache")
+    testImplementation testFixtures(project(':base'))
 }
 
 test {
