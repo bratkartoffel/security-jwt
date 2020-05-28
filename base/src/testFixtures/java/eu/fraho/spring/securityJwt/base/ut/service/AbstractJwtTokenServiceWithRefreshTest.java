@@ -62,11 +62,12 @@ public abstract class AbstractJwtTokenServiceWithRefreshTest extends AbstractJwt
         RefreshToken tokenC = service.generateRefreshToken(xsmith);
 
         final List<RefreshToken> jsmithTokens = service.listRefreshTokens(jsmith);
-        Assert.assertTrue("Not all tokens returned", jsmithTokens.containsAll(Arrays.asList(tokenA, tokenB)));
+        Assert.assertTrue("Contains tokenA", jsmithTokens.contains(tokenA));
+        Assert.assertTrue("Contains tokenB", jsmithTokens.contains(tokenB));
         Assert.assertEquals("Unexpected token count", 2, jsmithTokens.size());
 
         final List<RefreshToken> xsmithTokens = service.listRefreshTokens(xsmith);
-        Assert.assertTrue("Not all tokens returned", xsmithTokens.contains(tokenC));
+        Assert.assertTrue("Contains tokenC", xsmithTokens.contains(tokenC));
         Assert.assertEquals("Unexpected token count", 1, xsmithTokens.size());
     }
 
