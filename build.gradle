@@ -70,9 +70,12 @@ subprojects {
         publications {
             mavenJava(MavenPublication) {
                 groupId = project.group
-                artifactId = project.name
+                artifactId = "security-jwt-${project.name}"
                 version = project.version
                 from components.java
+
+                suppressPomMetadataWarningsFor('testFixturesApiElements')
+                suppressPomMetadataWarningsFor('testFixturesRuntimeElements')
 
                 pom {
                     name = project.archivesBaseName
@@ -105,11 +108,9 @@ subprojects {
         }
         repositories {
             maven {
-                if (project.hasProperty('ossrhUsername') && project.hasProperty('ossrhPassword')) {
-                    credentials {
-                        username = project.property('ossrhUsername')
-                        password = project.property('ossrhPassword')
-                    }
+                credentials {
+                    username = project.hasProperty('ossrhUsername') ? project.property('ossrhUsername') : null
+                    password = project.hasProperty('ossrhPassword') ? project.property('ossrhPassword') : null
                 }
                 url = project.version.endsWith('-SNAPSHOT') ?
                         'https://oss.sonatype.org/content/repositories/snapshots' :
