@@ -1,5 +1,9 @@
 # Changelog
 
+### 4.3.0 (2020-05-28)
+* (all) Update dependencies
+* (all) Refactoring of gradle build scripts
+
 ### 4.2.0 (2020-02-08)
 * (all) Update dependencies
 

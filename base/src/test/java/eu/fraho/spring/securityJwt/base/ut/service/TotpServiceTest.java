@@ -1,6 +1,6 @@
 /*
  * MIT Licence
- * Copyright (c) 2017 Simon Frankenberger
+ * Copyright (c) 2020 Simon Frankenberger
  *
  * Please see LICENCE.md for complete licence text.
  */
@@ -9,29 +9,11 @@ package eu.fraho.spring.securityJwt.base.ut.service;
 import eu.fraho.spring.securityJwt.base.config.TotpProperties;
 import eu.fraho.spring.securityJwt.base.service.TotpService;
 import eu.fraho.spring.securityJwt.base.service.TotpServiceImpl;
-import org.apache.commons.codec.binary.Base32;
+import eu.fraho.spring.securityJwt.base.util.TotpUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 public class TotpServiceTest {
-    public static int getCodeForTesting(TotpService service, String secret, int varianceDiff) {
-        Base32 base32 = new Base32();
-        byte[] decoded = base32.decode(secret);
-        long timeIndex = (System.currentTimeMillis() / 1000 / 30) + varianceDiff;
-
-        try {
-            Method method = TotpServiceImpl.class.getDeclaredMethod("getCode", byte[].class, long.class);
-            method.setAccessible(true);
-            Object result = method.invoke(service, decoded, timeIndex);
-            return (Integer) result;
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
     private TotpProperties getConfig() {
         return new TotpProperties();
     }
@@ -58,10 +40,10 @@ public class TotpServiceTest {
         TotpService service = getNewInstance(config);
         String secret = service.generateSecret();
 
-        int lastCode = getCodeForTesting(service, secret, -1);
-        int curCode = getCodeForTesting(service, secret, 0);
-        int nextCode = getCodeForTesting(service, secret, 1);
-        int invalidCode = getCodeForTesting(service, secret, 4);
+        int lastCode = TotpUtil.getCodeForTesting(service, secret, -1);
+        int curCode = TotpUtil.getCodeForTesting(service, secret, 0);
+        int nextCode = TotpUtil.getCodeForTesting(service, secret, 1);
+        int invalidCode = TotpUtil.getCodeForTesting(service, secret, 4);
 
         Assert.assertTrue("Last code was invalid", service.verifyCode(secret, lastCode));
         Assert.assertTrue("Current code was invalid", service.verifyCode(secret, curCode));

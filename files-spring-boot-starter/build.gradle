@@ -1,11 +1,7 @@
 dependencies {
-    compile project(':base-spring-boot-starter')
-    compile project(':files')
+    api project(':base-spring-boot-starter')
+    api project(':files')
 
-    testCompile project(path: ':base', configuration: 'testArchives')
-    testCompile project(path: ':files', configuration: 'testArchives')
-}
-
-compileModuleInfoJava {
-    inputs.property("moduleName", "fraho.securityJwt.filesStarter")
+    testImplementation testFixtures(project(':base'))
+    testImplementation testFixtures(project(':files'))
 }

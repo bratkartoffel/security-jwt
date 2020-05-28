@@ -1,3 +1,9 @@
+/*
+ * MIT Licence
+ * Copyright (c) 2020 Simon Frankenberger
+ *
+ * Please see LICENCE.md for complete licence text.
+ */
 package eu.fraho.spring.securityJwt.base.starter;
 
 import org.springframework.context.annotation.Condition;
