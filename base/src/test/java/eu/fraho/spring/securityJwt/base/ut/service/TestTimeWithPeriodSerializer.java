@@ -1,6 +1,6 @@
 /*
  * MIT Licence
- * Copyright (c) 2018 Simon Frankenberger
+ * Copyright (c) 2020 Simon Frankenberger
  *
  * Please see LICENCE.md for complete licence text.
  */
@@ -30,6 +30,6 @@ public class TestTimeWithPeriodSerializer {
 
         instance.serialize(testee, jsonGenerator, serializerProvider);
         Mockito.verify(jsonGenerator).writeString(Mockito.eq("42 days"));
-        Mockito.verifyZeroInteractions(serializerProvider);
+        Mockito.verifyNoInteractions(serializerProvider);
     }
 }

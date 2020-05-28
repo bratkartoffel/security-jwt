@@ -1,5 +1,10 @@
 # Changelog
 
+### 4.3.0 (2020-05-28)
+* (all) Update dependencies
+* (all) Refactoring of gradle build scripts
+* (memcache) Fix bug when running against memcached >= 1.5 which made this plugin effectively useless
+
 ### 4.2.0 (2020-02-08)
 * (all) Update dependencies
 

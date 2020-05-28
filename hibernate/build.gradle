@@ -1,11 +1,7 @@
 dependencies {
-    compile project(':base')
-    testCompile project(path: ':base', configuration: 'testArchives')
+    api project(':base')
+    api group: "org.springframework.boot", name: "spring-boot-starter-data-jpa", version: springBootVersion
 
-    compile('org.springframework.boot:spring-boot-starter-data-jpa')
-    testCompile("com.h2database:h2:${h2Version}")
-}
-
-compileModuleInfoJava {
-    inputs.property("moduleName", "fraho.securityJwt.hibernate")
+    testImplementation testFixtures(project(':base'))
+    testImplementation group: "com.h2database", name: "h2", version: h2Version
 }

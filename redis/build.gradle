@@ -1,12 +1,8 @@
 dependencies {
-    compile project(':base')
-    testCompile project(path: ':base', configuration: 'testArchives')
+    api project(':base')
+    api group: "redis.clients", name: "jedis", version: jedisVersion
 
-    compile("redis.clients:jedis:${jedisVersion}")
-}
-
-compileModuleInfoJava {
-    inputs.property("moduleName", "fraho.securityJwt.redis")
+    testImplementation testFixtures(project(':base'))
 }
 
 test {

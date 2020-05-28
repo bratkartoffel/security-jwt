@@ -1,6 +1,6 @@
 /*
  * MIT Licence
- * Copyright (c) 2017 Simon Frankenberger
+ * Copyright (c) 2020 Simon Frankenberger
  *
  * Please see LICENCE.md for complete licence text.
  */
@@ -12,18 +12,22 @@ import eu.fraho.spring.securityJwt.base.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.base.exceptions.RefreshException;
 import eu.fraho.spring.securityJwt.base.service.RefreshTokenStore;
 import eu.fraho.spring.securityJwt.memcache.config.MemcacheProperties;
+import eu.fraho.spring.securityJwt.memcache.dto.LruMetadumpEntry;
 import eu.fraho.spring.securityJwt.memcache.dto.MemcacheEntry;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import net.spy.memcached.MemcachedClient;
 import net.spy.memcached.internal.OperationFuture;
+import net.spy.memcached.ops.OperationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -35,12 +39,10 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class MemcacheTokenStore implements RefreshTokenStore {
     private RefreshProperties refreshProperties;
-
     private MemcacheProperties memcacheProperties;
-
     private UserDetailsService userDetailsService;
-
     private MemcachedClient memcachedClient;
+    private boolean lruCrawlerAvailable;
 
     private OperationFuture<Boolean> getAndWait(String message, Supplier<OperationFuture<Boolean>> action) {
         try {
@@ -83,12 +85,10 @@ public class MemcacheTokenStore implements RefreshTokenStore {
         return result;
     }
 
-
     @Override
     public List<RefreshToken> listTokens(JwtUser user) {
         return listTokens().getOrDefault(user.getId(), Collections.emptyList());
     }
-
 
     @Override
     public Map<Long, List<RefreshToken>> listTokens() {
@@ -134,8 +134,60 @@ public class MemcacheTokenStore implements RefreshTokenStore {
         return submitAndCountSuccess(allKeys, futures);
     }
 
-
     private List<String> listAllKeys() {
+        if (lruCrawlerAvailable) {
+            return listAllKeysModern();
+        } else {
+            return listAllKeysLegacy();
+        }
+    }
+
+    private List<String> listAllKeysModern() {
+        Map<SocketAddress, List<LruMetadumpEntry>> entries = getLruCrawlerMetadump("all");
+        return entries.values().stream()
+                .flatMap(List::stream)
+                .map(LruMetadumpEntry::getKey)
+                .filter(e -> e.startsWith(memcacheProperties.getPrefix()))
+                .collect(Collectors.toList());
+    }
+
+    private Map<SocketAddress, List<LruMetadumpEntry>> getLruCrawlerMetadump(String arg) {
+        Map<SocketAddress, List<LruMetadumpEntry>> result = new HashMap<>();
+
+        CountDownLatch blatch = memcachedClient.broadcastOp((n, latch) -> {
+            SocketAddress sa = n.getSocketAddress();
+            ArrayList<LruMetadumpEntry> list = new ArrayList<>();
+            result.put(sa, list);
+            return new LruCrawlerMetadumpOperationImpl(arg, new LruCrawlerMetadumpOperation.Callback() {
+                @Override
+                public void gotMetadump(LruMetadumpEntry entry) {
+                    list.add(entry);
+                }
+
+                @Override
+                @SuppressWarnings("synthetic-access")
+                public void receivedStatus(OperationStatus status) {
+                    if (!status.isSuccess()) {
+                        log.error("Unsuccessful lru_crawler metadump: " + status);
+                    }
+                }
+
+                @Override
+                public void complete() {
+                    latch.countDown();
+                }
+            });
+        });
+
+        try {
+            blatch.await(memcacheProperties.getTimeout(), TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Interrupted waiting for lru_crawler metadump", e);
+        }
+        return result;
+    }
+
+    private List<String> listAllKeysLegacy() {
         final List<String> result = new ArrayList<>();
         final Set<Integer> slabs = memcachedClient.getStats("items")
                 .entrySet().iterator().next()
@@ -146,7 +198,7 @@ public class MemcacheTokenStore implements RefreshTokenStore {
                 .collect(Collectors.toSet());
 
         for (Integer slab : slabs) {
-            int used_chunks = Integer.valueOf(
+            int used_chunks = Integer.parseInt(
                     memcachedClient.getStats("slabs " + slab)
                             .entrySet().iterator().next()
                             .getValue().get(slab + ":used_chunks"));
@@ -190,7 +242,12 @@ public class MemcacheTokenStore implements RefreshTokenStore {
         }
 
         log.info("Starting memcache connection to {}:{}", memcacheProperties.getHost(), memcacheProperties.getPort());
-        memcachedClient = new MemcachedClient(new InetSocketAddress(memcacheProperties.getHost(), memcacheProperties.getPort()));
+        InetSocketAddress address = new InetSocketAddress(memcacheProperties.getHost(), memcacheProperties.getPort());
+        memcachedClient = new MemcachedClient(address);
+
+        String version = memcachedClient.getVersions().get(address);
+        String[] parts = version.split("\\.", 3);
+        lruCrawlerAvailable = Integer.parseInt(parts[0]) > 1 || (Integer.parseInt(parts[0]) == 1 && Integer.parseInt(parts[1]) >= 5);
     }
 
     @Autowired

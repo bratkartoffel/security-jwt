@@ -1,10 +1,5 @@
 dependencies {
-    compile project(':base')
-    optional("org.bouncycastle:bcprov-jdk15on:${bouncyCastleVersion}")
-
-    testCompile project(path: ':base', configuration: 'testArchives')
-}
-
-compileModuleInfoJava {
-    inputs.property("moduleName", "fraho.securityJwt.baseStarter")
+    api project(':base')
+    implementation group: "org.bouncycastle", name: "bcprov-jdk15on", version: bouncyCastleVersion
+    testImplementation testFixtures(project(':base'))
 }

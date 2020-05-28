@@ -3,6 +3,8 @@
 [![Code Coverage](https://img.shields.io/codecov/c/github/bratkartoffel/security-jwt/develop.svg)](https://codecov.io/github/bratkartoffel/security-jwt?branch=develop)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/3632c543331d4fe3b98c96a2964d43ae)](https://www.codacy.com/app/bratkartoffel/security-jwt?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bratkartoffel/security-jwt&amp;utm_campaign=Badge_Grade)
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat)](http://doge.mit-license.org)
+[![Central Version](https://img.shields.io/maven-central/v/eu.fraho.spring/security-jwt-base)](https://mvnrepository.com/artifact/eu.fraho.spring)
+
 
 Providing a simple way to integrate [JWT](https://jwt.io/introduction/) into your spring boot application.
 

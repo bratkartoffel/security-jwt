@@ -1,44 +1,16 @@
-buildscript {
-    ext {
-        projectVersion = '4.2.0'
-        javaCompabitility = 8
-
-        springBootVersion = '2.2.4.RELEASE'
-        springDependencyManagementVersion = '1.0.9.RELEASE'
-
-        lombokVersion = '1.18.12'
-        swaggerAnnotations2Version = '1.6.0'
-        nimbusJwtVersion = '8.5.1'
-        commonsCodecVersion = '1.14'
-        bouncyCastleVersion = '1.64'
-        spyMemcachedVersion = '2.12.3'
-        expiringMapVersion = '0.5.9'
-        h2Version = '1.4.200'
-        powerMockVersion = '2.0.5'
-        jedisVersion = '3.2.0'
-    }
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        maven { url 'https://repo.spring.io/plugins-release' }
-        maven { url "https://plugins.gradle.org/m2/" }
-    }
-    dependencies {
-        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.2"
-        classpath 'io.spring.gradle:propdeps-plugin:0.0.10.RELEASE'
-        classpath "gradle.plugin.gradle-plugins:jartest:1.0.1"
-        classpath "io.spring.gradle:dependency-management-plugin:${springDependencyManagementVersion}"
-    }
-}
-
 plugins {
-    id 'com.adarshr.test-logger' version '2.0.0'
-    id 'com.github.ben-manes.versions' version '0.27.0'
-    id 'org.owasp.dependencycheck' version '5.3.0'
+    id 'io.spring.dependency-management' version "$springDependencyManagementPluginVersion" apply false
+    id "io.freefair.lombok" version "$lombokPluginVersion" apply false
+    id 'com.adarshr.test-logger' version "$testLoggerPluginVersion" apply false
+    id 'com.github.ben-manes.versions' version "$versionsPluginVersion"
 }
 
 subprojects {
-    apply plugin: 'java'
+    apply plugin: 'java-library'
+    apply plugin: 'java-test-fixtures'
+    apply plugin: 'io.freefair.lombok'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'com.adarshr.test-logger'
 
     repositories {
         mavenLocal()
@@ -47,238 +19,146 @@ subprojects {
 
     group = 'eu.fraho.spring'
     archivesBaseName = "security-jwt-${project.name}"
-    version = "${projectVersion}"
+    version = rootProject.file('version.txt').text.trim()
     description = "Spring boot security integration for JWT"
-    sourceCompatibility = javaCompabitility
-    targetCompatibility = javaCompabitility
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+
+    java {
+        withJavadocJar()
+        withSourcesJar()
+    }
 
     jar {
         manifest {
             attributes(
-                    "Implementation-Title": archivesBaseName,
-                    "Implementation-Version": version,
-                    "Build-Jdk": "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
-                    "Compatibility": javaCompabitility,
+                    'Implementation-Title': rootProject.name,
+                    'Implementation-Version': project.version,
+                    'Build-Jdk': "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
+                    'Compatibility': project.sourceCompatibility,
+                    'Built-By': System.getProperty('user.name')
             )
         }
     }
 
     test {
-        ignoreFailures = true
-    }
-
-// START java 9 stuff
-    sourceSets {
-        main {
-            java {
-                srcDir 'src/main/java'
-                exclude 'module-info.java'
-            }
-        }
-        moduleInfo {
-            java {
-                srcDir 'src/main/java9'
-                include 'module-info.java'
-            }
-            compileClasspath = sourceSets.main.compileClasspath
-        }
-    }
-
-    compileModuleInfoJava {
-        sourceCompatibility = 9
-        targetCompatibility = 9
-        doFirst {
-            options.compilerArgs = [
-                    '--module-path', compileJava.classpath.asPath,
-                    '-d', sourceSets.main.output.classesDirs.asPath
-            ]
-            classpath = files()
-        }
-        dependsOn(compileJava)
-        onlyIf {
-            JavaVersion.current() >= JavaVersion.VERSION_1_9
-        }
-    }
-
-    jar {
-        from sourceSets.moduleInfo.output
-        from sourceSets.main.output
-    }
-// END java 9 stuff
-
-    buildscript {
-        repositories {
-            mavenLocal()
-            mavenCentral()
-        }
+        ignoreFailures = rootProject.version.endsWith('-SNAPSHOT')
     }
 
     dependencies {
-        compileOnly("org.projectlombok:lombok:${lombokVersion}")
+        annotationProcessor group: "org.springframework.boot", name: "spring-boot-configuration-processor", version: springBootVersion
 
-        annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
-        annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-
-        testCompile('org.springframework.boot:spring-boot-starter-test')
-        testCompile('org.springframework:spring-aspects')
-        testCompile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-    }
-
-    // spring dependency management
-    apply plugin: 'io.spring.dependency-management'
-    dependencyManagement {
-        imports {
-            mavenBom "org.springframework.boot:spring-boot-starter-parent:${springBootVersion}"
-        }
-    }
-
-    // propdeps
-    apply plugin: 'propdeps'
-    apply plugin: 'propdeps-maven'
-    apply plugin: 'propdeps-idea'
-    apply plugin: 'propdeps-eclipse'
-    compileJava {
-        dependsOn(processResources)
-    }
-
-    // transitive dependencies for tests
-    apply plugin: 'com.github.hauner.jarTest'
-
-    // release stuff
-    task javadocJar(type: Jar) {
-        archiveClassifier.set('javadoc')
-        from javadoc
-    }
-
-    task sourcesJar(type: Jar) {
-        archiveClassifier.set('sources')
-        from sourceSets.main.allSource
-    }
-
-    task testsJar(type: Jar) {
-        archiveClassifier.set('tests')
-        from sourceSets.test.output
-        from sourceSets.test.allSource
-    }
-
-    artifacts {
-        archives javadocJar, sourcesJar, testsJar
+        testFixturesApi group: "org.springframework.boot", name: "spring-boot-starter-test", version: springBootVersion
+        testImplementation group: "org.springframework.boot", name: "spring-boot-starter-test", version: springBootVersion
+        testImplementation group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jsr310", version: jacksonVersion
     }
 
     // code coverage
     apply plugin: 'jacoco'
-    jacoco {
-        toolVersion = "0.8.4"
+    jacoco.toolVersion = jacocoVersion
+    jacocoTestReport.reports {
+        xml.enabled = true
+        html.enabled = true
     }
-    jacocoTestReport {
-        reports {
-            xml.enabled = true
-            html.enabled = true
-        }
-    }
-    check {
-        dependsOn(jacocoTestReport)
-    }
+    check.dependsOn(jacocoTestReport)
 
     // release to central
+    apply plugin: 'maven-publish'
     apply plugin: 'signing'
-    apply plugin: 'maven'
-    if (project.hasProperty('release')) {
-        // abort on test failures on releasing
-        test {
-            ignoreFailures = false
-        }
 
-        // Signature of artifacts
-        signing {
-            useGpgCmd()
-            sign configurations.archives
-        }
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                groupId = project.group
+                artifactId = "security-jwt-${project.name}"
+                version = project.version
+                from components.java
 
-        // OSSRH publication
-        uploadArchives {
-            repositories {
-                mavenDeployer {
-                    // POM signature
-                    beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-                    // Target repository
-                    if (project.version.endsWith('-SNAPSHOT')) {
-                        repository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
-                            authentication(userName: ossrhUsername, password: ossrhPassword)
-                        }
-                    } else {
-                        repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2") {
-                            authentication(userName: ossrhUsername, password: ossrhPassword)
+                suppressPomMetadataWarningsFor('testFixturesApiElements')
+                suppressPomMetadataWarningsFor('testFixturesRuntimeElements')
+
+                pom {
+                    name = project.archivesBaseName
+                    description = project.description
+                    url = 'https://github.com/bratkartoffel/security-jwt'
+
+                    scm {
+                        connection = 'scm:git:https://github.com/bratkartoffel/security-jwt.git'
+                        developerConnection = 'scm:git:git@github.com:bratkartoffel/security-jwt.git'
+                        url = 'https://github.com/bratkartoffel/security-jwt.git'
+                    }
+
+                    licenses {
+                        license {
+                            name = 'The MIT License (MIT)'
+                            url = 'http://opensource.org/licenses/MIT'
+                            distribution = 'repo'
                         }
                     }
-                    pom.project {
-                        name = project.archivesBaseName
-                        description project.description
-                        url 'https://github.com/bratkartoffel/security-jwt'
 
-                        scm {
-                            connection 'scm:git:https://github.com/bratkartoffel/security-jwt.git'
-                            developerConnection 'scm:git:git@github.com:bratkartoffel/security-jwt.git'
-                            url 'https://github.com/bratkartoffel/security-jwt.git'
-                        }
-
-                        licenses {
-                            license {
-                                name 'The MIT License (MIT)'
-                                url 'http://opensource.org/licenses/MIT'
-                                distribution 'repo'
-                            }
-                        }
-
-                        developers {
-                            developer {
-                                id = 'bratkartoffel'
-                                name = 'Simon Frankenberger'
-                                email = 'simon-ossrh-release@fraho.eu'
-                            }
+                    developers {
+                        developer {
+                            id = 'bratkartoffel'
+                            name = 'Simon Frankenberger'
+                            email = 'simon-ossrh-release@fraho.eu'
                         }
                     }
                 }
+            }
+        }
+        repositories {
+            maven {
+                credentials {
+                    username = project.hasProperty('ossrhUsername') ? project.property('ossrhUsername') : null
+                    password = project.hasProperty('ossrhPassword') ? project.property('ossrhPassword') : null
+                }
+                url = project.version.endsWith('-SNAPSHOT') ?
+                        'https://oss.sonatype.org/content/repositories/snapshots' :
+                        'https://oss.sonatype.org/service/local/staging/deploy/maven2'
             }
         }
     }
 
-
-    // dependencyUpdates should only suggest released versions
-    dependencyUpdates.resolutionStrategy {
-        componentSelection { rules ->
-            rules.all { ComponentSelection selection ->
-                boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm', 'preview'].any { qualifier ->
-                    selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
-                }
-                if (rejected) {
-                    selection.reject('Release candidate')
-                }
-            }
-        }
+    // Signature of artifacts
+    signing {
+        required = !rootProject.version.endsWith('-SNAPSHOT')
+        useGpgCmd()
+        sign publishing.publications.mavenJava
     }
 
     // enhancement for jenkins build
     // do not try to print colors in stdout
     if (System.getenv("JENKINS_HOME") != null) {
-        testlogger {
-            theme 'plain'
-        }
+        testlogger.theme 'plain'
     }
 }
 
 task jacocoRootReport(type: JacocoReport) {
     dependsOn = subprojects.test
-    additionalSourceDirs.from(subprojects.sourceSets.main.allSource.srcDirs,
+    additionalSourceDirs.from(
             subprojects.sourceSets.main.allSource.srcDirs,
             subprojects.sourceSets.main.output,
-            subprojects.jacocoTestReport.executionData)
+            subprojects.jacocoTestReport.executionData
+    )
     reports {
         html.enabled = true
         xml.enabled = true
-        csv.enabled = false
     }
     onlyIf = {
         true
+    }
+}
+
+// dependencyUpdates should only suggest released versions
+dependencyUpdates.resolutionStrategy {
+    componentSelection { rules ->
+        rules.all { ComponentSelection selection ->
+            boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm', 'preview'].any { qualifier ->
+                selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
+            }
+            if (rejected) {
+                selection.reject('Release candidate')
+            }
+        }
     }
 }

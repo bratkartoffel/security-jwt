@@ -1,11 +1,7 @@
 dependencies {
-    compile project(':base-spring-boot-starter')
-    compile project(':internal')
+    api project(':base-spring-boot-starter')
+    api project(':internal')
 
-    testCompile project(path: ':base', configuration: 'testArchives')
-    testCompile project(path: ':internal', configuration: 'testArchives')
-}
-
-compileModuleInfoJava {
-    inputs.property("moduleName", "fraho.securityJwt.internalStarter")
+    testImplementation testFixtures(project(':base'))
+    testImplementation testFixtures(project(':internal'))
 }
