@@ -130,8 +130,8 @@ subprojects {
         sign publishing.publications.mavenJava
     }
 
-    // do not try to print colors on stdout when running on jenkins or travis
-    if (System.getenv("JENKINS_HOME") != null || System.getenv("TRAVIS_BUILD_ID") != null) {
+    // do not try to print colors on stdout when running on jenkins
+    if (System.getenv("JENKINS_HOME") != null) {
         testlogger.theme 'plain'
     }
 }
