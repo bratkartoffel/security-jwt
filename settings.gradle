@@ -1,3 +1,5 @@
+rootProject.name = 'security-jwt'
+
 include ":base"
 include ":files"
 include ":internal"

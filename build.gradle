@@ -1,5 +1,4 @@
 plugins {
-    id 'io.spring.dependency-management' version "$springDependencyManagementPluginVersion" apply false
     id "io.freefair.lombok" version "$lombokPluginVersion" apply false
     id 'com.adarshr.test-logger' version "$testLoggerPluginVersion" apply false
     id 'com.github.ben-manes.versions' version "$versionsPluginVersion"
@@ -9,7 +8,6 @@ subprojects {
     apply plugin: 'java-library'
     apply plugin: 'java-test-fixtures'
     apply plugin: 'io.freefair.lombok'
-    apply plugin: 'io.spring.dependency-management'
     apply plugin: 'com.adarshr.test-logger'
 
     repositories {
@@ -18,7 +16,7 @@ subprojects {
     }
 
     group = 'eu.fraho.spring'
-    archivesBaseName = "security-jwt-${project.name}"
+    archivesBaseName = "${rootProject.name}-${project.name}"
     version = rootProject.file('version.txt').text.trim()
     description = "Spring boot security integration for JWT"
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -70,7 +68,7 @@ subprojects {
         publications {
             mavenJava(MavenPublication) {
                 groupId = project.group
-                artifactId = "security-jwt-${project.name}"
+                artifactId = "${rootProject.name}-${project.name}"
                 version = project.version
                 from components.java
 
@@ -78,7 +76,7 @@ subprojects {
                 suppressPomMetadataWarningsFor('testFixturesRuntimeElements')
 
                 pom {
-                    name = project.archivesBaseName
+                    name = "${rootProject.name}-${project.name}"
                     description = project.description
                     url = 'https://github.com/bratkartoffel/security-jwt'
 
