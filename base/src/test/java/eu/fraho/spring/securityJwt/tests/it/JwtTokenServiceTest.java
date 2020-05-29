@@ -4,25 +4,25 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.securityJwt.base.it;
+package eu.fraho.spring.securityJwt.tests.it;
 
 import eu.fraho.spring.securityJwt.base.dto.AccessToken;
 import eu.fraho.spring.securityJwt.base.dto.JwtUser;
 import eu.fraho.spring.securityJwt.base.it.spring.TestApiApplication;
 import eu.fraho.spring.securityJwt.base.service.JwtTokenService;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Objects;
 import java.util.Optional;
 
 @SpringBootTest(classes = TestApiApplication.class)
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class JwtTokenServiceTest {
     private JwtTokenService jwtTokenService;
 
@@ -36,11 +36,11 @@ public class JwtTokenServiceTest {
         Optional<JwtUser> userFromService1 = jwtTokenService.parseUser(token.getToken());
         Optional<JwtUser> userFromService2 = jwtTokenService.parseUser(token.getToken());
 
-        Assert.assertTrue("JwtUser1 should be parsed", userFromService1.isPresent());
-        Assert.assertTrue("JwtUser2 should be parsed", userFromService2.isPresent());
+        Assertions.assertTrue(userFromService1.isPresent(), "JwtUser1 should be parsed");
+        Assertions.assertTrue(userFromService2.isPresent(), "JwtUser2 should be parsed");
 
-        Assert.assertNotSame("JwtUsers should be not the same instance", userFromDb, userFromService2.get());
-        Assert.assertNotSame("JwtUsers should be not the same instance", userFromService1.get(), userFromService2.get());
+        Assertions.assertNotSame(userFromDb, userFromService2.get(), "JwtUsers should be not the same instance");
+        Assertions.assertNotSame(userFromService1.get(), userFromService2.get(), "JwtUsers should be not the same instance");
     }
 
     public JwtTokenService getJwtTokenService() {

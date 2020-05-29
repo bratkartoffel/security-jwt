@@ -4,11 +4,11 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.securityJwt.base.ut.config;
+package eu.fraho.spring.securityJwt.tests.ut.config;
 
 import eu.fraho.spring.securityJwt.base.config.RefreshCookieProperties;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class RefreshCookiePropertiesTest {
     private RefreshCookieProperties getNewInstance() {
@@ -20,18 +20,12 @@ public class RefreshCookiePropertiesTest {
         getNewInstance().afterPropertiesSet();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testEmptyNames() {
         RefreshCookieProperties conf = getNewInstance();
         conf.setNames(new String[0]);
         conf.setEnabled(true);
-        try {
-            conf.afterPropertiesSet();
-        } catch (IllegalArgumentException iae) {
-            Assert.assertEquals("Wrong message text",
-                    "You have to specify at least one cookie name to enable this feature", iae.getMessage());
-            throw iae;
-        }
+        Assertions.assertThrows(IllegalArgumentException.class, conf::afterPropertiesSet);
     }
 
     @Test

@@ -4,20 +4,20 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.securityJwt.base.it;
+package eu.fraho.spring.securityJwt.tests.it;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.fraho.spring.securityJwt.base.dto.AccessToken;
 import eu.fraho.spring.securityJwt.base.dto.AuthenticationResponse;
 import eu.fraho.spring.securityJwt.base.it.spring.TestApiApplication;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -29,7 +29,7 @@ import javax.servlet.Filter;
 import java.util.Objects;
 
 @SpringBootTest(classes = TestApiApplication.class)
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class SecuredControllerTest {
     public static final ObjectMapper mapper = new ObjectMapper();
 
@@ -49,7 +49,7 @@ public class SecuredControllerTest {
 
     private MockMvc mockMvc;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         if (mockMvc == null) {
             mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilter(springSecurityFilterChain).build();
@@ -135,7 +135,7 @@ public class SecuredControllerTest {
                 .andReturn().getResponse().getContentAsString();
 
         AuthenticationResponse token = mapper.readValue(body, AuthenticationResponse.class);
-        Assert.assertNotNull("Should return a token", token.getAccessToken());
+        Assertions.assertNotNull(token.getAccessToken(), "Should return a token");
         return token;
     }
 

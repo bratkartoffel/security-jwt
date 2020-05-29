@@ -4,13 +4,13 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.securityJwt.base.ut.service;
+package eu.fraho.spring.securityJwt.tests.ut.service;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import eu.fraho.spring.securityJwt.base.dto.TimeWithPeriod;
 import eu.fraho.spring.securityJwt.base.service.TimeWithPeriodSerializer;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.io.IOException;

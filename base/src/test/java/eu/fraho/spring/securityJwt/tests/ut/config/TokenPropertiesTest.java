@@ -4,15 +4,14 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.securityJwt.base.ut.config;
+package eu.fraho.spring.securityJwt.tests.ut.config;
 
-import com.nimbusds.jose.KeyLengthException;
 import com.nimbusds.jose.crypto.*;
 import com.nimbusds.jose.jwk.Curve;
 import eu.fraho.spring.securityJwt.base.config.TokenProperties;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -51,16 +50,11 @@ public class TokenPropertiesTest {
         getNewInstance().afterPropertiesSet();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testUnknownAlgorithm() {
         TokenProperties conf = getNewInstance();
         conf.setAlgorithm("foobar");
-        try {
-            conf.afterPropertiesSet();
-        } catch (IllegalArgumentException iae) {
-            Assert.assertEquals("Wrong exception text", "Unknown signature algorithm configured: foobar", iae.getMessage());
-            throw iae;
-        }
+        Assertions.assertThrows(IllegalArgumentException.class, conf::afterPropertiesSet);
     }
 
     @Test
@@ -68,8 +62,8 @@ public class TokenPropertiesTest {
         TokenProperties conf = getNewInstance();
         conf.afterPropertiesSet();
 
-        Assert.assertEquals("Verifier should be for HMAC", MACVerifier.class, conf.getVerifier().getClass());
-        Assert.assertEquals("Signer should be for HMAC", MACSigner.class, conf.getSigner().getClass());
+        Assertions.assertEquals(MACVerifier.class, conf.getVerifier().getClass(), "Verifier should be for HMAC");
+        Assertions.assertEquals(MACSigner.class, conf.getSigner().getClass(), "Signer should be for HMAC");
     }
 
     @Test
@@ -81,22 +75,18 @@ public class TokenPropertiesTest {
         conf.setHmac(tempPrivate.toPath());
         conf.afterPropertiesSet();
 
-        Assert.assertEquals("Verifier should be for HMAC", MACVerifier.class, conf.getVerifier().getClass());
-        Assert.assertEquals("Signer should be for HMAC", MACSigner.class, conf.getSigner().getClass());
+        Assertions.assertEquals(MACVerifier.class, conf.getVerifier().getClass(), "Verifier should be for HMAC");
+        Assertions.assertEquals(MACSigner.class, conf.getSigner().getClass(), "Signer should be for HMAC");
     }
 
-    @Test(expected = KeyLengthException.class)
+    @Test
     public void testHmacSmallKeyfile() throws Throwable {
         try (OutputStream os = new FileOutputStream(tempPrivate)) {
             os.write(42);
         }
         TokenProperties conf = getNewInstance();
         conf.setHmac(tempPrivate.toPath());
-        try {
-            conf.afterPropertiesSet();
-        } catch (IllegalArgumentException iae) {
-            throw iae.getCause();
-        }
+        Assertions.assertThrows(IllegalArgumentException.class, conf::afterPropertiesSet);
     }
 
     @Test
@@ -109,8 +99,8 @@ public class TokenPropertiesTest {
         conf.setHmac(tempPrivate.toPath());
         conf.afterPropertiesSet();
 
-        Assert.assertEquals("Verifier should be for HMAC", MACVerifier.class, conf.getVerifier().getClass());
-        Assert.assertArrayEquals("Secret not loaded", secret, ((MACVerifier) conf.getVerifier()).getSecret());
+        Assertions.assertEquals(MACVerifier.class, conf.getVerifier().getClass(), "Verifier should be for HMAC");
+        Assertions.assertArrayEquals(secret, ((MACVerifier) conf.getVerifier()).getSecret(), "Secret not loaded");
     }
 
     @Test
@@ -120,8 +110,8 @@ public class TokenPropertiesTest {
             TokenProperties conf = withRsa(getNewInstance());
             conf.afterPropertiesSet();
 
-            Assert.assertEquals("Verifier should be for RSA", RSASSAVerifier.class, conf.getVerifier().getClass());
-            Assert.assertEquals("Signer should be for RSA", RSASSASigner.class, conf.getSigner().getClass());
+            Assertions.assertEquals(RSASSAVerifier.class, conf.getVerifier().getClass(), "Verifier should be for RSA");
+            Assertions.assertEquals(RSASSASigner.class, conf.getSigner().getClass(), "Signer should be for RSA");
         } finally {
             Security.removeProvider(BouncyCastleProvider.PROVIDER_NAME);
         }
@@ -135,22 +125,17 @@ public class TokenPropertiesTest {
         }
         conf.afterPropertiesSet();
 
-        Assert.assertEquals("Verifier should be for RSA", RSASSAVerifier.class, conf.getVerifier().getClass());
-        Assert.assertNull("Signer should be null", conf.getSigner());
+        Assertions.assertEquals(RSASSAVerifier.class, conf.getVerifier().getClass(), "Verifier should be for RSA");
+        Assertions.assertNull(conf.getSigner(), "Signer should be null");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testRsaNoPubkey() throws Exception {
         TokenProperties conf = withRsa(getNewInstance());
         try (OutputStream os = new FileOutputStream(tempPublic)) {
             os.flush();
         }
-        try {
-            conf.afterPropertiesSet();
-        } catch (IllegalArgumentException iae) {
-            Assert.assertEquals("Wrong exception text", "No public key configured", iae.getMessage());
-            throw iae;
-        }
+        Assertions.assertThrows(IllegalArgumentException.class, conf::afterPropertiesSet);
     }
 
     @Test
@@ -160,14 +145,14 @@ public class TokenPropertiesTest {
             TokenProperties conf = withEcdsa(getNewInstance());
             conf.afterPropertiesSet();
 
-            Assert.assertEquals("Verifier should be for ECDSA", ECDSAVerifier.class, conf.getVerifier().getClass());
-            Assert.assertEquals("Signer should be for ECDSA", ECDSASigner.class, conf.getSigner().getClass());
+            Assertions.assertEquals(ECDSAVerifier.class, conf.getVerifier().getClass(), "Verifier should be for ECDSA");
+            Assertions.assertEquals(ECDSASigner.class, conf.getSigner().getClass(), "Signer should be for ECDSA");
         } finally {
             Security.removeProvider(BouncyCastleProvider.PROVIDER_NAME);
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testEcdsaNotSupported() throws Exception {
         Security.addProvider(new BouncyCastleProvider());
         TokenProperties conf;
@@ -176,14 +161,7 @@ public class TokenPropertiesTest {
         } finally {
             Security.removeProvider(BouncyCastleProvider.PROVIDER_NAME);
         }
-        try {
-            conf.afterPropertiesSet();
-        } catch (IllegalArgumentException iae) {
-            Assert.assertEquals("Wrong exception text",
-                    "Bouncycastle is not installed properly, ECDSA is not available!",
-                    iae.getMessage());
-            throw iae;
-        }
+        Assertions.assertThrows(IllegalArgumentException.class, conf::afterPropertiesSet);
     }
 
     @Test
@@ -196,14 +174,14 @@ public class TokenPropertiesTest {
             }
             conf.afterPropertiesSet();
 
-            Assert.assertEquals("Verifier should be for ECDSA", ECDSAVerifier.class, conf.getVerifier().getClass());
-            Assert.assertNull("Signer should be null", conf.getSigner());
+            Assertions.assertEquals(ECDSAVerifier.class, conf.getVerifier().getClass(), "Verifier should be for ECDSA");
+            Assertions.assertNull(conf.getSigner(), "Signer should be null");
         } finally {
             Security.removeProvider(BouncyCastleProvider.PROVIDER_NAME);
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testEcsaNoPubkey() throws Exception {
         Security.addProvider(new BouncyCastleProvider());
         try {
@@ -211,29 +189,18 @@ public class TokenPropertiesTest {
             try (OutputStream os = new FileOutputStream(tempPublic)) {
                 os.flush();
             }
-            try {
-                conf.afterPropertiesSet();
-            } catch (IllegalArgumentException iae) {
-                Assert.assertEquals("Wrong exception text", "No public key configured", iae.getMessage());
-                throw iae;
-            }
+            Assertions.assertThrows(IllegalArgumentException.class, conf::afterPropertiesSet);
         } finally {
             Security.removeProvider(BouncyCastleProvider.PROVIDER_NAME);
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testNeitherHeaderNorCookieEnabled() {
         TokenProperties conf = getNewInstance();
         conf.getCookie().setEnabled(false);
         conf.getHeader().setEnabled(false);
-        try {
-            conf.afterPropertiesSet();
-        } catch (IllegalArgumentException iae) {
-            Assert.assertEquals("Wrong exception text",
-                    "Please enable at least one of header or cookie authentication.", iae.getMessage());
-            throw iae;
-        }
+        Assertions.assertThrows(IllegalArgumentException.class, conf::afterPropertiesSet);
     }
 
     private TokenProperties withRsa(final TokenProperties conf) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {

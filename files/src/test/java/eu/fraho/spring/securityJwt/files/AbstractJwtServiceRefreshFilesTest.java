@@ -10,7 +10,7 @@ import eu.fraho.spring.securityJwt.base.service.RefreshTokenStore;
 import eu.fraho.spring.securityJwt.base.ut.service.AbstractJwtTokenServiceWithRefreshTest;
 import eu.fraho.spring.securityJwt.files.config.FilesProperties;
 import eu.fraho.spring.securityJwt.files.service.FilesTokenStore;
-import org.junit.AfterClass;
+import org.junit.jupiter.api.AfterAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +32,7 @@ public class AbstractJwtServiceRefreshFilesTest extends AbstractJwtTokenServiceW
         refreshTokenStore.afterPropertiesSet();
     }
 
-    @AfterClass
+    @AfterAll
     public static void cleanup() {
         try {
             Files.deleteIfExists(Paths.get("test_datadir/db.json"));

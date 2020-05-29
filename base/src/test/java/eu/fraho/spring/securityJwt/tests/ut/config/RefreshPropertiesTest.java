@@ -4,12 +4,12 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.securityJwt.base.ut.config;
+package eu.fraho.spring.securityJwt.tests.ut.config;
 
 import eu.fraho.spring.securityJwt.base.config.RefreshProperties;
 import eu.fraho.spring.securityJwt.base.service.NullTokenStore;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class RefreshPropertiesTest {
     private RefreshProperties getNewInstance() {
@@ -27,11 +27,11 @@ public class RefreshPropertiesTest {
 
         conf.setLength(1);
         conf.afterPropertiesSet();
-        Assert.assertEquals("Length did not reset to default", 24, conf.getLength());
+        Assertions.assertEquals(24, conf.getLength(), "Length did not reset to default");
 
         conf.setLength(64);
         conf.afterPropertiesSet();
-        Assert.assertEquals("Length did not reset to default", 24, conf.getLength());
+        Assertions.assertEquals(24, conf.getLength(), "Length did not reset to default");
     }
 
     @Test
@@ -39,38 +39,27 @@ public class RefreshPropertiesTest {
         RefreshProperties conf = getNewInstance();
         try {
             conf.setCacheImpl(null);
-            Assert.fail("Setting null on cache impl worked");
+            Assertions.fail("Setting null on cache impl worked");
         } catch (NullPointerException npe) {
             // just ignore, we expect that here
         }
         conf.afterPropertiesSet();
-        Assert.assertEquals("CacheImapl may not be null", NullTokenStore.class, conf.getCacheImpl());
+        Assertions.assertEquals(NullTokenStore.class, conf.getCacheImpl(), "CacheImapl may not be null");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testEmptyPath() {
         RefreshProperties conf = getNewInstance();
         conf.setPath("");
-        try {
-            conf.afterPropertiesSet();
-        } catch (IllegalArgumentException iae) {
-            Assert.assertEquals("Wrong message text",
-                    "The path for refresh cookies may not be empty", iae.getMessage());
-            throw iae;
-        }
+        Assertions.assertThrows(IllegalArgumentException.class, conf::afterPropertiesSet);
     }
 
     @Test
     public void testNullPath() {
         RefreshProperties conf = getNewInstance();
-        try {
-            conf.setPath(null);
-            Assert.fail("Setting null on cache impl worked");
-        } catch (NullPointerException npe) {
-            // just ignore, we expect that here
-        }
+        Assertions.assertThrows(NullPointerException.class, () -> conf.setPath(null));
 
         conf.afterPropertiesSet();
-        Assert.assertNotNull("Path may not be null", conf.getPath());
+        Assertions.assertNotNull(conf.getPath(), "Path may not be null");
     }
 }

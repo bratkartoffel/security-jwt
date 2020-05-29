@@ -13,11 +13,12 @@ import eu.fraho.spring.securityJwt.base.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.base.exceptions.FeatureNotConfiguredException;
 import eu.fraho.spring.securityJwt.base.service.JwtTokenService;
 import eu.fraho.spring.securityJwt.base.service.RefreshTokenStore;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -35,7 +36,7 @@ public abstract class AbstractJwtTokenServiceWithRefreshTest extends AbstractJwt
         return mapper;
     }
 
-    @Before
+    @BeforeEach
     public void cleanupOldRefreshTokens() {
         getRefreshStore().revokeTokens();
     }
@@ -44,8 +45,8 @@ public abstract class AbstractJwtTokenServiceWithRefreshTest extends AbstractJwt
     public void testRefreshTokenSupported() {
         JwtTokenService service = getService();
 
-        Assert.assertTrue("Refresh tokens not supported", getRefreshStore().isRefreshTokenSupported());
-        Assert.assertTrue("Refresh tokens not supported", service.isRefreshTokenSupported());
+        Assertions.assertTrue(getRefreshStore().isRefreshTokenSupported(), "Refresh tokens not supported");
+        Assertions.assertTrue(service.isRefreshTokenSupported(), "Refresh tokens not supported");
     }
 
     @Test
@@ -62,24 +63,24 @@ public abstract class AbstractJwtTokenServiceWithRefreshTest extends AbstractJwt
         RefreshToken tokenC = service.generateRefreshToken(xsmith);
 
         final List<RefreshToken> jsmithTokens = service.listRefreshTokens(jsmith);
-        Assert.assertTrue("Contains tokenA", jsmithTokens.contains(tokenA));
-        Assert.assertTrue("Contains tokenB", jsmithTokens.contains(tokenB));
-        Assert.assertEquals("Unexpected token count", 2, jsmithTokens.size());
+        Assertions.assertTrue(jsmithTokens.contains(tokenA), "Contains tokenA");
+        Assertions.assertTrue(jsmithTokens.contains(tokenB), "Contains tokenB");
+        Assertions.assertEquals(2, jsmithTokens.size(), "Unexpected token count");
 
         final List<RefreshToken> xsmithTokens = service.listRefreshTokens(xsmith);
-        Assert.assertTrue("Contains tokenC", xsmithTokens.contains(tokenC));
-        Assert.assertEquals("Unexpected token count", 1, xsmithTokens.size());
+        Assertions.assertTrue(xsmithTokens.contains(tokenC), "Contains tokenC");
+        Assertions.assertEquals(1, xsmithTokens.size(), "Unexpected token count");
     }
 
-    @Test(timeout = 10_000L)
+    @Test
     public void testExpireRefreshToken() throws Exception {
         JwtTokenService service = getService();
         JwtUser user = getJwtUser();
 
-        RefreshToken token = service.generateRefreshToken(user);
-        Assert.assertNotNull("No token generated", token.getToken());
+        RefreshToken token = Assertions.assertTimeout(Duration.ofSeconds(1), () -> service.generateRefreshToken(user));
+        Assertions.assertNotNull(token.getToken(), "No token generated");
         Thread.sleep(getRefreshProperties().getExpiration().toSeconds() * 1000 + 100);
-        Assert.assertFalse("AbstractToken didn't expire", service.useRefreshToken(token.getToken()).isPresent());
+        Assertions.assertFalse(service.useRefreshToken(token.getToken()).isPresent(), "AbstractToken didn't expire");
     }
 
     @Test
@@ -96,15 +97,16 @@ public abstract class AbstractJwtTokenServiceWithRefreshTest extends AbstractJwt
         RefreshToken tokenC = service.generateRefreshToken(xsmith);
 
         final Map<Long, List<RefreshToken>> tokenMap = service.listRefreshTokens();
-        Assert.assertEquals("User count don't match", 2, tokenMap.size());
+        Assertions.assertEquals(2, tokenMap.size(), "User count don't match");
 
-        final List<RefreshToken> allTokens = tokenMap.values().stream().flatMap(Collection::stream)
+        final List<RefreshToken> allTokens = tokenMap.values().stream()
+                .flatMap(Collection::stream)
                 .collect(Collectors.toList());
-        Assert.assertEquals("RefreshToken count don't match", 3, allTokens.size());
-        Assert.assertTrue("Not all tokens returned", allTokens.containsAll(Arrays.asList(tokenA, tokenB, tokenC)));
+        Assertions.assertEquals(3, allTokens.size(), "RefreshToken count don't match");
+        Assertions.assertTrue(allTokens.containsAll(Arrays.asList(tokenA, tokenB, tokenC)), "Not all tokens returned");
     }
 
-    @Test(timeout = 10_000L)
+    @Test
     public void testListRefreshTokensExpiration() throws Exception {
         JwtTokenService service = getService();
 
@@ -113,18 +115,20 @@ public abstract class AbstractJwtTokenServiceWithRefreshTest extends AbstractJwt
         JwtUser xsmith = getJwtUser();
         xsmith.setUsername("xsmith");
 
-        service.generateRefreshToken(jsmith);
-        service.generateRefreshToken(jsmith);
-        service.generateRefreshToken(xsmith);
+        Assertions.assertTimeout(Duration.ofSeconds(1), () -> {
+            service.generateRefreshToken(jsmith);
+            service.generateRefreshToken(jsmith);
+            service.generateRefreshToken(xsmith);
+        });
 
         Thread.sleep(getRefreshProperties().getExpiration().toSeconds() * 1000 + 100);
 
         final Map<Long, List<RefreshToken>> tokenMap = service.listRefreshTokens();
-        Assert.assertEquals("User count don't match", 0, tokenMap.size());
+        Assertions.assertEquals(0, tokenMap.size(), "User count don't match");
 
         final List<RefreshToken> allTokens = tokenMap.values().stream().flatMap(Collection::stream)
                 .collect(Collectors.toList());
-        Assert.assertEquals("RefreshToken count don't match", 0, allTokens.size());
+        Assertions.assertEquals(0, allTokens.size(), "RefreshToken count don't match");
     }
 
     @Test
@@ -136,13 +140,13 @@ public abstract class AbstractJwtTokenServiceWithRefreshTest extends AbstractJwt
         RefreshToken tokenB = service.generateRefreshToken(user);
 
         final List<RefreshToken> tokens = service.listRefreshTokens(user);
-        Assert.assertEquals("RefreshToken count don't match", 2, tokens.size());
+        Assertions.assertEquals(2, tokens.size(), "RefreshToken count don't match");
 
-        Assert.assertTrue("AbstractToken should be revoked", service.revokeRefreshToken(tokenA));
-        Assert.assertEquals("AbstractToken list is not immutable", 2, tokens.size());
+        Assertions.assertTrue(service.revokeRefreshToken(tokenA), "AbstractToken should be revoked");
+        Assertions.assertEquals(2, tokens.size(), "AbstractToken list is not immutable");
         final List<RefreshToken> tokens2 = service.listRefreshTokens(user);
-        Assert.assertEquals("AbstractToken was not revoked", 1, tokens2.size());
-        Assert.assertTrue("Wrong token revoked", tokens2.contains(tokenB));
+        Assertions.assertEquals(1, tokens2.size(), "AbstractToken was not revoked");
+        Assertions.assertTrue(tokens2.contains(tokenB), "Wrong token revoked");
     }
 
     @Test
@@ -153,13 +157,13 @@ public abstract class AbstractJwtTokenServiceWithRefreshTest extends AbstractJwt
         RefreshToken tokenA = service.generateRefreshToken(jsmith);
 
         List<RefreshToken> tokens = service.listRefreshTokens(jsmith);
-        Assert.assertEquals("RefreshToken count don't match", 1, tokens.size());
+        Assertions.assertEquals(1, tokens.size(), "RefreshToken count don't match");
 
-        Assert.assertTrue("AbstractToken should be revoked", service.revokeRefreshToken(tokenA));
-        Assert.assertEquals("AbstractToken list is not immutable", 1, tokens.size());
+        Assertions.assertTrue(service.revokeRefreshToken(tokenA), "AbstractToken should be revoked");
+        Assertions.assertEquals(1, tokens.size(), "AbstractToken list is not immutable");
         List<RefreshToken> tokens2 = service.listRefreshTokens(jsmith);
-        Assert.assertEquals("RefreshToken count don't match", 0, tokens2.size());
-        Assert.assertFalse("AbstractToken should be already revoked", service.revokeRefreshToken(tokenA));
+        Assertions.assertEquals(0, tokens2.size(), "RefreshToken count don't match");
+        Assertions.assertFalse(service.revokeRefreshToken(tokenA), "AbstractToken should be already revoked");
     }
 
     @Test
@@ -171,12 +175,12 @@ public abstract class AbstractJwtTokenServiceWithRefreshTest extends AbstractJwt
         service.generateRefreshToken(jsmith);
 
         final List<RefreshToken> tokens = service.listRefreshTokens(jsmith);
-        Assert.assertEquals("RefreshToken count don't match", 2, tokens.size());
+        Assertions.assertEquals(2, tokens.size(), "RefreshToken count don't match");
 
-        Assert.assertEquals("Tokens should be revoked", 2, service.revokeRefreshTokens(jsmith));
-        Assert.assertEquals("AbstractToken list is not immutable", 2, tokens.size());
+        Assertions.assertEquals(2, service.revokeRefreshTokens(jsmith), "Tokens should be revoked");
+        Assertions.assertEquals(2, tokens.size(), "AbstractToken list is not immutable");
         final List<RefreshToken> tokens2 = service.listRefreshTokens(jsmith);
-        Assert.assertTrue("Tokens were not revoked", tokens2.isEmpty());
+        Assertions.assertTrue(tokens2.isEmpty(), "Tokens were not revoked");
     }
 
     @Test
@@ -194,13 +198,13 @@ public abstract class AbstractJwtTokenServiceWithRefreshTest extends AbstractJwt
 
         final List<RefreshToken> tokens = service.listRefreshTokens().values().stream().flatMap(Collection::stream)
                 .collect(Collectors.toList());
-        Assert.assertEquals("RefreshToken count don't match", 3, tokens.size());
+        Assertions.assertEquals(3, tokens.size(), "RefreshToken count don't match");
 
         int count = service.clearTokens();
-        Assert.assertEquals("AbstractToken list is not immutable", 3, tokens.size());
+        Assertions.assertEquals(3, tokens.size(), "AbstractToken list is not immutable");
         final List<RefreshToken> tokens2 = service.listRefreshTokens(jsmith);
-        Assert.assertTrue("Tokens were not revoked", tokens2.isEmpty());
-        Assert.assertEquals("Revoked token count should be 3", 3, count);
+        Assertions.assertTrue(tokens2.isEmpty(), "Tokens were not revoked");
+        Assertions.assertEquals(3, count, "Revoked token count should be 3");
     }
 
     @Test
@@ -212,26 +216,23 @@ public abstract class AbstractJwtTokenServiceWithRefreshTest extends AbstractJwt
         RefreshToken tokenB = service.generateRefreshToken(jsmith);
 
         final List<RefreshToken> tokens = service.listRefreshTokens(jsmith);
-        Assert.assertEquals("RefreshToken count don't match", 2, tokens.size());
+        Assertions.assertEquals(2, tokens.size(), "RefreshToken count don't match");
 
-        Assert.assertTrue("AbstractToken should be used", service.useRefreshToken(tokenA.getToken()).isPresent());
+        Assertions.assertTrue(service.useRefreshToken(tokenA.getToken()).isPresent(), "AbstractToken should be used");
         final List<RefreshToken> tokensRead = service.listRefreshTokens(jsmith);
-        Assert.assertEquals("RefreshToken count don't match", 1, tokensRead.size());
-        Assert.assertEquals("Wrong token used", tokenB, tokensRead.get(0));
+        Assertions.assertEquals(1, tokensRead.size(), "RefreshToken count don't match");
+        Assertions.assertEquals(tokenB, tokensRead.get(0), "Wrong token used");
     }
 
-    @Test(expected = FeatureNotConfiguredException.class)
+    @Test
     public void testUseTokenNoPrivateKey() {
         TokenProperties tokenProperties = getRsaTokenProperties();
         JwtTokenService service = getService(tokenProperties);
 
-        try {
-            Assert.assertEquals("RSA config should be in use", "RS256", tokenProperties.getAlgorithm());
+        Assertions.assertEquals("RS256", tokenProperties.getAlgorithm(), "RSA config should be in use");
+        Assertions.assertThrows(FeatureNotConfiguredException.class, () -> {
             service.useRefreshToken("baz");
-        } catch (FeatureNotConfiguredException fnce) {
-            Assert.assertEquals("Wrong error message", "Access token signing is not enabled.", fnce.getMessage());
-            throw fnce;
-        }
+        });
     }
 
     @Override

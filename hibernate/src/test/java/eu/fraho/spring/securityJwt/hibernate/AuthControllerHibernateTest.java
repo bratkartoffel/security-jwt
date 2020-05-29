@@ -8,15 +8,13 @@ package eu.fraho.spring.securityJwt.hibernate;
 
 import eu.fraho.spring.securityJwt.base.it.AbstractAuthControllerWithRefreshTest;
 import eu.fraho.spring.securityJwt.hibernate.spring.TestHibernateApiApplication;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest(properties = "spring.config.location=classpath:hibernate-test.yaml",
-        classes = TestHibernateApiApplication.class)
-@RunWith(SpringJUnit4ClassRunner.class)
-//@Commit
+@SpringBootTest(properties = "spring.config.location=classpath:hibernate-test.yaml", classes = TestHibernateApiApplication.class)
+@ExtendWith(SpringExtension.class)
 @Transactional
 public class AuthControllerHibernateTest extends AbstractAuthControllerWithRefreshTest {
 }

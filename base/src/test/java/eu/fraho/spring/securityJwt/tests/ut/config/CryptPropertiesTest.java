@@ -4,12 +4,12 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.securityJwt.base.ut.config;
+package eu.fraho.spring.securityJwt.tests.ut.config;
 
 import eu.fraho.spring.securityJwt.base.config.CryptProperties;
 import eu.fraho.spring.securityJwt.base.dto.CryptAlgorithm;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class CryptPropertiesTest {
     private CryptProperties getNewInstance() {
@@ -27,11 +27,11 @@ public class CryptPropertiesTest {
 
         conf.setRounds(1);
         conf.afterPropertiesSet();
-        Assert.assertEquals("Rounds did not reset to default", 10_000, conf.getRounds());
+        Assertions.assertEquals(10_000, conf.getRounds(), "Rounds did not reset to default");
 
         conf.setRounds(1_000_000);
         conf.afterPropertiesSet();
-        Assert.assertEquals("Rounds did not reset to default", 10_000, conf.getRounds());
+        Assertions.assertEquals(10_000, conf.getRounds(), "Rounds did not reset to default");
     }
 
     @Test
@@ -42,6 +42,6 @@ public class CryptPropertiesTest {
 
         conf.setRounds(1);
         conf.afterPropertiesSet();
-        Assert.assertEquals("Rounds did reset to default", 1, conf.getRounds());
+        Assertions.assertEquals(1, conf.getRounds(), "Rounds did reset to default");
     }
 }

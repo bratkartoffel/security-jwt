@@ -4,13 +4,13 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.securityJwt.base.ut.password;
+package eu.fraho.spring.securityJwt.tests.ut.password;
 
 import eu.fraho.spring.securityJwt.base.config.CryptProperties;
 import eu.fraho.spring.securityJwt.base.dto.CryptAlgorithm;
 import eu.fraho.spring.securityJwt.base.password.CryptPasswordEncoder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
@@ -38,8 +38,8 @@ public class CryptPasswordEncoderTest {
 
         String pwd = generatePassword();
         String password = encoder.encode(pwd);
-        Assert.assertTrue("Hash with wrong algorithm", Pattern.compile("^[a-zA-Z0-9]{2}[a-zA-Z0-9./]{11}$").matcher(password).matches());
-        Assert.assertTrue("Password didn't validate", encoder.matches(pwd, password));
+        Assertions.assertTrue(Pattern.compile("^[a-zA-Z0-9]{2}[a-zA-Z0-9./]{11}$").matcher(password).matches(), "Hash with wrong algorithm");
+        Assertions.assertTrue(encoder.matches(pwd, password), "Password didn't validate");
     }
 
     @Test
@@ -52,8 +52,8 @@ public class CryptPasswordEncoderTest {
 
         String pwd = generatePassword();
         String password = encoder.encode(pwd);
-        Assert.assertTrue("Hash with wrong algorithm", Pattern.compile("^\\$1\\$[a-zA-Z0-9]{8}\\$.+$").matcher(password).matches());
-        Assert.assertTrue("Password didn't validate", encoder.matches(pwd, password));
+        Assertions.assertTrue(Pattern.compile("^\\$1\\$[a-zA-Z0-9]{8}\\$.+$").matcher(password).matches(), "Hash with wrong algorithm");
+        Assertions.assertTrue(encoder.matches(pwd, password), "Password didn't validate");
     }
 
     @Test
@@ -66,8 +66,8 @@ public class CryptPasswordEncoderTest {
 
         String pwd = generatePassword();
         String password = encoder.encode(pwd);
-        Assert.assertTrue("Hash with wrong algorithm", Pattern.compile("^\\$5\\$rounds=1000\\$[a-zA-Z0-9]{16}\\$.+$").matcher(password).matches());
-        Assert.assertTrue("Password didn't validate", encoder.matches(pwd, password));
+        Assertions.assertTrue(Pattern.compile("^\\$5\\$rounds=1000\\$[a-zA-Z0-9]{16}\\$.+$").matcher(password).matches(), "Hash with wrong algorithm");
+        Assertions.assertTrue(encoder.matches(pwd, password), "Password didn't validate");
     }
 
     @Test
@@ -80,8 +80,8 @@ public class CryptPasswordEncoderTest {
 
         String pwd = generatePassword();
         String password = encoder.encode(pwd);
-        Assert.assertTrue("Hash with wrong algorithm", Pattern.compile("^\\$6\\$rounds=1000\\$[a-zA-Z0-9]{16}\\$.+$").matcher(password).matches());
-        Assert.assertTrue("Password didn't validate", encoder.matches(pwd, password));
+        Assertions.assertTrue(Pattern.compile("^\\$6\\$rounds=1000\\$[a-zA-Z0-9]{16}\\$.+$").matcher(password).matches(), "Hash with wrong algorithm");
+        Assertions.assertTrue(encoder.matches(pwd, password), "Password didn't validate");
     }
 
     @Test
@@ -89,9 +89,9 @@ public class CryptPasswordEncoderTest {
         CryptProperties config = getConfig();
         config.afterPropertiesSet();
         CryptPasswordEncoder encoder = getNewInstance(config);
-        Assert.assertFalse("NULL passwords did match", encoder.matches("foo", null));
-        Assert.assertFalse("NULL passwords did match", encoder.matches(null, null));
-        Assert.assertFalse("NULL passwords did match", encoder.matches(null, "bar"));
+        Assertions.assertFalse(encoder.matches("foo", null), "NULL passwords did match");
+        Assertions.assertFalse(encoder.matches(null, null), "NULL passwords did match");
+        Assertions.assertFalse(encoder.matches(null, "bar"), "NULL passwords did match");
     }
 
     private String generatePassword() {

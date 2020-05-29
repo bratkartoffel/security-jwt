@@ -38,18 +38,17 @@ import java.util.concurrent.TimeUnit;
 @Immutable
 @Slf4j
 @JsonSerialize(using = TimeWithPeriodSerializer.class)
-public final class TimeWithPeriod {
+public class TimeWithPeriod {
     /**
      * Quantity of the {@link #chronoUnit}
      */
-    private final int quantity;
+    int quantity;
 
     /**
      * The chronoUnit to use
      */
-
     @NonNull
-    private final ChronoUnit chronoUnit;
+    ChronoUnit chronoUnit;
 
     /**
      * Parse the given configuration value and extract the {@link #quantity} and {@link #chronoUnit}.<br>
@@ -63,7 +62,7 @@ public final class TimeWithPeriod {
             period = period + "S";
         }
 
-        quantity = Integer.valueOf(parts[0]);
+        quantity = Integer.parseInt(parts[0]);
         chronoUnit = ChronoUnit.valueOf(period);
     }
 
