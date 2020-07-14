@@ -11,9 +11,9 @@ import eu.fraho.spring.securityJwt.base.config.TokenCookieProperties;
 import eu.fraho.spring.securityJwt.base.dto.AuthenticationRequest;
 import eu.fraho.spring.securityJwt.base.dto.AuthenticationResponse;
 import eu.fraho.spring.securityJwt.base.service.LoginService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -39,12 +39,11 @@ public class LoginRestController implements CookieSupport {
     private RefreshCookieProperties refreshCookieProperties;
 
     @RequestMapping("${fraho.jwt.token.path:/auth/login}")
-    // Swagger 2.0
-    @ApiOperation("Create a new token using the supplied credentials")
+    @Operation(summary = "Create a new token using the supplied credentials")
     @ApiResponses({
-            @ApiResponse(code = HttpServletResponse.SC_OK, message = "Generated token"),
-            @ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = "Missing a required field in the request"),
-            @ApiResponse(code = HttpServletResponse.SC_UNAUTHORIZED, message = "Either the credentials are wrong or the user has no access to this api"),
+            @ApiResponse(responseCode = "200", description = "Generated token"),
+            @ApiResponse(responseCode = "400", description = "Missing a required field in the request"),
+            @ApiResponse(responseCode = "401", description = "Either the credentials are wrong or the user has no access to this api"),
     })
     public ResponseEntity<AuthenticationResponse> login(HttpServletResponse response,
                                                         @RequestBody AuthenticationRequest authenticationRequest) {
