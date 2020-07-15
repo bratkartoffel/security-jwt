@@ -1,7 +1,6 @@
 # Spring Security Addon for JWT
 [![Build Status](https://travis-ci.org/bratkartoffel/security-jwt.svg?branch=develop)](https://travis-ci.org/bratkartoffel/security-jwt)
 [![Code Coverage](https://img.shields.io/codecov/c/github/bratkartoffel/security-jwt/develop.svg)](https://codecov.io/github/bratkartoffel/security-jwt?branch=develop)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/3632c543331d4fe3b98c96a2964d43ae)](https://www.codacy.com/app/bratkartoffel/security-jwt?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bratkartoffel/security-jwt&amp;utm_campaign=Badge_Grade)
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat)](http://doge.mit-license.org)
 [![Central Version](https://img.shields.io/maven-central/v/eu.fraho.spring/security-jwt-base)](https://mvnrepository.com/artifact/eu.fraho.spring)
 
@@ -44,13 +43,13 @@ The default configuration should be sufficient for the most use cases.
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-base</artifactId>
-        <version>4.3.0</version>
+        <version>4.4.0</version>
     </dependency>
     <!-- or -->
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-base-spring-boot-starter</artifactId>
-        <version>4.3.0</version>
+        <version>4.4.0</version>
     </dependency>
 </dependencies>
 ```
@@ -61,27 +60,27 @@ When you want to add refresh token support, then choose one of the following dep
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-internal</artifactId>
-        <version>4.3.0</version>
+        <version>4.4.0</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-memcache</artifactId>
-        <version>4.3.0</version>
+        <version>4.4.0</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-hibernate</artifactId>
-        <version>4.3.0</version>
+        <version>4.4.0</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-redis</artifactId>
-        <version>4.3.0</version>
+        <version>4.4.0</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-files</artifactId>
-        <version>4.3.0</version>
+        <version>4.4.0</version>
     </dependency>
 </dependencies>
 ```
