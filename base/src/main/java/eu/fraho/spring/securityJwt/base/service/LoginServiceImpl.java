@@ -73,7 +73,7 @@ public class LoginServiceImpl implements LoginService {
             refreshToken = null;
         }
 
-        return AuthenticationResponse.builder().accessToken(accessToken).refreshToken(refreshToken).build();
+        return new AuthenticationResponse(accessToken, refreshToken);
     }
 
     protected Authentication tryAuthentication(AuthenticationRequest authenticationRequest) {

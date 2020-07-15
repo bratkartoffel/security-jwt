@@ -68,7 +68,7 @@ public class RefreshServiceImpl implements RefreshService {
         log.debug("Generating new refresh token");
         final RefreshToken refreshToken = jwtTokenService.generateRefreshToken(userDetails);
 
-        return AuthenticationResponse.builder().accessToken(accessToken).refreshToken(refreshToken).build();
+        return new AuthenticationResponse(accessToken, refreshToken);
     }
 
     @Autowired

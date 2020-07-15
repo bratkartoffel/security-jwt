@@ -13,6 +13,7 @@ import eu.fraho.spring.securityJwt.base.dto.RefreshToken;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -32,13 +33,14 @@ import javax.servlet.http.HttpServletResponse;
 @Slf4j
 @NoArgsConstructor
 @ConditionalOnExpression("'${fraho.jwt.token.cookie.enabled}' == 'true' or '${fraho.jwt.refresh.cookie.enabled}' == 'true'")
+@Tag(name = "Authentication")
 public class LogoutRestController implements CookieSupport {
     private TokenCookieProperties tokenCookieProperties;
 
     private RefreshCookieProperties refreshCookieProperties;
 
     @RequestMapping("${fraho.jwt.logout.path:/auth/logout}")
-    @Operation(summary = "Deleted the sent out cookies, thus resulting in an logout")
+    @Operation(summary = "Delete the cookies, thus resulting in an logout")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Logout successfull"),
     })

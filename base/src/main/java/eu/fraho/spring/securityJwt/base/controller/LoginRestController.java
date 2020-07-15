@@ -14,6 +14,7 @@ import eu.fraho.spring.securityJwt.base.service.LoginService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 @NoArgsConstructor
+@Tag(name = "Authentication")
 public class LoginRestController implements CookieSupport {
     private LoginService loginService;
 
