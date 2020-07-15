@@ -38,12 +38,12 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public AuthenticationResponse checkLogin(AuthenticationRequest authenticationRequest) throws AuthenticationException {
         // Perform the basic security
-        final Authentication authentication = tryAuthentication(authenticationRequest);
+        Authentication authentication = tryAuthentication(authenticationRequest);
         log.info("Successfully authenticated against database for {}", authenticationRequest.getUsername());
 
         // Load the userdetails from the backend
         log.info("Fetching userdetails from backend");
-        final JwtUser userDetails = (JwtUser) userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+        JwtUser userDetails = (JwtUser) userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
 
         // Verify that the user may access this api and his TOTP (if present / provided) is valid
         log.info("Checking api access right and totp");
@@ -56,7 +56,7 @@ public class LoginServiceImpl implements LoginService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         log.debug("Generating access token");
-        final AccessToken accessToken;
+        AccessToken accessToken;
         try {
             accessToken = jwtTokenService.generateToken(userDetails);
         } catch (JOSEException e) {
@@ -64,7 +64,7 @@ public class LoginServiceImpl implements LoginService {
             throw new BadCredentialsException("Token generation failed");
         }
 
-        final RefreshToken refreshToken;
+        RefreshToken refreshToken;
         if (jwtTokenService.isRefreshTokenSupported()) {
             log.debug("Generating refresh token");
             refreshToken = jwtTokenService.generateRefreshToken(userDetails);
@@ -73,7 +73,7 @@ public class LoginServiceImpl implements LoginService {
             refreshToken = null;
         }
 
-        return new AuthenticationResponse(accessToken, refreshToken);
+        return AuthenticationResponse.builder().accessToken(accessToken).refreshToken(refreshToken).build();
     }
 
     protected Authentication tryAuthentication(AuthenticationRequest authenticationRequest) {

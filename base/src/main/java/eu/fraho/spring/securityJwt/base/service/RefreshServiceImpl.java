@@ -48,7 +48,7 @@ public class RefreshServiceImpl implements RefreshService {
             throw new BadCredentialsException("Unknown token");
         }
 
-        final JwtUser userDetails = jwtUser.get();
+        JwtUser userDetails = jwtUser.get();
         log.debug("User {} successfully used refresh token, checking database", userDetails.getUsername());
 
         if (!userDetails.isApiAccessAllowed()) {
@@ -57,7 +57,7 @@ public class RefreshServiceImpl implements RefreshService {
         }
 
         log.debug("User may access api, generating new access token");
-        final AccessToken accessToken;
+        AccessToken accessToken;
         try {
             accessToken = jwtTokenService.generateToken(userDetails);
         } catch (JOSEException e) {
@@ -66,9 +66,8 @@ public class RefreshServiceImpl implements RefreshService {
         }
 
         log.debug("Generating new refresh token");
-        final RefreshToken refreshToken = jwtTokenService.generateRefreshToken(userDetails);
-
-        return new AuthenticationResponse(accessToken, refreshToken);
+        RefreshToken refreshToken = jwtTokenService.generateRefreshToken(userDetails);
+        return AuthenticationResponse.builder().accessToken(accessToken).refreshToken(refreshToken).build();
     }
 
     @Autowired
