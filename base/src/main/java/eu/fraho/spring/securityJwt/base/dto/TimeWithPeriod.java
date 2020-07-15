@@ -55,8 +55,8 @@ public class TimeWithPeriod {
      *
      * @param value A string representation like &quot;&lt;quantity&gt; &lt;chronoUnit&gt;&quot;
      */
-    public TimeWithPeriod(final String value) {
-        final String[] parts = value.split("\\s", 2);
+    public TimeWithPeriod(String value) {
+        String[] parts = value.split("\\s", 2);
         String period = parts[1].toUpperCase();
         if (!period.endsWith("S")) {
             period = period + "S";

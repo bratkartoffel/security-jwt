@@ -4,7 +4,7 @@ dependencies {
     api group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jdk8", version: jacksonVersion
     api group: "com.nimbusds", name: "nimbus-jose-jwt", version: nimbusJwtVersion
     api group: "commons-codec", name: "commons-codec", version: commonsCodecVersion
-    api "org.springdoc:springdoc-openapi-webmvc-core:${openApiVersion}"
+    api "org.springdoc:springdoc-openapi-common:${openApiVersion}"
 
     implementation group: "org.bouncycastle", name: "bcprov-jdk15on", version: bouncyCastleVersion
 
