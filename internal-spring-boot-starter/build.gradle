@@ -2,6 +2,5 @@ dependencies {
     api project(':base-spring-boot-starter')
     api project(':internal')
 
-    testImplementation testFixtures(project(':base'))
     testImplementation testFixtures(project(':internal'))
 }

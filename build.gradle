@@ -1,6 +1,5 @@
 plugins {
-    id 'io.spring.dependency-management' version "$springDependencyManagementPluginVersion" apply false
-    id "io.freefair.lombok" version "$lombokPluginVersion" apply false
+    id 'io.freefair.lombok' version "$lombokPluginVersion" apply false
     id 'com.adarshr.test-logger' version "$testLoggerPluginVersion" apply false
     id 'com.github.ben-manes.versions' version "$versionsPluginVersion"
 }
@@ -9,7 +8,6 @@ subprojects {
     apply plugin: 'java-library'
     apply plugin: 'java-test-fixtures'
     apply plugin: 'io.freefair.lombok'
-    apply plugin: 'io.spring.dependency-management'
     apply plugin: 'com.adarshr.test-logger'
 
     repositories {
@@ -18,7 +16,7 @@ subprojects {
     }
 
     group = 'eu.fraho.spring'
-    archivesBaseName = "security-jwt-${project.name}"
+    archivesBaseName = "${rootProject.name}-${project.name}"
     version = rootProject.file('version.txt').text.trim()
     description = "Spring boot security integration for JWT"
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -42,6 +40,7 @@ subprojects {
     }
 
     test {
+        useJUnitPlatform()
         ignoreFailures = rootProject.version.endsWith('-SNAPSHOT')
     }
 
@@ -49,8 +48,14 @@ subprojects {
         annotationProcessor group: "org.springframework.boot", name: "spring-boot-configuration-processor", version: springBootVersion
 
         testFixturesApi group: "org.springframework.boot", name: "spring-boot-starter-test", version: springBootVersion
-        testImplementation group: "org.springframework.boot", name: "spring-boot-starter-test", version: springBootVersion
-        testImplementation group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jsr310", version: jacksonVersion
+        testFixturesApi group: "org.springframework.boot", name: "spring-boot-starter-web", version: springBootVersion
+        testFixturesApi group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jsr310", version: jacksonVersion
+        testFixturesApi group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.6.2'
+    }
+
+    configurations.all {
+        exclude group: 'junit', module: 'junit'
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
 
     // code coverage
@@ -65,12 +70,11 @@ subprojects {
     // release to central
     apply plugin: 'maven-publish'
     apply plugin: 'signing'
-
     publishing {
         publications {
             mavenJava(MavenPublication) {
                 groupId = project.group
-                artifactId = "security-jwt-${project.name}"
+                artifactId = "${rootProject.name}-${project.name}"
                 version = project.version
                 from components.java
 
@@ -78,7 +82,7 @@ subprojects {
                 suppressPomMetadataWarningsFor('testFixturesRuntimeElements')
 
                 pom {
-                    name = project.archivesBaseName
+                    name = "${rootProject.name}-${project.name}"
                     description = project.description
                     url = 'https://github.com/bratkartoffel/security-jwt'
 
@@ -126,8 +130,7 @@ subprojects {
         sign publishing.publications.mavenJava
     }
 
-    // enhancement for jenkins build
-    // do not try to print colors in stdout
+    // do not try to print colors on stdout when running on jenkins
     if (System.getenv("JENKINS_HOME") != null) {
         testlogger.theme 'plain'
     }

@@ -63,7 +63,6 @@ public class CryptPasswordEncoder implements PasswordEncoder {
                 && slowEquals(encodedPassword, Crypt.crypt(rawPassword.toString(), encodedPassword));
     }
 
-
     protected String generateSalt() {
         CryptAlgorithm algorithm = cryptProperties.getAlgorithm();
         final byte[] bytes = new byte[algorithm.getSaltLength() * 2];

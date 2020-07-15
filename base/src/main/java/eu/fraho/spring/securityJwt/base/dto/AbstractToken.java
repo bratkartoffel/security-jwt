@@ -7,22 +7,20 @@
 package eu.fraho.spring.securityJwt.base.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NonNull;
-import net.jcip.annotations.Immutable;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
 
-@Getter
-@Immutable
 @AllArgsConstructor
+@Getter
+@ToString
 @EqualsAndHashCode(of = {"token"})
 public abstract class AbstractToken {
     @JsonProperty(required = true)
-
     @NonNull
+    @Schema(description = "The access token")
     private final String token;
 
     @JsonProperty(required = true)
+    @Schema(description = "Expiration timestamp")
     private final long expiresIn;
 }

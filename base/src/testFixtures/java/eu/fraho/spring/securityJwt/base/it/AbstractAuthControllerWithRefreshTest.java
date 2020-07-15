@@ -8,8 +8,8 @@ package eu.fraho.spring.securityJwt.base.it;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.fraho.spring.securityJwt.base.it.spring.UserDetailsServiceTestImpl;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -38,7 +38,7 @@ public abstract class AbstractAuthControllerWithRefreshTest extends AbstractAuth
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse().getContentAsString();
 
-        Assert.assertTrue("Refresh token was not generated", body.contains("\"refreshToken\":{\""));
+        Assertions.assertTrue(body.contains("\"refreshToken\":{\""), "Refresh token was not generated");
     }
 
     @Test

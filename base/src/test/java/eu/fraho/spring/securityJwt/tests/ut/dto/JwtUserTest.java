@@ -4,12 +4,12 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.securityJwt.base.ut.dto;
+package eu.fraho.spring.securityJwt.tests.ut.dto;
 
 import com.nimbusds.jwt.JWTClaimsSet;
 import eu.fraho.spring.securityJwt.base.dto.JwtUser;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -32,11 +32,10 @@ public class JwtUserTest {
         JwtUser user = newInstance();
         JWTClaimsSet claims = user.toClaims().build();
 
-        Assert.assertEquals("Wrong username in claim", user.getUsername(), claims.getSubject());
-        Assert.assertEquals("Wrong id in claim", user.getId(), claims.getLongClaim("uid"));
-        Assert.assertEquals("Wrong authorities in claim",
-                user.getAuthorities().iterator().next().toString(),
-                claims.getStringListClaim("authorities").iterator().next());
+        Assertions.assertEquals(user.getUsername(), claims.getSubject(), "Wrong username in claim");
+        Assertions.assertEquals(user.getId(), claims.getLongClaim("uid"), "Wrong id in claim");
+        Assertions.assertEquals(user.getAuthorities().iterator().next().toString(),
+                claims.getStringListClaim("authorities").iterator().next(), "Wrong authorities in claim");
     }
 
     @Test
@@ -48,12 +47,10 @@ public class JwtUserTest {
         ));
         JWTClaimsSet claims = user.toClaims().build();
 
-        Assert.assertEquals("Wrong username in claim", user.getUsername(), claims.getSubject());
-        Assert.assertEquals("Wrong id in claim", user.getId(), claims.getLongClaim("uid"));
-        Assert.assertTrue("ROLE_NIGHTWATCH not present",
-                user.getAuthorities().stream().map(GrantedAuthority::toString).anyMatch("ROLE_NIGHTWATCH"::equals));
-        Assert.assertTrue("HOUSE_STARK not present",
-                user.getAuthorities().stream().map(GrantedAuthority::toString).anyMatch("HOUSE_STARK"::equals));
+        Assertions.assertEquals(user.getUsername(), claims.getSubject(), "Wrong username in claim");
+        Assertions.assertEquals(user.getId(), claims.getLongClaim("uid"), "Wrong id in claim");
+        Assertions.assertTrue(user.getAuthorities().stream().map(GrantedAuthority::toString).anyMatch("ROLE_NIGHTWATCH"::equals), "ROLE_NIGHTWATCH not present");
+        Assertions.assertTrue(user.getAuthorities().stream().map(GrantedAuthority::toString).anyMatch("HOUSE_STARK"::equals), "HOUSE_STARK not present");
     }
 
     @Test
@@ -62,7 +59,7 @@ public class JwtUserTest {
         JWTClaimsSet claims1 = user.toClaims().build();
         JwtUser user2 = new JwtUser();
         user2.applyClaims(claims1);
-        Assert.assertEquals("toClaims and fromClaims should work both ways", user, user2);
+        Assertions.assertEquals(user, user2, "toClaims and fromClaims should work both ways");
     }
 
     @Test
@@ -72,8 +69,8 @@ public class JwtUserTest {
         user.setTotpSecret("foobar");
         user.eraseCredentials();
 
-        Assert.assertNull("Password not cleared", user.getPassword());
-        Assert.assertEquals("Totp secret not cleared", Optional.empty(), user.getTotpSecret());
+        Assertions.assertNull(user.getPassword(), "Password not cleared");
+        Assertions.assertEquals(Optional.empty(), user.getTotpSecret(), "Totp secret not cleared");
     }
 
     @Test
@@ -81,11 +78,11 @@ public class JwtUserTest {
         JwtUser user = newInstance();
         user.setPassword("winteriscoming");
 
-        Assert.assertFalse("Password in toString present", user.toString().contains("winteriscoming"));
+        Assertions.assertFalse(user.toString().contains("winteriscoming"), "Password in toString present");
     }
 
-    @Test(expected = ParseException.class)
-    public void testInvalidUid() throws ParseException {
+    @Test
+    public void testInvalidUid() {
         JwtUser user = newInstance();
 
         JWTClaimsSet claims = new JWTClaimsSet.Builder()
@@ -93,11 +90,11 @@ public class JwtUserTest {
                 .claim("uid", "foobar")
                 .claim("authorities", Collections.singletonList("foobar"))
                 .build();
-        user.applyClaims(claims);
+        Assertions.assertThrows(ParseException.class, () -> user.applyClaims(claims));
     }
 
-    @Test(expected = ParseException.class)
-    public void testInvalidAuthorities() throws ParseException {
+    @Test
+    public void testInvalidAuthorities() {
         JwtUser user = newInstance();
 
         JWTClaimsSet claims = new JWTClaimsSet.Builder()
@@ -105,25 +102,25 @@ public class JwtUserTest {
                 .claim("uid", 42L)
                 .claim("authorities", "foobar")
                 .build();
-        user.applyClaims(claims);
+        Assertions.assertThrows(ParseException.class, () -> user.applyClaims(claims));
     }
 
     @Test
     public void testToString() {
         JwtUser user = newInstance();
-        Assert.assertFalse("toString contains password", user.toString().toLowerCase().contains("password"));
+        Assertions.assertFalse(user.toString().toLowerCase().contains("password"), "toString contains password");
     }
 
     @Test
     public void testEquals() {
         JwtUser userA = newInstance();
         JwtUser userB = newInstance();
-        Assert.assertEquals("Didn't equal", userA, userB);
+        Assertions.assertEquals(userA, userB, "Didn't equal");
 
         userA.setPassword("xxxx");
-        Assert.assertEquals("Changed password should equal", userA, userB);
+        Assertions.assertEquals(userA, userB, "Changed password should equal");
 
         userA.setUsername("xxxx");
-        Assert.assertNotEquals("Changed username should not equals", userA, userB);
+        Assertions.assertNotEquals(userA, userB, "Changed username should not equals");
     }
 }

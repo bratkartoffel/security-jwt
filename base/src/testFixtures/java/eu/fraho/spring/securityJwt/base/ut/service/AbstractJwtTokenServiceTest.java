@@ -18,9 +18,9 @@ import eu.fraho.spring.securityJwt.base.service.JwtTokenServiceImpl;
 import eu.fraho.spring.securityJwt.base.service.RefreshTokenStore;
 import eu.fraho.spring.securityJwt.base.util.JwtTokens;
 import eu.fraho.spring.securityJwt.base.util.MyJwtUser;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -204,7 +204,7 @@ public abstract class AbstractJwtTokenServiceTest {
         return user;
     }
 
-    @Before
+    @BeforeEach
     public void beforeTest() {
         tokenstoreMock = null;
     }
@@ -215,12 +215,12 @@ public abstract class AbstractJwtTokenServiceTest {
 
         String token = JwtTokens.VALID;
         Optional<JwtUser> oUser = service.parseUser(token);
-        Assert.assertTrue("User was not parsed from token", oUser.isPresent());
+        Assertions.assertTrue(oUser.isPresent(), "User was not parsed from token");
         JwtUser user = oUser.get();
 
-        Assert.assertEquals("Parsed user with wrong id", Long.valueOf(-1), user.getId());
-        Assert.assertEquals("Parsed user with wrong username", "foo", user.getUsername());
-        Assert.assertEquals("Parsed user with wrong role", "ROLE_USER", user.getAuthorities().iterator().next().toString());
+        Assertions.assertEquals(Long.valueOf(-1), user.getId(), "Parsed user with wrong id");
+        Assertions.assertEquals("foo", user.getUsername(), "Parsed user with wrong username");
+        Assertions.assertEquals("ROLE_USER", user.getAuthorities().iterator().next().toString(), "Parsed user with wrong role");
     }
 
     @Test
@@ -229,11 +229,11 @@ public abstract class AbstractJwtTokenServiceTest {
 
         String tokenInvalidSignature = JwtTokens.INVALID_SIGNATURE;
         Optional<JwtUser> oUser1 = service.parseUser(tokenInvalidSignature);
-        Assert.assertFalse("User was parsed from token", oUser1.isPresent());
+        Assertions.assertFalse(oUser1.isPresent(), "User was parsed from token");
 
         String tokenInvalidBody = JwtTokens.INVALID_BODY;
         Optional<JwtUser> oUser2 = service.parseUser(tokenInvalidBody);
-        Assert.assertFalse("User was parsed from token", oUser2.isPresent());
+        Assertions.assertFalse(oUser2.isPresent(), "User was parsed from token");
     }
 
 
@@ -245,19 +245,19 @@ public abstract class AbstractJwtTokenServiceTest {
 
         // no iat
         String noIat = JwtTokens.NO_IAT;
-        Assert.assertTrue("AbstractToken is invalid", service.validateToken(noIat));
+        Assertions.assertTrue(service.validateToken(noIat), "AbstractToken is invalid");
         // future iat (false)
         String futureIat = JwtTokens.FUTURE_IAT;
-        Assert.assertFalse("AbstractToken is invalid", service.validateToken(futureIat));
+        Assertions.assertFalse(service.validateToken(futureIat), "AbstractToken is invalid");
         // no nbf
         String noNbf = JwtTokens.NO_NBF;
-        Assert.assertTrue("AbstractToken is invalid", service.validateToken(noNbf));
+        Assertions.assertTrue(service.validateToken(noNbf), "AbstractToken is invalid");
         // future nbf (false)
         String futureNbf = JwtTokens.FUTURE_NBF;
-        Assert.assertFalse("AbstractToken is invalid", service.validateToken(futureNbf));
+        Assertions.assertFalse(service.validateToken(futureNbf), "AbstractToken is invalid");
         // no exp (false)
         AccessToken noExp = new AccessToken(JwtTokens.NO_EXP, -1);
-        Assert.assertFalse("AbstractToken is invalid", service.validateToken(noExp));
+        Assertions.assertFalse(service.validateToken(noExp), "AbstractToken is invalid");
     }
 
     @Test
@@ -265,7 +265,7 @@ public abstract class AbstractJwtTokenServiceTest {
         JwtTokenService service = getService();
 
         String token = JwtTokens.INVALID_BODY;
-        Assert.assertFalse("AbstractToken is invalid", service.validateToken(token));
+        Assertions.assertFalse(service.validateToken(token), "AbstractToken is invalid");
     }
 
     @Test
@@ -273,7 +273,7 @@ public abstract class AbstractJwtTokenServiceTest {
         JwtTokenService service = getService();
 
         String token = "ö";
-        Assert.assertFalse("AbstractToken is invalid", service.validateToken(token));
+        Assertions.assertFalse(service.validateToken(token), "AbstractToken is invalid");
     }
 
     @Test
@@ -283,9 +283,9 @@ public abstract class AbstractJwtTokenServiceTest {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getHeader("Authorization")).thenReturn("Bearer foobar", "foobar", null);
 
-        Assert.assertEquals("AbstractToken not extracted from header", Optional.of("foobar"), service.getAccessToken(request));
-        Assert.assertEquals("AbstractToken not extracted from header", Optional.of("foobar"), service.getAccessToken(request));
-        Assert.assertEquals("AbstractToken extracted from header", Optional.empty(), service.getAccessToken(request));
+        Assertions.assertEquals(Optional.of("foobar"), service.getAccessToken(request), "AbstractToken not extracted from header with Bearer prefix");
+        Assertions.assertEquals(Optional.of("foobar"), service.getAccessToken(request), "AbstractToken not extracted from header without Bearer prefix");
+        Assertions.assertEquals(Optional.empty(), service.getAccessToken(request), "AbstractToken extracted from header");
     }
 
     @Test
@@ -305,9 +305,9 @@ public abstract class AbstractJwtTokenServiceTest {
                 },
                 new Cookie[0]);
 
-        Assert.assertEquals("AbstractToken not extracted from header", Optional.of("foobar"), service.getAccessToken(request));
-        Assert.assertEquals("AbstractToken not extracted from header", Optional.of("foobar"), service.getAccessToken(request));
-        Assert.assertEquals("AbstractToken extracted from header", Optional.empty(), service.getAccessToken(request));
+        Assertions.assertEquals(Optional.of("foobar"), service.getAccessToken(request), "AbstractToken not extracted from header");
+        Assertions.assertEquals(Optional.of("foobar"), service.getAccessToken(request), "AbstractToken not extracted from header");
+        Assertions.assertEquals(Optional.empty(), service.getAccessToken(request), "AbstractToken extracted from header");
     }
 
     @Test
@@ -323,7 +323,7 @@ public abstract class AbstractJwtTokenServiceTest {
                         new Cookie(tokenCookieProperties.getNames()[0], "baz")
                 });
 
-        Assert.assertEquals("AbstractToken not extracted from header", Optional.of("foobar"), service.getAccessToken(request));
+        Assertions.assertEquals(Optional.of("foobar"), service.getAccessToken(request), "AbstractToken not extracted from header");
     }
 
     @Test
@@ -335,15 +335,15 @@ public abstract class AbstractJwtTokenServiceTest {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getCookies()).thenReturn(new Cookie[]{new Cookie(refreshCookieProperties.getNames()[0], "foobar")}, (Cookie[]) null);
 
-        Assert.assertEquals("AbstractToken not extracted from cookies", Optional.of("foobar"), service.getRefreshToken(request));
-        Assert.assertEquals("AbstractToken extracted from header", Optional.empty(), service.getRefreshToken(request));
+        Assertions.assertEquals(Optional.of("foobar"), service.getRefreshToken(request), "AbstractToken not extracted from cookies");
+        Assertions.assertEquals(Optional.empty(), service.getRefreshToken(request), "AbstractToken extracted from header");
     }
 
     @Test
     public void testGetRefreshTokenDisabled() {
         JwtTokenService service = getService();
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        Assert.assertEquals("AbstractToken extracted from header", Optional.empty(), service.getRefreshToken(request));
+        Assertions.assertEquals(Optional.empty(), service.getRefreshToken(request), "AbstractToken extracted from header");
     }
 
     @Test
@@ -352,21 +352,16 @@ public abstract class AbstractJwtTokenServiceTest {
         JwtUser user = getJwtUser();
 
         AccessToken token = service.generateToken(user);
-        Assert.assertNotNull("No token generated", token.getToken());
+        Assertions.assertNotNull(token.getToken(), "No token generated");
     }
 
-    @Test(expected = FeatureNotConfiguredException.class)
-    public void testGenerateTokenNoPrivateKey() throws Exception {
+    @Test
+    public void testGenerateTokenNoPrivateKey() {
         TokenProperties tokenProperties = getRsaTokenProperties();
         JwtTokenService service = getService(tokenProperties);
         JwtUser user = getJwtUser();
 
-        try {
-            service.generateToken(user);
-        } catch (FeatureNotConfiguredException fnce) {
-            Assert.assertEquals("Wrong error message", "Access token signing is not enabled.", fnce.getMessage());
-            throw fnce;
-        }
+        Assertions.assertThrows(FeatureNotConfiguredException.class, () -> service.generateToken(user));
     }
 
     @Test
@@ -375,23 +370,18 @@ public abstract class AbstractJwtTokenServiceTest {
         MyJwtUser user = getMyJwtUser();
 
         AccessToken token = service.generateToken(user);
-        Assert.assertNotNull("No token generated", token.getToken());
+        Assertions.assertNotNull(token.getToken(), "No token generated");
 
         Optional<MyJwtUser> user1 = service.parseUser(token.getToken());
-        Assert.assertTrue("User should be parsed", user1.isPresent());
-        Assert.assertEquals("Custom claim should be present", user.getFoobar(), user1.get().getFoobar());
+        Assertions.assertTrue(user1.isPresent(), "User should be parsed");
+        Assertions.assertEquals(user.getFoobar(), user1.get().getFoobar(), "Custom claim should be present");
     }
 
-    @Test(expected = FeatureNotConfiguredException.class)
+    @Test
     public void testUseRefreshTokenNoPriv() {
         JwtTokenService service = getNoPrivService();
 
-        try {
-            service.useRefreshToken(new RefreshToken("foobar", -1));
-        } catch (FeatureNotConfiguredException fnce) {
-            Assert.assertEquals("Wrong error message", "Access token signing is not enabled.", fnce.getMessage());
-            throw fnce;
-        }
+        Assertions.assertThrows(FeatureNotConfiguredException.class, () -> service.useRefreshToken(new RefreshToken("foobar", -1)));
 
         if (tokenstoreMock != null) {
             Mockito.verifyNoInteractions(tokenstoreMock);
@@ -403,7 +393,7 @@ public abstract class AbstractJwtTokenServiceTest {
         JwtTokenService service = getService();
 
         RefreshToken token = new RefreshToken("foobar", -1);
-        Assert.assertFalse("Unknown token used", service.useRefreshToken(token).isPresent());
+        Assertions.assertFalse(service.useRefreshToken(token).isPresent(), "Unknown token used");
 
         if (tokenstoreMock != null) {
             Mockito.verify(tokenstoreMock).useToken(Mockito.eq(token.getToken()));
@@ -415,15 +405,15 @@ public abstract class AbstractJwtTokenServiceTest {
         JwtTokenService service = getService();
         JwtUser user = getJwtUser();
         RefreshToken token1 = service.generateRefreshToken(user);
-        Assert.assertNotNull("No token generated", token1.getToken());
-        Assert.assertEquals("Wrong expiresIn", getRefreshProperties().getExpiration().toSeconds(), token1.getExpiresIn());
+        Assertions.assertNotNull(token1.getToken(), "No token generated");
+        Assertions.assertEquals(getRefreshProperties().getExpiration().toSeconds(), token1.getExpiresIn(), "Wrong expiresIn");
 
         if (tokenstoreMock != null) {
             Mockito.verify(tokenstoreMock).saveToken(Mockito.eq(user), Mockito.eq(token1.getToken()));
         }
 
         RefreshToken token2 = service.generateRefreshToken(user);
-        Assert.assertNotNull("No token generated", token2.getToken());
-        Assert.assertNotEquals("No new token generated", token1, token2);
+        Assertions.assertNotNull(token2.getToken(), "No token generated");
+        Assertions.assertNotEquals(token1, token2, "No new token generated");
     }
 }

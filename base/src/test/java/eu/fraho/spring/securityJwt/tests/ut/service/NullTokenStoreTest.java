@@ -4,14 +4,14 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.securityJwt.base.ut.service;
+package eu.fraho.spring.securityJwt.tests.ut.service;
 
 import eu.fraho.spring.securityJwt.base.dto.JwtUser;
 import eu.fraho.spring.securityJwt.base.exceptions.FeatureNotConfiguredException;
 import eu.fraho.spring.securityJwt.base.service.NullTokenStore;
 import eu.fraho.spring.securityJwt.base.service.RefreshTokenStore;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class NullTokenStoreTest {
     private JwtUser getJwtUser() {
@@ -27,43 +27,43 @@ public class NullTokenStoreTest {
         return tokenStore;
     }
 
-    @Test(expected = FeatureNotConfiguredException.class)
+    @Test
     public void testSaveToken() {
-        getNewInstance().saveToken(getJwtUser(), "bar");
+        Assertions.assertThrows(FeatureNotConfiguredException.class, () -> getNewInstance().saveToken(getJwtUser(), "bar"));
     }
 
-    @Test(expected = FeatureNotConfiguredException.class)
+    @Test
     public void testUseToken() {
-        getNewInstance().useToken("bar");
+        Assertions.assertThrows(FeatureNotConfiguredException.class, () -> getNewInstance().useToken("bar"));
     }
 
-    @Test(expected = FeatureNotConfiguredException.class)
+    @Test
     public void testListTokens() {
-        getNewInstance().listTokens();
+        Assertions.assertThrows(FeatureNotConfiguredException.class, () -> getNewInstance().listTokens());
     }
 
-    @Test(expected = FeatureNotConfiguredException.class)
+    @Test
     public void testListTokensForUser() {
-        getNewInstance().listTokens(getJwtUser());
+        Assertions.assertThrows(FeatureNotConfiguredException.class, () -> getNewInstance().listTokens(getJwtUser()));
     }
 
-    @Test(expected = FeatureNotConfiguredException.class)
+    @Test
     public void testRevokeToken() {
-        getNewInstance().revokeToken("baz");
+        Assertions.assertThrows(FeatureNotConfiguredException.class, () -> getNewInstance().revokeToken("baz"));
     }
 
-    @Test(expected = FeatureNotConfiguredException.class)
+    @Test
     public void testRevokeTokens() {
-        getNewInstance().revokeTokens();
+        Assertions.assertThrows(FeatureNotConfiguredException.class, () -> getNewInstance().revokeTokens());
     }
 
-    @Test(expected = FeatureNotConfiguredException.class)
+    @Test
     public void testRevokeTokensForUser() {
-        getNewInstance().revokeTokens(getJwtUser());
+        Assertions.assertThrows(FeatureNotConfiguredException.class, () -> getNewInstance().revokeTokens(getJwtUser()));
     }
 
     @Test
     public void testIsRefreshTokenSupported() {
-        Assert.assertFalse(getNewInstance().isRefreshTokenSupported());
+        Assertions.assertFalse(getNewInstance().isRefreshTokenSupported());
     }
 }

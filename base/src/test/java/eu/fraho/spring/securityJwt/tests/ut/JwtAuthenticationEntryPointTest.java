@@ -4,10 +4,10 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.securityJwt.base.ut;
+package eu.fraho.spring.securityJwt.tests.ut;
 
 import eu.fraho.spring.securityJwt.base.JwtAuthenticationEntryPoint;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import javax.servlet.http.HttpServletRequest;

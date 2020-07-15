@@ -4,15 +4,15 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.securityJwt.base.ut;
+package eu.fraho.spring.securityJwt.tests.ut;
 
 import eu.fraho.spring.securityJwt.base.JwtAuthenticationTokenFilter;
 import eu.fraho.spring.securityJwt.base.dto.JwtUser;
 import eu.fraho.spring.securityJwt.base.service.JwtTokenService;
 import eu.fraho.spring.securityJwt.base.service.JwtTokenServiceImpl;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -34,7 +34,7 @@ public class JwtAuthenticationTokenFilterTest {
         return filter;
     }
 
-    @Before
+    @BeforeEach
     public void cleanSecurityContext() {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
@@ -53,7 +53,7 @@ public class JwtAuthenticationTokenFilterTest {
         instance.doFilter(request, response, chain);
         Mockito.verify(chain).doFilter(request, response);
 
-        Assert.assertNotNull("Authentication failed", SecurityContextHolder.getContext().getAuthentication());
+        Assertions.assertNotNull(SecurityContextHolder.getContext().getAuthentication(), "Authentication failed");
     }
 
     @Test
@@ -69,7 +69,7 @@ public class JwtAuthenticationTokenFilterTest {
         instance.doFilter(request, response, chain);
         Mockito.verify(chain).doFilter(request, response);
 
-        Assert.assertNull("Authentication succeeded", SecurityContextHolder.getContext().getAuthentication());
+        Assertions.assertNull(SecurityContextHolder.getContext().getAuthentication(), "Authentication succeeded");
     }
 
     @Test
@@ -86,6 +86,6 @@ public class JwtAuthenticationTokenFilterTest {
         instance.doFilter(request, response, chain);
         Mockito.verify(chain).doFilter(request, response);
 
-        Assert.assertNull("Authentication succeeded", SecurityContextHolder.getContext().getAuthentication());
+        Assertions.assertNull(SecurityContextHolder.getContext().getAuthentication(), "Authentication succeeded");
     }
 }

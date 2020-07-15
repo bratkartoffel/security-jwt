@@ -16,13 +16,14 @@ import eu.fraho.spring.securityJwt.base.ut.service.AbstractJwtTokenServiceWithRe
 import eu.fraho.spring.securityJwt.memcache.config.MemcacheProperties;
 import eu.fraho.spring.securityJwt.memcache.service.MemcacheTokenStore;
 import net.spy.memcached.MemcachedClient;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.lang.reflect.Field;
+import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,7 +32,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class AbstractJwtServiceRefreshMemcacheTest extends AbstractJwtTokenServiceWithRefreshTest {
     private final RefreshProperties refreshProperties;
     private final MemcacheTokenStore refreshTokenStore;
@@ -52,9 +53,9 @@ public class AbstractJwtServiceRefreshMemcacheTest extends AbstractJwtTokenServi
         return configuration;
     }
 
-    @Before
+    @BeforeEach
     public void clearCache() throws Exception {
-        Assert.assertTrue(getMemcachedClient().flush().get(1, TimeUnit.SECONDS));
+        Assertions.assertTrue(getMemcachedClient().flush().get(1, TimeUnit.SECONDS));
     }
 
     @Override
@@ -62,7 +63,7 @@ public class AbstractJwtServiceRefreshMemcacheTest extends AbstractJwtTokenServi
         return refreshTokenStore;
     }
 
-    @Test(timeout = 10_000L)
+    @Test
     public void testListRefreshTokensOtherEntries() throws Exception {
         JwtTokenService service = getService();
 
@@ -72,19 +73,19 @@ public class AbstractJwtServiceRefreshMemcacheTest extends AbstractJwtTokenServi
         xsmith.setUsername("xsmith");
 
         MemcachedClient client = getMemcachedClient();
-        RefreshToken tokenA = service.generateRefreshToken(jsmith);
-        RefreshToken tokenB = service.generateRefreshToken(jsmith);
-        RefreshToken tokenC = service.generateRefreshToken(xsmith);
+        RefreshToken tokenA = Assertions.assertTimeout(Duration.ofSeconds(1), () -> service.generateRefreshToken(jsmith));
+        RefreshToken tokenB = Assertions.assertTimeout(Duration.ofSeconds(1), () -> service.generateRefreshToken(jsmith));
+        RefreshToken tokenC = Assertions.assertTimeout(Duration.ofSeconds(1), () -> service.generateRefreshToken(xsmith));
 
         client.set("foobar", 30, "hi").get();
 
         final Map<Long, List<RefreshToken>> tokenMap = service.listRefreshTokens();
-        Assert.assertEquals("User count don't match", 2, tokenMap.size());
+        Assertions.assertEquals(2, tokenMap.size(), "User count don't match");
 
         final List<RefreshToken> allTokens = tokenMap.values().stream().flatMap(Collection::stream)
                 .collect(Collectors.toList());
-        Assert.assertEquals("AbstractToken count don't match", 3, allTokens.size());
-        Assert.assertTrue("Not all tokens returned", allTokens.containsAll(Arrays.asList(tokenA, tokenB, tokenC)));
+        Assertions.assertEquals(3, allTokens.size(), "AbstractToken count don't match");
+        Assertions.assertTrue(allTokens.containsAll(Arrays.asList(tokenA, tokenB, tokenC)), "Not all tokens returned");
     }
 
     private MemcachedClient getMemcachedClient() throws Exception {
@@ -93,14 +94,14 @@ public class AbstractJwtServiceRefreshMemcacheTest extends AbstractJwtTokenServi
         return (MemcachedClient) memcachedClient.get(refreshTokenStore);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testExpirationBounds() throws Exception {
         Field expiration = RefreshProperties.class.getDeclaredField("expiration");
         expiration.setAccessible(true);
         Object oldValue = expiration.get(refreshProperties);
         try {
             expiration.set(refreshProperties, new TimeWithPeriod(31, ChronoUnit.DAYS));
-            refreshTokenStore.afterPropertiesSet();
+            Assertions.assertThrows(IllegalStateException.class, refreshTokenStore::afterPropertiesSet);
         } finally {
             expiration.set(refreshProperties, oldValue);
         }

@@ -8,6 +8,7 @@ package eu.fraho.spring.securityJwt.base.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import eu.fraho.spring.securityJwt.base.service.TimeWithPeriodSerializer;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -38,32 +39,32 @@ import java.util.concurrent.TimeUnit;
 @Immutable
 @Slf4j
 @JsonSerialize(using = TimeWithPeriodSerializer.class)
-public final class TimeWithPeriod {
+@Schema(implementation = String.class, example = "12 hours")
+public class TimeWithPeriod {
     /**
      * Quantity of the {@link #chronoUnit}
      */
-    private final int quantity;
+    int quantity;
 
     /**
      * The chronoUnit to use
      */
-
     @NonNull
-    private final ChronoUnit chronoUnit;
+    ChronoUnit chronoUnit;
 
     /**
      * Parse the given configuration value and extract the {@link #quantity} and {@link #chronoUnit}.<br>
      *
      * @param value A string representation like &quot;&lt;quantity&gt; &lt;chronoUnit&gt;&quot;
      */
-    public TimeWithPeriod(final String value) {
-        final String[] parts = value.split("\\s", 2);
+    public TimeWithPeriod(String value) {
+        String[] parts = value.split("\\s", 2);
         String period = parts[1].toUpperCase();
         if (!period.endsWith("S")) {
             period = period + "S";
         }
 
-        quantity = Integer.valueOf(parts[0]);
+        quantity = Integer.parseInt(parts[0]);
         chronoUnit = ChronoUnit.valueOf(period);
     }
 

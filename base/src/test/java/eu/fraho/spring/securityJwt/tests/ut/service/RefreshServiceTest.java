@@ -4,15 +4,15 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.securityJwt.base.ut.service;
+package eu.fraho.spring.securityJwt.tests.ut.service;
 
 import com.nimbusds.jose.JOSEException;
 import eu.fraho.spring.securityJwt.base.dto.*;
 import eu.fraho.spring.securityJwt.base.service.JwtTokenService;
 import eu.fraho.spring.securityJwt.base.service.RefreshService;
 import eu.fraho.spring.securityJwt.base.service.RefreshServiceImpl;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -51,22 +51,22 @@ public class RefreshServiceTest {
         return service;
     }
 
-    @Test(expected = BadCredentialsException.class)
+    @Test
     public void testNullToken() {
         RefreshService instance = getNewInstance();
-        instance.checkRefresh(null);
+        Assertions.assertThrows(BadCredentialsException.class, () -> instance.checkRefresh(null));
     }
 
-    @Test(expected = BadCredentialsException.class)
+    @Test
     public void testValidTokenInactiveUser() {
         RefreshService instance = getNewInstance();
-        instance.checkRefresh("valid_inactive");
+        Assertions.assertThrows(BadCredentialsException.class, () -> instance.checkRefresh("valid_inactive"));
     }
 
-    @Test(expected = BadCredentialsException.class)
+    @Test
     public void testInvalidToken() {
         RefreshService instance = getNewInstance();
-        instance.checkRefresh("invalid");
+        Assertions.assertThrows(BadCredentialsException.class, () -> instance.checkRefresh("invalid"));
     }
 
     @Test
@@ -74,7 +74,7 @@ public class RefreshServiceTest {
         RefreshService instance = getNewInstance();
         AuthenticationResponse response = instance.checkRefresh("valid_active");
 
-        Assert.assertEquals("foo", response.getAccessToken().getToken());
-        Assert.assertEquals("bar", Optional.ofNullable(response.getRefreshToken()).map(AbstractToken::getToken).orElse(null));
+        Assertions.assertEquals("foo", response.getAccessToken().getToken());
+        Assertions.assertEquals("bar", Optional.ofNullable(response.getRefreshToken()).map(AbstractToken::getToken).orElse(null));
     }
 }

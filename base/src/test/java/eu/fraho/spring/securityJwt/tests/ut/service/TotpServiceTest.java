@@ -4,14 +4,14 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.securityJwt.base.ut.service;
+package eu.fraho.spring.securityJwt.tests.ut.service;
 
 import eu.fraho.spring.securityJwt.base.config.TotpProperties;
 import eu.fraho.spring.securityJwt.base.service.TotpService;
 import eu.fraho.spring.securityJwt.base.service.TotpServiceImpl;
 import eu.fraho.spring.securityJwt.base.util.TotpUtil;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TotpServiceTest {
     private TotpProperties getConfig() {
@@ -30,8 +30,8 @@ public class TotpServiceTest {
         TotpService service = getNewInstance(config);
 
         String secret = service.generateSecret();
-        Assert.assertNotNull("No secret generated", secret);
-        Assert.assertNotEquals("No secret generated", 0, secret.length());
+        Assertions.assertNotNull(secret, "No secret generated");
+        Assertions.assertNotEquals(0, secret.length(), "No secret generated");
     }
 
     @Test
@@ -45,10 +45,10 @@ public class TotpServiceTest {
         int nextCode = TotpUtil.getCodeForTesting(service, secret, 1);
         int invalidCode = TotpUtil.getCodeForTesting(service, secret, 4);
 
-        Assert.assertTrue("Last code was invalid", service.verifyCode(secret, lastCode));
-        Assert.assertTrue("Current code was invalid", service.verifyCode(secret, curCode));
-        Assert.assertTrue("Next code was invalid", service.verifyCode(secret, nextCode));
-        Assert.assertFalse("Code out of variance was valid", service.verifyCode(secret, invalidCode));
+        Assertions.assertTrue(service.verifyCode(secret, lastCode), "Last code was invalid");
+        Assertions.assertTrue(service.verifyCode(secret, curCode), "Current code was invalid");
+        Assertions.assertTrue(service.verifyCode(secret, nextCode), "Next code was invalid");
+        Assertions.assertFalse(service.verifyCode(secret, invalidCode), "Code out of variance was valid");
     }
 
     @Test
@@ -57,6 +57,6 @@ public class TotpServiceTest {
         TotpService service = getNewInstance(config);
         String secret = "x";
 
-        Assert.assertFalse("Code out of variance was valid", service.verifyCode(secret, 0));
+        Assertions.assertFalse(service.verifyCode(secret, 0), "Code out of variance was valid");
     }
 }

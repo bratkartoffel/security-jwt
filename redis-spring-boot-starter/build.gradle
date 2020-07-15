@@ -2,6 +2,5 @@ dependencies {
     api project(':base-spring-boot-starter')
     api project(':redis')
 
-    testImplementation testFixtures(project(':base'))
     testImplementation testFixtures(project(':redis'))
 }

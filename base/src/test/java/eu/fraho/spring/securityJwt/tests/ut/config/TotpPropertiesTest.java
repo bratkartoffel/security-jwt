@@ -4,11 +4,11 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.securityJwt.base.ut.config;
+package eu.fraho.spring.securityJwt.tests.ut.config;
 
 import eu.fraho.spring.securityJwt.base.config.TotpProperties;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TotpPropertiesTest {
     private TotpProperties getNewInstance() {
@@ -26,11 +26,11 @@ public class TotpPropertiesTest {
 
         conf.setVariance(0);
         conf.afterPropertiesSet();
-        Assert.assertEquals("Variance did not reset to default", 3, conf.getVariance());
+        Assertions.assertEquals(3, conf.getVariance(), "Variance did not reset to default");
 
         conf.setVariance(100);
         conf.afterPropertiesSet();
-        Assert.assertEquals("Variance did not reset to default", 3, conf.getVariance());
+        Assertions.assertEquals(3, conf.getVariance(), "Variance did not reset to default");
     }
 
     @Test
@@ -39,10 +39,10 @@ public class TotpPropertiesTest {
 
         conf.setLength(1);
         conf.afterPropertiesSet();
-        Assert.assertEquals("Length did not reset to default", 16, conf.getLength());
+        Assertions.assertEquals(16, conf.getLength(), "Length did not reset to default");
 
         conf.setLength(128);
         conf.afterPropertiesSet();
-        Assert.assertEquals("Length did not reset to default", 16, conf.getLength());
+        Assertions.assertEquals(16, conf.getLength(), "Length did not reset to default");
     }
 }

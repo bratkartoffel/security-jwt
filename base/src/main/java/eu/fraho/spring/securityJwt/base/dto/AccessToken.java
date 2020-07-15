@@ -16,9 +16,9 @@ import lombok.Value;
 @JsonDeserialize(builder = AccessToken.AccessTokenBuilder.class)
 @Value
 @EqualsAndHashCode(callSuper = true)
-public final class AccessToken extends AbstractToken {
+public class AccessToken extends AbstractToken {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private final String type = "Bearer";
+    String type = "Bearer";
 
     @Builder
     public AccessToken(String token, long expiresIn) {

@@ -9,8 +9,8 @@ package eu.fraho.spring.securityJwt.base.it;
 import eu.fraho.spring.securityJwt.base.it.spring.UserDetailsServiceTestImpl;
 import eu.fraho.spring.securityJwt.base.service.TotpServiceImpl;
 import eu.fraho.spring.securityJwt.base.util.TotpUtil;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -36,7 +36,7 @@ abstract class AbstractAuthControllerTest {
 
     private MockMvc mockMvc;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         if (mockMvc == null) {
             synchronized (this) {

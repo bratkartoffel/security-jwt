@@ -12,9 +12,10 @@ import eu.fraho.spring.securityJwt.base.dto.AuthenticationResponse;
 import eu.fraho.spring.securityJwt.base.dto.RefreshRequest;
 import eu.fraho.spring.securityJwt.base.service.JwtTokenService;
 import eu.fraho.spring.securityJwt.base.service.RefreshService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,7 @@ import java.util.Optional;
 @Slf4j
 @NoArgsConstructor
 @ConditionalOnMissingBean(name = "refreshTokenStore", type = "eu.fraho.spring.securityJwt.base.service.NullTokenStore")
+@Tag(name = "Authentication")
 public class RefreshRestController implements CookieSupport {
     private JwtTokenService jwtTokenService;
 
@@ -46,12 +48,11 @@ public class RefreshRestController implements CookieSupport {
     private RefreshService refreshService;
 
     @RequestMapping("${fraho.jwt.refresh.path:/auth/refresh}")
-    // Swagger 2.0
-    @ApiOperation("Use a previously fetched refresh token to create a new access token")
+    @Operation(summary = "Use a previously fetched refresh token to create a new access token")
     @ApiResponses({
-            @ApiResponse(code = HttpServletResponse.SC_OK, message = "Generated token"),
-            @ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = "Missing a required field in the request or refresh tokens not supported"),
-            @ApiResponse(code = HttpServletResponse.SC_UNAUTHORIZED, message = "Either the token expired, or the user has no longer access to this api"),
+            @ApiResponse(responseCode = "200", description = "Generated token"),
+            @ApiResponse(responseCode = "400", description = "Missing a required field in the request or refresh tokens not supported"),
+            @ApiResponse(responseCode = "401", description = "Either the token expired, or the user has no longer access to this api"),
     })
     public ResponseEntity<AuthenticationResponse> refresh(HttpServletResponse response,
                                                           HttpServletRequest request,

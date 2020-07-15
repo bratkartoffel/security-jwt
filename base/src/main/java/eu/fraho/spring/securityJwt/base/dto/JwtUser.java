@@ -8,6 +8,7 @@ package eu.fraho.spring.securityJwt.base.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nimbusds.jwt.JWTClaimsSet;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -35,27 +36,37 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Slf4j
 public class JwtUser implements UserDetails, CredentialsContainer {
+    @Schema(description = "Identifier")
     private Long id = -1L;
 
+    @Schema(description = "Username")
     private String username = "anonymousUser";
 
     @JsonIgnore
+    @Schema(description = "Password")
     private String password = null;
 
     @JsonIgnore
+    @Schema(description = "TOTP secret")
     private String totpSecret = null;
 
+    @Schema(description = "Account is not expired?")
     private boolean accountNonExpired = false;
 
+    @Schema(description = "Account is not locked?")
     private boolean accountNonLocked = false;
 
+    @Schema(description = "Credentials are not expired?")
     private boolean credentialsNonExpired = false;
 
+    @Schema(description = "Account is enabled?")
     private boolean enabled = false;
 
     @JsonIgnore
+    @Schema(description = "List of authorities")
     private List<GrantedAuthority> authorities = new ArrayList<>();
 
+    @Schema(description = "API access is allowed?")
     private boolean apiAccessAllowed = false;
 
     @Override
