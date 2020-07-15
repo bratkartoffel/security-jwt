@@ -10,11 +10,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
 @JsonDeserialize(builder = RefreshRequest.RefreshRequestBuilder.class)
 @Value
+@Builder
 public class RefreshRequest {
     @JsonProperty(required = true)
     @NonNull
