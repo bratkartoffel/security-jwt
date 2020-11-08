@@ -97,6 +97,7 @@ To see this library "in action", please take a look at [the examples](https://gi
 # Spring boot and library versions
 * The 2.x versions are compatible with spring boot 1.5.x
 * The 3.x versions are compatible with spring boot 2.x
+* Starting with 4.4.1, the minumum required spring boot version is 2.2.0
 
 ## Spring Boot Autoconfig (recommended):
 * Use any *-spring-boot-starter dependency you like
