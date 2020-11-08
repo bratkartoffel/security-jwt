@@ -1,7 +1,10 @@
 # Changelog
 
-### 4.4.1 (unreleased)
+### 4.4.2 (unreleased)
 * (none) so far
+
+### 4.4.1 (2020-11-08)
+* (all) Dependencies upgraded to latest
 
 ### 4.4.0 (2020-07-15)
 * (all) Migrate tests from Junit4 to Junit5
