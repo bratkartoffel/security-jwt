@@ -21,6 +21,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.Optional;
 
 public class JwtAuthenticationTokenFilterTest {
@@ -40,7 +41,7 @@ public class JwtAuthenticationTokenFilterTest {
     }
 
     @Test
-    public void testRegularAuthentication() throws ServletException, IOException {
+    public void testRegularAuthentication() throws ServletException, IOException, ReflectiveOperationException {
         JwtTokenService service = getService();
         Mockito.when(service.getAccessToken(Mockito.any())).thenReturn(Optional.of("foobar"));
         Mockito.when(service.parseUser(Mockito.any())).thenReturn(Optional.of(new JwtUser()));
@@ -50,14 +51,16 @@ public class JwtAuthenticationTokenFilterTest {
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
         JwtAuthenticationTokenFilter instance = getNewInstance(service);
 
-        instance.doFilter(request, response, chain);
+        Method method = JwtAuthenticationTokenFilter.class.getDeclaredMethod("doFilterInternal", HttpServletRequest.class, HttpServletResponse.class, FilterChain.class);
+        method.setAccessible(true);
+        method.invoke(instance, request, response, chain);
         Mockito.verify(chain).doFilter(request, response);
 
         Assertions.assertNotNull(SecurityContextHolder.getContext().getAuthentication(), "Authentication failed");
     }
 
     @Test
-    public void testNoTokenPresent() throws ServletException, IOException {
+    public void testNoTokenPresent() throws ServletException, IOException, ReflectiveOperationException {
         JwtTokenService service = getService();
         Mockito.when(service.getAccessToken(Mockito.any())).thenReturn(Optional.empty());
 
@@ -66,14 +69,16 @@ public class JwtAuthenticationTokenFilterTest {
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
         JwtAuthenticationTokenFilter instance = getNewInstance(service);
 
-        instance.doFilter(request, response, chain);
+        Method method = JwtAuthenticationTokenFilter.class.getDeclaredMethod("doFilterInternal", HttpServletRequest.class, HttpServletResponse.class, FilterChain.class);
+        method.setAccessible(true);
+        method.invoke(instance, request, response, chain);
         Mockito.verify(chain).doFilter(request, response);
 
         Assertions.assertNull(SecurityContextHolder.getContext().getAuthentication(), "Authentication succeeded");
     }
 
     @Test
-    public void testParseFailed() throws ServletException, IOException {
+    public void testParseFailed() throws ServletException, IOException, ReflectiveOperationException {
         JwtTokenService service = getService();
         Mockito.when(service.getAccessToken(Mockito.any())).thenReturn(Optional.of("foobar"));
         Mockito.when(service.parseUser(Mockito.any())).thenReturn(Optional.empty());
@@ -83,7 +88,9 @@ public class JwtAuthenticationTokenFilterTest {
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
         JwtAuthenticationTokenFilter instance = getNewInstance(service);
 
-        instance.doFilter(request, response, chain);
+        Method method = JwtAuthenticationTokenFilter.class.getDeclaredMethod("doFilterInternal", HttpServletRequest.class, HttpServletResponse.class, FilterChain.class);
+        method.setAccessible(true);
+        method.invoke(instance, request, response, chain);
         Mockito.verify(chain).doFilter(request, response);
 
         Assertions.assertNull(SecurityContextHolder.getContext().getAuthentication(), "Authentication succeeded");
