@@ -2,6 +2,7 @@ plugins {
     id 'io.freefair.lombok' version "$lombokPluginVersion" apply false
     id 'com.adarshr.test-logger' version "$testLoggerPluginVersion" apply false
     id 'com.github.ben-manes.versions' version "$versionsPluginVersion"
+    id 'org.springframework.boot' version "$springBootVersion" apply false
 }
 
 subprojects {
@@ -9,6 +10,7 @@ subprojects {
     apply plugin: 'java-test-fixtures'
     apply plugin: 'io.freefair.lombok'
     apply plugin: 'com.adarshr.test-logger'
+    apply plugin: 'io.spring.dependency-management'
 
     repositories {
         mavenLocal()
