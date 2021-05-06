@@ -25,7 +25,12 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @SuppressWarnings({"SpringJavaAutowiredMembersInspection", "JpaQlInspection"})
@@ -44,8 +49,7 @@ public class HibernateTokenStore implements RefreshTokenStore {
     @SuppressWarnings("unchecked")
     public <T extends JwtUser> Optional<T> useToken(String token) {
         // first load the token from the database
-        final TypedQuery<RefreshTokenEntity> queryLoad = entityManager.createQuery("SELECT o FROM RefreshTokenEntity o WHERE " +
-                "o.token = :token AND o.created >= :expiration", RefreshTokenEntity.class);
+        TypedQuery<RefreshTokenEntity> queryLoad = entityManager.createQuery("SELECT o FROM RefreshTokenEntity o WHERE o.token = :token AND o.created >= :expiration", RefreshTokenEntity.class);
         queryLoad.setParameter("token", token);
         setQueryExpiration(queryLoad);
         List<RefreshTokenEntity> loadResultList = queryLoad.getResultList();
@@ -57,7 +61,7 @@ public class HibernateTokenStore implements RefreshTokenStore {
         Optional<T> resultUser = Optional.ofNullable((T) userDetailsService.loadUserByUsername(refreshToken.getUsername()));
 
         if (resultUser.isPresent()) {
-            final Query query = entityManager.createQuery("DELETE FROM RefreshTokenEntity o WHERE o.id = :id");
+            Query query = entityManager.createQuery("DELETE FROM RefreshTokenEntity o WHERE o.id = :id");
             query.setParameter("id", refreshToken.getId());
 
             if (query.executeUpdate() == 0) {
@@ -72,8 +76,7 @@ public class HibernateTokenStore implements RefreshTokenStore {
     @Override
     @Transactional(readOnly = true)
     public List<RefreshToken> listTokens(JwtUser user) {
-        final TypedQuery<RefreshTokenEntity> query = entityManager.createQuery("SELECT o FROM RefreshTokenEntity o WHERE " +
-                "o.userId = :userId AND o.created >= :expiration", RefreshTokenEntity.class);
+        TypedQuery<RefreshTokenEntity> query = entityManager.createQuery("SELECT o FROM RefreshTokenEntity o WHERE o.userId = :userId AND o.created >= :expiration", RefreshTokenEntity.class);
         query.setParameter("userId", user.getId());
         setQueryExpiration(query);
 
@@ -91,7 +94,7 @@ public class HibernateTokenStore implements RefreshTokenStore {
     }
 
     private void setQueryExpiration(Query query) {
-        final ZonedDateTime expiration = ZonedDateTime.now().minusSeconds(refreshProperties.getExpiration().toSeconds());
+        ZonedDateTime expiration = ZonedDateTime.now().minusSeconds(refreshProperties.getExpiration().toSeconds());
         query.setParameter("expiration", expiration);
     }
 
@@ -109,12 +112,11 @@ public class HibernateTokenStore implements RefreshTokenStore {
     @Override
     @Transactional(readOnly = true)
     public Map<Long, List<RefreshToken>> listTokens() {
-        final TypedQuery<RefreshTokenEntity> query = entityManager.createQuery("SELECT o FROM RefreshTokenEntity o WHERE " +
-                "o.created >= :expiration", RefreshTokenEntity.class);
+        TypedQuery<RefreshTokenEntity> query = entityManager.createQuery("SELECT o FROM RefreshTokenEntity o WHERE o.created >= :expiration", RefreshTokenEntity.class);
         setQueryExpiration(query);
 
-        final List<RefreshTokenEntity> tokens = query.getResultList();
-        final Map<Long, List<RefreshToken>> result = new HashMap<>();
+        List<RefreshTokenEntity> tokens = query.getResultList();
+        Map<Long, List<RefreshToken>> result = new HashMap<>();
 
         tokens.forEach(e ->
                 result.computeIfAbsent(e.getUserId(), s -> new ArrayList<>())
@@ -130,27 +132,23 @@ public class HibernateTokenStore implements RefreshTokenStore {
     @Override
     @Transactional
     public boolean revokeToken(String token) {
-        final Query query = entityManager.createQuery("DELETE FROM RefreshTokenEntity o WHERE " +
-                "o.token = :token ");
+        Query query = entityManager.createQuery("DELETE FROM RefreshTokenEntity o WHERE o.token = :token ");
         query.setParameter("token", token);
-
         return query.executeUpdate() != 0;
     }
 
     @Override
     @Transactional
     public int revokeTokens(JwtUser user) {
-        final Query query = entityManager.createQuery("DELETE FROM RefreshTokenEntity o WHERE " +
-                "o.userId = :userId");
+        Query query = entityManager.createQuery("DELETE FROM RefreshTokenEntity o WHERE o.userId = :userId");
         query.setParameter("userId", user.getId());
-
         return query.executeUpdate();
     }
 
     @Override
     @Transactional
     public int revokeTokens() {
-        final Query query = entityManager.createQuery("DELETE FROM RefreshTokenEntity o");
+        Query query = entityManager.createQuery("DELETE FROM RefreshTokenEntity o");
         return query.executeUpdate();
     }
 
