@@ -7,15 +7,28 @@
 package eu.fraho.spring.securityJwt.base.starter;
 
 import eu.fraho.spring.securityJwt.base.JwtAuthenticationEntryPoint;
-import eu.fraho.spring.securityJwt.base.config.*;
+import eu.fraho.spring.securityJwt.base.config.JwtSecurityConfig;
+import eu.fraho.spring.securityJwt.base.config.RefreshCookieProperties;
+import eu.fraho.spring.securityJwt.base.config.RefreshProperties;
+import eu.fraho.spring.securityJwt.base.config.TokenCookieProperties;
+import eu.fraho.spring.securityJwt.base.config.TokenHeaderProperties;
+import eu.fraho.spring.securityJwt.base.config.TokenProperties;
+import eu.fraho.spring.securityJwt.base.config.TotpProperties;
 import eu.fraho.spring.securityJwt.base.controller.LoginRestController;
 import eu.fraho.spring.securityJwt.base.controller.LogoutRestController;
 import eu.fraho.spring.securityJwt.base.dto.JwtUser;
-import eu.fraho.spring.securityJwt.base.service.*;
+import eu.fraho.spring.securityJwt.base.service.JwtTokenService;
+import eu.fraho.spring.securityJwt.base.service.JwtTokenServiceImpl;
+import eu.fraho.spring.securityJwt.base.service.LoginService;
+import eu.fraho.spring.securityJwt.base.service.LoginServiceImpl;
+import eu.fraho.spring.securityJwt.base.service.RefreshService;
+import eu.fraho.spring.securityJwt.base.service.RefreshServiceImpl;
+import eu.fraho.spring.securityJwt.base.service.TotpService;
+import eu.fraho.spring.securityJwt.base.service.TotpServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
@@ -31,7 +44,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
-@AutoConfigureAfter(SecurityAutoConfiguration.class)
+@AutoConfigureBefore(SecurityAutoConfiguration.class)
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 @Slf4j

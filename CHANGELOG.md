@@ -2,6 +2,7 @@
 
 ### [4.4.2] (unreleased)
 * (all) Dependencies upgraded to latest
+* (all) Fixes "Found WebSecurityConfigurerAdapter as well as SecurityFilterChain"-error (#32)
 
 ### [4.4.1] (2020-11-08)
 * (all) Dependencies upgraded to latest
