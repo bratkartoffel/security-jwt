@@ -1,6 +1,9 @@
 # Changelog
 
-### [4.4.2] (unreleased)
+### [unreleased]
+* no changes yet
+
+### [4.4.2] (2021-05-06)
 * (all) Dependencies upgraded to latest
 * (all) Fixes "Found WebSecurityConfigurerAdapter as well as SecurityFilterChain"-error (#32)
 
@@ -119,7 +122,8 @@
 * Initial release to github and maven central
 
 
-[4.4.2]: https://github.com/bratkartoffel/security-jwt/compare/4.4.1...develop
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/4.4.2...develop
+[4.4.2]: https://github.com/bratkartoffel/security-jwt/compare/4.4.1...4.4.2
 [4.4.1]: https://github.com/bratkartoffel/security-jwt/compare/4.4.0...4.4.1
 [4.4.0]: https://github.com/bratkartoffel/security-jwt/compare/4.3.0...4.4.0
 [4.3.0]: https://github.com/bratkartoffel/security-jwt/compare/4.2.0...4.3.0
