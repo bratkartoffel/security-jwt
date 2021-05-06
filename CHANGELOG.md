@@ -1,7 +1,7 @@
 # Changelog
 
 ### [4.4.2] (unreleased)
-* (none) so far
+* (all) Dependencies upgraded to latest
 
 ### [4.4.1] (2020-11-08)
 * (all) Dependencies upgraded to latest
