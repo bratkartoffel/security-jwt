@@ -48,10 +48,11 @@ public class HibernateTokenStore implements RefreshTokenStore {
     @Transactional
     @SuppressWarnings("unchecked")
     public <T extends JwtUser> Optional<T> useToken(String token) {
+        ZonedDateTime expiration = ZonedDateTime.now().minusSeconds(refreshProperties.getExpiration().toSeconds());
         // first load the token from the database
         TypedQuery<RefreshTokenEntity> queryLoad = entityManager.createQuery("SELECT o FROM RefreshTokenEntity o WHERE o.token = :token AND o.created >= :expiration", RefreshTokenEntity.class);
         queryLoad.setParameter("token", token);
-        setQueryExpiration(queryLoad);
+        queryLoad.setParameter("expiration", expiration);
         List<RefreshTokenEntity> loadResultList = queryLoad.getResultList();
         if (loadResultList.size() != 1) {
             return Optional.empty();
@@ -76,9 +77,10 @@ public class HibernateTokenStore implements RefreshTokenStore {
     @Override
     @Transactional(readOnly = true)
     public List<RefreshToken> listTokens(JwtUser user) {
+        ZonedDateTime expiration = ZonedDateTime.now().minusSeconds(refreshProperties.getExpiration().toSeconds());
         TypedQuery<RefreshTokenEntity> query = entityManager.createQuery("SELECT o FROM RefreshTokenEntity o WHERE o.userId = :userId AND o.created >= :expiration", RefreshTokenEntity.class);
         query.setParameter("userId", user.getId());
-        setQueryExpiration(query);
+        query.setParameter("expiration", expiration);
 
         List<RefreshTokenEntity> result = query.getResultList();
         return result.stream()
@@ -87,15 +89,6 @@ public class HibernateTokenStore implements RefreshTokenStore {
                         .expiresIn(calculateExpiration(e.getCreated()))
                         .build())
                 .collect(Collectors.toList());
-    }
-
-    private int calculateExpiration(ZonedDateTime created) {
-        return (int) ChronoUnit.SECONDS.between(created, ZonedDateTime.now());
-    }
-
-    private void setQueryExpiration(Query query) {
-        ZonedDateTime expiration = ZonedDateTime.now().minusSeconds(refreshProperties.getExpiration().toSeconds());
-        query.setParameter("expiration", expiration);
     }
 
     @Override
@@ -113,7 +106,8 @@ public class HibernateTokenStore implements RefreshTokenStore {
     @Transactional(readOnly = true)
     public Map<Long, List<RefreshToken>> listTokens() {
         TypedQuery<RefreshTokenEntity> query = entityManager.createQuery("SELECT o FROM RefreshTokenEntity o WHERE o.created >= :expiration", RefreshTokenEntity.class);
-        setQueryExpiration(query);
+        ZonedDateTime expiration = ZonedDateTime.now().minusSeconds(refreshProperties.getExpiration().toSeconds());
+        query.setParameter("expiration", expiration);
 
         List<RefreshTokenEntity> tokens = query.getResultList();
         Map<Long, List<RefreshToken>> result = new HashMap<>();
@@ -170,5 +164,9 @@ public class HibernateTokenStore implements RefreshTokenStore {
     @Override
     public void afterPropertiesSet() {
         log.info("Using hibernate implementation to handle refresh tokens");
+    }
+
+    protected int calculateExpiration(ZonedDateTime created) {
+        return (int) ChronoUnit.SECONDS.between(created, ZonedDateTime.now());
     }
 }
