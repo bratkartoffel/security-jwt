@@ -1,7 +1,7 @@
 # Changelog
 
 ### [unreleased]
-* (files) the methods to interact with the database are now protected to make the class easier to extend
+* (all) make private methods in refresh tokenstore implementations protected to make the classes easier to extend
 * (hibernate) minor refactoring
 * (internal) make the in-memory RefreshTokenMap accessible to subclasses
 * (memcache) use specialized exception on timeouts instead of generic `RuntimeException`
