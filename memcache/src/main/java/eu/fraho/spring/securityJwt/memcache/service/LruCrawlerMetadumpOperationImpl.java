@@ -24,7 +24,6 @@ public class LruCrawlerMetadumpOperationImpl extends BaseOperationImpl {
     private final ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
     private final LruCrawlerMetadumpOperation.Callback cb;
     private final byte[] msg;
-    private boolean foundCr;
     private byte[] errorMsg;
 
     public LruCrawlerMetadumpOperationImpl(String arg, LruCrawlerMetadumpOperation.Callback cb) {
@@ -53,18 +52,15 @@ public class LruCrawlerMetadumpOperationImpl extends BaseOperationImpl {
             int offset = -1;
             for (int i = 0; data.remaining() > 0; i++) {
                 byte b = data.get();
-                if (b == '\r') {
-                    foundCr = true;
-                } else if (b == '\n') {
+                if (b == '\n') {
                     offset = i;
-                    foundCr = false;
                     break;
-                } else {
+                } else if (b != '\r') {
                     byteBuffer.write(b);
                 }
             }
             if (offset >= 0) {
-                String line = new String(byteBuffer.toByteArray(), CHARSET);
+                String line = byteBuffer.toString(CHARSET);
                 byteBuffer.reset();
                 OperationErrorType eType = classifyError(line);
                 if (eType != null) {
