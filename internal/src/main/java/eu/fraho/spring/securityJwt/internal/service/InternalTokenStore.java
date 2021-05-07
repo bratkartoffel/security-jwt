@@ -18,7 +18,13 @@ import net.jodah.expiringmap.ExpiringMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 @SuppressWarnings("SpringJavaAutowiredMembersInspection")
 @Slf4j
@@ -104,5 +110,13 @@ public class InternalTokenStore implements RefreshTokenStore {
     @Autowired
     public void setUserDetailsService(@NonNull UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
+    }
+
+    protected ExpiringMap<String, JwtUser> getRefreshTokenMap() {
+        return refreshTokenMap;
+    }
+
+    protected void setRefreshTokenMap(ExpiringMap<String, JwtUser> refreshTokenMap) {
+        this.refreshTokenMap = refreshTokenMap;
     }
 }
