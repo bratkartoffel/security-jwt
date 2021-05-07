@@ -27,7 +27,13 @@ import java.io.IOException;
 import java.nio.channels.FileLock;
 import java.nio.file.Files;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
@@ -38,6 +44,8 @@ import java.util.stream.Collectors;
 @Slf4j
 @NoArgsConstructor
 public class FilesTokenStore implements RefreshTokenStore {
+    private final ReentrantLock lock = new ReentrantLock(true);
+
     private RefreshProperties refreshProperties;
 
     private UserDetailsService userDetailsService;
@@ -46,18 +54,16 @@ public class FilesTokenStore implements RefreshTokenStore {
 
     private ObjectMapper objectMapper;
 
-    private ReentrantLock lock = new ReentrantLock(true);
-
     private List<DatabaseEntry> database = null;
 
-    private void withLock(Consumer<List<DatabaseEntry>> consumer) {
-        withLock((db) -> {
+    protected void withLock(Consumer<List<DatabaseEntry>> consumer) {
+        withLock(db -> {
             consumer.accept(db);
             return null;
         });
     }
 
-    private <T> T withLock(Function<List<DatabaseEntry>, T> consumer) {
+    protected <T> T withLock(Function<List<DatabaseEntry>, T> consumer) {
         try {
             if (!lock.tryLock(5, TimeUnit.SECONDS)) {
                 throw new RefreshException("Lock timed out");
@@ -79,7 +85,7 @@ public class FilesTokenStore implements RefreshTokenStore {
         }
     }
 
-    private List<DatabaseEntry> loadDatabase() {
+    protected List<DatabaseEntry> loadDatabase() {
         if (filesProperties.isExternalLocks() || database == null) {
             try {
                 database = objectMapper.readValue(Files.readAllBytes(filesProperties.getDatabaseFile()), new TypeReference<List<DatabaseEntry>>() {
@@ -94,7 +100,7 @@ public class FilesTokenStore implements RefreshTokenStore {
         return database;
     }
 
-    private void saveDatabase(List<DatabaseEntry> database) {
+    protected void saveDatabase(List<DatabaseEntry> database) {
         try {
             Files.write(filesProperties.getDatabaseFile(), objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(database));
         } catch (IOException ioe) {
@@ -106,13 +112,12 @@ public class FilesTokenStore implements RefreshTokenStore {
     public void saveToken(JwtUser user, String token) {
         withLock(db -> {
             TimeWithPeriod expiration = refreshProperties.getExpiration();
-            db.add(
-                    DatabaseEntry.builder()
-                            .userId(user.getId())
-                            .token(token)
-                            .username(user.getUsername())
-                            .expires(ZonedDateTime.now().plus(expiration.getQuantity(), expiration.getChronoUnit()))
-                            .build());
+            db.add(DatabaseEntry.builder()
+                    .userId(user.getId())
+                    .token(token)
+                    .username(user.getUsername())
+                    .expires(ZonedDateTime.now().plus(expiration.getQuantity(), expiration.getChronoUnit()))
+                    .build());
             saveDatabase(db);
         });
     }

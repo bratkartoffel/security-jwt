@@ -1,7 +1,7 @@
 # Changelog
 
 ### [unreleased]
-* no changes yet
+* (files) the methods to interact with the database are now protected to make the class easier to extend
 
 ### [4.4.2] (2021-05-06)
 * (all) Dependencies upgraded to latest
