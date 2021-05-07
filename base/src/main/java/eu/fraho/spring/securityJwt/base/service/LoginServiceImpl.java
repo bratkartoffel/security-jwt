@@ -1,13 +1,17 @@
 /*
  * MIT Licence
- * Copyright (c) 2020 Simon Frankenberger
+ * Copyright (c) 2021 Simon Frankenberger
  *
  * Please see LICENCE.md for complete licence text.
  */
 package eu.fraho.spring.securityJwt.base.service;
 
 import com.nimbusds.jose.JOSEException;
-import eu.fraho.spring.securityJwt.base.dto.*;
+import eu.fraho.spring.securityJwt.base.dto.AccessToken;
+import eu.fraho.spring.securityJwt.base.dto.AuthenticationRequest;
+import eu.fraho.spring.securityJwt.base.dto.AuthenticationResponse;
+import eu.fraho.spring.securityJwt.base.dto.JwtUser;
+import eu.fraho.spring.securityJwt.base.dto.RefreshToken;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
