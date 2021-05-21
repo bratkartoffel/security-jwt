@@ -87,27 +87,41 @@ When you want to add refresh token support, then choose one of the following dep
 For details on the usage of the plugins please see the README within the relevant module directories.
 
 # Usage
+
 Starting with version 1.0.0 there are two ways on how to use these libraries.
 
-The old way is by directly using the libraries as dependencies and doing some manual configuration.
-The newer way used spring boot autoconfiguration and reduced the needed configuration a lot.
+The old way is by directly using the libraries as dependencies and doing some manual configuration. The newer way used
+spring boot autoconfiguration and reduced the needed configuration a lot.
 
-To see this library "in action", please take a look at [the examples](https://github.com/bratkartoffel/security-jwt-examples).
+To see this library "in action", please take a look
+at [the examples](https://github.com/bratkartoffel/security-jwt-examples).
 
 # Spring boot and library versions
-* The 2.x versions are compatible with spring boot 1.5.x
-* The 3.x versions are compatible with spring boot 2.x
-* Starting with 4.4.1, the minumum required spring boot version is 2.2.0
+
+The mimum supported spring boot version changed during the lifetime of this library and sadly wasn't always aligned to
+the semantic versioning scheme. Take the following table of supported versions as reference prior updating this library
+in your project.
+
+| Library Version | Spring boot versions |
+|-----------------|----------------------|
+| <= 2.0.1        | 1.5.x                |
+| 3.x - 4.4.0     | 2.0.x - 2.1.x        |
+| 4.4.1 - 4.4.x   | 2.2.x - 2.5.x        |
+| > = 4.5.0        | 2.0.0+               |
 
 ## Spring Boot Autoconfig (recommended):
+
 * Use any *-spring-boot-starter dependency you like
 * Bouncycastle will be automagically loaded and installed if on classpath
 * My enhanced PasswordEncoder (using Unix-Crypt-Style hashes) will be used as default
 
 ## Manual configuration (legacy):
+
 * Add the dependencies to your build script
-* Configure your boot application to pick up our components (add "eu.fraho.spring.securityJwt" to the scanBasePackages field of your ```@SpringBootApplication```)
-* Optionally add the BouncyCastle Provider (e.g. within the [main-Method](base/src/test/java/eu/fraho/spring/securityJwt/base/util/CreateEcdsaJwtKeys.java))
+* Configure your boot application to pick up our components (add "eu.fraho.spring.securityJwt" to the scanBasePackages
+  field of your ```@SpringBootApplication```)
+* Optionally add the BouncyCastle Provider (e.g. within
+  the [main-Method](base/src/test/java/eu/fraho/spring/securityJwt/base/util/CreateEcdsaJwtKeys.java))
   * **Hint:** This is required if you would like to use the ECDSA signature algorithm!
 * Optionally use my enhanced PasswordEncoder as a ```@Bean```
 * Optionally choose a refresh token store implementation and set it as ```fraho.jwt.refresh.cache-impl```

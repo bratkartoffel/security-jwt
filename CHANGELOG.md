@@ -2,6 +2,7 @@
 
 ### [unreleased]
 * (all) make private methods in refresh tokenstore implementations protected to make the classes easier to extend
+* (all) make compatible with spring bot 2.0+ again
 * (hibernate) minor refactoring
 * (internal) make the in-memory RefreshTokenMap accessible to subclasses
 * (memcache) use specialized exception on timeouts instead of generic `RuntimeException`
