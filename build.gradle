@@ -146,7 +146,6 @@ subprojects {
     // Signature of artifacts
     signing {
         required = !rootProject.version.endsWith('-SNAPSHOT')
-        useGpgCmd()
         sign publishing.publications.mavenJava
     }
 
