@@ -9,8 +9,7 @@ dependencies {
     }
 
     implementation group: "org.bouncycastle", name: "bcprov-jdk15on", version: bouncyCastleVersion
-
-    testFixturesApi group: "org.powermock", name: "powermock-api-mockito2", version: powerMockVersion
-    testFixturesApi group: "org.powermock", name: "powermock-module-junit4", version: powerMockVersion
     testFixturesApi group: "org.bouncycastle", name: "bcprov-jdk15on", version: bouncyCastleVersion
+    implementation group: "org.mockito", name: "mockito-core", version: mockitoVersion
+    testFixturesApi group: "org.mockito", name: "mockito-core", version: mockitoVersion
 }
