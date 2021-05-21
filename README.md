@@ -1,9 +1,9 @@
 # Spring Security Addon for JWT
+
 [![Build Status](https://travis-ci.org/bratkartoffel/security-jwt.svg?branch=develop)](https://travis-ci.org/bratkartoffel/security-jwt)
 [![Code Coverage](https://img.shields.io/codecov/c/github/bratkartoffel/security-jwt/develop.svg)](https://codecov.io/github/bratkartoffel/security-jwt?branch=develop)
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat)](http://doge.mit-license.org)
 [![Central Version](https://img.shields.io/maven-central/v/eu.fraho.spring/security-jwt-base)](https://mvnrepository.com/artifact/eu.fraho.spring)
-
 
 Providing a simple way to integrate [JWT](https://jwt.io/introduction/) into your spring boot application.
 
@@ -16,29 +16,35 @@ This project is split into multiple parts:
 * redis: Support for redis to store refresh tokens
 * files: Support for filesystem to store refresh tokens
 
-Simply use the dependencies within your build script, spring boot takes care of the rest.
-The default configuration should be sufficient for the most use cases.
+Simply use the dependencies within your build script, spring boot takes care of the rest. The default configuration
+should be sufficient for the most use cases.
 
 # Contents
+
 * base:
-  * JWT Integration into Spring Security (including some [REST-Controllers](base/src/main/java/eu/fraho/spring/securityJwt/base/controller) to authenticate against)
-  * A [CryptPasswordEncoder](base/src/main/java/eu/fraho/spring/securityJwt/base/password/CryptPasswordEncoder.java) to generate / use linux system crypt(1)-hashes (supporting the newer $5$ and $6$ hashes and rounds)
-  * Full support for [Swagger 2](https://github.com/springfox/springfox) documentation (REST Controller and DTO are annotated and described)
+  * JWT Integration into Spring Security (including
+    some [REST-Controllers](base/src/main/java/eu/fraho/spring/securityJwt/base/controller) to authenticate against)
+  * A [CryptPasswordEncoder](base/src/main/java/eu/fraho/spring/securityJwt/base/password/CryptPasswordEncoder.java)
+    to generate / use linux system crypt(1)-hashes (supporting the newer $5$ and $6$ hashes and rounds)
+  * Full support for [Swagger 2](https://github.com/springfox/springfox) documentation (REST Controller and DTO are
+    annotated and described)
 * module [internal](internal):
   * Refresh token support through an internal, in-memory map
 * module [memcache](memcache):
   * Refresh token support through an external memcache server
 * module [hibernate](hibernate):
-	* Refresh token support using hibernate and a database table
+  * Refresh token support using hibernate and a database table
 * module [redis](redis):
-	* Refresh token support using a redis server
+  * Refresh token support using a redis server
 * module [files](files):
-	* Refresh token support using a json file
+  * Refresh token support using a json file
 * various *-spring-boot-starter:
     * Spring boot starter modules to integrate into the autoconfiguration ecosystem
 
 # Dependencies
+
 ```xml
+
 <dependencies>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
@@ -55,7 +61,9 @@ The default configuration should be sufficient for the most use cases.
 ```
 
 When you want to add refresh token support, then choose one of the following dependencies:
+
 ```xml
+
 <dependencies>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
@@ -84,6 +92,7 @@ When you want to add refresh token support, then choose one of the following dep
     </dependency>
 </dependencies>
 ```
+
 For details on the usage of the plugins please see the README within the relevant module directories.
 
 # Usage
@@ -104,10 +113,10 @@ in your project.
 
 | Library Version | Spring boot versions |
 |-----------------|----------------------|
-| <= 2.0.1        | 1.5.x                |
-| 3.x - 4.4.0     | 2.0.x - 2.1.x        |
-| 4.4.1 - 4.4.x   | 2.2.x - 2.5.x        |
-| > = 4.5.0        | 2.0.0+               |
+| `<= 2.0.1`      | 1.5.x                |
+| `3.x - 4.4.0`   | 2.0.x - 2.1.x        |
+| `4.4.1 - 4.4.2` | 2.2.x - 2.5.x        |
+| `>= 4.5.0`      | 2.0.0+               |
 
 ## Spring Boot Autoconfig (recommended):
 
@@ -127,10 +136,15 @@ in your project.
 * Optionally choose a refresh token store implementation and set it as ```fraho.jwt.refresh.cache-impl```
 
 ## General steps for both methods:
-* Create an implementation of UserDetailsService that returns an instance of [JwtUser](base/src/main/java/eu/fraho/spring/securityJwt/base/dto/JwtUser.java)
-* By default, this service creates a random hmac secret for signatures on each startup. To stay consistent accross service restarts and not kicking clients out please either change the algorithm (recommended) or specifiy at least an hmac keyfile.
+
+* Create an implementation of UserDetailsService that returns an instance
+  of [JwtUser](base/src/main/java/eu/fraho/spring/securityJwt/base/dto/JwtUser.java)
+* By default, this service creates a random hmac secret for signatures on each startup. To stay consistent accross
+  service restarts and not kicking clients out please either change the algorithm (recommended) or specifiy at least an
+  hmac keyfile.
 
 # Usage for clients
+
 * Request new tokens by sending an authentication request to ```/auth/login```
 * Somehow store the received token(s)
   * Or use the cookie flow so the browser can store the tokens safely
@@ -138,13 +152,20 @@ in your project.
   * When using cookies this is done automatically by your browser
 
 # Configuration
-This library will run out-of the box, but you should at least take a look at the different configuration properties. I tried to make them reasonable secure, but if you're really paranoid you can change them as you like.
 
-By default, this library creates an hmac secret on startup. As this is no problem for testing and running your application you are strongly adviced to define a static key. Otherwise you will render all access tokens invalid upon service restart, thus requiring your clients to login again.
+This library will run out-of the box, but you should at least take a look at the different configuration properties. I
+tried to make them reasonable secure, but if you're really paranoid you can change them as you like.
 
-I recommend using ECDSA for tokens (you can use [this](base/src/test/java/eu/fraho/spring/securityJwt/base/util/CreateEcdsaJwtKeys.java) class for that) and setting the ```algorithm``` field to something like ES256.
+By default, this library creates an hmac secret on startup. As this is no problem for testing and running your
+application you are strongly adviced to define a static key. Otherwise you will render all access tokens invalid upon
+service restart, thus requiring your clients to login again.
+
+I recommend using ECDSA for tokens (you can
+use [this](base/src/test/java/eu/fraho/spring/securityJwt/base/util/CreateEcdsaJwtKeys.java) class for that) and setting
+the ```algorithm``` field to something like ES256.
 
 ## Token configuration (Prefix fraho.jwt.token)
+
 | Property        | Default                     | Description   |
 |-----------------|-----------------------------|---------------|
 | algorithm       | HS256                       | The signature algorithm used for the tokens. For a list of valid algorithms please see either the [JWT spec](https://tools.ietf.org/html/rfc7518#section-3) or [JWSAlgorithm](https://bitbucket.org/connect2id/nimbus-jose-jwt/src/master/src/main/java/com/nimbusds/jose/JWSAlgorithm.java)|
@@ -164,6 +185,7 @@ I recommend using ECDSA for tokens (you can use [this](base/src/test/java/eu/fra
 | pub             | null                        | Defines the public key file when using a public / private key signature method|
 
 ## Refresh configuration (Prefix fraho.jwt.refresh)
+
 | Property                   | Default             | Description   |
 |----------------------------|---------------------|---------------|
 | cache-impl                 | null                | Defines the implemenation for refresh token storage. The specified class has to implement the [RefreshTokenStore](base/src/main/java/eu/fraho/spring/securityJwt/base/service/RefreshTokenStore.java) Interface. To disable the refresh tokens at all use null as value.<br>You have to add at least one of the optional dependencies below to add refresh token support.<br>Please see module READMEs for valid values.|
@@ -178,6 +200,7 @@ I recommend using ECDSA for tokens (you can use [this](base/src/test/java/eu/fra
 | path                       | /auth/refresh       | Sets the path for the RestController, defining the endpoint for refresh requests.|
 
 ## Other configuration properties
+
 | Property              | Default      | Description   |
 |-----------------------|--------------|---------------|
 | fraho.jwt.logout.path | /auth/logout | Sets the path for the RestController, defining the endpoint for logging out. This path is only available if cookies are enabled.|
@@ -187,6 +210,7 @@ I recommend using ECDSA for tokens (you can use [this](base/src/test/java/eu/fra
 | fraho.crypt.rounds    | 10,000       | Defines the "strength" of the hashing function. The more rounds used, the more secure the generated hash. But beware that more rounds mean more cpu-load and longer computation times! This parameter is only used if the specified algorithm supports hashing rounds.|
 
 # Building
+
 ```bash
 # on linux:
 ./gradlew assemble
@@ -195,13 +219,16 @@ gradlew.bat assemble
 ```
 
 # Hacking
+
 * This repository uses the git flow layout
 * Changes are welcome, but please use pull requests with separate branches
 * TravisCI has to pass before merging
 * Code coverage should stay about the same level (please write tests for new features!)
-* When writing new modules please use my abstract testclasses which provide a great base (see [internal](internal/src/test/java/eu/fraho/spring/securityJwt/internal/service) for an example)
+* When writing new modules please use my abstract testclasses which provide a great base (
+  see [internal](internal/src/test/java/eu/fraho/spring/securityJwt/internal/service) for an example)
 
 # Releasing
+
 ```bash
 # to local repository:
 ./gradlew install
@@ -210,14 +237,19 @@ gradlew.bat assemble
 ```
 
 # JWT Request Flow
+
 ## UML (with headers)
+
 [![Sequence diagram](doc/headers.png)](doc/headers.png)
 
 ## UML (with cookies)
+
 [![Sequence diagram](doc/cookies.png)](doc/cookies.png)
 
 ## HTTP-Requests
+
 Request a token (login):
+
 ```
 > POST /auth/login HTTP/1.1
 > Host: localhost:8080
@@ -247,6 +279,7 @@ Request a token (login):
 ```
 
 Usage of token to access some (secured) data:
+
 ```
 > GET /users HTTP/1.1
 > Authorization: Bearer eyJhbGciOiJFUzI1NiJ9...
@@ -259,6 +292,7 @@ Usage of token to access some (secured) data:
 ```
 
 Use refresh token when token expired:
+
 ```
 > POST /auth/refresh HTTP/1.1
 > Content-Type: application/json
