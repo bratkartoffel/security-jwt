@@ -60,7 +60,7 @@ public class AuthControllerWithCookiesTest {
 
         getMockMvc().perform(req)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.cookie().exists("access"))
                 .andReturn().getResponse().getContentAsString();
     }

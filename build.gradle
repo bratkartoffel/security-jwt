@@ -51,8 +51,26 @@ subprojects {
 
         testFixturesApi group: "org.springframework.boot", name: "spring-boot-starter-test", version: springBootVersion
         testFixturesApi group: "org.springframework.boot", name: "spring-boot-starter-web", version: springBootVersion
-        testFixturesApi group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jsr310", version: jacksonVersion
+        testFixturesApi group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jsr310"
         testFixturesApi group: 'org.junit.jupiter', name: 'junit-jupiter', version: jupiterVersion
+    }
+
+    dependencyManagement {
+        dependencies {
+            dependency group: 'org.springframework', name: 'spring-aop', version: '5.0.4.RELEASE'
+            dependency group: 'org.springframework', name: 'spring-aspects', version: '5.0.4.RELEASE'
+            dependency group: 'org.springframework', name: 'spring-beans', version: '5.0.4.RELEASE'
+            dependency group: 'org.springframework', name: 'spring-context', version: '5.0.4.RELEASE'
+            dependency group: 'org.springframework', name: 'spring-core', version: '5.0.4.RELEASE'
+            dependency group: 'org.springframework', name: 'spring-expression', version: '5.0.4.RELEASE'
+            dependency group: 'org.springframework', name: 'spring-jcl', version: '5.0.4.RELEASE'
+            dependency group: 'org.springframework', name: 'spring-jdbc', version: '5.0.4.RELEASE'
+            dependency group: 'org.springframework', name: 'spring-orm', version: '5.0.4.RELEASE'
+            dependency group: 'org.springframework', name: 'spring-test', version: '5.0.4.RELEASE'
+            dependency group: 'org.springframework', name: 'spring-tx', version: '5.0.4.RELEASE'
+            dependency group: 'org.springframework', name: 'spring-web', version: '5.0.4.RELEASE'
+            dependency group: 'org.springframework', name: 'spring-webmvc', version: '5.0.4.RELEASE'
+        }
     }
 
     configurations.all {
