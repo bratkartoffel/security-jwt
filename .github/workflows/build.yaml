@@ -16,6 +16,8 @@ jobs:
           distribution: 'adopt'
           java-version: '11'
           cache: 'gradle'
+      - uses: niden/actions-memcached@v7
+      - uses: supercharge/redis-github-action@1.2.0
       - run: ./gradlew --no-daemon check
       - uses: codecov/codecov-action@v2
         with:
