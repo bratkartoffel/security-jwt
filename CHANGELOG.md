@@ -1,6 +1,9 @@
 # Changelog
 
 ### [unreleased]
+* no changes yet
+
+### [4.5.0] (2021-11-19)
 * (all) make private methods in refresh tokenstore implementations protected to make the classes easier to extend
 * (all) make compatible with spring bot 2.0+ again
 * (all) upgrade bouncycastle to 1.69
@@ -131,7 +134,8 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/4.4.2...develop
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/4.5.0...develop
+[4.5.0]: https://github.com/bratkartoffel/security-jwt/compare/4.4.2...4.5.0
 [4.4.2]: https://github.com/bratkartoffel/security-jwt/compare/4.4.1...4.4.2
 [4.4.1]: https://github.com/bratkartoffel/security-jwt/compare/4.4.0...4.4.1
 [4.4.0]: https://github.com/bratkartoffel/security-jwt/compare/4.3.0...4.4.0
