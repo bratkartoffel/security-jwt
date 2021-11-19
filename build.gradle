@@ -82,8 +82,8 @@ subprojects {
     apply plugin: 'jacoco'
     jacoco.toolVersion = jacocoVersion
     jacocoTestReport.reports {
-        xml.enabled = true
-        html.enabled = true
+        xml.required = true
+        html.required = true
     }
     check.dependsOn(jacocoTestReport)
 
@@ -163,8 +163,8 @@ task jacocoRootReport(type: JacocoReport) {
             subprojects.jacocoTestReport.executionData
     )
     reports {
-        html.enabled = true
-        xml.enabled = true
+        html.required = true
+        xml.required = true
     }
     onlyIf = {
         true

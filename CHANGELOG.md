@@ -3,9 +3,14 @@
 ### [unreleased]
 * (all) make private methods in refresh tokenstore implementations protected to make the classes easier to extend
 * (all) make compatible with spring bot 2.0+ again
+* (all) upgrade bouncycastle to 1.69
+* (all) upgrade nimbus-jose-jwt to 9.15.2
+* (all) upgrade openapi to 1.5.12
 * (hibernate) minor refactoring
 * (internal) make the in-memory RefreshTokenMap accessible to subclasses
+* (internal) upgrade epxiring map to 0.5.10
 * (memcache) use specialized exception on timeouts instead of generic `RuntimeException`
+* (redis) upgrade jedis to 3.7.0
 
 ### [4.4.2] (2021-05-06)
 * (all) Dependencies upgraded to latest
