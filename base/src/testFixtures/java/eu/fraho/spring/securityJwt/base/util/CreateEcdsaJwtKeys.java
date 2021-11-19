@@ -1,6 +1,6 @@
 /*
  * MIT Licence
- * Copyright (c) 2020 Simon Frankenberger
+ * Copyright (c) 2021 Simon Frankenberger
  *
  * Please see LICENCE.md for complete licence text.
  */
@@ -18,7 +18,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
-import java.security.*;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Security;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;

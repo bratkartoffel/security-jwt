@@ -1,6 +1,6 @@
 /*
  * MIT Licence
- * Copyright (c) 2020 Simon Frankenberger
+ * Copyright (c) 2021 Simon Frankenberger
  *
  * Please see LICENCE.md for complete licence text.
  */
@@ -14,6 +14,7 @@ import eu.fraho.spring.securityJwt.base.service.RefreshTokenStore;
 import eu.fraho.spring.securityJwt.memcache.config.MemcacheProperties;
 import eu.fraho.spring.securityJwt.memcache.dto.LruMetadumpEntry;
 import eu.fraho.spring.securityJwt.memcache.dto.MemcacheEntry;
+import eu.fraho.spring.securityJwt.memcache.exceptions.RequestTimedOutException;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +27,14 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -43,16 +51,6 @@ public class MemcacheTokenStore implements RefreshTokenStore {
     private UserDetailsService userDetailsService;
     private MemcachedClient memcachedClient;
     private boolean lruCrawlerAvailable;
-
-    private OperationFuture<Boolean> getAndWait(String message, Supplier<OperationFuture<Boolean>> action) {
-        try {
-            OperationFuture<Boolean> future = action.get();
-            future.get(memcacheProperties.getTimeout(), TimeUnit.SECONDS);
-            return future;
-        } catch (TimeoutException | InterruptedException | ExecutionException e) {
-            throw new RefreshException(message, e);
-        }
-    }
 
     @Override
     public void saveToken(JwtUser user, String token) {
@@ -71,14 +69,14 @@ public class MemcacheTokenStore implements RefreshTokenStore {
     public <T extends JwtUser> Optional<T> useToken(String token) {
         String key = memcacheProperties.getPrefix() + token;
         // will be "null" if invalid token
-        final Object found = memcachedClient.get(key);
+        Object found = memcachedClient.get(key);
 
         Optional<T> result = Optional.empty();
         if (found != null) {
             String username = MemcacheEntry.from((String) found).getUsername();
             result = Optional.ofNullable((T) userDetailsService.loadUserByUsername(username));
         }
-        if (!getAndWait("Error while deleting refresh token on memcache server", () -> memcachedClient.delete(key)).getStatus().isSuccess()) {
+        if (!getAndWait("Error while removing refresh token on memcache server", () -> memcachedClient.delete(key)).getStatus().isSuccess()) {
             result = Optional.empty();
         }
 
@@ -92,10 +90,10 @@ public class MemcacheTokenStore implements RefreshTokenStore {
 
     @Override
     public Map<Long, List<RefreshToken>> listTokens() {
-        final Map<Long, List<RefreshToken>> result = new HashMap<>();
-        final List<String> keys = listAllKeys();
-        final Map<String, Object> entries = memcachedClient.getBulk(keys);
-        final int prefixLen = memcacheProperties.getPrefix().length();
+        Map<Long, List<RefreshToken>> result = new HashMap<>();
+        List<String> keys = listAllKeys();
+        Map<String, Object> entries = memcachedClient.getBulk(keys);
+        int prefixLen = memcacheProperties.getPrefix().length();
         for (Map.Entry<String, Object> entry : entries.entrySet()) {
             MemcacheEntry dto = MemcacheEntry.from((String) entry.getValue());
             int expiresIn = -1;
@@ -114,16 +112,15 @@ public class MemcacheTokenStore implements RefreshTokenStore {
     @Override
     public boolean revokeToken(String token) {
         String key = memcacheProperties.getPrefix() + token;
-        return getAndWait("Error while deleting refresh token on memcache server", () ->
+        return getAndWait("Error while revoking refresh token on memcache server", () ->
                 memcachedClient.delete(key)).getStatus().isSuccess();
     }
 
     @Override
     public int revokeTokens(JwtUser user) {
         List<String> allKeys = listAllKeys();
-        final Map<String, Object> entries = memcachedClient.getBulk(allKeys);
-
-        final List<OperationFuture<Boolean>> futures = new ArrayList<>();
+        Map<String, Object> entries = memcachedClient.getBulk(allKeys);
+        List<OperationFuture<Boolean>> futures = new ArrayList<>();
         for (Map.Entry<String, Object> entry : entries.entrySet()) {
             MemcacheEntry dto = MemcacheEntry.from((String) entry.getValue());
             if (Objects.equals(dto.getId(), user.getId())) {
@@ -134,104 +131,14 @@ public class MemcacheTokenStore implements RefreshTokenStore {
         return submitAndCountSuccess(allKeys, futures);
     }
 
-    private List<String> listAllKeys() {
-        if (lruCrawlerAvailable) {
-            return listAllKeysModern();
-        } else {
-            return listAllKeysLegacy();
-        }
-    }
-
-    private List<String> listAllKeysModern() {
-        Map<SocketAddress, List<LruMetadumpEntry>> entries = getLruCrawlerMetadump("all");
-        return entries.values().stream()
-                .flatMap(List::stream)
-                .map(LruMetadumpEntry::getKey)
-                .filter(e -> e.startsWith(memcacheProperties.getPrefix()))
-                .collect(Collectors.toList());
-    }
-
-    private Map<SocketAddress, List<LruMetadumpEntry>> getLruCrawlerMetadump(String arg) {
-        Map<SocketAddress, List<LruMetadumpEntry>> result = new HashMap<>();
-
-        CountDownLatch blatch = memcachedClient.broadcastOp((n, latch) -> {
-            SocketAddress sa = n.getSocketAddress();
-            ArrayList<LruMetadumpEntry> list = new ArrayList<>();
-            result.put(sa, list);
-            return new LruCrawlerMetadumpOperationImpl(arg, new LruCrawlerMetadumpOperation.Callback() {
-                @Override
-                public void gotMetadump(LruMetadumpEntry entry) {
-                    list.add(entry);
-                }
-
-                @Override
-                @SuppressWarnings("synthetic-access")
-                public void receivedStatus(OperationStatus status) {
-                    if (!status.isSuccess()) {
-                        log.error("Unsuccessful lru_crawler metadump: " + status);
-                    }
-                }
-
-                @Override
-                public void complete() {
-                    latch.countDown();
-                }
-            });
-        });
-
-        try {
-            blatch.await(memcacheProperties.getTimeout(), TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            throw new RuntimeException("Interrupted waiting for lru_crawler metadump", e);
-        }
-        return result;
-    }
-
-    private List<String> listAllKeysLegacy() {
-        final List<String> result = new ArrayList<>();
-        final Set<Integer> slabs = memcachedClient.getStats("items")
-                .entrySet().iterator().next()
-                .getValue().keySet().stream()
-                .filter(k -> k.matches("^items:[0-9]+:number$"))
-                .map(s -> s.split(":")[1])
-                .map(Integer::valueOf)
-                .collect(Collectors.toSet());
-
-        for (Integer slab : slabs) {
-            int used_chunks = Integer.parseInt(
-                    memcachedClient.getStats("slabs " + slab)
-                            .entrySet().iterator().next()
-                            .getValue().get(slab + ":used_chunks"));
-
-            final Set<String> entries = memcachedClient.getStats("cachedump " + slab + " " + used_chunks)
-                    .entrySet().iterator().next().getValue().keySet()
-                    .stream().filter(e -> e.startsWith(memcacheProperties.getPrefix()))
-                    .collect(Collectors.toSet());
-
-            result.addAll(entries);
-        }
-        return Collections.unmodifiableList(result);
-    }
-
     @Override
     public int revokeTokens() {
-        final List<String> keys = listAllKeys();
-        final List<OperationFuture<Boolean>> futures = new ArrayList<>();
+        List<String> keys = listAllKeys();
+        List<OperationFuture<Boolean>> futures = new ArrayList<>();
         for (String key : keys) {
             futures.add(memcachedClient.delete(key));
         }
-
         return submitAndCountSuccess(keys, futures);
-    }
-
-    private int submitAndCountSuccess(List<String> keys, List<OperationFuture<Boolean>> futures) {
-        int count = keys.size();
-        for (OperationFuture<Boolean> future : futures) {
-            if (!getAndWait("Error while saving refresh token on memcache server", () -> future).getStatus().isSuccess()) {
-                count--;
-            }
-        }
-        return count;
     }
 
     @Override
@@ -263,5 +170,104 @@ public class MemcacheTokenStore implements RefreshTokenStore {
     @Autowired
     public void setUserDetailsService(@NonNull UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
+    }
+
+    protected OperationFuture<Boolean> getAndWait(String message, Supplier<OperationFuture<Boolean>> action) {
+        try {
+            OperationFuture<Boolean> future = action.get();
+            future.get(memcacheProperties.getTimeout(), TimeUnit.SECONDS);
+            return future;
+        } catch (TimeoutException | InterruptedException | ExecutionException e) {
+            throw new RefreshException(message, e);
+        }
+    }
+
+    protected List<String> listAllKeys() {
+        if (lruCrawlerAvailable) {
+            return listAllKeysModern();
+        } else {
+            return listAllKeysLegacy();
+        }
+    }
+
+    protected List<String> listAllKeysModern() {
+        Map<SocketAddress, List<LruMetadumpEntry>> entries = getLruCrawlerMetadump();
+        return entries.values().stream()
+                .flatMap(List::stream)
+                .map(LruMetadumpEntry::getKey)
+                .filter(e -> e.startsWith(memcacheProperties.getPrefix()))
+                .collect(Collectors.toList());
+    }
+
+    protected Map<SocketAddress, List<LruMetadumpEntry>> getLruCrawlerMetadump() {
+        Map<SocketAddress, List<LruMetadumpEntry>> result = new HashMap<>();
+
+        CountDownLatch blatch = memcachedClient.broadcastOp((n, latch) -> {
+            SocketAddress sa = n.getSocketAddress();
+            ArrayList<LruMetadumpEntry> list = new ArrayList<>();
+            result.put(sa, list);
+            return new LruCrawlerMetadumpOperationImpl("all", new LruCrawlerMetadumpOperation.Callback() {
+                @Override
+                public void gotMetadump(LruMetadumpEntry entry) {
+                    list.add(entry);
+                }
+
+                @Override
+                @SuppressWarnings("synthetic-access")
+                public void receivedStatus(OperationStatus status) {
+                    if (!status.isSuccess()) {
+                        log.error("Unsuccessful lru_crawler metadump: " + status);
+                    }
+                }
+
+                @Override
+                public void complete() {
+                    latch.countDown();
+                }
+            });
+        });
+
+        try {
+            if (!blatch.await(memcacheProperties.getTimeout(), TimeUnit.SECONDS)) {
+                throw new RequestTimedOutException("lru_crawler metadump timed out");
+            }
+        } catch (InterruptedException e) {
+            throw new RequestTimedOutException("Interrupted waiting for lru_crawler metadump", e);
+        }
+        return result;
+    }
+
+    protected List<String> listAllKeysLegacy() {
+        List<String> result = new ArrayList<>();
+        Set<Integer> slabs = memcachedClient.getStats("items")
+                .entrySet().iterator().next()
+                .getValue().keySet().stream()
+                .filter(k -> k.matches("^items:[0-9]+:number$"))
+                .map(s -> s.split(":")[1])
+                .map(Integer::valueOf)
+                .collect(Collectors.toSet());
+
+        for (Integer slab : slabs) {
+            int used_chunks = Integer.parseInt(
+                    memcachedClient.getStats("slabs " + slab)
+                            .entrySet().iterator().next()
+                            .getValue().get(slab + ":used_chunks"));
+            Set<String> entries = memcachedClient.getStats("cachedump " + slab + " " + used_chunks)
+                    .entrySet().iterator().next().getValue().keySet()
+                    .stream().filter(e -> e.startsWith(memcacheProperties.getPrefix()))
+                    .collect(Collectors.toSet());
+            result.addAll(entries);
+        }
+        return Collections.unmodifiableList(result);
+    }
+
+    protected int submitAndCountSuccess(List<String> keys, List<OperationFuture<Boolean>> futures) {
+        int count = keys.size();
+        for (OperationFuture<Boolean> future : futures) {
+            if (!getAndWait("Error while revoking tokens on memcache server", () -> future).getStatus().isSuccess()) {
+                count--;
+            }
+        }
+        return count;
     }
 }

@@ -1,6 +1,6 @@
 /*
  * MIT Licence
- * Copyright (c) 2020 Simon Frankenberger
+ * Copyright (c) 2021 Simon Frankenberger
  *
  * Please see LICENCE.md for complete licence text.
  */
@@ -10,7 +10,11 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import eu.fraho.spring.securityJwt.base.config.*;
+import eu.fraho.spring.securityJwt.base.config.RefreshCookieProperties;
+import eu.fraho.spring.securityJwt.base.config.RefreshProperties;
+import eu.fraho.spring.securityJwt.base.config.TokenCookieProperties;
+import eu.fraho.spring.securityJwt.base.config.TokenHeaderProperties;
+import eu.fraho.spring.securityJwt.base.config.TokenProperties;
 import eu.fraho.spring.securityJwt.base.dto.AccessToken;
 import eu.fraho.spring.securityJwt.base.dto.JwtUser;
 import eu.fraho.spring.securityJwt.base.dto.RefreshToken;
@@ -29,7 +33,14 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.SecureRandom;
 import java.text.ParseException;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 @Component
 @Slf4j

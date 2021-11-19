@@ -1,6 +1,6 @@
 /*
  * MIT Licence
- * Copyright (c) 2020 Simon Frankenberger
+ * Copyright (c) 2021 Simon Frankenberger
  *
  * Please see LICENCE.md for complete licence text.
  */
@@ -35,7 +35,7 @@ public abstract class AbstractAuthControllerWithRefreshTest extends AbstractAuth
 
         String body = getMockMvc().perform(req)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse().getContentAsString();
 
         Assertions.assertTrue(body.contains("\"refreshToken\":{\""), "Refresh token was not generated");
@@ -53,7 +53,7 @@ public abstract class AbstractAuthControllerWithRefreshTest extends AbstractAuth
 
         getMockMvc().perform(req)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andReturn();
 
         // check double usage
@@ -95,7 +95,7 @@ public abstract class AbstractAuthControllerWithRefreshTest extends AbstractAuth
 
         getMockMvc().perform(req)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andReturn();
 
         // use second token
@@ -106,7 +106,7 @@ public abstract class AbstractAuthControllerWithRefreshTest extends AbstractAuth
 
         getMockMvc().perform(req)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andReturn();
     }
 
@@ -146,7 +146,7 @@ public abstract class AbstractAuthControllerWithRefreshTest extends AbstractAuth
 
         byte[] body = getMockMvc().perform(req)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andReturn()
                 .getResponse()
                 .getContentAsByteArray();

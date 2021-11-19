@@ -1,12 +1,16 @@
 /*
  * MIT Licence
- * Copyright (c) 2020 Simon Frankenberger
+ * Copyright (c) 2021 Simon Frankenberger
  *
  * Please see LICENCE.md for complete licence text.
  */
 package eu.fraho.spring.securityJwt.base.ut.service;
 
-import eu.fraho.spring.securityJwt.base.config.*;
+import eu.fraho.spring.securityJwt.base.config.RefreshCookieProperties;
+import eu.fraho.spring.securityJwt.base.config.RefreshProperties;
+import eu.fraho.spring.securityJwt.base.config.TokenCookieProperties;
+import eu.fraho.spring.securityJwt.base.config.TokenHeaderProperties;
+import eu.fraho.spring.securityJwt.base.config.TokenProperties;
 import eu.fraho.spring.securityJwt.base.dto.AccessToken;
 import eu.fraho.spring.securityJwt.base.dto.JwtUser;
 import eu.fraho.spring.securityJwt.base.dto.RefreshToken;

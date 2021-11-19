@@ -55,6 +55,24 @@ subprojects {
         testFixturesApi group: 'org.junit.jupiter', name: 'junit-jupiter', version: jupiterVersion
     }
 
+    dependencyManagement {
+        dependencies {
+            dependency group: 'org.springframework', name: 'spring-aop', version: '5.0.4.RELEASE'
+            dependency group: 'org.springframework', name: 'spring-aspects', version: '5.0.4.RELEASE'
+            dependency group: 'org.springframework', name: 'spring-beans', version: '5.0.4.RELEASE'
+            dependency group: 'org.springframework', name: 'spring-context', version: '5.0.4.RELEASE'
+            dependency group: 'org.springframework', name: 'spring-core', version: '5.0.4.RELEASE'
+            dependency group: 'org.springframework', name: 'spring-expression', version: '5.0.4.RELEASE'
+            dependency group: 'org.springframework', name: 'spring-jcl', version: '5.0.4.RELEASE'
+            dependency group: 'org.springframework', name: 'spring-jdbc', version: '5.0.4.RELEASE'
+            dependency group: 'org.springframework', name: 'spring-orm', version: '5.0.4.RELEASE'
+            dependency group: 'org.springframework', name: 'spring-test', version: '5.0.4.RELEASE'
+            dependency group: 'org.springframework', name: 'spring-tx', version: '5.0.4.RELEASE'
+            dependency group: 'org.springframework', name: 'spring-web', version: '5.0.4.RELEASE'
+            dependency group: 'org.springframework', name: 'spring-webmvc', version: '5.0.4.RELEASE'
+        }
+    }
+
     configurations.all {
         exclude group: 'junit', module: 'junit'
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
@@ -64,8 +82,8 @@ subprojects {
     apply plugin: 'jacoco'
     jacoco.toolVersion = jacocoVersion
     jacocoTestReport.reports {
-        xml.enabled = true
-        html.enabled = true
+        xml.required = true
+        html.required = true
     }
     check.dependsOn(jacocoTestReport)
 
@@ -128,7 +146,6 @@ subprojects {
     // Signature of artifacts
     signing {
         required = !rootProject.version.endsWith('-SNAPSHOT')
-        useGpgCmd()
         sign publishing.publications.mavenJava
     }
 
@@ -146,8 +163,8 @@ task jacocoRootReport(type: JacocoReport) {
             subprojects.jacocoTestReport.executionData
     )
     reports {
-        html.enabled = true
-        xml.enabled = true
+        html.required = true
+        xml.required = true
     }
     onlyIf = {
         true

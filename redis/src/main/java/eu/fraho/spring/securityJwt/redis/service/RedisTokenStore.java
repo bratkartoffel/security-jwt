@@ -1,6 +1,6 @@
 /*
  * MIT Licence
- * Copyright (c) 2020 Simon Frankenberger
+ * Copyright (c) 2021 Simon Frankenberger
  *
  * Please see LICENCE.md for complete licence text.
  */
@@ -17,9 +17,20 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import redis.clients.jedis.*;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.Pipeline;
+import redis.clients.jedis.Response;
+import redis.clients.jedis.Transaction;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 @SuppressWarnings("SpringJavaAutowiredMembersInspection")
 @Slf4j
@@ -69,31 +80,6 @@ public class RedisTokenStore implements RefreshTokenStore {
     public List<RefreshToken> listTokens(JwtUser user) {
         return listTokens().getOrDefault(user.getId(), Collections.emptyList());
     }
-
-    private <K, V> Map<K, V> zipToMap(List<K> keys, List<V> values) {
-        Iterator<K> keyIter = keys.iterator();
-        Iterator<V> valIter = values.iterator();
-        Map<K, V> result = new HashMap<>();
-        while (keyIter.hasNext() && valIter.hasNext()) {
-            K key = keyIter.next();
-            V val = valIter.next();
-
-            if (key != null && val != null) {
-                result.put(key, val);
-            }
-        }
-        return result;
-    }
-
-    private Map<String, String> listKeysWithValues(Jedis jedis) {
-        List<String> keys = new ArrayList<>(jedis.keys(redisProperties.getPrefix() + "*"));
-        if (keys.isEmpty()) {
-            return Collections.emptyMap();
-        }
-        List<String> values = jedis.mget(keys.toArray(new String[0]));
-        return zipToMap(keys, values);
-    }
-
 
     @Override
     public Map<Long, List<RefreshToken>> listTokens() {
@@ -178,5 +164,30 @@ public class RedisTokenStore implements RefreshTokenStore {
     @Autowired
     public void setUserDetailsService(@NonNull UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
+    }
+
+
+    protected <K, V> Map<K, V> zipToMap(List<K> keys, List<V> values) {
+        Iterator<K> keyIter = keys.iterator();
+        Iterator<V> valIter = values.iterator();
+        Map<K, V> result = new HashMap<>();
+        while (keyIter.hasNext() && valIter.hasNext()) {
+            K key = keyIter.next();
+            V val = valIter.next();
+
+            if (key != null && val != null) {
+                result.put(key, val);
+            }
+        }
+        return result;
+    }
+
+    protected Map<String, String> listKeysWithValues(Jedis jedis) {
+        List<String> keys = new ArrayList<>(jedis.keys(redisProperties.getPrefix() + "*"));
+        if (keys.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        List<String> values = jedis.mget(keys.toArray(new String[0]));
+        return zipToMap(keys, values);
     }
 }
