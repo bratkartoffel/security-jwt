@@ -144,9 +144,13 @@ subprojects {
     }
 
     // Signature of artifacts
-    signing {
-        required = !rootProject.version.endsWith('-SNAPSHOT')
-        sign publishing.publications.mavenJava
+    if (project.hasProperty('signing.keyId')) {
+        signing {
+            required = !rootProject.version.endsWith('-SNAPSHOT')
+            sign publishing.publications.mavenJava
+        }
+    } else {
+        logger.info("Disable signing of artifacts as no key is configured")
     }
 
     // do not try to print colors on stdout when running on jenkins
