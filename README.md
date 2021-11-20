@@ -129,7 +129,7 @@ in your project.
 * Configure your boot application to pick up our components (add "eu.fraho.spring.securityJwt" to the scanBasePackages
   field of your ```@SpringBootApplication```)
 * Optionally add the BouncyCastle Provider (e.g. within
-  the [main-Method](base/src/test/java/eu/fraho/spring/securityJwt/base/util/CreateEcdsaJwtKeys.java))
+  the [main-Method](base/src/testFixtures/java/eu/fraho/spring/securityJwt/base/util/CreateEcdsaJwtKeys.java))
   * **Hint:** This is required if you would like to use the ECDSA signature algorithm!
 * Optionally use my enhanced PasswordEncoder as a ```@Bean```
 * Optionally choose a refresh token store implementation and set it as ```fraho.jwt.refresh.cache-impl```
@@ -160,8 +160,8 @@ application you are strongly adviced to define a static key. Otherwise you will 
 service restart, thus requiring your clients to login again.
 
 I recommend using ECDSA for tokens (you can
-use [this](base/src/test/java/eu/fraho/spring/securityJwt/base/util/CreateEcdsaJwtKeys.java) class for that) and setting
-the ```algorithm``` field to something like ES256.
+use [this](base/src/testFixtures/java/eu/fraho/spring/securityJwt/base/util/CreateEcdsaJwtKeys.java) class for that) and
+setting the ```algorithm``` field to something like ES256.
 
 ## Token configuration (Prefix fraho.jwt.token)
 
@@ -224,7 +224,7 @@ gradlew.bat assemble
 * TravisCI has to pass before merging
 * Code coverage should stay about the same level (please write tests for new features!)
 * When writing new modules please use my abstract testclasses which provide a great base (
-  see [internal](internal/src/test/java/eu/fraho/spring/securityJwt/internal/service) for an example)
+  see [internal](internal/src/test/java/eu/fraho/spring/securityJwt/internal) for an example)
 
 # Releasing
 
