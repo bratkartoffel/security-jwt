@@ -23,18 +23,29 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
   integration-tests:
+    strategy:
+      matrix:
+        springBootVersion:
+          - 2.0.9.RELEASE
+          - 2.1.18.RELEASE
+          - 2.2.13.RELEASE
+          - 2.3.12.RELEASE
+          - 2.4.13
+          - 2.5.7
+          - 2.6.0
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
           repository: 'bratkartoffel/security-jwt-examples'
           ref: 'master'
+          fetch-depth: 1
           lfs: true
       - uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
-          java-version: '11'
+          java-version: '8'
           cache: 'gradle'
       - uses: niden/actions-memcached@v7
       - uses: supercharge/redis-github-action@1.2.0
-      - run: ./gradlew --no-daemon check
+      - run: ./gradlew --no-daemon -PspringBootVersion=${{ matrix.springBootVersion }} check
