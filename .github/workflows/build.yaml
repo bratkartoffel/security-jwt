@@ -60,4 +60,4 @@ jobs:
       - uses: niden/actions-memcached@v7
       - uses: supercharge/redis-github-action@1.2.0
       - run: ./gradlew --no-daemon -PspringBootVersion=${{ matrix.springBootVersion }} check
-      - run: ./gradlew starter-hibernate:dependencies | egrep '(:spring|:security-jwt)' | grep -v -- '->' | sed -e 's/^[+-\\| ]\+//' -e 's/ ([n\*])$//' | sort | uniq
+      - run: ./gradlew --no-daemon -PspringBootVersion=${{ matrix.springBootVersion }} starter-hibernate:dependencies | egrep '(:spring|:security-jwt)' | grep -v -- '->' | sed -e 's/^[+-\\| ]\+//' -e 's/ ([n\*])$//' | sort | uniq
