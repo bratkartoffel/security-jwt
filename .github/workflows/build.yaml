@@ -18,7 +18,7 @@ jobs:
           cache: 'gradle'
       - uses: niden/actions-memcached@v7
       - uses: supercharge/redis-github-action@1.2.0
-      - run: ./gradlew --no-daemon check
+      - run: ./gradlew --no-daemon check publishToMavenLocal
       - uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -34,6 +34,7 @@ jobs:
           - 2.5.7
           - 2.6.0
     runs-on: ubuntu-latest
+    needs: build
     steps:
       - uses: actions/checkout@v2
         with:
@@ -49,3 +50,4 @@ jobs:
       - uses: niden/actions-memcached@v7
       - uses: supercharge/redis-github-action@1.2.0
       - run: ./gradlew --no-daemon -PspringBootVersion=${{ matrix.springBootVersion }} check
+      - run: ./gradlew starter-hibernate:dependencies | egrep '(:spring|:security-jwt)' | grep -v -- '->' | sed -e 's/^[+-\\| ]\+//' -e 's/ ([n\*])$//' | sort | uniq
