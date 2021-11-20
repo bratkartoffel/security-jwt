@@ -16,6 +16,10 @@ jobs:
           distribution: 'adopt'
           java-version: '11'
           cache: 'gradle'
+      - uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ github.run_id }}
       - uses: niden/actions-memcached@v7
       - uses: supercharge/redis-github-action@1.2.0
       - run: ./gradlew --no-daemon check publishToMavenLocal
@@ -42,6 +46,12 @@ jobs:
           ref: 'master'
           fetch-depth: 1
           lfs: true
+      - uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-maven-${{ github.run_id }}
       - uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
