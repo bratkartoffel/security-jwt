@@ -22,3 +22,19 @@ jobs:
       - uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+  integration-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: 'bratkartoffel/security-jwt-examples'
+          ref: 'master'
+          lfs: true
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+          cache: 'gradle'
+      - uses: niden/actions-memcached@v7
+      - uses: supercharge/redis-github-action@1.2.0
+      - run: ./gradlew --no-daemon check
