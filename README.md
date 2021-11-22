@@ -1,5 +1,6 @@
 # Spring Security Addon for JWT
 
+[![Java CI](https://github.com/bratkartoffel/security-jwt/actions/workflows/build.yaml/badge.svg)](https://github.com/bratkartoffel/security-jwt/actions/workflows/build.yaml)
 [![Code Coverage](https://img.shields.io/codecov/c/github/bratkartoffel/security-jwt/develop.svg)](https://codecov.io/github/bratkartoffel/security-jwt?branch=develop)
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat)](http://doge.mit-license.org)
 [![Central Version](https://img.shields.io/maven-central/v/eu.fraho.spring/security-jwt-base)](https://mvnrepository.com/artifact/eu.fraho.spring)
