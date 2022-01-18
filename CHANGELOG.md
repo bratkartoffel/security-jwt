@@ -2,9 +2,9 @@
 
 ### [unreleased]
 * (all) upgrade bouncycastle to 1.70
-* (all) upgrade openapi to 1.6.2
+* (all) upgrade openapi to 1.6.4
 * (all) upgrade jackson to 2.13.1
-* (redis) upgrade jedis to 4.0.0
+* (redis) upgrade jedis to 4.0.1
 
 ### [4.5.0] (2021-11-19)
 * (all) make private methods in refresh tokenstore implementations protected to make the classes easier to extend
