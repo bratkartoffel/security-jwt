@@ -35,8 +35,8 @@ jobs:
           - 2.2.13.RELEASE
           - 2.3.12.RELEASE
           - 2.4.13
-          - 2.5.8
-          - 2.6.2
+          - 2.5.9
+          - 2.6.3
     runs-on: ubuntu-latest
     needs: build
     steps:
