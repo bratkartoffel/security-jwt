@@ -25,7 +25,6 @@ import java.util.Optional;
 @ExtendWith(SpringExtension.class)
 public class JwtTokenServiceTest {
     private JwtTokenService jwtTokenService;
-
     private UserDetailsService userDetailsService;
 
     @Test
@@ -43,20 +42,11 @@ public class JwtTokenServiceTest {
         Assertions.assertNotSame(userFromService1.get(), userFromService2.get(), "JwtUsers should be not the same instance");
     }
 
-    public JwtTokenService getJwtTokenService() {
-        return this.jwtTokenService;
-    }
-
     @Autowired
     public void setJwtTokenService(JwtTokenService jwtTokenService) {
         this.jwtTokenService = Objects.requireNonNull(jwtTokenService);
     }
 
-    public UserDetailsService getUserDetailsService() {
-        return this.userDetailsService;
-    }
-
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     public void setUserDetailsService(UserDetailsService userDetailsService) {
         this.userDetailsService = Objects.requireNonNull(userDetailsService);
