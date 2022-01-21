@@ -19,6 +19,8 @@ import eu.fraho.spring.securityJwt.base.dto.AccessToken;
 import eu.fraho.spring.securityJwt.base.dto.JwtUser;
 import eu.fraho.spring.securityJwt.base.dto.RefreshToken;
 import eu.fraho.spring.securityJwt.base.exceptions.FeatureNotConfiguredException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import java.security.SecureRandom;
 import java.text.ParseException;
 import java.time.ZonedDateTime;

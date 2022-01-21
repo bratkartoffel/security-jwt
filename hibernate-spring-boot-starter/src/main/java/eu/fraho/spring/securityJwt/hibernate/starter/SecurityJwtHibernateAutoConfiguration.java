@@ -11,6 +11,7 @@ import eu.fraho.spring.securityJwt.base.service.RefreshTokenStore;
 import eu.fraho.spring.securityJwt.base.starter.SecurityJwtBaseAutoConfiguration;
 import eu.fraho.spring.securityJwt.base.starter.SecurityJwtNoRefreshStoreAutoConfiguration;
 import eu.fraho.spring.securityJwt.hibernate.service.HibernateTokenStore;
+import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -19,8 +20,6 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.UserDetailsService;
-
-import javax.persistence.EntityManager;
 
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 @Configuration
