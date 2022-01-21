@@ -1,0 +1,5 @@
+eu.fraho.spring.securityJwt.base.config.JwtSecurityConfig
+eu.fraho.spring.securityJwt.base.starter.SecurityJwtBaseAutoConfiguration
+eu.fraho.spring.securityJwt.base.starter.SecurityJwtNoRefreshStoreAutoConfiguration
+eu.fraho.spring.securityJwt.base.starter.InstallBouncyCastleConfiguration
+eu.fraho.spring.securityJwt.base.starter.SecurityJwtPasswordAutoConfiguration

@@ -40,7 +40,7 @@ public class RefreshCookieProperties implements CookieProperties {
     /**
      * The cookie will only be sent to these domains.
      *
-     * @see javax.servlet.http.Cookie#setDomain(String)
+     * @see jakarta.servlet.http.Cookie#setDomain(String)
      */
 
     private String domain;
@@ -48,14 +48,14 @@ public class RefreshCookieProperties implements CookieProperties {
     /**
      * The cookie will not be accessible by client JavaScript if enabled (highly recommend)
      *
-     * @see javax.servlet.http.Cookie#setHttpOnly(boolean)
+     * @see jakarta.servlet.http.Cookie#setHttpOnly(boolean)
      */
     private boolean httpOnly = true;
 
     /**
      * The cookie will only be sent over an encrypted (https) connection (recommend)
      *
-     * @see javax.servlet.http.Cookie#setSecure(boolean)
+     * @see jakarta.servlet.http.Cookie#setSecure(boolean)
      */
     private boolean secure = true;
 
@@ -64,7 +64,7 @@ public class RefreshCookieProperties implements CookieProperties {
      * <p>
      * This path spec has to include the endpoint for refreshing tokens, otherwise this won't work!
      *
-     * @see javax.servlet.http.Cookie#setPath(String)
+     * @see jakarta.servlet.http.Cookie#setPath(String)
      */
 
     @NonNull

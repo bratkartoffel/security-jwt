@@ -1,2 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-eu.fraho.spring.securityJwt.hibernate.starter.SecurityJwtHibernateAutoConfiguration
