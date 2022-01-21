@@ -32,13 +32,9 @@ import java.util.Base64;
 
 public class CreateEcdsaJwtKeys {
     private static final String OUT_PUB_KEY = "build/pub.key";
-
     private static final String OUT_PRIV_KEY = "build/priv.key";
-
     private static final String OUT_PUB_JWK = "build/jwk_pub.json";
-
     private static final String OUT_PRIV_JWK = "build/jwk_priv.json";
-
     private static final Curve CURVE = Curve.P_256;
     private static final Logger log = LoggerFactory.getLogger(CreateEcdsaJwtKeys.class);
 

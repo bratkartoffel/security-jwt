@@ -21,7 +21,6 @@ import java.util.Objects;
 
 public abstract class AbstractAuthControllerWithRefreshTest extends AbstractAuthControllerTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
-
     private UserDetailsServiceTestImpl userDetailsService;
 
     @Test
