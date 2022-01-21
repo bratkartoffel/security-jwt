@@ -6,7 +6,6 @@
  */
 package eu.fraho.spring.securityJwt.base.config;
 
-import eu.fraho.spring.securityJwt.base.JwtAuthenticationEntryPoint;
 import eu.fraho.spring.securityJwt.base.JwtAuthenticationTokenFilter;
 import eu.fraho.spring.securityJwt.base.service.JwtTokenService;
 import lombok.AllArgsConstructor;
@@ -17,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -27,6 +27,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -42,8 +43,6 @@ public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
     private PasswordEncoder passwordEncoder;
 
     private JwtTokenService jwtTokenService;
-
-    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @NonNull
     @Override
@@ -78,7 +77,7 @@ public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
                 // we don't need CSRF because our token is invulnerable
                 .csrf().disable()
                 // use our unauthorized handler
-                .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 .and()
                 // don't create session
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -103,11 +102,5 @@ public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
     @NonNull
     public void setJwtTokenService(JwtTokenService jwtTokenService) {
         this.jwtTokenService = jwtTokenService;
-    }
-
-    @Autowired
-    @NonNull
-    public void setJwtAuthenticationEntryPoint(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
-        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
     }
 }
