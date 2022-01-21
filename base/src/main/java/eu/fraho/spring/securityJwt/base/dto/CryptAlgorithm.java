@@ -44,10 +44,10 @@ public enum CryptAlgorithm {
      */
     SHA512(false, true, "$6$", 16);
 
-    boolean insecure;
-    boolean roundsSupported;
-    String prefix;
-    int saltLength;
+    final boolean insecure;
+    final boolean roundsSupported;
+    final String prefix;
+    final int saltLength;
 
     CryptAlgorithm(boolean insecure, boolean roundsSupported, String prefix, int saltLength) {
         this.insecure = insecure;
