@@ -32,10 +32,6 @@ public class AbstractJwtServiceRefreshHibernateTest extends AbstractJwtTokenServ
         return refreshTokenStore;
     }
 
-    public RefreshTokenStore getRefreshTokenStore() {
-        return this.refreshTokenStore;
-    }
-
     @Autowired
     public void setRefreshTokenStore(RefreshTokenStore refreshTokenStore) {
         this.refreshTokenStore = Objects.requireNonNull(refreshTokenStore);

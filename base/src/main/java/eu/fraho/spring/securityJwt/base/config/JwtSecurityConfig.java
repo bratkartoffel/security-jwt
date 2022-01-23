@@ -39,9 +39,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @AllArgsConstructor
 public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
-
     private PasswordEncoder passwordEncoder;
-
     private JwtTokenService jwtTokenService;
 
     @NonNull
