@@ -39,9 +39,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class HibernateTokenStore implements RefreshTokenStore {
     private RefreshProperties refreshProperties;
-
     private UserDetailsService userDetailsService;
-
     private EntityManager entityManager;
 
     @Override
