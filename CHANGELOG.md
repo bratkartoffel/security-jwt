@@ -4,6 +4,7 @@
 * (all) upgrade bouncycastle to 1.70
 * (all) upgrade openapi to 1.6.5
 * (all) upgrade jackson to 2.13.1
+* (all) upgrade nimbus-jose-jwt to 9.16
 * (redis) upgrade jedis to 4.0.1
 * (base) remove custom JwtAuthenticationEntryPoint, use spring provided class
 
