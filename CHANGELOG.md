@@ -2,7 +2,7 @@
 
 ### [unreleased]
 * (all) upgrade bouncycastle to 1.70
-* (all) upgrade openapi to 1.6.3
+* (all) upgrade openapi to 1.6.5
 * (all) upgrade jackson to 2.13.1
 * (redis) upgrade jedis to 4.0.1
 
