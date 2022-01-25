@@ -60,7 +60,7 @@ public class TokenProperties implements InitializingBean {
 
     static {
         String s = System.getProperties().getProperty("eu.fraho.spring.securityJwt.config.TokenProperties.loadEager", "true");
-        loadEager = Boolean.valueOf(s);
+        loadEager = Boolean.parseBoolean(s);
     }
 
     /**

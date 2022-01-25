@@ -25,9 +25,7 @@ public class RegisterRefreshTokenStore implements InitializingBean {
     public static final String BEAN_NAME = "refreshTokenStore";
 
     private ConfigurableListableBeanFactory factory;
-
     private RefreshProperties refreshProperties;
-
     private BeanDefinitionRegistry registry;
 
     @Override

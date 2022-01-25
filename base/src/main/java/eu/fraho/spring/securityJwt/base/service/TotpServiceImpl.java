@@ -82,7 +82,7 @@ public class TotpServiceImpl implements TotpService {
     public String generateSecret() {
         final byte[] secret = new byte[totpProperties.getLength()];
         random.nextBytes(secret);
-        log.debug("Generated secret with length=", secret.length);
+        log.debug("Generated secret with length={}", secret.length);
         return base32.encodeToString(secret);
     }
 

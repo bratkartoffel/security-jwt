@@ -11,10 +11,10 @@ import eu.fraho.spring.securityJwt.base.dto.AccessToken;
 import eu.fraho.spring.securityJwt.base.dto.AuthenticationResponse;
 import eu.fraho.spring.securityJwt.base.it.spring.TestApiApplication;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -22,39 +22,20 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-
-import javax.servlet.Filter;
-import java.util.Objects;
 
 @SpringBootTest(classes = TestApiApplication.class)
 @ExtendWith(SpringExtension.class)
+@AutoConfigureMockMvc
 public class SecuredControllerTest {
     public static final ObjectMapper mapper = new ObjectMapper();
 
     public static final String AUTH_LOGIN = "/auth/login";
-
     public static final String AUTH_REFRESH = "/auth/refresh";
-
     public static final String API_ADMIN = "/api/admin";
-
     public static final String API_USER = "/api/user";
-
     public static final String HELLO_WORLD = "Hello world!";
 
-    private WebApplicationContext context;
-
-    private Filter springSecurityFilterChain;
-
     private MockMvc mockMvc;
-
-    @BeforeEach
-    public void setUp() {
-        if (mockMvc == null) {
-            mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilter(springSecurityFilterChain).build();
-        }
-    }
 
     @Test
     public void testLoggedInRequestWrongRole() throws Exception {
@@ -139,25 +120,8 @@ public class SecuredControllerTest {
         return token;
     }
 
-    public WebApplicationContext getContext() {
-        return this.context;
-    }
-
     @Autowired
-    public void setContext(WebApplicationContext context) {
-        this.context = Objects.requireNonNull(context);
-    }
-
-    public Filter getSpringSecurityFilterChain() {
-        return this.springSecurityFilterChain;
-    }
-
-    @Autowired
-    public void setSpringSecurityFilterChain(Filter springSecurityFilterChain) {
-        this.springSecurityFilterChain = Objects.requireNonNull(springSecurityFilterChain);
-    }
-
-    public MockMvc getMockMvc() {
-        return this.mockMvc;
+    public void setMockMvc(MockMvc mockMvc) {
+        this.mockMvc = mockMvc;
     }
 }

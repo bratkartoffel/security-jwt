@@ -47,19 +47,12 @@ import java.util.UUID;
 @NoArgsConstructor
 public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     private final SecureRandom random = new SecureRandom();
-
     private TokenProperties tokenProperties;
-
     private RefreshProperties refreshProperties;
-
     private TokenCookieProperties tokenCookieProperties;
-
     private TokenHeaderProperties tokenHeaderProperties;
-
     private RefreshCookieProperties refreshCookieProperties;
-
     private ObjectFactory<JwtUser> jwtUser;
-
     private RefreshTokenStore refreshTokenStore;
 
     @Override
@@ -218,7 +211,6 @@ public class JwtTokenServiceImpl implements JwtTokenService, InitializingBean {
     }
 
     @Override
-
     public RefreshToken generateRefreshToken(JwtUser user) {
         byte[] data = new byte[refreshProperties.getLength()];
         random.nextBytes(data);

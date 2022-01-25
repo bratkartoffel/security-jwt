@@ -6,7 +6,6 @@
  */
 package eu.fraho.spring.securityJwt.base.starter;
 
-import eu.fraho.spring.securityJwt.base.JwtAuthenticationEntryPoint;
 import eu.fraho.spring.securityJwt.base.config.JwtSecurityConfig;
 import eu.fraho.spring.securityJwt.base.config.RefreshCookieProperties;
 import eu.fraho.spring.securityJwt.base.config.RefreshProperties;
@@ -112,12 +111,6 @@ public class SecurityJwtBaseAutoConfiguration {
     }
 
     @Bean
-    public JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint() {
-        log.debug("Register JwtAuthenticationEntryPoint");
-        return new JwtAuthenticationEntryPoint();
-    }
-
-    @Bean
     @ConditionalOnMissingBean
     public PasswordEncoder passwordEncoder() {
         log.debug("Register BCryptPasswordEncoder");
@@ -188,14 +181,12 @@ public class SecurityJwtBaseAutoConfiguration {
     @Bean
     public JwtSecurityConfig webSecurityConfig(final UserDetailsService userDetailsService,
                                                final PasswordEncoder passwordEncoder,
-                                               final JwtTokenService jwtTokenService,
-                                               final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
+                                               final JwtTokenService jwtTokenService) {
         log.debug("Register JwtSecurityConfig");
         JwtSecurityConfig config = new JwtSecurityConfig();
         config.setUserDetailsService(userDetailsService);
         config.setPasswordEncoder(passwordEncoder);
         config.setJwtTokenService(jwtTokenService);
-        config.setJwtAuthenticationEntryPoint(jwtAuthenticationEntryPoint);
         return config;
     }
 }

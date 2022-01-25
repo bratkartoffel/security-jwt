@@ -25,9 +25,7 @@ public class UserDetailsServiceTestImpl implements UserDetailsService {
     public static final String BASE32_TOTP = "MZXW6YTBOI======";
 
     private final AtomicBoolean apiAccessAllowed = new AtomicBoolean(true);
-
     private PasswordEncoder passwordEncoder;
-
     private ObjectFactory<JwtUser> jwtUser;
 
     @Override

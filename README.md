@@ -1,6 +1,6 @@
 # Spring Security Addon for JWT
 
-[![Build Status](https://travis-ci.org/bratkartoffel/security-jwt.svg?branch=develop)](https://travis-ci.org/bratkartoffel/security-jwt)
+[![Java CI](https://github.com/bratkartoffel/security-jwt/actions/workflows/build.yaml/badge.svg)](https://github.com/bratkartoffel/security-jwt/actions/workflows/build.yaml)
 [![Code Coverage](https://img.shields.io/codecov/c/github/bratkartoffel/security-jwt/develop.svg)](https://codecov.io/github/bratkartoffel/security-jwt?branch=develop)
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat)](http://doge.mit-license.org)
 [![Central Version](https://img.shields.io/maven-central/v/eu.fraho.spring/security-jwt-base)](https://mvnrepository.com/artifact/eu.fraho.spring)
@@ -49,13 +49,13 @@ should be sufficient for the most use cases.
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-base</artifactId>
-        <version>4.5.0</version>
+        <version>4.5.1</version>
     </dependency>
     <!-- or -->
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-base-spring-boot-starter</artifactId>
-        <version>4.5.0</version>
+        <version>4.5.1</version>
     </dependency>
 </dependencies>
 ```
@@ -68,27 +68,27 @@ When you want to add refresh token support, then choose one of the following dep
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-internal</artifactId>
-        <version>4.5.0</version>
+        <version>4.5.1</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-memcache</artifactId>
-        <version>4.5.0</version>
+        <version>4.5.1</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-hibernate</artifactId>
-        <version>4.5.0</version>
+        <version>4.5.1</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-redis</artifactId>
-        <version>4.5.0</version>
+        <version>4.5.1</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-files</artifactId>
-        <version>4.5.0</version>
+        <version>4.5.1</version>
     </dependency>
 </dependencies>
 ```
@@ -130,7 +130,7 @@ in your project.
 * Configure your boot application to pick up our components (add "eu.fraho.spring.securityJwt" to the scanBasePackages
   field of your ```@SpringBootApplication```)
 * Optionally add the BouncyCastle Provider (e.g. within
-  the [main-Method](base/src/test/java/eu/fraho/spring/securityJwt/base/util/CreateEcdsaJwtKeys.java))
+  the [main-Method](base/src/testFixtures/java/eu/fraho/spring/securityJwt/base/util/CreateEcdsaJwtKeys.java))
   * **Hint:** This is required if you would like to use the ECDSA signature algorithm!
 * Optionally use my enhanced PasswordEncoder as a ```@Bean```
 * Optionally choose a refresh token store implementation and set it as ```fraho.jwt.refresh.cache-impl```
@@ -161,8 +161,8 @@ application you are strongly adviced to define a static key. Otherwise you will 
 service restart, thus requiring your clients to login again.
 
 I recommend using ECDSA for tokens (you can
-use [this](base/src/test/java/eu/fraho/spring/securityJwt/base/util/CreateEcdsaJwtKeys.java) class for that) and setting
-the ```algorithm``` field to something like ES256.
+use [this](base/src/testFixtures/java/eu/fraho/spring/securityJwt/base/util/CreateEcdsaJwtKeys.java) class for that) and
+setting the ```algorithm``` field to something like ES256.
 
 ## Token configuration (Prefix fraho.jwt.token)
 
@@ -225,15 +225,17 @@ gradlew.bat assemble
 * TravisCI has to pass before merging
 * Code coverage should stay about the same level (please write tests for new features!)
 * When writing new modules please use my abstract testclasses which provide a great base (
-  see [internal](internal/src/test/java/eu/fraho/spring/securityJwt/internal/service) for an example)
+  see [internal](internal/src/test/java/eu/fraho/spring/securityJwt/internal) for an example)
 
 # Releasing
 
+Releasing is done with the default gradle tasks:
+
 ```bash
 # to local repository:
-./gradlew install
+./gradlew publishToMavenLocal
 # to central:
-./gradlew -Prelease check uploadArchives
+./gradlew publish
 ```
 
 # JWT Request Flow

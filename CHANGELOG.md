@@ -3,6 +3,14 @@
 ### [unreleased]
 * no changes yet
 
+### [4.5.1] (2022-01-25)
+* (all) upgrade bouncycastle to 1.70
+* (all) upgrade openapi to 1.6.5
+* (all) upgrade jackson to 2.13.1
+* (all) upgrade nimbus-jose-jwt to 9.16
+* (redis) upgrade jedis to 4.0.1
+* (base) remove custom JwtAuthenticationEntryPoint, use spring provided class
+
 ### [4.5.0] (2021-11-19)
 * (all) make private methods in refresh tokenstore implementations protected to make the classes easier to extend
 * (all) make compatible with spring bot 2.0+ again
@@ -135,6 +143,7 @@
 
 
 [unreleased]: https://github.com/bratkartoffel/security-jwt/compare/4.5.0...develop
+[4.5.1]: https://github.com/bratkartoffel/security-jwt/compare/4.5.0...4.5.1
 [4.5.0]: https://github.com/bratkartoffel/security-jwt/compare/4.4.2...4.5.0
 [4.4.2]: https://github.com/bratkartoffel/security-jwt/compare/4.4.1...4.4.2
 [4.4.1]: https://github.com/bratkartoffel/security-jwt/compare/4.4.0...4.4.1

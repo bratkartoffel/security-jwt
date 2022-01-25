@@ -43,7 +43,7 @@ public class JwtAuthenticationTokenFilterTest {
     @Test
     public void testRegularAuthentication() throws ServletException, IOException, ReflectiveOperationException {
         JwtTokenService service = getService();
-        Mockito.when(service.getAccessToken(Mockito.any())).thenReturn(Optional.of("foobar"));
+        Mockito.when(service.getAccessToken(Mockito.any(HttpServletRequest.class))).thenReturn(Optional.of("foobar"));
         Mockito.when(service.parseUser(Mockito.any())).thenReturn(Optional.of(new JwtUser()));
 
         FilterChain chain = Mockito.mock(FilterChain.class);
@@ -62,7 +62,7 @@ public class JwtAuthenticationTokenFilterTest {
     @Test
     public void testNoTokenPresent() throws ServletException, IOException, ReflectiveOperationException {
         JwtTokenService service = getService();
-        Mockito.when(service.getAccessToken(Mockito.any())).thenReturn(Optional.empty());
+        Mockito.when(service.getAccessToken(Mockito.any(HttpServletRequest.class))).thenReturn(Optional.empty());
 
         FilterChain chain = Mockito.mock(FilterChain.class);
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
@@ -80,7 +80,7 @@ public class JwtAuthenticationTokenFilterTest {
     @Test
     public void testParseFailed() throws ServletException, IOException, ReflectiveOperationException {
         JwtTokenService service = getService();
-        Mockito.when(service.getAccessToken(Mockito.any())).thenReturn(Optional.of("foobar"));
+        Mockito.when(service.getAccessToken(Mockito.any(HttpServletRequest.class))).thenReturn(Optional.of("foobar"));
         Mockito.when(service.parseUser(Mockito.any())).thenReturn(Optional.empty());
 
         FilterChain chain = Mockito.mock(FilterChain.class);
