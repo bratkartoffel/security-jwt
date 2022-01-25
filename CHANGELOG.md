@@ -1,6 +1,9 @@
 # Changelog
 
 ### [unreleased]
+* no changes yet
+
+### [4.5.1] (2022-01-25)
 * (all) upgrade bouncycastle to 1.70
 * (all) upgrade openapi to 1.6.5
 * (all) upgrade jackson to 2.13.1
@@ -140,6 +143,7 @@
 
 
 [unreleased]: https://github.com/bratkartoffel/security-jwt/compare/4.5.0...develop
+[4.5.1]: https://github.com/bratkartoffel/security-jwt/compare/4.5.0...4.5.1
 [4.5.0]: https://github.com/bratkartoffel/security-jwt/compare/4.4.2...4.5.0
 [4.4.2]: https://github.com/bratkartoffel/security-jwt/compare/4.4.1...4.4.2
 [4.4.1]: https://github.com/bratkartoffel/security-jwt/compare/4.4.0...4.4.1

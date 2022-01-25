@@ -49,13 +49,13 @@ should be sufficient for the most use cases.
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-base</artifactId>
-        <version>4.5.0</version>
+        <version>4.5.1</version>
     </dependency>
     <!-- or -->
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-base-spring-boot-starter</artifactId>
-        <version>4.5.0</version>
+        <version>4.5.1</version>
     </dependency>
 </dependencies>
 ```
@@ -68,27 +68,27 @@ When you want to add refresh token support, then choose one of the following dep
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-internal</artifactId>
-        <version>4.5.0</version>
+        <version>4.5.1</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-memcache</artifactId>
-        <version>4.5.0</version>
+        <version>4.5.1</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-hibernate</artifactId>
-        <version>4.5.0</version>
+        <version>4.5.1</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-redis</artifactId>
-        <version>4.5.0</version>
+        <version>4.5.1</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-files</artifactId>
-        <version>4.5.0</version>
+        <version>4.5.1</version>
     </dependency>
 </dependencies>
 ```
@@ -229,11 +229,13 @@ gradlew.bat assemble
 
 # Releasing
 
+Releasing is done with the default gradle tasks:
+
 ```bash
 # to local repository:
-./gradlew install
+./gradlew publishToMavenLocal
 # to central:
-./gradlew -Prelease check uploadArchives
+./gradlew publish
 ```
 
 # JWT Request Flow
