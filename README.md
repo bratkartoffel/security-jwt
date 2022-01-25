@@ -229,11 +229,13 @@ gradlew.bat assemble
 
 # Releasing
 
+Releasing is done with the default gradle tasks:
+
 ```bash
 # to local repository:
-./gradlew install
+./gradlew publishToMavenLocal
 # to central:
-./gradlew -Prelease check uploadArchives
+./gradlew publish
 ```
 
 # JWT Request Flow
