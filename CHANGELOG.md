@@ -1,7 +1,9 @@
 # Changelog
 
 ### [unreleased]
-* no changes yet
+* (all) upgrade openapi to 1.6.6
+* (all) upgrade nimbus-jose-jwt to 9.19
+* (redis) upgrade jedis to 4.1.1
 
 ### [4.5.1] (2022-01-25)
 * (all) upgrade bouncycastle to 1.70
