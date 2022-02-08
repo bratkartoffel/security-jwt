@@ -1,6 +1,9 @@
 # Changelog
 
 ### [unreleased]
+* no changes yet
+
+### [4.5.2] (2022-02-08)
 * (all) upgrade openapi to 1.6.6
 * (all) upgrade nimbus-jose-jwt to 9.19
 * (redis) upgrade jedis to 4.1.1
@@ -144,7 +147,8 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/4.5.0...develop
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/4.5.2...develop
+[4.5.2]: https://github.com/bratkartoffel/security-jwt/compare/4.5.1...4.5.2
 [4.5.1]: https://github.com/bratkartoffel/security-jwt/compare/4.5.0...4.5.1
 [4.5.0]: https://github.com/bratkartoffel/security-jwt/compare/4.4.2...4.5.0
 [4.4.2]: https://github.com/bratkartoffel/security-jwt/compare/4.4.1...4.4.2
