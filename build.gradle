@@ -176,15 +176,17 @@ task jacocoRootReport(type: JacocoReport) {
 }
 
 // dependencyUpdates should only suggest released versions
-dependencyUpdates.resolutionStrategy {
-    componentSelection { rules ->
-        rules.all { ComponentSelection selection ->
-            boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm', 'preview'].any { qualifier ->
-                selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
-            }
-            if (rejected) {
-                selection.reject('Release candidate')
-            }
-        }
+static boolean isStable(String version) {
+    boolean result = ['alpha', 'beta', 'rc', 'cr', 'm', 'preview', 'snapshot'].any {
+        version ==~ /(?i).*[.-]$it[.\-\d]*/
+    }
+    return !result
+}
+
+tasks.named("dependencyUpdates").configure {
+    gradleReleaseChannel = 'current'
+    revision = 'integration'
+    rejectVersionIf {
+        !isStable(it.candidate.version) && isStable(it.currentVersion)
     }
 }
