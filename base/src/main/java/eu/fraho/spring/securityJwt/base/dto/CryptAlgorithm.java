@@ -35,6 +35,11 @@ public enum CryptAlgorithm {
     MD5(true, false, "$1$", 8),
 
     /**
+     * Use blowfish based crypt (2a, rounds supported)
+     */
+    BLOWFISH(false, false, "$2a$", 0),
+
+    /**
      * Use SHA2-256 based crypt (rounds supported)
      */
     SHA256(false, true, "$5$", 16),

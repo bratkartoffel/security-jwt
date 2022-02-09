@@ -1,7 +1,7 @@
 # Changelog
 
 ### [unreleased]
-* no changes yet
+* (base) extend CryptPasswordEncoder to also handle bcrypt ($2a) hashes
 
 ### [4.5.2] (2022-02-08)
 * (all) upgrade openapi to 1.6.6
