@@ -47,7 +47,7 @@ public class CryptProperties implements InitializingBean {
                     10_000, rounds, 100_000_000, 50_000);
             rounds = 50_000;
         }
-        if (CryptAlgorithm.BLOWFISH.equals(algorithm) && (cost < 12 || cost > 19)) {
+        if (CryptAlgorithm.BLOWFISH.equals(algorithm) && (cost < 10 || cost > 19)) {
             log.warn("Encryption cost out of bounds ({} <= {} <= {}), forcing to default ({})",
                     10, cost, 19, 12);
             cost = 12;
