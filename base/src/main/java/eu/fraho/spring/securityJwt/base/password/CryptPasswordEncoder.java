@@ -1,6 +1,6 @@
 /*
  * MIT Licence
- * Copyright (c) 2021 Simon Frankenberger
+ * Copyright (c) 2022 Simon Frankenberger
  *
  * Please see LICENCE.md for complete licence text.
  */
@@ -14,23 +14,21 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.Crypt;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Base64.Encoder;
-import java.util.Random;
 
 @Component
 @Slf4j
 @NoArgsConstructor
 @AllArgsConstructor
 public class CryptPasswordEncoder implements PasswordEncoder {
-    private final Random random = new SecureRandom();
-
+    private final SecureRandom random = new SecureRandom();
     private final Encoder encoder = Base64.getUrlEncoder();
-
     private CryptProperties cryptProperties;
 
     private static boolean slowEquals(CharSequence a, CharSequence b) {
@@ -46,12 +44,16 @@ public class CryptPasswordEncoder implements PasswordEncoder {
     public String encode(CharSequence rawPassword) {
         final String cryptParam;
         CryptAlgorithm algorithm = cryptProperties.getAlgorithm();
-        if (algorithm.isRoundsSupported()) {
-            cryptParam = String.format("%srounds=%d$%s$", algorithm.getPrefix(), cryptProperties.getRounds(), generateSalt());
+        if (CryptAlgorithm.BLOWFISH.equals(algorithm)) {
+            cryptParam = BCrypt.gensalt(cryptProperties.getCost(), random);
+            log.trace("Encoding password with param={}", cryptParam);
+            return BCrypt.hashpw(rawPassword.toString(), cryptParam);
+        } else if (algorithm.isRoundsSupported()) {
+            cryptParam = String.format("%srounds=%d$%s$", algorithm.getPrefix(), cryptProperties.getRounds(), generateSalt(algorithm));
         } else if (CryptAlgorithm.DES.equals(algorithm)) {
-            cryptParam = generateSalt();
+            cryptParam = generateSalt(algorithm);
         } else {
-            cryptParam = String.format("%s%s$", algorithm.getPrefix(), generateSalt());
+            cryptParam = String.format("%s%s$", algorithm.getPrefix(), generateSalt(algorithm));
         }
         log.trace("Encoding password with param={}", cryptParam);
         return Crypt.crypt(rawPassword.toString(), cryptParam);
@@ -59,12 +61,17 @@ public class CryptPasswordEncoder implements PasswordEncoder {
 
     @Override
     public boolean matches(CharSequence rawPassword, String encodedPassword) {
-        return rawPassword != null && encodedPassword != null
-                && slowEquals(encodedPassword, Crypt.crypt(rawPassword.toString(), encodedPassword));
+        if (rawPassword == null || encodedPassword == null) {
+            return false;
+        }
+        if (encodedPassword.startsWith(CryptAlgorithm.BLOWFISH.getPrefix())) {
+            return BCrypt.checkpw(rawPassword.toString(), encodedPassword);
+        } else {
+            return slowEquals(encodedPassword, Crypt.crypt(rawPassword.toString(), encodedPassword));
+        }
     }
 
-    protected String generateSalt() {
-        CryptAlgorithm algorithm = cryptProperties.getAlgorithm();
+    protected String generateSalt(CryptAlgorithm algorithm) {
         final byte[] bytes = new byte[algorithm.getSaltLength() * 2];
         random.nextBytes(bytes);
         String salt = encoder.encodeToString(bytes);

@@ -1,6 +1,6 @@
 /*
  * MIT Licence
- * Copyright (c) 2021 Simon Frankenberger
+ * Copyright (c) 2022 Simon Frankenberger
  *
  * Please see LICENCE.md for complete licence text.
  */
@@ -33,6 +33,11 @@ public enum CryptAlgorithm {
      */
     @Deprecated
     MD5(true, false, "$1$", 8),
+
+    /**
+     * Use blowfish based crypt (2a, rounds supported)
+     */
+    BLOWFISH(false, false, "$2a$", 0),
 
     /**
      * Use SHA2-256 based crypt (rounds supported)
