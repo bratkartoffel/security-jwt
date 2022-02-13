@@ -1,6 +1,9 @@
 # Changelog
 
 ### [unreleased]
+* no changes yet
+
+### [4.6.0] (2022-02-13)
 * (base) extend CryptPasswordEncoder to also handle bcrypt ($2a) hashes
 
 ### [4.5.2] (2022-02-08)
@@ -147,7 +150,8 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/4.5.2...develop
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/4.6.0...develop
+[4.6.0]: https://github.com/bratkartoffel/security-jwt/compare/4.5.2...4.6.0
 [4.5.2]: https://github.com/bratkartoffel/security-jwt/compare/4.5.1...4.5.2
 [4.5.1]: https://github.com/bratkartoffel/security-jwt/compare/4.5.0...4.5.1
 [4.5.0]: https://github.com/bratkartoffel/security-jwt/compare/4.4.2...4.5.0
