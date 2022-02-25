@@ -1,6 +1,9 @@
 # Changelog
 
 ### [unreleased]
+* no changes yet
+
+### [4.6.1] (2022-02-25)
 * (all) remove runtime dependency on mockito (used for tests only of course)
 * (all) upgrade nimbus-jose-jwt to 9.20
 
