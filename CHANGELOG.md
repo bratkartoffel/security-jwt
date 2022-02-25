@@ -1,7 +1,7 @@
 # Changelog
 
 ### [unreleased]
-* no changes yet
+* (base) remove runtime dependency on mockito (used for tests only of course)
 
 ### [4.6.0] (2022-02-13)
 * (base) extend CryptPasswordEncoder to also handle bcrypt ($2a) hashes
