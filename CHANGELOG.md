@@ -1,7 +1,8 @@
 # Changelog
 
 ### [unreleased]
-* (base) remove runtime dependency on mockito (used for tests only of course)
+* (all) remove runtime dependency on mockito (used for tests only of course)
+* (all) upgrade nimbus-jose-jwt to 9.20
 
 ### [4.6.0] (2022-02-13)
 * (base) extend CryptPasswordEncoder to also handle bcrypt ($2a) hashes
