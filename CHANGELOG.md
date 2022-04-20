@@ -157,7 +157,8 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/4.6.0...develop
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/4.6.1...develop
+[4.6.1]: https://github.com/bratkartoffel/security-jwt/compare/4.6.0...4.6.1
 [4.6.0]: https://github.com/bratkartoffel/security-jwt/compare/4.5.2...4.6.0
 [4.5.2]: https://github.com/bratkartoffel/security-jwt/compare/4.5.1...4.5.2
 [4.5.1]: https://github.com/bratkartoffel/security-jwt/compare/4.5.0...4.5.1
