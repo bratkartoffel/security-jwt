@@ -37,9 +37,9 @@ jobs:
           - 2.2.13.RELEASE
           - 2.3.12.RELEASE
           - 2.4.13
-          - 2.5.10
-          - 2.6.4
-          - 2.7.0-M2
+          - 2.5.14
+          - 2.6.8
+          - 2.7.0
           # 3.0.0 will not be supported for now due to:
           # * requires java 17
           # * needs other imports for servlet classes (javax.servlet -> jakarta.servlet)

@@ -1,7 +1,10 @@
 # Changelog
 
 ### [unreleased]
-* no changes yet
+* (all) upgrade jackson to 2.13.3
+* (all) upgrade nimbus-jose-jwt to 9.22
+* (all) upgrade openapi to 1.6.8
+* (redis) upgrade jedis to 4.2.3
 
 ### [4.6.1] (2022-02-25)
 * (all) remove runtime dependency on mockito (used for tests only of course)
@@ -154,7 +157,8 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/4.6.0...develop
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/4.6.1...develop
+[4.6.1]: https://github.com/bratkartoffel/security-jwt/compare/4.6.0...4.6.1
 [4.6.0]: https://github.com/bratkartoffel/security-jwt/compare/4.5.2...4.6.0
 [4.5.2]: https://github.com/bratkartoffel/security-jwt/compare/4.5.1...4.5.2
 [4.5.1]: https://github.com/bratkartoffel/security-jwt/compare/4.5.0...4.5.1
