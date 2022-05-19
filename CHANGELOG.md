@@ -1,6 +1,9 @@
 # Changelog
 
 ### [unreleased]
+* no changes yet
+
+### [4.6.2] (2022-05-19)
 * (all) upgrade jackson to 2.13.3
 * (all) upgrade nimbus-jose-jwt to 9.22
 * (all) upgrade openapi to 1.6.8
@@ -157,7 +160,8 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/4.6.1...develop
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/4.6.2...develop
+[4.6.2]: https://github.com/bratkartoffel/security-jwt/compare/4.6.1...4.6.2
 [4.6.1]: https://github.com/bratkartoffel/security-jwt/compare/4.6.0...4.6.1
 [4.6.0]: https://github.com/bratkartoffel/security-jwt/compare/4.5.2...4.6.0
 [4.5.2]: https://github.com/bratkartoffel/security-jwt/compare/4.5.1...4.5.2
