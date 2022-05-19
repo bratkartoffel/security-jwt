@@ -1,10 +1,10 @@
 # Changelog
 
 ### [unreleased]
-* (all) upgrade jackson to 2.13.2
-* (all) upgrade nimbus-jose-jwt to 9.21.1
-* (all) upgrade openapi to 1.6.7
-* (redis) upgrade jedis to 4.2.2
+* (all) upgrade jackson to 2.13.3
+* (all) upgrade nimbus-jose-jwt to 9.22
+* (all) upgrade openapi to 1.6.8
+* (redis) upgrade jedis to 4.2.3
 
 ### [4.6.1] (2022-02-25)
 * (all) remove runtime dependency on mockito (used for tests only of course)
