@@ -1,7 +1,10 @@
 # Changelog
 
 ### [unreleased]
-* no changes yet
+* (all) upgrade jackson to 2.13.4
+* (all) upgrade  nimbus-jose-jwt to 9.25.6
+* (all) upgrade openapi to 1.6.12
+* (redis) upgrade jedis to 4.3.1
 
 ### [4.6.2] (2022-05-19)
 * (all) upgrade jackson to 2.13.3
