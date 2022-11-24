@@ -6,7 +6,6 @@
  */
 package eu.fraho.spring.securityJwt.base.starter;
 
-import eu.fraho.spring.securityJwt.base.config.JwtSecurityConfig;
 import eu.fraho.spring.securityJwt.base.config.RefreshCookieProperties;
 import eu.fraho.spring.securityJwt.base.config.RefreshProperties;
 import eu.fraho.spring.securityJwt.base.config.TokenCookieProperties;
@@ -25,7 +24,6 @@ import eu.fraho.spring.securityJwt.base.service.RefreshServiceImpl;
 import eu.fraho.spring.securityJwt.base.service.TotpService;
 import eu.fraho.spring.securityJwt.base.service.TotpServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -35,17 +33,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.BeanIds;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @AutoConfigureBefore(SecurityAutoConfiguration.class)
-@EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+@EnableMethodSecurity(securedEnabled = true)
 @Slf4j
 public class SecurityJwtBaseAutoConfiguration {
     @Bean
@@ -72,11 +67,6 @@ public class SecurityJwtBaseAutoConfiguration {
     public RefreshProperties refreshProperties() {
         log.debug("Register RefreshProperties");
         return new RefreshProperties();
-    }
-
-    @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
-    public AuthenticationManager authenticationManagerBean(@Autowired JwtSecurityConfig config) throws Exception {
-        return config.authenticationManagerBean();
     }
 
     @Bean
@@ -176,17 +166,5 @@ public class SecurityJwtBaseAutoConfiguration {
         controller.setTokenCookieProperties(tokenCookieProperties);
         controller.setRefreshCookieProperties(refreshCookieProperties);
         return controller;
-    }
-
-    @Bean
-    public JwtSecurityConfig webSecurityConfig(final UserDetailsService userDetailsService,
-                                               final PasswordEncoder passwordEncoder,
-                                               final JwtTokenService jwtTokenService) {
-        log.debug("Register JwtSecurityConfig");
-        JwtSecurityConfig config = new JwtSecurityConfig();
-        config.setUserDetailsService(userDetailsService);
-        config.setPasswordEncoder(passwordEncoder);
-        config.setJwtTokenService(jwtTokenService);
-        return config;
     }
 }

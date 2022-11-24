@@ -40,7 +40,7 @@ public class TokenCookieProperties implements CookieProperties {
     /**
      * The issued access token cookie will only be sent by the client to URIs matching this pattern.
      *
-     * @see javax.servlet.http.Cookie#setPath(String)
+     * @see jakarta.servlet.http.Cookie#setPath(String)
      */
 
     @NonNull
@@ -49,7 +49,7 @@ public class TokenCookieProperties implements CookieProperties {
     /**
      * The issued tokens will only be valid for the specified domain. Defaults to the issuing server domain.
      *
-     * @see javax.servlet.http.Cookie#setDomain(String)
+     * @see jakarta.servlet.http.Cookie#setDomain(String)
      */
 
     private String domain;
@@ -57,14 +57,14 @@ public class TokenCookieProperties implements CookieProperties {
     /**
      * The cookie will not be accessible by client JavaScript if enabled (highly recommend)
      *
-     * @see javax.servlet.http.Cookie#setHttpOnly(boolean)
+     * @see jakarta.servlet.http.Cookie#setHttpOnly(boolean)
      */
     private boolean httpOnly = true;
 
     /**
      * The cookie will only be sent over an encrypted (https) connection (highly recommend)
      *
-     * @see javax.servlet.http.Cookie#setSecure(boolean)
+     * @see jakarta.servlet.http.Cookie#setSecure(boolean)
      */
     private boolean secure = true;
 

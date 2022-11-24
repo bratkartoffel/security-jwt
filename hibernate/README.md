@@ -13,7 +13,7 @@ for rows you have to regularly cleanup the token table, e.g. by using a cronjob.
 <dependency>
     <groupId>eu.fraho.spring</groupId>
     <artifactId>security-jwt-hibernate</artifactId>
-    <version>4.6.3</version>
+    <version>5.0.0</version>
 </dependency>
 ```
 

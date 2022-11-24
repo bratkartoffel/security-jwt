@@ -22,6 +22,8 @@ import eu.fraho.spring.securityJwt.base.service.JwtTokenServiceImpl;
 import eu.fraho.spring.securityJwt.base.service.RefreshTokenStore;
 import eu.fraho.spring.securityJwt.base.util.JwtTokens;
 import eu.fraho.spring.securityJwt.base.util.MyJwtUser;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,8 +33,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;

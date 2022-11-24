@@ -3,6 +3,10 @@
 ### [unreleased]
 * no changes yet
 
+### [5.0.0] (2022-11-24)
+* add support for spring boot 3 (breaking, _not_ backwards compatible)
+* require java 17 (as of spring boot 3)
+
 ### [4.6.3] (2022-11-24)
 * (all) upgrade jackson to 2.14.1
 * (all) upgrade nimbus-jose-jwt to 9.25.6
@@ -166,7 +170,8 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/4.6.3...develop
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.0...develop
+[5.0.0]: https://github.com/bratkartoffel/security-jwt/compare/4.6.3...5.0.0
 [4.6.3]: https://github.com/bratkartoffel/security-jwt/compare/4.6.2...4.6.3
 [4.6.2]: https://github.com/bratkartoffel/security-jwt/compare/4.6.1...4.6.2
 [4.6.1]: https://github.com/bratkartoffel/security-jwt/compare/4.6.0...4.6.1

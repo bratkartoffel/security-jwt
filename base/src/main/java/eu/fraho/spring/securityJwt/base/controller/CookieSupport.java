@@ -8,9 +8,9 @@ package eu.fraho.spring.securityJwt.base.controller;
 
 import eu.fraho.spring.securityJwt.base.config.CookieProperties;
 import eu.fraho.spring.securityJwt.base.dto.AbstractToken;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
 public interface CookieSupport {
