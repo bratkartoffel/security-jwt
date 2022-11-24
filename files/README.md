@@ -17,8 +17,8 @@ This module adds support for storing refresh tokens within an simple json docume
 
 This module also uses some additional application properties:
 
-| Property                              | Default        | Description   |
-|---------------------------------------|----------------|---------------|
-| fraho.jwt.refresh.files.dataDir       | data/          | The directory where the database and lockfile (if used) are stored. |
-| fraho.jwt.refresh.files.externalLocks | false          | Use a filesystem-level lockfile? Due to performance reasons this should only be used when other applications access the database. |
-| fraho.jwt.refresh.files.databaseFile  | db.json        | Filename of the database file, relative to dataDir. |
+| Property                              | Default | Description                                                                                                                       |
+|---------------------------------------|---------|-----------------------------------------------------------------------------------------------------------------------------------|
+| fraho.jwt.refresh.files.dataDir       | data/   | The directory where the database and lockfile (if used) are stored.                                                               |
+| fraho.jwt.refresh.files.externalLocks | false   | Use a filesystem-level lockfile? Due to performance reasons this should only be used when other applications access the database. |
+| fraho.jwt.refresh.files.databaseFile  | db.json | Filename of the database file, relative to dataDir.                                                                               |
