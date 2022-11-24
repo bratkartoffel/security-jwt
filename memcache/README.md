@@ -9,7 +9,7 @@ Please note that the memcache-plugin needs an external memcached server.
 <dependency>
     <groupId>eu.fraho.spring</groupId>
     <artifactId>security-jwt-memcache</artifactId>
-    <version>4.6.2</version>
+    <version>4.6.3</version>
 </dependency>
 ```
 
