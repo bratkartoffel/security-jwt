@@ -4,7 +4,7 @@ dependencies {
     api group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jdk8", version: jacksonVersion
     api group: "com.nimbusds", name: "nimbus-jose-jwt", version: nimbusJwtVersion
     api group: "commons-codec", name: "commons-codec", version: commonsCodecVersion
-    api(group: "org.springdoc", name: "springdoc-openapi-common", version: openApiVersion) {
+    api(group: "org.springdoc", name: "springdoc-openapi-starter-common", version: openApiVersion) {
         exclude(group: "org.springframework.boot")
     }
 

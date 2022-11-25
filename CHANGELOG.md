@@ -1,7 +1,7 @@
 # Changelog
 
 ### [unreleased]
-* no changes yet
+* (all) upgrade openapi to 2.0.0
 
 ### [5.0.0] (2022-11-24)
 * add support for spring boot 3 (breaking, _not_ backwards compatible)
