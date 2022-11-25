@@ -48,7 +48,7 @@ jobs:
           key: ${{ runner.os }}-maven-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-maven-${{ github.run_id }}
-      - uses: actions/setup-java@v2
+      - uses: actions/setup-java@v3
         with:
           distribution: 'adopt'
           java-version: '17'
