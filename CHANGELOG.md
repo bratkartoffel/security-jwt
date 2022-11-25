@@ -1,6 +1,9 @@
 # Changelog
 
 ### [unreleased]
+* no changes yet
+
+### [5.0.1] (2022-11-25)
 * (base) remove openapi dependency, just use the annotations (2.2.7)
 
 ### [5.0.0] (2022-11-24)
@@ -170,7 +173,8 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.0...develop
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.1...develop
+[5.0.1]: https://github.com/bratkartoffel/security-jwt/compare/5.0.0...5.0.1
 [5.0.0]: https://github.com/bratkartoffel/security-jwt/compare/4.6.3...5.0.0
 [4.6.3]: https://github.com/bratkartoffel/security-jwt/compare/4.6.2...4.6.3
 [4.6.2]: https://github.com/bratkartoffel/security-jwt/compare/4.6.1...4.6.2
