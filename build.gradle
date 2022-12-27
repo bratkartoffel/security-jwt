@@ -73,7 +73,7 @@ subprojects {
         }
     }
 
-    configurations.all {
+    configurations.configureEach {
         exclude group: 'junit', module: 'junit'
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
@@ -160,7 +160,7 @@ subprojects {
     }
 }
 
-task jacocoRootReport(type: JacocoReport) {
+tasks.register('jacocoRootReport', JacocoReport) {
     dependsOn = subprojects.test
     additionalSourceDirs.from(
             subprojects.sourceSets.main.allSource.srcDirs,
