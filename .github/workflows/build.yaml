@@ -50,7 +50,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           repository: 'bratkartoffel/security-jwt-examples'
-          ref: 'master'
+          ref: 'support/4.x'
           fetch-depth: 1
           lfs: true
       - uses: actions/cache@v2
