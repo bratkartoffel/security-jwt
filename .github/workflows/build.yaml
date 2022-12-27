@@ -27,6 +27,18 @@ jobs:
       - uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+      - id: output_version
+        run: |
+          while read line
+          do
+            if [ -n "$line" ]
+            then
+              version=$line
+            fi
+          done < "version.txt"
+          echo "::set-output name=securityJwtVersion::$version"
+    outputs:
+      securityJwtVersion: ${{ steps.output_version.outputs.securityJwtVersion }}
 
   integration-tests:
     strategy:
@@ -67,6 +79,6 @@ jobs:
       - uses: niden/actions-memcached@v7
       - uses: supercharge/redis-github-action@1.2.0
       - uses: gradle/wrapper-validation-action@v1
-      - run: ./gradlew --no-daemon -PspringBootVersion=${{ matrix.springBootVersion }} check
-      - run: ./gradlew --no-daemon -PspringBootVersion=${{ matrix.springBootVersion }} starter-hibernate:dependencies | egrep '(:spring|:security-jwt)' | grep -v -- '->' | sed -e 's/^[+-\\| ]\+//' -e 's/ ([n\*])$//' | sort | uniq
+      - run: ./gradlew --no-daemon -PspringBootVersion=${{ matrix.springBootVersion }} -PsecurityJwtVersion=${{ needs.build.outputs.securityJwtVersion }} check
+      - run: ./gradlew --no-daemon -PspringBootVersion=${{ matrix.springBootVersion }} -PsecurityJwtVersion=${{ needs.build.outputs.securityJwtVersion }} starter-hibernate:dependencies | egrep '(:spring|:security-jwt)' | grep -v -- '->' | sed -e 's/^[+-\\| ]\+//' -e 's/ ([n\*])$//' | sort | uniq
 
