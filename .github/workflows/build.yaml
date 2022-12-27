@@ -21,10 +21,10 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.run_id }}
       - uses: niden/actions-memcached@v7
-      - uses: supercharge/redis-github-action@1.2.0
+      - uses: supercharge/redis-github-action@1.4.0
       - uses: gradle/wrapper-validation-action@v1
       - run: ./gradlew --no-daemon check publishToMavenLocal
-      - uses: codecov/codecov-action@v2
+      - uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
       - id: output_version
@@ -36,7 +36,7 @@ jobs:
               version=$line
             fi
           done < "version.txt"
-          echo "::set-output name=securityJwtVersion::$version"
+          echo "securityJwtVersion=$version" >>$GITHUB_OUTPUT
     outputs:
       securityJwtVersion: ${{ steps.output_version.outputs.securityJwtVersion }}
 
