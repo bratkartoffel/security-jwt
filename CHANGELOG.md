@@ -3,6 +3,9 @@
 ### [unreleased]
 * no changes yet
 
+### [4.6.4] (2022-12-27)
+* (all) upgrade numbus-jose-jwt to 9.26
+
 ### [4.6.3] (2022-11-24)
 * (all) upgrade jackson to 2.14.1
 * (all) upgrade nimbus-jose-jwt to 9.25.6
