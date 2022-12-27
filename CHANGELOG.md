@@ -1,6 +1,9 @@
 # Changelog
 
 ### [unreleased]
+* no changes yet
+
+### [5.0.2] (2022-12-27)
 * (all) upgrade numbus-jose-jwt to 9.26
 
 ### [4.6.4] (2022-12-27)
@@ -176,7 +179,8 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.1...develop
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.2...develop
+[5.0.2]: https://github.com/bratkartoffel/security-jwt/compare/5.0.1...5.0.2
 [4.6.4]: https://github.com/bratkartoffel/security-jwt/compare/4.6.3...4.6.4
 [5.0.1]: https://github.com/bratkartoffel/security-jwt/compare/5.0.0...5.0.1
 [5.0.0]: https://github.com/bratkartoffel/security-jwt/compare/4.6.3...5.0.0
