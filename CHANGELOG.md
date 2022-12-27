@@ -177,6 +177,7 @@
 
 
 [unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.1...develop
+[4.6.4]: https://github.com/bratkartoffel/security-jwt/compare/4.6.3...4.6.4
 [5.0.1]: https://github.com/bratkartoffel/security-jwt/compare/5.0.0...5.0.1
 [5.0.0]: https://github.com/bratkartoffel/security-jwt/compare/4.6.3...5.0.0
 [4.6.3]: https://github.com/bratkartoffel/security-jwt/compare/4.6.2...4.6.3
