@@ -1,13 +1,14 @@
 # Changelog
 
 ### [unreleased]
-* no changes yet
+* (all) upgrade nimbus-jose-jtw to 9.29
+* (all) upgrade openapi dependency to 2.2.8
 
 ### [5.0.2] (2022-12-27)
-* (all) upgrade numbus-jose-jwt to 9.26
+* (all) upgrade nimbus-jose-jwt to 9.26
 
 ### [4.6.4] (2022-12-27)
-* (all) upgrade numbus-jose-jwt to 9.26
+* (all) upgrade nimbus-jose-jwt to 9.26
 
 ### [5.0.1] (2022-11-25)
 * (base) remove openapi dependency, just use the annotations (2.2.7)
