@@ -1,8 +1,15 @@
 # Changelog
 
 ### [unreleased]
+* no changes yet
+
+### [5.0.3] (2023-02-03)
 * (all) upgrade nimbus-jose-jwt to 9.30.1
 * (all) upgrade openapi dependency to 2.2.8
+* (all) upgrade jackson-datatype to 2.14.2
+
+### [4.6.5] (2023-02-03)
+* (all) upgrade nimbus-jose-jwt to 9.30.1
 * (all) upgrade jackson-datatype to 2.14.2
 
 ### [5.0.2] (2022-12-27)
@@ -181,7 +188,8 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.2...develop
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.3...develop
+[5.0.3]: https://github.com/bratkartoffel/security-jwt/compare/5.0.2...5.0.3
 [5.0.2]: https://github.com/bratkartoffel/security-jwt/compare/5.0.1...5.0.2
 [4.6.4]: https://github.com/bratkartoffel/security-jwt/compare/4.6.3...4.6.4
 [5.0.1]: https://github.com/bratkartoffel/security-jwt/compare/5.0.0...5.0.1
