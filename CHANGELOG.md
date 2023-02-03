@@ -1,8 +1,9 @@
 # Changelog
 
 ### [unreleased]
-* (all) upgrade nimbus-jose-jtw to 9.29
+* (all) upgrade nimbus-jose-jwt to 9.30.1
 * (all) upgrade openapi dependency to 2.2.8
+* (all) upgrade jackson-datatype to 2.14.2
 
 ### [5.0.2] (2022-12-27)
 * (all) upgrade nimbus-jose-jwt to 9.26
