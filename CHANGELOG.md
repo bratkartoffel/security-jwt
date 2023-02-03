@@ -1,7 +1,8 @@
 # Changelog
 
 ### [unreleased]
-* no changes yet
+* (all) upgrade nimbus-jose-jwt to 9.30.1
+* (all) upgrade jackson-datatype to 2.14.2
 
 ### [4.6.4] (2022-12-27)
 * (all) upgrade numbus-jose-jwt to 9.26
