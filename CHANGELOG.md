@@ -2,6 +2,7 @@
 
 ### [unreleased]
 * (all) upgrade nimbus-jose-jwt to 9.31
+* (base) enhance TOTP service performance by ~40%
 
 ### [5.0.3] (2023-02-03)
 * (all) upgrade nimbus-jose-jwt to 9.30.1

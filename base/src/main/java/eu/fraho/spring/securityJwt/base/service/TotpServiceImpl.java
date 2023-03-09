@@ -34,48 +34,42 @@ public class TotpServiceImpl implements TotpService {
 
     private TotpProperties totpProperties;
 
-    private int getCode(byte[] secret, long timeIndex) throws NoSuchAlgorithmException, InvalidKeyException {
-        final SecretKeySpec signKey = new SecretKeySpec(secret, "HmacSHA1");
-        final ByteBuffer buffer = ByteBuffer.allocate(8).putLong(timeIndex);
-        final byte[] timeBytes = buffer.array();
-        final byte[] hash = computeMac(signKey, timeBytes);
-        final int offset = hash[19] & 0xf;
-        long truncatedHash = hash[offset] & 0x7f;
-        for (int i = 1; i < 4; i++) {
-            truncatedHash <<= 8;
-            truncatedHash |= hash[offset + i] & 0xff;
-        }
-        return (int) (truncatedHash % 1000000);
-    }
-
-    private byte[] computeMac(SecretKeySpec signKey, byte[] data) throws NoSuchAlgorithmException, InvalidKeyException {
-        final Mac mac = Mac.getInstance("HmacSHA1");
-        mac.init(signKey);
-        return mac.doFinal(data);
-    }
-
     @Override
     public boolean verifyCode(String secret, int code) {
-        final long timeIndex = System.currentTimeMillis() / 1000 / 30;
-        final byte[] secretBytes = base32.decode(secret);
-        if (secretBytes.length == 0) {
-            return false;
-        }
-
-        boolean result = false;
+        long timeIndex = getTimeIndex();
+        byte[] secretBytes = base32.decode(secret);
         try {
+            Mac mac = Mac.getInstance("HmacSHA1");
+            mac.init(new SecretKeySpec(secretBytes, "HmacSHA1"));
+            ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+
             for (int i = -totpProperties.getVariance(); i <= totpProperties.getVariance(); i++) {
-                int calculated = getCode(secretBytes, timeIndex + i);
+                buffer.putLong(0, timeIndex + i);
+                byte[] timeBytes = buffer.array();
+                int calculated = createCode(mac, timeBytes);
                 log.trace("Verifying code i={}, calculated={}, given={}", i, calculated, code);
                 if (calculated == code) {
-                    result = true;
-                    break;
+                    return true;
                 }
             }
-        } catch (NoSuchAlgorithmException | InvalidKeyException | IllegalArgumentException ike) {
-            log.error("Error checking totp pin", ike);
+        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+            log.error("Error checking totp pin", e);
         }
-        return result;
+
+        return false;
+    }
+
+    public long getTimeIndex() {
+        return System.currentTimeMillis() / 1000 / 30;
+    }
+
+    private int createCode(Mac mac, byte[] timeBytes) {
+        byte[] hash = mac.doFinal(timeBytes);
+        int offset = hash[19] & 0xf;
+        return ((hash[offset] & 0x7f) << 24
+                | (hash[offset + 1] & 0xff) << 16
+                | (hash[offset + 2] & 0xff) << 8
+                | (hash[offset + 3] & 0xff)) % 1000000;
     }
 
     @Override
