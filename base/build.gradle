@@ -5,6 +5,7 @@ dependencies {
     api group: "com.nimbusds", name: "nimbus-jose-jwt", version: nimbusJwtVersion
     api group: "commons-codec", name: "commons-codec", version: commonsCodecVersion
     api(group: "io.swagger.core.v3", name: "swagger-annotations-jakarta", version: openApiVersion)
+    api(group: "eu.fraho.libs", name: "libtotp", version: libtotpVersion)
 
     implementation group: "org.bouncycastle", name: "bcprov-jdk15on", version: bouncyCastleVersion
     testFixturesApi group: "org.bouncycastle", name: "bcprov-jdk15on", version: bouncyCastleVersion

@@ -21,6 +21,7 @@ public class TotpServiceTest {
     private TotpService getNewInstance(TotpProperties totpProperties) {
         TotpServiceImpl totpService = new TotpServiceImpl();
         totpService.setTotpProperties(totpProperties);
+        totpService.afterPropertiesSet();
         return totpService;
     }
 
@@ -40,10 +41,10 @@ public class TotpServiceTest {
         TotpService service = getNewInstance(config);
         String secret = service.generateSecret();
 
-        int lastCode = TotpUtil.getCodeForTesting(service, secret, -1);
-        int curCode = TotpUtil.getCodeForTesting(service, secret, 0);
-        int nextCode = TotpUtil.getCodeForTesting(service, secret, 1);
-        int invalidCode = TotpUtil.getCodeForTesting(service, secret, 4);
+        int lastCode = TotpUtil.getCodeForTesting(secret, -1);
+        int curCode = TotpUtil.getCodeForTesting(secret, 0);
+        int nextCode = TotpUtil.getCodeForTesting(secret, 1);
+        int invalidCode = TotpUtil.getCodeForTesting(secret, 4);
 
         Assertions.assertTrue(service.verifyCode(secret, lastCode), "Last code was invalid");
         Assertions.assertTrue(service.verifyCode(secret, curCode), "Current code was invalid");

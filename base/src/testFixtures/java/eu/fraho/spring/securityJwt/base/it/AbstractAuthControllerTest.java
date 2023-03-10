@@ -75,7 +75,7 @@ abstract class AbstractAuthControllerTest {
     public void testLoginCorrectTotp() throws Exception {
         MockHttpServletRequestBuilder req;
 
-        long totp = TotpUtil.getCodeForTesting(totpService, UserDetailsServiceTestImpl.BASE32_TOTP, 0);
+        long totp = TotpUtil.getCodeForTesting(UserDetailsServiceTestImpl.BASE32_TOTP, 0);
         req = MockMvcRequestBuilders.post(AUTH_LOGIN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"username\":\"user_totp\",\"password\":\"user_totp\",\"totp\":" + totp + "}")
