@@ -2,9 +2,11 @@ name: Java CI
 
 on:
   push:
+    - develop
   pull_request:
-  schedule:
-    - cron: '0 0 * * 0' # weekly
+
+permissions:
+  checks: write
 
 jobs:
   build:
