@@ -1,6 +1,9 @@
 # Changelog
 
 ### [unreleased]
+* no changes yet
+
+### [4.6.6] (2023-03-23)
 * (all) upgrade nimbus-jose-jwt to 9.31
 
 ### [4.6.5] (2023-02-03)
