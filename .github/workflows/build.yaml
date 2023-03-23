@@ -48,7 +48,7 @@ jobs:
     strategy:
       matrix:
         springBootVersion:
-          - 3.0.4
+          - 3.0.5
     runs-on: ubuntu-latest
     needs: build
     steps:
