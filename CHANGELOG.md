@@ -1,6 +1,9 @@
 # Changelog
 
 ### [unreleased]
+* no changes yet
+
+### [5.0.4] (2023-03-23)
 * (all) upgrade nimbus-jose-jwt to 9.31
 * (base) enhance TOTP service performance by ~40%, replace by library
 
@@ -192,7 +195,8 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.3...develop
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.4...develop
+[5.0.4]: https://github.com/bratkartoffel/security-jwt/compare/5.0.3...5.0.4
 [5.0.3]: https://github.com/bratkartoffel/security-jwt/compare/5.0.2...5.0.3
 [5.0.2]: https://github.com/bratkartoffel/security-jwt/compare/5.0.1...5.0.2
 [4.6.6]: https://github.com/bratkartoffel/security-jwt/compare/4.6.5...4.6.6
