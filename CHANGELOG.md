@@ -4,6 +4,9 @@
 * (all) upgrade nimbus-jose-jwt to 9.31
 * (base) enhance TOTP service performance by ~40%, replace by library
 
+### [4.6.6] (2023-03-23)
+* (all) upgrade nimbus-jose-jwt to 9.31
+
 ### [5.0.3] (2023-02-03)
 * (all) upgrade nimbus-jose-jwt to 9.30.1
 * (all) upgrade openapi dependency to 2.2.8
@@ -192,6 +195,8 @@
 [unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.3...develop
 [5.0.3]: https://github.com/bratkartoffel/security-jwt/compare/5.0.2...5.0.3
 [5.0.2]: https://github.com/bratkartoffel/security-jwt/compare/5.0.1...5.0.2
+[4.6.6]: https://github.com/bratkartoffel/security-jwt/compare/4.6.5...4.6.6
+[4.6.5]: https://github.com/bratkartoffel/security-jwt/compare/4.6.4...4.6.5
 [4.6.4]: https://github.com/bratkartoffel/security-jwt/compare/4.6.3...4.6.4
 [5.0.1]: https://github.com/bratkartoffel/security-jwt/compare/5.0.0...5.0.1
 [5.0.0]: https://github.com/bratkartoffel/security-jwt/compare/4.6.3...5.0.0
