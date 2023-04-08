@@ -1,7 +1,8 @@
 # Changelog
 
 ### [unreleased]
-* no changes yet
+* (base) upgrade openapi dependency to 2.2.9
+* (redis) upgrade jedis to 4.3.2
 
 ### [5.0.4] (2023-03-23)
 * (all) upgrade nimbus-jose-jwt to 9.31
