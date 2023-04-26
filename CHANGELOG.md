@@ -2,6 +2,7 @@
 
 ### [unreleased]
 * (base) upgrade openapi dependency to 2.2.9
+* (base) upgrade jackson to 2.15.0
 * (redis) upgrade jedis to 4.3.2
 
 ### [5.0.4] (2023-03-23)
