@@ -73,6 +73,7 @@ jobs:
       securityJwtVersion: ${{ steps.output_version.outputs.securityJwtVersion }}
 
   integration-tests:
+    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/support/4.6'
     strategy:
       matrix:
         springBootVersion:
