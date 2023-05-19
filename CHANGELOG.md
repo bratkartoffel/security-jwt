@@ -1,9 +1,10 @@
 # Changelog
 
 ### [unreleased]
-* (base) upgrade openapi dependency to 2.2.9
-* (base) upgrade jackson to 2.15.0
-* (redis) upgrade jedis to 4.3.2
+* (base) upgrade openapi dependency to 2.2.10
+* (base) upgrade jackson to 2.15.1
+* (all) upgrade bouncycastle to 1.73, change to jdk18on variant
+* (redis) upgrade jedis to 4.4.1
 
 ### [4.6.7] (2023-05-19)
 * (all) upgrade jackson-datatype to 2.14.3 (cannot upgrade to 2.15.x as of snakeyaml 2.0 incompatibility)
