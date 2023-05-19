@@ -1,14 +1,14 @@
 dependencies {
     api group: "org.springframework.boot", name: "spring-boot-starter-web", version: "3.0.0"
     api group: "org.springframework.boot", name: "spring-boot-starter-security", version: "3.0.0"
-    api group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jdk8", version: "2.14.2"
+    api group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jdk8", version: "2.15.1"
     api group: "com.nimbusds", name: "nimbus-jose-jwt", version: "9.31"
     api group: "commons-codec", name: "commons-codec", version: "1.15"
-    api(group: "io.swagger.core.v3", name: "swagger-annotations-jakarta", version: "2.2.8")
+    api(group: "io.swagger.core.v3", name: "swagger-annotations-jakarta", version: "2.2.10")
     api(group: "eu.fraho.libs", name: "libtotp", version: "1.0.0")
 
-    implementation group: "org.bouncycastle", name: "bcprov-jdk15on", version: "1.70"
-    testFixturesApi group: "org.bouncycastle", name: "bcprov-jdk15on", version: "1.70"
-    testImplementation group: "org.mockito", name: "mockito-core", version: "5.2.0"
-    testFixturesApi group: "org.mockito", name: "mockito-core", version: "5.2.0"
+    implementation group: "org.bouncycastle", name: "bcprov-jdk18on", version: "1.73"
+    testFixturesApi group: "org.bouncycastle", name: "bcprov-jdk18on", version: "1.73"
+    testImplementation group: "org.mockito", name: "mockito-core", version: "5.3.1"
+    testFixturesApi group: "org.mockito", name: "mockito-core", version: "5.3.1"
 }
