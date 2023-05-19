@@ -1,6 +1,9 @@
 # Changelog
 
 ### [unreleased]
+* no changes yet
+
+### [4.6.7] (2023-05-19)
 * (all) upgrade jackson-datatype to 2.14.3 (cannot upgrade to 2.15.x as of snakeyaml 2.0 incompatibility)
 * (all) upgrade openapi to 1.6.15 (cannot upgrade to 1.7.x as of snakeyaml 2.0 incompatibility)
 * (all) upgrade bouncycastle to 1.73, change to jdk18on variant
@@ -179,7 +182,8 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/4.6.6...support/4.6
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/4.6.7...support/4.6
+[4.6.7]: https://github.com/bratkartoffel/security-jwt/compare/4.6.6...4.6.7
 [4.6.6]: https://github.com/bratkartoffel/security-jwt/compare/4.6.5...4.6.6
 [4.6.5]: https://github.com/bratkartoffel/security-jwt/compare/4.6.4...4.6.5
 [4.6.4]: https://github.com/bratkartoffel/security-jwt/compare/4.6.3...4.6.4
