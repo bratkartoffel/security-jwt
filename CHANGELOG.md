@@ -5,6 +5,12 @@
 * (base) upgrade jackson to 2.15.0
 * (redis) upgrade jedis to 4.3.2
 
+### [4.6.7] (2023-05-19)
+* (all) upgrade jackson-datatype to 2.14.3 (cannot upgrade to 2.15.x as of snakeyaml 2.0 incompatibility)
+* (all) upgrade openapi to 1.6.15 (cannot upgrade to 1.7.x as of snakeyaml 2.0 incompatibility)
+* (all) upgrade bouncycastle to 1.73, change to jdk18on variant
+* (redis) upgrade jedis to 4.4.1
+
 ### [5.0.4] (2023-03-23)
 * (all) upgrade nimbus-jose-jwt to 9.31
 * (base) enhance TOTP service performance by ~40%, replace by library
@@ -198,6 +204,7 @@
 
 
 [unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.4...develop
+[4.6.7]: https://github.com/bratkartoffel/security-jwt/compare/4.6.6...4.6.7
 [5.0.4]: https://github.com/bratkartoffel/security-jwt/compare/5.0.3...5.0.4
 [5.0.3]: https://github.com/bratkartoffel/security-jwt/compare/5.0.2...5.0.3
 [5.0.2]: https://github.com/bratkartoffel/security-jwt/compare/5.0.1...5.0.2
