@@ -1,15 +1,15 @@
 dependencies {
     api group: "org.springframework.boot", name: "spring-boot-starter-web", version: "2.0.0.RELEASE"
     api group: "org.springframework.boot", name: "spring-boot-starter-security", version: "2.0.0.RELEASE"
-    api group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jdk8", version: "2.14.2"
+    api group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jdk8", version: "2.14.3"
     api group: "com.nimbusds", name: "nimbus-jose-jwt", version: "9.31"
     api group: "commons-codec", name: "commons-codec", version: "1.15"
-    api(group: "org.springdoc", name: "springdoc-openapi-common", version: "1.6.14") {
+    api(group: "org.springdoc", name: "springdoc-openapi-common", version: "1.6.15") {
         exclude(group: "org.springframework.boot")
     }
 
-    implementation group: "org.bouncycastle", name: "bcprov-jdk15on", version: "1.70"
-    testFixturesApi group: "org.bouncycastle", name: "bcprov-jdk15on", version: "1.70"
-    testImplementation group: "org.mockito", name: "mockito-core", version: "5.2.0"
-    testFixturesApi group: "org.mockito", name: "mockito-core", version: "5.2.0"
+    implementation group: "org.bouncycastle", name: "bcprov-jdk18on", version: "1.73"
+    testFixturesApi group: "org.bouncycastle", name: "bcprov-jdk18on", version: "1.73"
+    testImplementation group: "org.mockito", name: "mockito-core", version: "5.3.1"
+    testFixturesApi group: "org.mockito", name: "mockito-core", version: "5.3.1"
 }

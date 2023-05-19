@@ -1,5 +1,5 @@
 plugins {
-    id 'io.freefair.lombok' version "6.6.3" apply false
+    id 'io.freefair.lombok' version "8.0.1" apply false
     id 'com.adarshr.test-logger' version "3.2.0" apply false
     id 'com.github.ben-manes.versions' version "0.46.0"
     id 'org.springframework.boot' version "2.0.0.RELEASE" apply false
@@ -11,6 +11,7 @@ subprojects {
     apply plugin: 'io.freefair.lombok'
     apply plugin: 'com.adarshr.test-logger'
     apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'com.github.ben-manes.versions'
 
     repositories {
         mavenLocal()
@@ -51,8 +52,8 @@ subprojects {
 
         testFixturesApi group: "org.springframework.boot", name: "spring-boot-starter-test", version: "2.0.0.RELEASE"
         testFixturesApi group: "org.springframework.boot", name: "spring-boot-starter-web", version: "2.0.0.RELEASE"
-        testFixturesApi group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jsr310", version: "2.14.2"
-        testFixturesApi group: 'org.junit.jupiter', name: 'junit-jupiter', version: "5.9.2"
+        testFixturesApi group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jsr310", version: "2.14.3"
+        testFixturesApi group: 'org.junit.jupiter', name: 'junit-jupiter', version: "5.9.3"
     }
 
     dependencyManagement {
@@ -80,7 +81,7 @@ subprojects {
 
     // code coverage
     apply plugin: 'jacoco'
-    jacoco.toolVersion = "0.8.7"
+    jacoco.toolVersion = "0.8.10"
     jacocoTestReport.reports {
         xml.required = true
         html.required = true

@@ -1,7 +1,10 @@
 # Changelog
 
 ### [unreleased]
-* no changes yet
+* (all) upgrade jackson-datatype to 2.14.3 (cannot upgrade to 2.15.x as of snakeyaml 2.0 incompatibility)
+* (all) upgrade openapi to 1.6.15 (cannot upgrade to 1.7.x as of snakeyaml 2.0 incompatibility)
+* (all) upgrade bouncycastle to 1.73, change to jdk18on variant
+* (redis) upgrade jedis to 4.4.1
 
 ### [4.6.6] (2023-03-23)
 * (all) upgrade nimbus-jose-jwt to 9.31
