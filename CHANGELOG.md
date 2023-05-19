@@ -1,6 +1,9 @@
 # Changelog
 
 ### [unreleased]
+* no changes yet
+
+### [5.0.5] (2023-05-19)
 * (base) upgrade openapi dependency to 2.2.10
 * (base) upgrade jackson to 2.15.1
 * (all) upgrade bouncycastle to 1.73, change to jdk18on variant
@@ -204,7 +207,8 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.4...develop
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.5...develop
+[5.0.5]: https://github.com/bratkartoffel/security-jwt/compare/5.0.4...5.0.5
 [4.6.7]: https://github.com/bratkartoffel/security-jwt/compare/4.6.6...4.6.7
 [5.0.4]: https://github.com/bratkartoffel/security-jwt/compare/5.0.3...5.0.4
 [5.0.3]: https://github.com/bratkartoffel/security-jwt/compare/5.0.2...5.0.3
