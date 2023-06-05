@@ -4,7 +4,7 @@ dependencies {
     api group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jdk8", version: "2.15.1"
     api group: "com.nimbusds", name: "nimbus-jose-jwt", version: "9.31"
     api group: "commons-codec", name: "commons-codec", version: "1.15"
-    api(group: "io.swagger.core.v3", name: "swagger-annotations-jakarta", version: "2.2.10")
+    api(group: "io.swagger.core.v3", name: "swagger-annotations-jakarta", version: "2.2.11")
     api(group: "eu.fraho.libs", name: "libtotp", version: "1.0.0")
 
     implementation group: "org.bouncycastle", name: "bcprov-jdk18on", version: "1.73"
