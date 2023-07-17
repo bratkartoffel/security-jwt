@@ -1,7 +1,7 @@
 # Changelog
 
 ### [unreleased]
-* no changes yet
+* (all) fix invalid generated pom files with self-referential dependencies
 
 ### [4.6.7] (2023-05-19)
 * (all) upgrade jackson-datatype to 2.14.3 (cannot upgrade to 2.15.x as of snakeyaml 2.0 incompatibility)
