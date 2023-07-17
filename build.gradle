@@ -1,8 +1,8 @@
 plugins {
-    id 'io.freefair.lombok' version "8.0.1" apply false
+    id 'io.freefair.lombok' version "8.1.0" apply false
     id 'com.adarshr.test-logger' version "3.2.0" apply false
-    id 'com.github.ben-manes.versions' version "0.46.0"
-    id 'org.springframework.boot' version "3.1.0" apply false
+    id 'com.github.ben-manes.versions' version "0.47.0"
+    id 'org.springframework.boot' version "3.1.1" apply false
 }
 
 subprojects {
@@ -48,11 +48,11 @@ subprojects {
     }
 
     dependencies {
-        annotationProcessor group: "org.springframework.boot", name: "spring-boot-configuration-processor", version: "3.1.0"
+        annotationProcessor group: "org.springframework.boot", name: "spring-boot-configuration-processor", version: "3.1.1"
 
         testFixturesApi group: "org.springframework.boot", name: "spring-boot-starter-test", version: "3.0.0"
         testFixturesApi group: "org.springframework.boot", name: "spring-boot-starter-web", version: "3.0.0"
-        testFixturesApi group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jsr310", version: "2.15.1"
+        testFixturesApi group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jsr310", version: "2.15.2"
         testFixturesApi group: 'org.junit.jupiter', name: 'junit-jupiter', version: "5.9.3"
     }
 
@@ -108,6 +108,16 @@ subprojects {
                             id = 'bratkartoffel'
                             name = 'Simon Frankenberger'
                             email = 'simon-ossrh-release@fraho.eu'
+                        }
+                    }
+                    // workaround
+                    // https://stackoverflow.com/questions/69877418/why-does-every-pom-file-published-by-gradle-has-a-self-referential-dependency
+                    // https://github.com/spring-gradle-plugins/dependency-management-plugin/issues/365
+                    withXml {
+                        asNode().dependencies.dependency.each { dep ->
+                            if(dep["artifactId"].last().value().last() == artifactId) {
+                                assert dep.parent().remove(dep)
+                            }
                         }
                     }
                 }
