@@ -1,6 +1,9 @@
 # Changelog
 
 ### [unreleased]
+* no changes yet
+
+### [4.6.8] (2023-07-17)
 * (all) fix invalid generated pom files with self-referential dependencies
 
 ### [4.6.7] (2023-05-19)
@@ -182,7 +185,8 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/4.6.7...support/4.6
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/4.6.8..support/4.6
+[4.6.8]: https://github.com/bratkartoffel/security-jwt/compare/4.6.7...4.6.8
 [4.6.7]: https://github.com/bratkartoffel/security-jwt/compare/4.6.6...4.6.7
 [4.6.6]: https://github.com/bratkartoffel/security-jwt/compare/4.6.5...4.6.6
 [4.6.5]: https://github.com/bratkartoffel/security-jwt/compare/4.6.4...4.6.5
