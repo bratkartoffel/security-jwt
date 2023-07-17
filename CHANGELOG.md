@@ -1,7 +1,7 @@
 # Changelog
 
 ### [unreleased]
-* no changes yet
+* (all) fix invalid generated pom files with self-referential dependencies
 
 ### [5.0.5] (2023-05-19)
 * (base) upgrade openapi dependency to 2.2.10
