@@ -1,6 +1,9 @@
 # Changelog
 
 ### [unreleased]
+- no changes yet
+
+## [5.0.7] (2023-07-24
 * Add workaround for [spring-projects/spring-security#13572]
 
 ### [5.0.6] (2023-07-17)
@@ -213,7 +216,8 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.6...develop
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.7...develop
+[5.0.7]: https://github.com/bratkartoffel/security-jwt/compare/5.0.6...5.0.7
 [5.0.6]: https://github.com/bratkartoffel/security-jwt/compare/5.0.5...5.0.6
 [4.6.8]: https://github.com/bratkartoffel/security-jwt/compare/4.6.7...4.6.8
 [5.0.5]: https://github.com/bratkartoffel/security-jwt/compare/5.0.4...5.0.5
