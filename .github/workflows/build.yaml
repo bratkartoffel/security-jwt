@@ -75,6 +75,7 @@ jobs:
   integration-tests:
     if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/support/4.6'
     strategy:
+      fail-fast: false
       matrix:
         springBootVersion:
           - 3.0.9
