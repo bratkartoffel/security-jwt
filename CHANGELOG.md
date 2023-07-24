@@ -1,7 +1,7 @@
 # Changelog
 
 ### [unreleased]
-* no changes yet
+* Add workaround for [spring-projects/spring-security#13572]
 
 ### [5.0.6] (2023-07-17)
 * (all) fix invalid generated pom files with self-referential dependencies
@@ -251,3 +251,5 @@
 [0.7.0]: https://github.com/bratkartoffel/security-jwt/compare/0.6.0...0.7.0
 [0.6.0]: https://github.com/bratkartoffel/security-jwt/compare/0.5.2...0.6.0
 [0.5.2]: https://github.com/bratkartoffel/security-jwt/tree/0.5.2
+
+[spring-projects/spring-security#13572]: https://github.com/spring-projects/spring-security/issues/13572
