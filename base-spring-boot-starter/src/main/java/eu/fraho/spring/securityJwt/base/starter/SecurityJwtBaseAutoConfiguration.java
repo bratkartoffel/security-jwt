@@ -40,7 +40,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @AutoConfigureBefore(SecurityAutoConfiguration.class)
-@EnableMethodSecurity(securedEnabled = true)
 @Slf4j
 public class SecurityJwtBaseAutoConfiguration {
     @Bean

@@ -1,9 +1,15 @@
 # Changelog
 
 ### [unreleased]
-* no changes yet
+- no changes yet
+
+## [5.0.7] (2023-07-24
+* Add workaround for [spring-projects/spring-security#13572]
 
 ### [5.0.6] (2023-07-17)
+* (all) fix invalid generated pom files with self-referential dependencies
+
+### [4.6.8] (2023-07-17)
 * (all) fix invalid generated pom files with self-referential dependencies
 
 ### [5.0.5] (2023-05-19)
@@ -210,8 +216,10 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.6...develop
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.7...develop
+[5.0.7]: https://github.com/bratkartoffel/security-jwt/compare/5.0.6...5.0.7
 [5.0.6]: https://github.com/bratkartoffel/security-jwt/compare/5.0.5...5.0.6
+[4.6.8]: https://github.com/bratkartoffel/security-jwt/compare/4.6.7...4.6.8
 [5.0.5]: https://github.com/bratkartoffel/security-jwt/compare/5.0.4...5.0.5
 [4.6.7]: https://github.com/bratkartoffel/security-jwt/compare/4.6.6...4.6.7
 [5.0.4]: https://github.com/bratkartoffel/security-jwt/compare/5.0.3...5.0.4
@@ -247,3 +255,5 @@
 [0.7.0]: https://github.com/bratkartoffel/security-jwt/compare/0.6.0...0.7.0
 [0.6.0]: https://github.com/bratkartoffel/security-jwt/compare/0.5.2...0.6.0
 [0.5.2]: https://github.com/bratkartoffel/security-jwt/tree/0.5.2
+
+[spring-projects/spring-security#13572]: https://github.com/spring-projects/spring-security/issues/13572
