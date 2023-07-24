@@ -25,6 +25,7 @@ jobs:
           allowed-endpoints: >
             api.adoptopenjdk.net:443
             api.github.com:443
+            api.snapcraft.io:443
             auth.docker.io:443
             codecov.io:443
             docker.io:443
@@ -92,13 +93,11 @@ jobs:
             api.adoptopenjdk.net:443
             api.github.com:443
             auth.docker.io:443
-            codecov.io:443
             docker.io:443
             downloads.gradle-dn.com:443
             downloads.gradle.org:443
             github.com:443
             jcenter.bintray.com:443
-            jfrog-prod-use1-shared-virginia-main.s3.amazonaws.com:443
             objects.githubusercontent.com:443
             plugins.gradle.org:443
             plugins-artifacts.gradle.org:443
@@ -107,8 +106,6 @@ jobs:
             repo.maven.apache.org:443
             repo.spring.io:443
             services.gradle.org:443
-            storage.googleapis.com:443
-            uploader.codecov.io:443
       - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
         with:
           repository: 'bratkartoffel/security-jwt-examples'
