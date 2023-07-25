@@ -3,7 +3,7 @@
 ### [unreleased]
 - no changes yet
 
-## [5.0.7] (2023-07-24
+### [5.0.7] (2023-07-24)
 * Add workaround for [spring-projects/spring-security#13572]
 
 ### [5.0.6] (2023-07-17)
