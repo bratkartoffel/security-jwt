@@ -1,13 +1,23 @@
 # Changelog
 
 ### [unreleased]
-- no changes yet
+* (base) upgrade nimbus-jose-jwt to 9.35
+* (base) upgrade swagger annotations to 2.2.16
+* (base) upgrade bouncycastle to 1.76
+* (internal) upgrade expiringmap to 0.5.11
+* (redis) upgrade jedis to 5.0.1
 
 ### [5.0.7] (2023-07-24)
-* Add workaround for [spring-projects/spring-security#13572]
+* (base) Add workaround for [spring-projects/spring-security#13572]
 
 ### [5.0.6] (2023-07-17)
 * (all) fix invalid generated pom files with self-referential dependencies
+* (base) upgrade jackson to 2.15.2
+* (redis) upgrade jedis to 4.4.2
+* (base) upgrade totp to 1.1.0
+* (base) upgrade swagger annotations to 2.2.15
+* (base) upgrade bouncycastle to 1.75
+* (base) upgrade commons-codec to 1.16.0
 
 ### [4.6.8] (2023-07-17)
 * (all) fix invalid generated pom files with self-referential dependencies
@@ -15,7 +25,7 @@
 ### [5.0.5] (2023-05-19)
 * (base) upgrade openapi dependency to 2.2.10
 * (base) upgrade jackson to 2.15.1
-* (all) upgrade bouncycastle to 1.73, change to jdk18on variant
+* (base) upgrade bouncycastle to 1.73, change to jdk18on variant
 * (redis) upgrade jedis to 4.4.1
 
 ### [4.6.7] (2023-05-19)
