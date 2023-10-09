@@ -9,6 +9,6 @@ dependencies {
 
     implementation group: "org.bouncycastle", name: "bcprov-jdk18on", version: "1.76"
     testFixturesApi group: "org.bouncycastle", name: "bcprov-jdk18on", version: "1.76"
-    testImplementation group: "org.mockito", name: "mockito-core", version: "5.5.0"
-    testFixturesApi group: "org.mockito", name: "mockito-core", version: "5.5.0"
+    testImplementation group: "org.mockito", name: "mockito-core", version: "5.6.0"
+    testFixturesApi group: "org.mockito", name: "mockito-core", version: "5.6.0"
 }
