@@ -47,7 +47,7 @@ jobs:
       - uses: actions/setup-java@0ab4596768b603586c0de567f2430c30f5b0d2b0 # v3.13.0
         with:
           distribution: 'adopt'
-          java-version: '17'
+          java-version: '11'
           cache: 'gradle'
       - uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
         with:
@@ -126,7 +126,7 @@ jobs:
       - uses: actions/setup-java@0ab4596768b603586c0de567f2430c30f5b0d2b0 # v3.13.0
         with:
           distribution: 'adopt'
-          java-version: '17'
+          java-version: '11'
           cache: 'gradle'
       - uses: niden/actions-memcached@3b3ecd9d0d035ea92db716dc1540a7dbe9e56349 # v7
       - uses: supercharge/redis-github-action@6dc7a5eeaf9a8f860b6464e05195a15f8b9f3bbb # v1.7.0
