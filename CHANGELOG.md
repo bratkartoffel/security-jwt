@@ -1,7 +1,7 @@
 # Changelog
 
 ### [unreleased]
-* no changes yet
+* (base) upgrade nimbus-jose-jwt to 9.37
 
 ### [4.6.8] (2023-07-17)
 * (all) fix invalid generated pom files with self-referential dependencies
