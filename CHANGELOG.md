@@ -2,6 +2,7 @@
 
 ### [unreleased]
 * (base) upgrade nimbus-jose-jwt to 9.37
+* (base) upgrade commons-codec to 1.16.0
 
 ### [4.6.8] (2023-07-17)
 * (all) fix invalid generated pom files with self-referential dependencies

@@ -3,7 +3,7 @@ dependencies {
     api group: "org.springframework.boot", name: "spring-boot-starter-security", version: "2.0.0.RELEASE"
     api group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jdk8", version: "2.14.3"
     api group: "com.nimbusds", name: "nimbus-jose-jwt", version: "9.37"
-    api group: "commons-codec", name: "commons-codec", version: "1.15"
+    api group: "commons-codec", name: "commons-codec", version: "1.16.0"
     api(group: "org.springdoc", name: "springdoc-openapi-common", version: "1.6.15") {
         exclude(group: "org.springframework.boot")
     }
