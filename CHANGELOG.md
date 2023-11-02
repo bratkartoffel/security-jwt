@@ -1,11 +1,12 @@
 # Changelog
 
 ### [unreleased]
-* (base) upgrade nimbus-jose-jwt to 9.35
-* (base) upgrade swagger annotations to 2.2.16
+* (base) upgrade nimbus-jose-jwt to 9.37
+* (base) upgrade swagger annotations to 2.2.18
 * (base) upgrade bouncycastle to 1.76
+* (base) upgrade jackson to 2.15.3
 * (internal) upgrade expiringmap to 0.5.11
-* (redis) upgrade jedis to 5.0.1
+* (redis) upgrade jedis to 5.0.2
 
 ### [5.0.7] (2023-07-24)
 * (base) Add workaround for [spring-projects/spring-security#13572]
