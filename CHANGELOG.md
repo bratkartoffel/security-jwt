@@ -4,6 +4,7 @@
 * (base) upgrade nimbus-jose-jwt to 9.37
 * (base) upgrade commons-codec to 1.16.0
 * (base) upgrade bouncycastle to 1.76
+* (internal) upgrade expiringmap to 0.5.11
 
 ### [4.6.8] (2023-07-17)
 * (all) fix invalid generated pom files with self-referential dependencies
