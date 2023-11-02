@@ -1,6 +1,9 @@
 # Changelog
 
 ### [unreleased]
+* no changes yet
+
+### [4.6.9] (2023-11-02)
 * (base) upgrade nimbus-jose-jwt to 9.37
 * (base) upgrade commons-codec to 1.16.0
 * (base) upgrade bouncycastle to 1.76
@@ -189,7 +192,8 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/4.6.8..support/4.6
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/4.6.9..support/4.6
+[4.6.9]: https://github.com/bratkartoffel/security-jwt/compare/4.6.8...4.6.9
 [4.6.8]: https://github.com/bratkartoffel/security-jwt/compare/4.6.7...4.6.8
 [4.6.7]: https://github.com/bratkartoffel/security-jwt/compare/4.6.6...4.6.7
 [4.6.6]: https://github.com/bratkartoffel/security-jwt/compare/4.6.5...4.6.6
