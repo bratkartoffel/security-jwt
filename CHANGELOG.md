@@ -8,6 +8,13 @@
 * (internal) upgrade expiringmap to 0.5.11
 * (redis) upgrade jedis to 5.0.2
 
+### [4.6.9] (2023-11-02)
+* (base) upgrade nimbus-jose-jwt to 9.37
+* (base) upgrade commons-codec to 1.16.0
+* (base) upgrade bouncycastle to 1.76
+* (internal) upgrade expiringmap to 0.5.11
+* (redis) upgrade jedis to 4.4.6
+
 ### [5.0.7] (2023-07-24)
 * (base) Add workaround for [spring-projects/spring-security#13572]
 
@@ -228,6 +235,7 @@
 
 
 [unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.7...develop
+[4.6.9]: https://github.com/bratkartoffel/security-jwt/compare/4.6.8...4.6.9
 [5.0.7]: https://github.com/bratkartoffel/security-jwt/compare/5.0.6...5.0.7
 [5.0.6]: https://github.com/bratkartoffel/security-jwt/compare/5.0.5...5.0.6
 [4.6.8]: https://github.com/bratkartoffel/security-jwt/compare/4.6.7...4.6.8
