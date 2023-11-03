@@ -16,7 +16,7 @@ git commit -m "Version updated from $current_version to version $release_version
 
 # update the changelog
 sed -i \
-  -e "/## \[unreleased/a - no changes yet\n\n## [$release_version] ($(date +%Y-%m-%d)" \
+  -e "/### \[unreleased/a - no changes yet\n\n### [$release_version] ($(date +%Y-%m-%d))" \
   -e "/^\[unreleased\]:/a [$release_version]: https://github.com/bratkartoffel/security-jwt/compare/${previous_version}...${release_version}" \
   -e "s|^\[unreleased\]:.\+develop$|[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/${release_version}...develop|" \
   CHANGELOG.md

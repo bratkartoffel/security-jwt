@@ -3,11 +3,32 @@
 ### [unreleased]
 - no changes yet
 
-## [5.0.7] (2023-07-24
-* Add workaround for [spring-projects/spring-security#13572]
+### [5.0.8] (2023-11-03)
+* (base) upgrade nimbus-jose-jwt to 9.37
+* (base) upgrade swagger annotations to 2.2.18
+* (base) upgrade bouncycastle to 1.76
+* (base) upgrade jackson to 2.15.3
+* (internal) upgrade expiringmap to 0.5.11
+* (redis) upgrade jedis to 5.0.2
+
+### [4.6.9] (2023-11-02)
+* (base) upgrade nimbus-jose-jwt to 9.37
+* (base) upgrade commons-codec to 1.16.0
+* (base) upgrade bouncycastle to 1.76
+* (internal) upgrade expiringmap to 0.5.11
+* (redis) upgrade jedis to 4.4.6
+
+### [5.0.7] (2023-07-24)
+* (base) Add workaround for [spring-projects/spring-security#13572]
 
 ### [5.0.6] (2023-07-17)
 * (all) fix invalid generated pom files with self-referential dependencies
+* (base) upgrade jackson to 2.15.2
+* (redis) upgrade jedis to 4.4.2
+* (base) upgrade totp to 1.1.0
+* (base) upgrade swagger annotations to 2.2.15
+* (base) upgrade bouncycastle to 1.75
+* (base) upgrade commons-codec to 1.16.0
 
 ### [4.6.8] (2023-07-17)
 * (all) fix invalid generated pom files with self-referential dependencies
@@ -15,7 +36,7 @@
 ### [5.0.5] (2023-05-19)
 * (base) upgrade openapi dependency to 2.2.10
 * (base) upgrade jackson to 2.15.1
-* (all) upgrade bouncycastle to 1.73, change to jdk18on variant
+* (base) upgrade bouncycastle to 1.73, change to jdk18on variant
 * (redis) upgrade jedis to 4.4.1
 
 ### [4.6.7] (2023-05-19)
@@ -216,7 +237,9 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.7...develop
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.8...develop
+[5.0.8]: https://github.com/bratkartoffel/security-jwt/compare/5.0.7...5.0.8
+[4.6.9]: https://github.com/bratkartoffel/security-jwt/compare/4.6.8...4.6.9
 [5.0.7]: https://github.com/bratkartoffel/security-jwt/compare/5.0.6...5.0.7
 [5.0.6]: https://github.com/bratkartoffel/security-jwt/compare/5.0.5...5.0.6
 [4.6.8]: https://github.com/bratkartoffel/security-jwt/compare/4.6.7...4.6.8
