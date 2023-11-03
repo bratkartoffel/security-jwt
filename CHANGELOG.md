@@ -1,6 +1,9 @@
 # Changelog
 
 ### [unreleased]
+- no changes yet
+
+### [5.0.8] (2023-11-03)
 * (base) upgrade nimbus-jose-jwt to 9.37
 * (base) upgrade swagger annotations to 2.2.18
 * (base) upgrade bouncycastle to 1.76
@@ -234,7 +237,8 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.7...develop
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.8...develop
+[5.0.8]: https://github.com/bratkartoffel/security-jwt/compare/5.0.7...5.0.8
 [4.6.9]: https://github.com/bratkartoffel/security-jwt/compare/4.6.8...4.6.9
 [5.0.7]: https://github.com/bratkartoffel/security-jwt/compare/5.0.6...5.0.7
 [5.0.6]: https://github.com/bratkartoffel/security-jwt/compare/5.0.5...5.0.6
