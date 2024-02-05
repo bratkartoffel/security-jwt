@@ -57,7 +57,7 @@ jobs:
       - uses: supercharge/redis-github-action@ea9b21c6ecece47bd99595c532e481390ea0f044 # v1.8.0
       - uses: gradle/wrapper-validation-action@27152f6fa06a6b8062ef7195c795692e51fc2c81 # v2.0.0
       - run: ./gradlew --no-daemon check publishToMavenLocal
-      - uses: codecov/codecov-action@4fe8c5f003fae66aa5ebb77cfd3e7bfbbda0b6b0 # v3.1.5
+      - uses: codecov/codecov-action@e0b68c6749509c5f83f984dd99a76a1c1a231044 # v4.0.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
       - id: output_version
