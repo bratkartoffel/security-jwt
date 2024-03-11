@@ -1,6 +1,6 @@
 dependencies {
     api project(':base')
-    api group: "redis.clients", name: "jedis", version: "5.1.1"
+    api group: "redis.clients", name: "jedis", version: "5.1.2"
 
     testImplementation testFixtures(project(':base'))
 }
