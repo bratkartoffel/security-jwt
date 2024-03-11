@@ -52,7 +52,7 @@ subprojects {
 
         testFixturesApi group: "org.springframework.boot", name: "spring-boot-starter-test", version: "3.0.0"
         testFixturesApi group: "org.springframework.boot", name: "spring-boot-starter-web", version: "3.0.0"
-        testFixturesApi group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jsr310", version: "2.16.1"
+        testFixturesApi group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jsr310", version: "2.16.2"
         testFixturesApi group: 'org.junit.jupiter', name: 'junit-jupiter', version: "5.10.2"
     }
 
