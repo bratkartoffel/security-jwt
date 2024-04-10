@@ -7,8 +7,8 @@ dependencies {
     api(group: "io.swagger.core.v3", name: "swagger-annotations-jakarta", version: "2.2.20")
     api(group: "eu.fraho.libs", name: "libtotp", version: "1.1.0")
 
-    implementation group: "org.bouncycastle", name: "bcprov-jdk18on", version: "1.77"
-    testFixturesApi group: "org.bouncycastle", name: "bcprov-jdk18on", version: "1.77"
+    implementation group: "org.bouncycastle", name: "bcprov-jdk18on", version: "1.78"
+    testFixturesApi group: "org.bouncycastle", name: "bcprov-jdk18on", version: "1.78"
     testImplementation group: "org.mockito", name: "mockito-core", version: "5.11.0"
     testFixturesApi group: "org.mockito", name: "mockito-core", version: "5.11.0"
 }
