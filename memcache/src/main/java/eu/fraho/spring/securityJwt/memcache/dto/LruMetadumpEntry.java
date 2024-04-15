@@ -19,4 +19,5 @@ public class LruMetadumpEntry {
     Boolean fetch;
     Integer cls;
     Integer size;
+    Integer flags;
 }

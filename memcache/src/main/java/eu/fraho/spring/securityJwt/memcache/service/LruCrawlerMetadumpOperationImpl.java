@@ -80,7 +80,7 @@ public class LruCrawlerMetadumpOperationImpl extends BaseOperationImpl {
             return;
         }
 
-        String[] parts = line.split(" ", 7);
+        String[] parts = line.split(" ");
         String key = null;
         Integer exp = null;
         Integer la = null;
@@ -88,6 +88,7 @@ public class LruCrawlerMetadumpOperationImpl extends BaseOperationImpl {
         Boolean fetch = null;
         Integer cls = null;
         Integer size = null;
+        Integer flags = null;
         for (String part : parts) {
             String[] kv = part.split("=", 2);
 
@@ -119,12 +120,21 @@ public class LruCrawlerMetadumpOperationImpl extends BaseOperationImpl {
                 case "size":
                     size = Integer.parseInt(kv[1]);
                     break;
+                case "flags":
+                    flags = Integer.parseInt(kv[1]);
+                    break;
             }
         }
 
         cb.gotMetadump(LruMetadumpEntry.builder()
-                .key(key).exp(exp).la(la).cas(cas)
-                .fetch(fetch).cls(cls).size(size)
+                .key(key)
+                .exp(exp)
+                .la(la)
+                .cas(cas)
+                .fetch(fetch)
+                .cls(cls)
+                .size(size)
+                .flags(flags)
                 .build());
     }
 
