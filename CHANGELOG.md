@@ -1,7 +1,13 @@
-# Changelog
+# Chanegelog
 
 ### [unreleased]
-- no changes yet
+* (base) upgrade bouncycastle to 1.78.1
+* (base) upgrade nimbus-jose-jwt to 9.37.3
+* (base) upgrade commons-codec to 1.17.0
+* (base) upgrade swagger annotations to 2.2.21
+* (redis) upgrade jedis to 5.1.2
+* (memcache) fix memcache plugin with newer memcached versions
+  * The `lru_crawler` metadump seems to return more attributes now, handle this case
 
 ### [5.0.8] (2023-11-03)
 * (base) upgrade nimbus-jose-jwt to 9.37
