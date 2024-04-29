@@ -1,6 +1,9 @@
 # Chanegelog
 
 ### [unreleased]
+* no changes yet
+
+### [5.0.9] (2024-04-29)
 * (base) upgrade bouncycastle to 1.78.1
 * (base) upgrade nimbus-jose-jwt to 9.37.3
 * (base) upgrade commons-codec to 1.17.0
@@ -243,7 +246,8 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.8...develop
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.9...develop
+[5.0.9]: https://github.com/bratkartoffel/security-jwt/compare/5.0.8...5.0.9
 [5.0.8]: https://github.com/bratkartoffel/security-jwt/compare/5.0.7...5.0.8
 [4.6.9]: https://github.com/bratkartoffel/security-jwt/compare/4.6.8...4.6.9
 [5.0.7]: https://github.com/bratkartoffel/security-jwt/compare/5.0.6...5.0.7
