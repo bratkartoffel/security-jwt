@@ -1,7 +1,16 @@
-# Changelog
+# Chanegelog
 
 ### [unreleased]
-- no changes yet
+* no changes yet
+
+### [5.0.9] (2024-04-29)
+* (base) upgrade bouncycastle to 1.78.1
+* (base) upgrade nimbus-jose-jwt to 9.37.3
+* (base) upgrade commons-codec to 1.17.0
+* (base) upgrade swagger annotations to 2.2.21
+* (redis) upgrade jedis to 5.1.2
+* (memcache) fix memcache plugin with newer memcached versions
+  * The `lru_crawler` metadump seems to return more attributes now, handle this case
 
 ### [5.0.8] (2023-11-03)
 * (base) upgrade nimbus-jose-jwt to 9.37
@@ -237,7 +246,8 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.8...develop
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.9...develop
+[5.0.9]: https://github.com/bratkartoffel/security-jwt/compare/5.0.8...5.0.9
 [5.0.8]: https://github.com/bratkartoffel/security-jwt/compare/5.0.7...5.0.8
 [4.6.9]: https://github.com/bratkartoffel/security-jwt/compare/4.6.8...4.6.9
 [5.0.7]: https://github.com/bratkartoffel/security-jwt/compare/5.0.6...5.0.7

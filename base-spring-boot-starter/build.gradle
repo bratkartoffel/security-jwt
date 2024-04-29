@@ -1,5 +1,5 @@
 dependencies {
     api project(':base')
-    implementation group: "org.bouncycastle", name: "bcprov-jdk18on", version: "1.76"
+    implementation group: "org.bouncycastle", name: "bcprov-jdk18on", version: "1.78.1"
     testImplementation testFixtures(project(':base'))
 }

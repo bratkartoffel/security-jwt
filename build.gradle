@@ -1,8 +1,8 @@
 plugins {
-    id 'io.freefair.lombok' version "8.4" apply false
+    id 'io.freefair.lombok' version "8.6" apply false
     id 'com.adarshr.test-logger' version "4.0.0" apply false
-    id 'com.github.ben-manes.versions' version "0.49.0"
-    id 'org.springframework.boot' version "3.1.5" apply false
+    id 'com.github.ben-manes.versions' version "0.51.0"
+    id 'org.springframework.boot' version "3.2.5" apply false
 }
 
 subprojects {
@@ -48,12 +48,12 @@ subprojects {
     }
 
     dependencies {
-        annotationProcessor group: "org.springframework.boot", name: "spring-boot-configuration-processor", version: "3.1.5"
+        annotationProcessor group: "org.springframework.boot", name: "spring-boot-configuration-processor", version: "3.2.5"
 
         testFixturesApi group: "org.springframework.boot", name: "spring-boot-starter-test", version: "3.0.0"
         testFixturesApi group: "org.springframework.boot", name: "spring-boot-starter-web", version: "3.0.0"
-        testFixturesApi group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jsr310", version: "2.15.3"
-        testFixturesApi group: 'org.junit.jupiter', name: 'junit-jupiter', version: "5.10.0"
+        testFixturesApi group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jsr310", version: "2.17.0"
+        testFixturesApi group: 'org.junit.jupiter', name: 'junit-jupiter', version: "5.10.2"
     }
 
     configurations.configureEach {
