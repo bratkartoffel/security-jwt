@@ -13,7 +13,6 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
-import net.jcip.annotations.Immutable;
 
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
@@ -36,7 +35,6 @@ import java.util.concurrent.TimeUnit;
  * @see #TimeWithPeriod(int, ChronoUnit)
  */
 @Value
-@Immutable
 @Slf4j
 @JsonSerialize(using = TimeWithPeriodSerializer.class)
 @Schema(implementation = String.class, example = "12 hours")
