@@ -49,13 +49,13 @@ should be sufficient for the most use cases.
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-base</artifactId>
-        <version>5.0.9</version>
+        <version>5.0.10</version>
     </dependency>
     <!-- or -->
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-base-spring-boot-starter</artifactId>
-        <version>5.0.9</version>
+        <version>5.0.10</version>
     </dependency>
 </dependencies>
 ```
@@ -68,27 +68,27 @@ When you want to add refresh token support, then choose one of the following dep
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-internal</artifactId>
-        <version>5.0.9</version>
+        <version>5.0.10</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-memcache</artifactId>
-        <version>5.0.9</version>
+        <version>5.0.10</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-hibernate</artifactId>
-        <version>5.0.9</version>
+        <version>5.0.10</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-redis</artifactId>
-        <version>5.0.9</version>
+        <version>5.0.10</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-files</artifactId>
-        <version>5.0.9</version>
+        <version>5.0.10</version>
     </dependency>
 </dependencies>
 ```
