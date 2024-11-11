@@ -3,6 +3,14 @@
 ### [unreleased]
 * no changes yet
 
+### [5.0.11] (2024-11-11)
+* (base) upgrade jackson to 2.18.1
+* (base) upgradde commons-codec to 1.17.1
+* (base) upgrade bouncycastle to 1.79
+* (base) upgrade nimbus-jose-jwt to 9.46
+* (base) upgrade swagger-annotations to 2.2.25
+* (redis) upgrade jedis to 5.2.0
+
 ### [5.0.10] (2024-06-25)
 * (base) upgrade jackson to 2.17.1
 * (base) upgrade nimbus-jose-jwt to 9.40
@@ -252,7 +260,8 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.10...develop
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.11...develop
+[5.0.11]: https://github.com/bratkartoffel/security-jwt/compare/5.0.10...5.0.11
 [5.0.10]: https://github.com/bratkartoffel/security-jwt/compare/5.0.9...5.0.10
 [5.0.9]: https://github.com/bratkartoffel/security-jwt/compare/5.0.8...5.0.9
 [5.0.8]: https://github.com/bratkartoffel/security-jwt/compare/5.0.7...5.0.8
