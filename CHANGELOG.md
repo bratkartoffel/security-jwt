@@ -1,7 +1,12 @@
 # Chanegelog
 
 ### [unreleased]
-* no changes yet
+* (base) upgrade jackson to 2.18.1
+* (base) upgradde commons-codec to 1.17.1
+* (base) upgrade bouncycastle to 1.79
+* (base) upgrade nimbus-jose-jwt to 9.46
+* (base) upgrade swagger-annotations to 2.2.25
+* (redis) upgrade jedis to 5.2.0
 
 ### [5.0.10] (2024-06-25)
 * (base) upgrade jackson to 2.17.1
