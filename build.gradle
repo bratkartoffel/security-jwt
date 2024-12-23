@@ -48,7 +48,7 @@ subprojects {
     }
 
     dependencies {
-        annotationProcessor group: "org.springframework.boot", name: "spring-boot-configuration-processor", version: "3.4.0"
+        annotationProcessor group: "org.springframework.boot", name: "spring-boot-configuration-processor", version: "3.4.1"
 
         testFixturesApi group: "org.springframework.boot", name: "spring-boot-starter-test", version: "3.0.0"
         testFixturesApi group: "org.springframework.boot", name: "spring-boot-starter-web", version: "3.0.0"
