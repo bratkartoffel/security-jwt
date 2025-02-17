@@ -78,12 +78,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        springBootVersion:
-          - 3.0.13
-          - 3.1.12
-          - 3.2.12
-          - 3.3.6
-          - 3.4.0
+        - springBootVersion: 3.0.13
+          springdocVersion: 2.1.0
+        - springBootVersion: 3.1.12
+          springdocVersion: 2.2.0
+        - springBootVersion: 3.2.12
+          springdocVersion: 2.5.0
+        - springBootVersion: 3.3.8
+          springdocVersion: 2.6.0
+        - springBootVersion: 3.4.2
+          springdocVersion: latest.integration
+        - springBootVersion: 3.5.0-M1
+          springdocVersion: latest.integration
     runs-on: ubuntu-latest
     needs: build
     steps:
@@ -128,5 +134,5 @@ jobs:
       - uses: niden/actions-memcached@3b3ecd9d0d035ea92db716dc1540a7dbe9e56349 # v7
       - uses: supercharge/redis-github-action@ea9b21c6ecece47bd99595c532e481390ea0f044 # v1.8.0
       - uses: gradle/actions/wrapper-validation@94baf225fe0a508e581a564467443d0e2379123b # v4
-      - run: ./gradlew --no-daemon -PspringBootVersion=${{ matrix.springBootVersion }} -PsecurityJwtVersion=${{ needs.build.outputs.securityJwtVersion }} check
-      - run: ./gradlew --no-daemon -PspringBootVersion=${{ matrix.springBootVersion }} -PsecurityJwtVersion=${{ needs.build.outputs.securityJwtVersion }} starter-hibernate:dependencies | egrep '(:spring|:security-jwt)' | grep -v -- '->' | sed -e 's/^[+-\\| ]\+//' -e 's/ ([n\*])$//' | sort | uniq
+      - run: ./gradlew --no-daemon -PspringBootVersion=${{ matrix.springBootVersion }} -PspringdocVersion=${{ matrix.springdocVersion }} -PsecurityJwtVersion=${{ needs.build.outputs.securityJwtVersion }} check
+      - run: ./gradlew --no-daemon -PspringBootVersion=${{ matrix.springBootVersion }} -PspringdocVersion=${{ matrix.springdocVersion }} -PsecurityJwtVersion=${{ needs.build.outputs.securityJwtVersion }} starter-hibernate:dependencies | egrep '(:spring|:security-jwt)' | grep -v -- '->' | sed -e 's/^[+-\\| ]\+//' -e 's/ ([n\*])$//' | sort | uniq
