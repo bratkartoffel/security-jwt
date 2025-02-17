@@ -78,18 +78,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        - springBootVersion: 3.0.13
-          springdocVersion: 2.1.0
-        - springBootVersion: 3.1.12
-          springdocVersion: 2.2.0
-        - springBootVersion: 3.2.12
-          springdocVersion: 2.5.0
-        - springBootVersion: 3.3.8
-          springdocVersion: 2.6.0
-        - springBootVersion: 3.4.2
-          springdocVersion: latest.integration
-        - springBootVersion: 3.5.0-M1
-          springdocVersion: latest.integration
+        versions:
+          - springBootVersion: 3.0.13
+            springdocVersion: 2.1.0
+          - springBootVersion: 3.1.12
+            springdocVersion: 2.2.0
+          - springBootVersion: 3.2.12
+            springdocVersion: 2.5.0
+          - springBootVersion: 3.3.8
+            springdocVersion: 2.6.0
+          - springBootVersion: 3.4.2
+            springdocVersion: latest.integration
+          - springBootVersion: 3.5.0-M1
+            springdocVersion: latest.integration
     runs-on: ubuntu-latest
     needs: build
     steps:
