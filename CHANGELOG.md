@@ -1,11 +1,15 @@
 # Chanegelog
 
 ### [unreleased]
-* no changes yet
+* (base) upgrade bouncycastle to 1.80
+* (base) upgrade jackson to 2.18.2
+* (base) upgrade nimbus-jose-jwt to 10.0.1
+* (base) upgrade commons-codec to 1.18.0
+* (base) upgrade swagger-annotations to 2.2.28
 
 ### [5.0.11] (2024-11-11)
 * (base) upgrade jackson to 2.18.1
-* (base) upgradde commons-codec to 1.17.1
+* (base) upgrade commons-codec to 1.17.1
 * (base) upgrade bouncycastle to 1.79
 * (base) upgrade nimbus-jose-jwt to 9.46
 * (base) upgrade swagger-annotations to 2.2.25
