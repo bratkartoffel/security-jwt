@@ -18,7 +18,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+      - uses: step-security/harden-runner@cb605e52c26070c328afc4562f0b4ada7618a84e # v2.10.4
         with:
           disable-sudo: true
           egress-policy: block
@@ -44,20 +44,20 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           lfs: true
-      - uses: actions/setup-java@8df1039502a15bceb9433410b1a100fbe190c53b # v4.5.0
+      - uses: actions/setup-java@3a4f6e1af504cf6a31855fa899c6aa5355ba6c12 # v4.7.0
         with:
           distribution: 'adopt'
           java-version: '17'
           cache: 'gradle'
-      - uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
+      - uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.run_id }}
       - uses: niden/actions-memcached@3b3ecd9d0d035ea92db716dc1540a7dbe9e56349 # v7
       - uses: supercharge/redis-github-action@ea9b21c6ecece47bd99595c532e481390ea0f044 # v1.8.0
-      - uses: gradle/actions/wrapper-validation@d156388eb19639ec20ade50009f3d199ce1e2808 # v4
+      - uses: gradle/actions/wrapper-validation@94baf225fe0a508e581a564467443d0e2379123b # v4
       - run: ./gradlew --no-daemon check publishToMavenLocal
-      - uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238 # v4.6.0
+      - uses: codecov/codecov-action@13ce06bfc6bbe3ecf90edbbf1bc32fe5978ca1d3 # v5.3.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
       - id: output_version
@@ -78,16 +78,23 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        springBootVersion:
-          - 3.0.13
-          - 3.1.12
-          - 3.2.11
-          - 3.3.5
-          - 3.4.0-RC1
+        versions:
+          - springBootVersion: 3.0.13
+            springdocVersion: 2.1.0
+          - springBootVersion: 3.1.12
+            springdocVersion: 2.2.0
+          - springBootVersion: 3.2.12
+            springdocVersion: 2.5.0
+          - springBootVersion: 3.3.8
+            springdocVersion: 2.6.0
+          - springBootVersion: 3.4.2
+            springdocVersion: latest.integration
+          - springBootVersion: 3.5.0-M1
+            springdocVersion: latest.integration
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+      - uses: step-security/harden-runner@cb605e52c26070c328afc4562f0b4ada7618a84e # v2.10.4
         with:
           disable-sudo: true
           egress-policy: block
@@ -114,19 +121,19 @@ jobs:
           ref: 'master'
           fetch-depth: 1
           lfs: true
-      - uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
+      - uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-maven-${{ github.run_id }}
-      - uses: actions/setup-java@8df1039502a15bceb9433410b1a100fbe190c53b # v4.5.0
+      - uses: actions/setup-java@3a4f6e1af504cf6a31855fa899c6aa5355ba6c12 # v4.7.0
         with:
           distribution: 'adopt'
           java-version: '17'
           cache: 'gradle'
       - uses: niden/actions-memcached@3b3ecd9d0d035ea92db716dc1540a7dbe9e56349 # v7
       - uses: supercharge/redis-github-action@ea9b21c6ecece47bd99595c532e481390ea0f044 # v1.8.0
-      - uses: gradle/actions/wrapper-validation@d156388eb19639ec20ade50009f3d199ce1e2808 # v4
-      - run: ./gradlew --no-daemon -PspringBootVersion=${{ matrix.springBootVersion }} -PsecurityJwtVersion=${{ needs.build.outputs.securityJwtVersion }} check
-      - run: ./gradlew --no-daemon -PspringBootVersion=${{ matrix.springBootVersion }} -PsecurityJwtVersion=${{ needs.build.outputs.securityJwtVersion }} starter-hibernate:dependencies | egrep '(:spring|:security-jwt)' | grep -v -- '->' | sed -e 's/^[+-\\| ]\+//' -e 's/ ([n\*])$//' | sort | uniq
+      - uses: gradle/actions/wrapper-validation@94baf225fe0a508e581a564467443d0e2379123b # v4
+      - run: ./gradlew --no-daemon -PspringBootVersion=${{ matrix.versions.springBootVersion }} -PspringdocVersion=${{ matrix.versions.springdocVersion }} -PsecurityJwtVersion=${{ needs.build.outputs.securityJwtVersion }} check
+      - run: ./gradlew --no-daemon -PspringBootVersion=${{ matrix.versions.springBootVersion }} -PspringdocVersion=${{ matrix.versions.springdocVersion }} -PsecurityJwtVersion=${{ needs.build.outputs.securityJwtVersion }} starter-hibernate:dependencies | egrep '(:spring|:security-jwt)' | grep -v -- '->' | sed -e 's/^[+-\\| ]\+//' -e 's/ ([n\*])$//' | sort | uniq
