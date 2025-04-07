@@ -2,7 +2,7 @@ dependencies {
     api group: "org.springframework.boot", name: "spring-boot-starter-web", version: "3.0.0"
     api group: "org.springframework.boot", name: "spring-boot-starter-security", version: "3.0.0"
     api group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jdk8", version: "2.18.3"
-    api group: "com.nimbusds", name: "nimbus-jose-jwt", version: "10.0.2"
+    api group: "com.nimbusds", name: "nimbus-jose-jwt", version: "10.1"
     api group: "commons-codec", name: "commons-codec", version: "1.18.0"
     api(group: "io.swagger.core.v3", name: "swagger-annotations-jakarta", version: "2.2.29")
     api(group: "eu.fraho.libs", name: "libtotp", version: "1.1.0")
