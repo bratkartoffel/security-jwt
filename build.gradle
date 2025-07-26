@@ -35,6 +35,8 @@ subprojects {
         options.compilerArgs << '-parameters'
     }
 
+    javadoc.options.addStringOption('Xdoclint:none', '-quiet')
+
     jar {
         manifest {
             attributes(
