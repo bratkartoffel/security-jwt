@@ -1,7 +1,7 @@
 # Chanegelog
 
 ### [unreleased]
-* no changes yet
+* make compatible with spring boot 4.0.0-M1
 
 ### [5.0.12] (2025-02-17)
 * (base) upgrade bouncycastle to 1.80
