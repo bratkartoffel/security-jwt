@@ -97,9 +97,7 @@ public class LruCrawlerMetadumpOperationImpl extends BaseOperationImpl {
                     try {
                         key = URLDecoder.decode(kv[1], CHARSET);
                     } catch (UnsupportedEncodingException e) {
-                        log.warn("Unsupported encoding: {}", e.getMessage(), e);
-                        //noinspection deprecation
-                        key = URLDecoder.decode(kv[1]);
+                        // UTF-8 should always be available
                     }
                     break;
                 case "exp":
