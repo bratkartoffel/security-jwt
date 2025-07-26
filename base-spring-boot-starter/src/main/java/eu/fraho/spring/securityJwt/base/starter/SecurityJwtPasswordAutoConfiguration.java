@@ -11,13 +11,12 @@ import eu.fraho.spring.securityJwt.base.password.CryptPasswordEncoder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
-@AutoConfigureBefore(SecurityAutoConfiguration.class)
+@AutoConfigureBefore(name = "SecurityAutoConfiguration")
 @Slf4j
 public class SecurityJwtPasswordAutoConfiguration {
     @Bean
