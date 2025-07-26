@@ -33,6 +33,7 @@ subprojects {
     tasks.withType(JavaCompile).configureEach {
         options.encoding = 'UTF-8'
         options.compilerArgs << '-parameters'
+        options.compilerArgs << '-Xlint:deprecation'
     }
 
     javadoc.options.addBooleanOption('Xdoclint:none', true)
