@@ -61,7 +61,7 @@ subprojects {
         testFixturesApi group: "org.springframework.boot", name: "spring-boot-starter-test", version: "3.0.0"
         testFixturesApi group: "org.springframework.boot", name: "spring-boot-starter-web", version: "3.0.0"
         testFixturesApi group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jsr310", version: "2.19.2"
-        testFixturesApi platform("org.junit:junit-bom:5.13.3")
+        testFixturesApi platform("org.junit:junit-bom:5.13.4")
         testFixturesApi "org.junit.jupiter:junit-jupiter-api"
         testFixturesApi "org.junit.jupiter:junit-jupiter-params"
         testRuntimeOnly "org.junit.platform:junit-platform-launcher"
