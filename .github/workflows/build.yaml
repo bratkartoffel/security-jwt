@@ -88,9 +88,9 @@ jobs:
           - springBootVersion: 3.3.13
             springdocVersion: 2.6.0
           - springBootVersion: 3.4.9
-            springdocVersion: latest.release
+            springdocVersion: 2.8.11
           - springBootVersion: 3.5.5
-            springdocVersion: latest.release
+            springdocVersion: 2.8.11
           - springBootVersion: 4.0.0-M2
             springdocVersion: 3.0.0-M1
     runs-on: ubuntu-latest
