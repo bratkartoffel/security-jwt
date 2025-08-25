@@ -2,7 +2,7 @@ plugins {
     id 'io.freefair.lombok' version "8.14" apply false
     id 'com.adarshr.test-logger' version "4.0.0" apply false
     id 'com.github.ben-manes.versions' version "0.52.0"
-    id 'org.springframework.boot' version "3.5.4" apply false
+    id 'org.springframework.boot' version "3.5.5" apply false
 }
 
 subprojects {
@@ -56,7 +56,7 @@ subprojects {
     }
 
     dependencies {
-        annotationProcessor group: "org.springframework.boot", name: "spring-boot-configuration-processor", version: "3.5.4"
+        annotationProcessor group: "org.springframework.boot", name: "spring-boot-configuration-processor", version: "3.5.5"
 
         testFixturesApi group: "org.springframework.boot", name: "spring-boot-starter-test", version: "3.0.0"
         testFixturesApi group: "org.springframework.boot", name: "spring-boot-starter-web", version: "3.0.0"
