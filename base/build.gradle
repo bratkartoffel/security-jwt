@@ -1,7 +1,7 @@
 dependencies {
     api group: "org.springframework.boot", name: "spring-boot-starter-web", version: "3.0.0"
     api group: "org.springframework.boot", name: "spring-boot-starter-security", version: "3.0.0"
-    api group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jdk8", version: "2.19.2"
+    api group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jdk8", version: "2.20.0"
     api group: "com.nimbusds", name: "nimbus-jose-jwt", version: "10.5"
     api group: "commons-codec", name: "commons-codec", version: "1.19.0"
     api(group: "io.swagger.core.v3", name: "swagger-annotations-jakarta", version: "2.2.36")
