@@ -3,5 +3,5 @@ dependencies {
     api group: "org.springframework.boot", name: "spring-boot-starter-data-jpa", version: "3.0.0"
 
     testImplementation testFixtures(project(':base'))
-    testImplementation group: "com.h2database", name: "h2", version: "2.3.232"
+    testImplementation group: "com.h2database", name: "h2", version: "2.4.240"
 }
