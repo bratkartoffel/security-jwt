@@ -1,7 +1,6 @@
 plugins {
     id 'io.freefair.lombok' version "9.0.0" apply false
     id 'com.adarshr.test-logger' version "4.0.0" apply false
-    id 'com.github.ben-manes.versions' version "0.53.0"
     id 'org.springframework.boot' version "3.5.6" apply false
 }
 
@@ -11,7 +10,6 @@ subprojects {
     apply plugin: 'io.freefair.lombok'
     apply plugin: 'com.adarshr.test-logger'
     apply plugin: 'io.spring.dependency-management'
-    apply plugin: 'com.github.ben-manes.versions'
 
     repositories {
         mavenLocal()
@@ -19,15 +17,14 @@ subprojects {
     }
 
     group = 'eu.fraho.spring'
-    archivesBaseName = "${rootProject.name}-${project.name}"
     version = rootProject.file('version.txt').text.trim()
     description = "Spring boot security integration for JWT"
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
 
     java {
         withJavadocJar()
         withSourcesJar()
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     tasks.withType(JavaCompile).configureEach {
@@ -36,7 +33,9 @@ subprojects {
         options.compilerArgs << '-Xlint:deprecation'
     }
 
-    javadoc.options.addBooleanOption('Xdoclint:none', true)
+    javadoc {
+        options.addBooleanOption('Xdoclint:none', true)
+    }
 
     jar {
         manifest {
@@ -44,7 +43,7 @@ subprojects {
                     'Implementation-Title': rootProject.name,
                     'Implementation-Version': project.version,
                     'Build-Jdk': "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
-                    'Compatibility': project.sourceCompatibility,
+                    'Compatibility': project.java.sourceCompatibility,
                     'Built-By': System.getProperty('user.name')
             )
         }
@@ -75,7 +74,7 @@ subprojects {
 
     // code coverage
     apply plugin: 'jacoco'
-    jacoco.toolVersion = "0.8.11"
+    jacoco.toolVersion = "0.8.14"
     jacocoTestReport.reports {
         xml.required = true
         html.required = true
@@ -110,7 +109,7 @@ subprojects {
                     licenses {
                         license {
                             name = 'The MIT License (MIT)'
-                            url = 'http://opensource.org/licenses/MIT'
+                            url = 'https://opensource.org/licenses/MIT'
                             distribution = 'repo'
                         }
                     }
@@ -120,16 +119,6 @@ subprojects {
                             id = 'bratkartoffel'
                             name = 'Simon Frankenberger'
                             email = 'simon-ossrh-release@fraho.eu'
-                        }
-                    }
-                    // workaround
-                    // https://stackoverflow.com/questions/69877418/why-does-every-pom-file-published-by-gradle-has-a-self-referential-dependency
-                    // https://github.com/spring-gradle-plugins/dependency-management-plugin/issues/365
-                    withXml {
-                        asNode().dependencies.dependency.each { dep ->
-                            if(dep["artifactId"].last().value().last() == artifactId) {
-                                assert dep.parent().remove(dep)
-                            }
                         }
                     }
                 }
@@ -158,11 +147,6 @@ subprojects {
     } else {
         logger.info("Disable signing of artifacts as no key is configured")
     }
-
-    // do not try to print colors on stdout when running on jenkins
-    if (System.getenv("JENKINS_HOME") != null) {
-        testlogger.theme 'plain'
-    }
 }
 
 tasks.register('jacocoRootReport', JacocoReport) {
@@ -178,21 +162,5 @@ tasks.register('jacocoRootReport', JacocoReport) {
     }
     onlyIf = {
         true
-    }
-}
-
-// dependencyUpdates should only suggest released versions
-static boolean isStable(String version) {
-    boolean result = ['alpha', 'beta', 'rc', 'cr', 'm', 'preview', 'snapshot'].any {
-        version ==~ /(?i).*[.-]$it[.\-\d]*/
-    }
-    return !result
-}
-
-tasks.named("dependencyUpdates").configure {
-    gradleReleaseChannel = 'current'
-    revision = 'integration'
-    rejectVersionIf {
-        !isStable(it.candidate.version) && isStable(it.currentVersion)
     }
 }
