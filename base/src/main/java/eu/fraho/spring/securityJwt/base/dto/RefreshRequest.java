@@ -7,14 +7,13 @@
 package eu.fraho.spring.securityJwt.base.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
-@JsonDeserialize(builder = RefreshRequest.RefreshRequestBuilder.class)
+@com.fasterxml.jackson.databind.annotation.JsonDeserialize(builder = RefreshRequest.RefreshRequestBuilder.class)
+@tools.jackson.databind.annotation.JsonDeserialize(builder = RefreshRequest.RefreshRequestBuilder.class)
 @Value
 @Builder
 public class RefreshRequest {
@@ -23,7 +22,8 @@ public class RefreshRequest {
     @Schema(description = "Refresh token")
     String refreshToken;
 
-    @JsonPOJOBuilder(withPrefix = "")
+    @com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
+    @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
     public static final class RefreshRequestBuilder {
     }
 }

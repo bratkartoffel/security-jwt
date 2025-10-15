@@ -6,8 +6,8 @@
  */
 package eu.fraho.spring.securityJwt.base.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import eu.fraho.spring.securityJwt.base.service.TimeWithPeriodSerializer;
+import eu.fraho.spring.securityJwt.base.service.TimeWithPeriodSerializerJackson3;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.NonNull;
@@ -36,7 +36,8 @@ import java.util.concurrent.TimeUnit;
  */
 @Value
 @Slf4j
-@JsonSerialize(using = TimeWithPeriodSerializer.class)
+@com.fasterxml.jackson.databind.annotation.JsonSerialize(using = TimeWithPeriodSerializer.class)
+@tools.jackson.databind.annotation.JsonSerialize(using = TimeWithPeriodSerializerJackson3.class)
 @Schema(implementation = String.class, example = "12 hours")
 public class TimeWithPeriod {
     /**
