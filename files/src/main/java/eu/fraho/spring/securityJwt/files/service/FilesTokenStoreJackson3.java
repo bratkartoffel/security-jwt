@@ -6,8 +6,6 @@
  */
 package eu.fraho.spring.securityJwt.files.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.fraho.spring.securityJwt.base.config.RefreshProperties;
 import eu.fraho.spring.securityJwt.base.dto.JwtUser;
 import eu.fraho.spring.securityJwt.base.dto.RefreshToken;
@@ -21,19 +19,15 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileLock;
 import java.nio.file.Files;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
@@ -43,7 +37,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("SpringJavaAutowiredMembersInspection")
 @Slf4j
 @NoArgsConstructor
-public class FilesTokenStore implements RefreshTokenStore {
+public class FilesTokenStoreJackson3 implements RefreshTokenStore {
     private final ReentrantLock lock = new ReentrantLock(true);
 
     private RefreshProperties refreshProperties;

@@ -7,12 +7,14 @@
 package eu.fraho.spring.securityJwt.hibernate.dto;
 
 import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 import java.sql.Timestamp;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
+@Converter
 public class ZonedDateTimeConverter implements AttributeConverter<ZonedDateTime, Timestamp> {
     @Override
     public Timestamp convertToDatabaseColumn(ZonedDateTime zdt) {

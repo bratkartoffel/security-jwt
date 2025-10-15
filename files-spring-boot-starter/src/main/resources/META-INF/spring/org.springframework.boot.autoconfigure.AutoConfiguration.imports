@@ -1,1 +1,3 @@
 eu.fraho.spring.securityJwt.files.starter.SecurityJwtFilesAutoConfiguration
+eu.fraho.spring.securityJwt.files.starter.SecurityJwtFilesAutoConfigurationJackson2
+eu.fraho.spring.securityJwt.files.starter.SecurityJwtFilesAutoConfigurationJackson3

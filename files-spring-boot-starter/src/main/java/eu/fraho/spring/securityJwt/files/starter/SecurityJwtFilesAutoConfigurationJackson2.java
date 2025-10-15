@@ -4,41 +4,40 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.securityJwt.hibernate.starter;
+package eu.fraho.spring.securityJwt.files.starter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.fraho.spring.securityJwt.base.config.RefreshProperties;
 import eu.fraho.spring.securityJwt.base.service.RefreshTokenStore;
-import eu.fraho.spring.securityJwt.base.starter.SecurityJwtBaseAutoConfiguration;
 import eu.fraho.spring.securityJwt.base.starter.SecurityJwtNoRefreshStoreAutoConfiguration;
-import eu.fraho.spring.securityJwt.hibernate.dto.RefreshTokenEntity;
-import eu.fraho.spring.securityJwt.hibernate.service.HibernateTokenStore;
-import jakarta.persistence.EntityManager;
+import eu.fraho.spring.securityJwt.files.config.FilesProperties;
+import eu.fraho.spring.securityJwt.files.service.FilesTokenStore;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.AutoConfigurationPackage;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 @Configuration
-@AutoConfigureAfter(SecurityJwtBaseAutoConfiguration.class)
 @AutoConfigureBefore(SecurityJwtNoRefreshStoreAutoConfiguration.class)
-@AutoConfigurationPackage(basePackageClasses = RefreshTokenEntity.class)
+@ConditionalOnClass(ObjectMapper.class)
 @Slf4j
-public class SecurityJwtHibernateAutoConfiguration {
+public class SecurityJwtFilesAutoConfigurationJackson2 {
     @Bean
     @ConditionalOnMissingBean
     public RefreshTokenStore refreshTokenStore(final RefreshProperties refreshProperties,
                                                final UserDetailsService userDetailsService,
-                                               final EntityManager entityManager) {
-        log.debug("Register HibernateTokenStore");
-        HibernateTokenStore store = new HibernateTokenStore();
+                                               final ObjectMapper objectMapper,
+                                               final FilesProperties filesProperties) {
+        log.debug("Register FilesTokenStore");
+        FilesTokenStore store = new FilesTokenStore();
         store.setRefreshProperties(refreshProperties);
         store.setUserDetailsService(userDetailsService);
-        store.setEntityManager(entityManager);
+        store.setObjectMapper(objectMapper);
+        store.setFilesProperties(filesProperties);
+        store.afterPropertiesSet();
         return store;
     }
 }

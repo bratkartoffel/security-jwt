@@ -19,7 +19,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
-@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 @Configuration
 @AutoConfigureAfter(SecurityJwtBaseAutoConfiguration.class)
 @Slf4j
@@ -27,6 +26,7 @@ public class SecurityJwtNoRefreshStoreAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public RefreshTokenStore refreshTokenStore() {
+        log.debug("Register NullTokenStore");
         return new NullTokenStore();
     }
 
