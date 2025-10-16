@@ -3,6 +3,7 @@
 ### [unreleased]
 * make compatible with spring boot 4.0.0-M1
 * (memcache) fix deprecated method invocation
+* (files) refactoring and optimizations
 
 ### [5.0.12] (2025-02-17)
 * (base) upgrade bouncycastle to 1.80
