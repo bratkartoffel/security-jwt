@@ -20,6 +20,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import tools.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
+
 @Configuration
 @AutoConfigureBefore(SecurityJwtNoRefreshStoreAutoConfiguration.class)
 @ConditionalOnClass(ObjectMapper.class)
@@ -30,7 +32,7 @@ public class SecurityJwtFilesAutoConfigurationJackson3 {
     public RefreshTokenStore refreshTokenStore(final RefreshProperties refreshProperties,
                                                final UserDetailsService userDetailsService,
                                                final ObjectMapper objectMapper,
-                                               final FilesProperties filesProperties) {
+                                               final FilesProperties filesProperties) throws IOException {
         log.debug("Register FilesTokenStoreJackson3");
         FilesTokenStoreJackson3 store = new FilesTokenStoreJackson3();
         store.setRefreshProperties(refreshProperties);
