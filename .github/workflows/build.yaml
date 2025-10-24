@@ -87,11 +87,11 @@ jobs:
             springdocVersion: 2.5.0
           - springBootVersion: 3.3.13
             springdocVersion: 2.6.0
-          - springBootVersion: 3.4.10
+          - springBootVersion: 3.4.11
             springdocVersion: 2.8.11
-          - springBootVersion: 3.5.6
+          - springBootVersion: 3.5.7
             springdocVersion: 2.8.11
-          - springBootVersion: 4.0.0-M3
+          - springBootVersion: 4.0.0-RC1
             springdocVersion: 3.0.0-M1
     runs-on: ubuntu-latest
     needs: build
