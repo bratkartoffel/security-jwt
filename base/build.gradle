@@ -4,7 +4,7 @@ dependencies {
     api group: "tools.jackson.core", name: "jackson-databind", version: "3.0.1"
     api group: "com.nimbusds", name: "nimbus-jose-jwt", version: "10.5"
     api group: "commons-codec", name: "commons-codec", version: "1.19.0"
-    api(group: "io.swagger.core.v3", name: "swagger-annotations-jakarta", version: "2.2.39")
+    api(group: "io.swagger.core.v3", name: "swagger-annotations-jakarta", version: "2.2.40")
     api(group: "eu.fraho.libs", name: "libtotp", version: "1.1.0")
 
     implementation group: "org.bouncycastle", name: "bcprov-jdk18on", version: "1.82"
