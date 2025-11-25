@@ -118,9 +118,17 @@ jobs:
             repo.spring.io:443
             services.gradle.org:443
       - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        if: ${{ !startsWith(matrix.versions.springBootVersion, '4.') }}
         with:
           repository: 'bratkartoffel/security-jwt-examples'
           ref: 'master'
+          fetch-depth: 1
+          lfs: true
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        if: ${{ startsWith(matrix.versions.springBootVersion, '4.') }}
+        with:
+          repository: 'bratkartoffel/security-jwt-examples'
+          ref: 'feature/boot-4'
           fetch-depth: 1
           lfs: true
       - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
