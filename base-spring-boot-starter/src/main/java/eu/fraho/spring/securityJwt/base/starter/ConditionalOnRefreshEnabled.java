@@ -1,6 +1,6 @@
 /*
  * MIT Licence
- * Copyright (c) 2022 Simon Frankenberger
+ * Copyright (c) 2025 Simon Frankenberger
  *
  * Please see LICENCE.md for complete licence text.
  */

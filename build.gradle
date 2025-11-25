@@ -1,8 +1,7 @@
 plugins {
-    id 'io.freefair.lombok' version "8.12.1" apply false
+    id 'io.freefair.lombok' version "9.1.0" apply false
     id 'com.adarshr.test-logger' version "4.0.0" apply false
-    id 'com.github.ben-manes.versions' version "0.52.0"
-    id 'org.springframework.boot' version "3.4.2" apply false
+    id 'org.springframework.boot' version "3.5.8" apply false
 }
 
 subprojects {
@@ -11,7 +10,6 @@ subprojects {
     apply plugin: 'io.freefair.lombok'
     apply plugin: 'com.adarshr.test-logger'
     apply plugin: 'io.spring.dependency-management'
-    apply plugin: 'com.github.ben-manes.versions'
 
     repositories {
         mavenLocal()
@@ -19,15 +17,24 @@ subprojects {
     }
 
     group = 'eu.fraho.spring'
-    archivesBaseName = "${rootProject.name}-${project.name}"
     version = rootProject.file('version.txt').text.trim()
     description = "Spring boot security integration for JWT"
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
 
     java {
         withJavadocJar()
         withSourcesJar()
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        options.compilerArgs << '-parameters'
+        options.compilerArgs << '-Xlint:deprecation'
+    }
+
+    javadoc {
+        options.addBooleanOption('Xdoclint:none', true)
     }
 
     jar {
@@ -36,7 +43,7 @@ subprojects {
                     'Implementation-Title': rootProject.name,
                     'Implementation-Version': project.version,
                     'Build-Jdk': "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
-                    'Compatibility': project.sourceCompatibility,
+                    'Compatibility': project.java.sourceCompatibility,
                     'Built-By': System.getProperty('user.name')
             )
         }
@@ -48,12 +55,16 @@ subprojects {
     }
 
     dependencies {
-        annotationProcessor group: "org.springframework.boot", name: "spring-boot-configuration-processor", version: "3.4.2"
+        annotationProcessor group: "org.springframework.boot", name: "spring-boot-configuration-processor", version: "3.5.8"
 
         testFixturesApi group: "org.springframework.boot", name: "spring-boot-starter-test", version: "3.0.0"
         testFixturesApi group: "org.springframework.boot", name: "spring-boot-starter-web", version: "3.0.0"
-        testFixturesApi group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jsr310", version: "2.18.2"
-        testFixturesApi group: 'org.junit.jupiter', name: 'junit-jupiter', version: "5.11.4"
+        testFixturesApi group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jsr310", version: "2.20.1"
+        testFixturesApi platform("org.junit:junit-bom:6.0.1")
+        testFixturesApi "org.junit.jupiter:junit-jupiter-api"
+        testFixturesApi "org.junit.jupiter:junit-jupiter-params"
+        testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
     }
 
     configurations.configureEach {
@@ -63,7 +74,7 @@ subprojects {
 
     // code coverage
     apply plugin: 'jacoco'
-    jacoco.toolVersion = "0.8.11"
+    jacoco.toolVersion = "0.8.14"
     jacocoTestReport.reports {
         xml.required = true
         html.required = true
@@ -98,7 +109,7 @@ subprojects {
                     licenses {
                         license {
                             name = 'The MIT License (MIT)'
-                            url = 'http://opensource.org/licenses/MIT'
+                            url = 'https://opensource.org/licenses/MIT'
                             distribution = 'repo'
                         }
                     }
@@ -110,16 +121,6 @@ subprojects {
                             email = 'simon-ossrh-release@fraho.eu'
                         }
                     }
-                    // workaround
-                    // https://stackoverflow.com/questions/69877418/why-does-every-pom-file-published-by-gradle-has-a-self-referential-dependency
-                    // https://github.com/spring-gradle-plugins/dependency-management-plugin/issues/365
-                    withXml {
-                        asNode().dependencies.dependency.each { dep ->
-                            if(dep["artifactId"].last().value().last() == artifactId) {
-                                assert dep.parent().remove(dep)
-                            }
-                        }
-                    }
                 }
             }
         }
@@ -129,9 +130,7 @@ subprojects {
                     username = project.hasProperty('ossrhUsername') ? project.property('ossrhUsername') : null
                     password = project.hasProperty('ossrhPassword') ? project.property('ossrhPassword') : null
                 }
-                url = project.version.endsWith('-SNAPSHOT') ?
-                        'https://oss.sonatype.org/content/repositories/snapshots' :
-                        'https://oss.sonatype.org/service/local/staging/deploy/maven2'
+                url = 'https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/'
             }
         }
     }
@@ -145,11 +144,6 @@ subprojects {
         }
     } else {
         logger.info("Disable signing of artifacts as no key is configured")
-    }
-
-    // do not try to print colors on stdout when running on jenkins
-    if (System.getenv("JENKINS_HOME") != null) {
-        testlogger.theme 'plain'
     }
 }
 
@@ -166,21 +160,5 @@ tasks.register('jacocoRootReport', JacocoReport) {
     }
     onlyIf = {
         true
-    }
-}
-
-// dependencyUpdates should only suggest released versions
-static boolean isStable(String version) {
-    boolean result = ['alpha', 'beta', 'rc', 'cr', 'm', 'preview', 'snapshot'].any {
-        version ==~ /(?i).*[.-]$it[.\-\d]*/
-    }
-    return !result
-}
-
-tasks.named("dependencyUpdates").configure {
-    gradleReleaseChannel = 'current'
-    revision = 'integration'
-    rejectVersionIf {
-        !isStable(it.candidate.version) && isStable(it.currentVersion)
     }
 }

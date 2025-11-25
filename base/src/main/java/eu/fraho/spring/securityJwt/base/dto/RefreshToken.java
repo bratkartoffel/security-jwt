@@ -1,18 +1,17 @@
 /*
  * MIT Licence
- * Copyright (c) 2022 Simon Frankenberger
+ * Copyright (c) 2025 Simon Frankenberger
  *
  * Please see LICENCE.md for complete licence text.
  */
 package eu.fraho.spring.securityJwt.base.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
-@JsonDeserialize(builder = RefreshToken.RefreshTokenBuilder.class)
+@com.fasterxml.jackson.databind.annotation.JsonDeserialize(builder = RefreshToken.RefreshTokenBuilder.class)
+@tools.jackson.databind.annotation.JsonDeserialize(builder = RefreshToken.RefreshTokenBuilder.class)
 @Value
 @EqualsAndHashCode(callSuper = true)
 public class RefreshToken extends AbstractToken {
@@ -21,7 +20,8 @@ public class RefreshToken extends AbstractToken {
         super(token, expiresIn);
     }
 
-    @JsonPOJOBuilder(withPrefix = "")
+    @com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
+    @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
     public static final class RefreshTokenBuilder {
     }
 }

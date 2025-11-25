@@ -4,44 +4,42 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.securityJwt.memcache.starter;
+package eu.fraho.spring.securityJwt.files.starter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.fraho.spring.securityJwt.base.config.RefreshProperties;
 import eu.fraho.spring.securityJwt.base.service.RefreshTokenStore;
-import eu.fraho.spring.securityJwt.base.starter.SecurityJwtBaseAutoConfiguration;
 import eu.fraho.spring.securityJwt.base.starter.SecurityJwtNoRefreshStoreAutoConfiguration;
-import eu.fraho.spring.securityJwt.memcache.config.MemcacheProperties;
-import eu.fraho.spring.securityJwt.memcache.service.MemcacheTokenStore;
+import eu.fraho.spring.securityJwt.files.config.FilesProperties;
+import eu.fraho.spring.securityJwt.files.service.FilesTokenStore;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-@Configuration
-@AutoConfigureAfter(SecurityJwtBaseAutoConfiguration.class)
-@AutoConfigureBefore(SecurityJwtNoRefreshStoreAutoConfiguration.class)
-@Slf4j
-public class SecurityJwtMemcacheAutoConfiguration {
-    @Bean
-    public MemcacheProperties memcacheProperties() {
-        log.debug("Register MemcacheProperties");
-        return new MemcacheProperties();
-    }
+import java.io.IOException;
 
+@Configuration
+@AutoConfigureBefore(SecurityJwtNoRefreshStoreAutoConfiguration.class)
+@ConditionalOnClass(ObjectMapper.class)
+@Slf4j
+public class SecurityJwtFilesAutoConfigurationJackson2 {
     @Bean
     @ConditionalOnMissingBean
     public RefreshTokenStore refreshTokenStore(final RefreshProperties refreshProperties,
-                                               final MemcacheProperties memcacheProperties,
-                                               final UserDetailsService userDetailsService) {
-        log.debug("Register MemcacheTokenStore");
-        MemcacheTokenStore store = new MemcacheTokenStore();
+                                               final UserDetailsService userDetailsService,
+                                               final ObjectMapper objectMapper,
+                                               final FilesProperties filesProperties) throws IOException {
+        log.debug("Register FilesTokenStore");
+        FilesTokenStore store = new FilesTokenStore();
         store.setRefreshProperties(refreshProperties);
-        store.setMemcacheProperties(memcacheProperties);
         store.setUserDetailsService(userDetailsService);
+        store.setObjectMapper(objectMapper);
+        store.setFilesProperties(filesProperties);
+        store.afterPropertiesSet();
         return store;
     }
 }

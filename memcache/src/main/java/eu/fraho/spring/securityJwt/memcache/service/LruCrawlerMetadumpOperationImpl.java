@@ -10,16 +10,15 @@ import net.spy.memcached.protocol.BaseOperationImpl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
 
 @Slf4j
 public class LruCrawlerMetadumpOperationImpl extends BaseOperationImpl {
     private static final OperationStatus END = new OperationStatus(true, "END", StatusCode.SUCCESS);
-    private static final String CHARSET = "UTF-8";
 
     private final ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
     private final LruCrawlerMetadumpOperation.Callback cb;
@@ -60,7 +59,7 @@ public class LruCrawlerMetadumpOperationImpl extends BaseOperationImpl {
                 }
             }
             if (offset >= 0) {
-                String line = byteBuffer.toString(CHARSET);
+                String line = byteBuffer.toString(StandardCharsets.UTF_8);
                 byteBuffer.reset();
                 OperationErrorType eType = classifyError(line);
                 if (eType != null) {
@@ -94,13 +93,7 @@ public class LruCrawlerMetadumpOperationImpl extends BaseOperationImpl {
 
             switch (kv[0]) {
                 case "key":
-                    try {
-                        key = URLDecoder.decode(kv[1], CHARSET);
-                    } catch (UnsupportedEncodingException e) {
-                        log.warn("Unsupported encoding: {}", e.getMessage(), e);
-                        //noinspection deprecation
-                        key = URLDecoder.decode(kv[1]);
-                    }
+                    key = URLDecoder.decode(kv[1], StandardCharsets.UTF_8);
                     break;
                 case "exp":
                     exp = Integer.parseInt(kv[1]);

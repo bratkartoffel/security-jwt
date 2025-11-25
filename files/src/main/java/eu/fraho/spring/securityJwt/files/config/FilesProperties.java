@@ -1,6 +1,6 @@
 /*
  * MIT Licence
- * Copyright (c) 2022 Simon Frankenberger
+ * Copyright (c) 2025 Simon Frankenberger
  *
  * Please see LICENCE.md for complete licence text.
  */
@@ -14,11 +14,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 
 @ConfigurationProperties(prefix = "fraho.jwt.refresh.files")
 @Component
@@ -49,8 +47,5 @@ public class FilesProperties implements InitializingBean {
             Files.createDirectories(dataDir);
         }
         databaseFile = dataDir.resolve(databaseFile);
-        if (!Files.exists(databaseFile)) {
-            Files.write(databaseFile, "[]".getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE_NEW);
-        }
     }
 }

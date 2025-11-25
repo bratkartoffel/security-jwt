@@ -9,7 +9,7 @@ Please note that the redis-plugin needs an external redisd server.
 <dependency>
     <groupId>eu.fraho.spring</groupId>
     <artifactId>security-jwt-redis</artifactId>
-    <version>5.0.12</version>
+    <version>5.1.0</version>
 </dependency>
 ```
 

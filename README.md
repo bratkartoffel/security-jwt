@@ -49,13 +49,13 @@ should be sufficient for the most use cases.
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-base</artifactId>
-        <version>5.0.12</version>
+        <version>5.1.0</version>
     </dependency>
     <!-- or -->
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-base-spring-boot-starter</artifactId>
-        <version>5.0.12</version>
+        <version>5.1.0</version>
     </dependency>
 </dependencies>
 ```
@@ -68,27 +68,27 @@ When you want to add refresh token support, then choose one of the following dep
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-internal</artifactId>
-        <version>5.0.12</version>
+        <version>5.1.0</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-memcache</artifactId>
-        <version>5.0.12</version>
+        <version>5.1.0</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-hibernate</artifactId>
-        <version>5.0.12</version>
+        <version>5.1.0</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-redis</artifactId>
-        <version>5.0.12</version>
+        <version>5.1.0</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-files</artifactId>
-        <version>5.0.12</version>
+        <version>5.1.0</version>
     </dependency>
 </dependencies>
 ```
@@ -117,7 +117,8 @@ updating this library in your project.
 | `3.0.0 - 4.4.0` | [2.0.0, 2.2.0[                  | 8+                    |
 | `4.4.1 - 4.4.2` | [2.2.0, 2.6.0[                  | 8+                    |
 | `4.5.x - 4.6.x` | [2.0.0, 3.0.0[                  | 8+                    |
-| `>= 5.0.0`      | [3.0.0                          | 17+                   |
+| `5.0.0 - 5.0.x` | [3.0.0, 4.0.0[                  | 17+                   |
+| `>= 5.1.0`      | [3.0.0                          | 17+                   |
 
 ## Spring Boot Autoconfig (recommended):
 

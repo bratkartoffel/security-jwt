@@ -1,6 +1,6 @@
 /*
  * MIT Licence
- * Copyright (c) 2022 Simon Frankenberger
+ * Copyright (c) 2025 Simon Frankenberger
  *
  * Please see LICENCE.md for complete licence text.
  */
@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,15 +21,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.lang.reflect.Constructor;
 
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
@@ -44,10 +50,24 @@ public class JwtSecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         log.debug("Configuring AuthenticationManagerBuilder");
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder);
-        return authProvider;
+        try {
+            // try default constructor [3.0.0 - 4.0.0[
+            DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+            authProvider.setUserDetailsService(userDetailsService);
+            authProvider.setPasswordEncoder(passwordEncoder);
+            return authProvider;
+        } catch (NoSuchMethodError nsme) {
+            try {
+                // try constructor with UserDetailsService [4.0.0
+                Constructor<DaoAuthenticationProvider> constructor = DaoAuthenticationProvider.class.getConstructor(UserDetailsService.class);
+                DaoAuthenticationProvider authProvider = constructor.newInstance(userDetailsService);
+                authProvider.setPasswordEncoder(passwordEncoder);
+                return authProvider;
+            } catch (ReflectiveOperationException roe2) {
+                roe2.addSuppressed(nsme);
+                throw new BeanInitializationException("Could not create DaoAuthenticationProvider", nsme);
+            }
+        }
     }
 
     @Bean
@@ -66,13 +86,11 @@ public class JwtSecurityConfig {
         httpSecurity
                 .authenticationProvider(authenticationProvider())
                 // we don't need CSRF because our token is invulnerable
-                .csrf().disable()
+                .csrf(AbstractHttpConfigurer::disable)
                 // use our unauthorized handler
-                .exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-                .and()
+                .exceptionHandling(httpSecurityExceptionHandlingConfigurer -> httpSecurityExceptionHandlingConfigurer.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 // don't create session
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+                .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // Custom JWT based security filter
                 .addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
 
@@ -80,7 +98,8 @@ public class JwtSecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfiguration) throws
+            Exception {
         return authConfiguration.getAuthenticationManager();
     }
 

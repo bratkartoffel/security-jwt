@@ -6,12 +6,12 @@
  */
 package eu.fraho.spring.securityJwt.files.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.fraho.spring.securityJwt.base.exceptions.RefreshException;
 import eu.fraho.spring.securityJwt.files.dto.DatabaseEntry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class FilesTokenStore extends CommonFilesTokenStore {
+public class FilesTokenStoreJackson3 extends CommonFilesTokenStore {
     protected final List<DatabaseEntry> database = new ArrayList<>();
     private ObjectMapper objectMapper;
 
@@ -45,6 +45,8 @@ public class FilesTokenStore extends CommonFilesTokenStore {
             log.debug("Loading existing store");
             database.addAll(objectMapper.readValue(Files.readAllBytes(filesProperties.getDatabaseFile()), new TypeReference<>() {
             }));
+            ZonedDateTime now = ZonedDateTime.now();
+            database.removeIf(e -> e.getExpires().isBefore(now));
         }
     }
 

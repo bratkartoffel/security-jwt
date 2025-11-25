@@ -1,6 +1,6 @@
 /*
  * MIT Licence
- * Copyright (c) 2022 Simon Frankenberger
+ * Copyright (c) 2025 Simon Frankenberger
  *
  * Please see LICENCE.md for complete licence text.
  */
@@ -28,18 +28,16 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
-@AutoConfigureBefore(SecurityAutoConfiguration.class)
+@AutoConfigureBefore(name = "SecurityAutoConfiguration")
 @Slf4j
 public class SecurityJwtBaseAutoConfiguration {
     @Bean
