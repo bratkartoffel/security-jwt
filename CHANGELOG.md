@@ -1,7 +1,7 @@
 # Chanegelog
 
 ### [unreleased]
-* make compatible with spring boot 4.0.0-M3
+* add spring boot 4.0.0 support
 * (memcache) fix deprecated method invocation
 * (files) refactoring and optimizations
 * (base) upgrade bouncycastle to 1.82
