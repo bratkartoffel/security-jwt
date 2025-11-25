@@ -1,6 +1,9 @@
 # Chanegelog
 
 ### [unreleased]
+* no changes yet
+
+### [5.1.0] (2025-11-25)
 * add spring boot 4.0.0 support
 * (memcache) fix deprecated method invocation
 * (files) refactoring and optimizations
@@ -274,7 +277,8 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.0.12...develop
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.1.0...develop
+[5.1.0]: https://github.com/bratkartoffel/security-jwt/compare/5.0.12...5.1.0
 [5.0.12]: https://github.com/bratkartoffel/security-jwt/compare/5.0.11...5.0.12
 [5.0.11]: https://github.com/bratkartoffel/security-jwt/compare/5.0.10...5.0.11
 [5.0.10]: https://github.com/bratkartoffel/security-jwt/compare/5.0.9...5.0.10
