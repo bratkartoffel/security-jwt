@@ -130,9 +130,7 @@ subprojects {
                     username = project.hasProperty('ossrhUsername') ? project.property('ossrhUsername') : null
                     password = project.hasProperty('ossrhPassword') ? project.property('ossrhPassword') : null
                 }
-                url = project.version.endsWith('-SNAPSHOT') ?
-                        'https://oss.sonatype.org/content/repositories/snapshots' :
-                        'https://oss.sonatype.org/service/local/staging/deploy/maven2'
+                url = 'https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/'
             }
         }
     }
