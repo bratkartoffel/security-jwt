@@ -4,14 +4,15 @@
 * no changes yet
 
 ### [5.1.0] (2025-11-25)
-* add spring boot 4.0.0 support
+* add spring boot 4.0.0 support (and maintain spring boot 3.x compatibility)
 * (memcache) fix deprecated method invocation
 * (files) refactoring and optimizations
 * (base) upgrade bouncycastle to 1.82
-* (base) upgrade nimbus-jose-jwt to 10.5
-* (base) upgrade commons-codec to 1.19.0
-* (base) upgrade jackson to 2.20.0
-* (redis) upgrade jedis to 7.0.0
+* (base) upgrade nimbus-jose-jwt to 10.6
+* (base) upgrade commons-codec to 1.20.0
+* (base) upgrade jackson to 3.0.2
+* (base) upgrade swagger-annotations to 2.2.40
+* (redis) upgrade jedis to 7.1.0
 
 ### [5.0.12] (2025-02-17)
 * (base) upgrade bouncycastle to 1.80
