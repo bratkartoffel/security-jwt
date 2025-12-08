@@ -41,7 +41,7 @@ jobs:
             repo.maven.apache.org:443
             services.gradle.org:443
             uploader.codecov.io:443
-      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           lfs: true
       - uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
@@ -117,14 +117,14 @@ jobs:
             repo.maven.apache.org:443
             repo.spring.io:443
             services.gradle.org:443
-      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         if: ${{ !startsWith(matrix.versions.springBootVersion, '4.') }}
         with:
           repository: 'bratkartoffel/security-jwt-examples'
           ref: 'master'
           fetch-depth: 1
           lfs: true
-      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         if: ${{ startsWith(matrix.versions.springBootVersion, '4.') }}
         with:
           repository: 'bratkartoffel/security-jwt-examples'
