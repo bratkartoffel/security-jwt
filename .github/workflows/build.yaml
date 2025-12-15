@@ -49,7 +49,7 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
           cache: 'gradle'
-      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+      - uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.run_id }}
@@ -131,7 +131,7 @@ jobs:
           ref: 'feature/boot-4'
           fetch-depth: 1
           lfs: true
-      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+      - uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.run_id }}
