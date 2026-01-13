@@ -36,6 +36,16 @@ public class RedisProperties implements InitializingBean {
      */
     private Integer port = 6379;
 
+    /**
+     * Optional username for redis server AUTH
+     */
+    private String username = null;
+
+    /**
+     * Optional password for redis server AUTH
+     */
+    private String password = null;
+
     @NestedConfigurationProperty
     private ConnectionPoolConfig poolConfig = new ConnectionPoolConfig();
 

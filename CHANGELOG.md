@@ -1,7 +1,8 @@
 # Chanegelog
 
 ### [unreleased]
-* no changes yet
+* (redis) replace deprecated jedis classes
+* (redis) add support for AUTH (fixes #446)
 
 ### [5.1.0] (2025-11-25)
 * add spring boot 4.0.0 support (and maintain spring boot 3.x compatibility)

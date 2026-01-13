@@ -141,8 +141,18 @@ public class RedisTokenStore implements RefreshTokenStore {
         log.info("Using redis implementation to handle refresh tokens");
         log.info("Starting redis connection pool to {}:{}", redisProperties.getHost(), redisProperties.getPort());
 
+        DefaultJedisClientConfig.Builder clientConfig = DefaultJedisClientConfig.builder();
+        if (redisProperties.getPassword() != null) {
+            if (redisProperties.getUsername() != null) {
+                log.debug("Using authentication with username");
+                clientConfig.user(redisProperties.getUsername());
+            } else {
+                log.debug("Using authentication without username");
+            }
+            clientConfig.password(redisProperties.getPassword());
+        }
         client = RedisClient.builder().hostAndPort(redisProperties.getHost(), redisProperties.getPort())
-                .clientConfig(DefaultJedisClientConfig.builder().build())
+                .clientConfig(clientConfig.build())
                 .poolConfig(redisProperties.getPoolConfig())
                 .build();
     }

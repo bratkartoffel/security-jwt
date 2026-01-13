@@ -42,6 +42,7 @@ public class AbstractJwtServiceRefreshRedisTest extends AbstractJwtTokenServiceW
     protected RedisProperties getRedisProperties() {
         RedisProperties configuration = new RedisProperties();
         configuration.setHost(System.getProperty("fraho.jwt.refresh.redis.host", "127.0.0.1"));
+        configuration.setPassword("changeit");
         configuration.afterPropertiesSet();
         return configuration;
     }
