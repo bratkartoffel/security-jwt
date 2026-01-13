@@ -6,6 +6,11 @@
 ### [5.2.0] (2026-01-13)
 * (redis) replace deprecated jedis classes
 * (redis) add support for AUTH (fixes #446)
+* (base) upgrade bouncycastle to 1.83
+* (base) upgrade jackson to 3.0.3
+* (base) upgrade swagger-annotations to 2.2.41
+* (base) upgrade nimbus-jose-jwt to 10.7
+* (redis) upgrade jedis to 7.2.0
 
 ### [5.1.0] (2025-11-25)
 * add spring boot 4.0.0 support (and maintain spring boot 3.x compatibility)
