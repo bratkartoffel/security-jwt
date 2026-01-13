@@ -17,11 +17,11 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.AbstractTransaction;
+import redis.clients.jedis.DefaultJedisClientConfig;
 import redis.clients.jedis.Pipeline;
+import redis.clients.jedis.RedisClient;
 import redis.clients.jedis.Response;
-import redis.clients.jedis.Transaction;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,14 +42,13 @@ public class RedisTokenStore implements RefreshTokenStore {
 
     private UserDetailsService userDetailsService;
 
-    private JedisPool redisPool;
+    private RedisClient client;
 
     @Override
     public void saveToken(JwtUser user, String token) {
         String key = redisProperties.getPrefix() + token;
         String entry = RedisEntry.from(user).toString();
-        try (Jedis jedis = redisPool.getResource()) {
-            Transaction t = jedis.multi();
+        try (AbstractTransaction t = client.multi()) {
             t.set(key, entry);
             t.pexpire(key, refreshProperties.getExpiration().toMillis());
             t.exec();
@@ -61,8 +60,7 @@ public class RedisTokenStore implements RefreshTokenStore {
     public <T extends JwtUser> Optional<T> useToken(String token) {
         String key = redisProperties.getPrefix() + token;
         Optional<T> result = Optional.empty();
-        try (Jedis jedis = redisPool.getResource()) {
-            Transaction transaction = jedis.multi();
+        try (AbstractTransaction transaction = client.multi()) {
             Response<String> tmp = transaction.get(key);
             Response<Long> del = transaction.del(key);
             transaction.exec();
@@ -85,20 +83,19 @@ public class RedisTokenStore implements RefreshTokenStore {
     public Map<Long, List<RefreshToken>> listTokens() {
         final Map<Long, List<RefreshToken>> result = new HashMap<>();
         final int prefixLen = redisProperties.getPrefix().length();
-        try (Jedis jedis = redisPool.getResource()) {
-            Map<String, String> entries = listKeysWithValues(jedis);
-            List<Runnable> resultBuilder = new ArrayList<>();
-            Pipeline p = jedis.pipelined();
+        Map<String, String> entries = listKeysWithValues();
+        List<Runnable> resultBuilder = new ArrayList<>();
+        try (Pipeline p = client.pipelined()) {
             for (Map.Entry<String, String> entry : entries.entrySet()) {
                 Long id = RedisEntry.from(entry.getValue()).getId();
                 String token = entry.getKey().substring(prefixLen);
                 List<RefreshToken> tokenList = result.computeIfAbsent(id, s -> new ArrayList<>());
                 Response<Long> expiresIn = p.ttl(entry.getKey());
                 resultBuilder.add(() -> tokenList.add(
-                        RefreshToken.builder()
-                                .token(token)
-                                .expiresIn(expiresIn.get())
-                                .build()
+                                RefreshToken.builder()
+                                        .token(token)
+                                        .expiresIn(expiresIn.get())
+                                        .build()
                         )
                 );
             }
@@ -111,34 +108,29 @@ public class RedisTokenStore implements RefreshTokenStore {
     @Override
     public boolean revokeToken(String token) {
         String key = redisProperties.getPrefix() + token;
-        try (Jedis jedis = redisPool.getResource()) {
-            return jedis.del(key) == 1;
-        }
+        return client.del(key) == 1L;
     }
 
     @Override
     public int revokeTokens(JwtUser user) {
-        try (Jedis jedis = redisPool.getResource()) {
-            List<String> keys = new ArrayList<>(jedis.keys(redisProperties.getPrefix() + "*"));
-            List<String> values = jedis.mget(keys.toArray(new String[0]));
+        List<String> keys = new ArrayList<>(client.keys(redisProperties.getPrefix() + "*"));
+        List<String> values = client.mget(keys.toArray(new String[0]));
 
-            int counter = 0;
-            for (int i = 0; i < keys.size(); i++) {
-                if (values.get(i) == null) continue;
-                RedisEntry dto = RedisEntry.from(values.get(i));
-                if (Objects.equals(dto.getId(), user.getId())) {
-                    counter += jedis.del(keys.get(i));
-                }
+        long counter = 0;
+        for (int i = 0; i < keys.size(); i++) {
+            if (values.get(i) == null) continue;
+            RedisEntry dto = RedisEntry.from(values.get(i));
+            if (Objects.equals(dto.getId(), user.getId())) {
+                counter += client.del(keys.get(i));
             }
-            return counter;
         }
+        return (int) counter;
     }
 
     @Override
     public int revokeTokens() {
-        try (Jedis jedis = redisPool.getResource()) {
-            List<String> keys = new ArrayList<>(jedis.keys(redisProperties.getPrefix() + "*"));
-            Transaction transaction = jedis.multi();
+        List<String> keys = new ArrayList<>(client.keys(redisProperties.getPrefix() + "*"));
+        try (AbstractTransaction transaction = client.multi()) {
             keys.forEach(transaction::del);
             return transaction.exec().size();
         }
@@ -148,7 +140,11 @@ public class RedisTokenStore implements RefreshTokenStore {
     public void afterPropertiesSet() {
         log.info("Using redis implementation to handle refresh tokens");
         log.info("Starting redis connection pool to {}:{}", redisProperties.getHost(), redisProperties.getPort());
-        redisPool = new JedisPool(redisProperties.getPoolConfig(), redisProperties.getHost(), redisProperties.getPort());
+
+        client = RedisClient.builder().hostAndPort(redisProperties.getHost(), redisProperties.getPort())
+                .clientConfig(DefaultJedisClientConfig.builder().build())
+                .poolConfig(redisProperties.getPoolConfig())
+                .build();
     }
 
     @Autowired
@@ -182,12 +178,12 @@ public class RedisTokenStore implements RefreshTokenStore {
         return result;
     }
 
-    protected Map<String, String> listKeysWithValues(Jedis jedis) {
-        List<String> keys = new ArrayList<>(jedis.keys(redisProperties.getPrefix() + "*"));
+    protected Map<String, String> listKeysWithValues() {
+        List<String> keys = new ArrayList<>(client.keys(redisProperties.getPrefix() + "*"));
         if (keys.isEmpty()) {
             return Collections.emptyMap();
         }
-        List<String> values = jedis.mget(keys.toArray(new String[0]));
+        List<String> values = client.mget(keys.toArray(new String[0]));
         return zipToMap(keys, values);
     }
 }

@@ -13,7 +13,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.stereotype.Component;
-import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.ConnectionPoolConfig;
 
 @ConfigurationProperties(prefix = "fraho.jwt.refresh.redis")
 @Component
@@ -37,7 +37,7 @@ public class RedisProperties implements InitializingBean {
     private Integer port = 6379;
 
     @NestedConfigurationProperty
-    private JedisPoolConfig poolConfig = new JedisPoolConfig();
+    private ConnectionPoolConfig poolConfig = new ConnectionPoolConfig();
 
     @Override
     public void afterPropertiesSet() {
