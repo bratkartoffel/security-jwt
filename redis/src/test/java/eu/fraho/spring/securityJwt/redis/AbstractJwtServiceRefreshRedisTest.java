@@ -17,8 +17,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.RedisClient;
 import redis.clients.jedis.params.SetParams;
 
 import java.lang.reflect.Field;
@@ -27,7 +26,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @ExtendWith(SpringExtension.class)
 public class AbstractJwtServiceRefreshRedisTest extends AbstractJwtTokenServiceWithRefreshTest {
@@ -44,6 +42,7 @@ public class AbstractJwtServiceRefreshRedisTest extends AbstractJwtTokenServiceW
     protected RedisProperties getRedisProperties() {
         RedisProperties configuration = new RedisProperties();
         configuration.setHost(System.getProperty("fraho.jwt.refresh.redis.host", "127.0.0.1"));
+        configuration.setPassword("changeit");
         configuration.afterPropertiesSet();
         return configuration;
     }
@@ -66,22 +65,19 @@ public class AbstractJwtServiceRefreshRedisTest extends AbstractJwtTokenServiceW
         RefreshToken tokenB = Assertions.assertTimeout(Duration.ofSeconds(1), () -> service.generateRefreshToken(jsmith));
         RefreshToken tokenC = Assertions.assertTimeout(Duration.ofSeconds(1), () -> service.generateRefreshToken(xsmith));
 
-        try (Jedis client = getJedisClient()) {
-            Assertions.assertNull(client.set("foobar", "hi", new SetParams().xx().ex(3)));
-        }
+        Assertions.assertNull(getRedisClient().set("foobar", "hi", new SetParams().xx().ex(3)));
 
         final Map<Long, List<RefreshToken>> tokenMap = service.listRefreshTokens();
         Assertions.assertEquals(2, tokenMap.size(), "User count don't match");
 
-        final List<RefreshToken> allTokens = tokenMap.values().stream().flatMap(Collection::stream)
-                .collect(Collectors.toList());
+        final List<RefreshToken> allTokens = tokenMap.values().stream().flatMap(Collection::stream).toList();
         Assertions.assertEquals(3, allTokens.size(), "AbstractToken count don't match");
         Assertions.assertTrue(allTokens.containsAll(Arrays.asList(tokenA, tokenB, tokenC)), "Not all tokens returned");
     }
 
-    private Jedis getJedisClient() throws Exception {
-        Field memcachedClient = RedisTokenStore.class.getDeclaredField("redisPool");
+    private RedisClient getRedisClient() throws Exception {
+        Field memcachedClient = RedisTokenStore.class.getDeclaredField("client");
         memcachedClient.setAccessible(true);
-        return ((JedisPool) memcachedClient.get(refreshTokenStore)).getResource();
+        return ((RedisClient) memcachedClient.get(refreshTokenStore));
     }
 }
