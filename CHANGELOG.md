@@ -1,6 +1,9 @@
 # Chanegelog
 
 ### [unreleased]
+* no changes yet
+
+### [5.2.0] (2026-01-13)
 * (redis) replace deprecated jedis classes
 * (redis) add support for AUTH (fixes #446)
 
@@ -279,7 +282,8 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.1.0...develop
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.2.0...develop
+[5.2.0]: https://github.com/bratkartoffel/security-jwt/compare/5.1.0...5.2.0
 [5.1.0]: https://github.com/bratkartoffel/security-jwt/compare/5.0.12...5.1.0
 [5.0.12]: https://github.com/bratkartoffel/security-jwt/compare/5.0.11...5.0.12
 [5.0.11]: https://github.com/bratkartoffel/security-jwt/compare/5.0.10...5.0.11
