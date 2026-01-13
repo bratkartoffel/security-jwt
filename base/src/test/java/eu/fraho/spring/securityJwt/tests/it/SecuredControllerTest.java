@@ -1,12 +1,13 @@
 /*
  * MIT Licence
- * Copyright (c) 2025 Simon Frankenberger
+ * Copyright (c) 2026 Simon Frankenberger
  *
  * Please see LICENCE.md for complete licence text.
  */
 package eu.fraho.spring.securityJwt.tests.it;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.fraho.spring.securityJwt.base.config.TokenProperties;
 import eu.fraho.spring.securityJwt.base.dto.AccessToken;
 import eu.fraho.spring.securityJwt.base.dto.AuthenticationResponse;
 import eu.fraho.spring.securityJwt.base.it.spring.TestApiApplication;
@@ -23,6 +24,8 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.concurrent.TimeUnit;
+
 @SpringBootTest(classes = TestApiApplication.class)
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
@@ -36,6 +39,7 @@ public class SecuredControllerTest {
     public static final String HELLO_WORLD = "Hello world!";
 
     private MockMvc mockMvc;
+    private TokenProperties tokenProperties;
 
     @Test
     public void testLoggedInRequestWrongRole() throws Exception {
@@ -52,6 +56,23 @@ public class SecuredControllerTest {
     public void testRequestNoToken() throws Exception {
         MockHttpServletRequestBuilder req = MockMvcRequestBuilders.get(API_ADMIN)
                 .accept(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(req)
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+    }
+
+    @Test
+    public void testRequestExpiredToken() throws Exception {
+        AccessToken token = getTokenFor("user").getAccessToken();
+        MockHttpServletRequestBuilder req = MockMvcRequestBuilders.get(API_USER)
+                .accept(MediaType.APPLICATION_JSON)
+                .header("Authorization", token.getType() + " " + token.getToken());
+
+        mockMvc.perform(req)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string(HELLO_WORLD));
+
+        TimeUnit.SECONDS.sleep(tokenProperties.getExpiration().toSeconds());
 
         mockMvc.perform(req)
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
@@ -123,5 +144,10 @@ public class SecuredControllerTest {
     @Autowired
     public void setMockMvc(MockMvc mockMvc) {
         this.mockMvc = mockMvc;
+    }
+
+    @Autowired
+    public void setTokenProperties(TokenProperties tokenProperties) {
+        this.tokenProperties = tokenProperties;
     }
 }

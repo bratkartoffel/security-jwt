@@ -43,3 +43,8 @@ git commit -m "Update version to next snapshot"
 
 # push everything upstream
 git push --atomic origin -- develop master refs/tags/"$release_version"
+
+# publish to central
+source .gradle/gradle.properties
+curl -v -X POST -u "$ossrhUsername:$ossrhPassword" https://ossrh-staging-api.central.sonatype.com/manual/upload/defaultRepository/eu.fraho
+

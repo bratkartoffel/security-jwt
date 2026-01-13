@@ -3,15 +3,20 @@
 ### [unreleased]
 * no changes yet
 
+### [5.2.0] (2026-01-13)
+* (redis) replace deprecated jedis classes
+* (redis) add support for AUTH (fixes #446)
+
 ### [5.1.0] (2025-11-25)
-* add spring boot 4.0.0 support
+* add spring boot 4.0.0 support (and maintain spring boot 3.x compatibility)
 * (memcache) fix deprecated method invocation
 * (files) refactoring and optimizations
 * (base) upgrade bouncycastle to 1.82
-* (base) upgrade nimbus-jose-jwt to 10.5
-* (base) upgrade commons-codec to 1.19.0
-* (base) upgrade jackson to 2.20.0
-* (redis) upgrade jedis to 7.0.0
+* (base) upgrade nimbus-jose-jwt to 10.6
+* (base) upgrade commons-codec to 1.20.0
+* (base) upgrade jackson to 3.0.2
+* (base) upgrade swagger-annotations to 2.2.40
+* (redis) upgrade jedis to 7.1.0
 
 ### [5.0.12] (2025-02-17)
 * (base) upgrade bouncycastle to 1.80
@@ -277,7 +282,8 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.1.0...develop
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.2.0...develop
+[5.2.0]: https://github.com/bratkartoffel/security-jwt/compare/5.1.0...5.2.0
 [5.1.0]: https://github.com/bratkartoffel/security-jwt/compare/5.0.12...5.1.0
 [5.0.12]: https://github.com/bratkartoffel/security-jwt/compare/5.0.11...5.0.12
 [5.0.11]: https://github.com/bratkartoffel/security-jwt/compare/5.0.10...5.0.11
