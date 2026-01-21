@@ -87,6 +87,8 @@ public class JwtSecurityConfig {
                 .authenticationProvider(authenticationProvider())
                 // we don't need CSRF because our token is invulnerable
                 .csrf(AbstractHttpConfigurer::disable)
+                // JWT Unless there is a strong need for "visitor data persistence", it is not recommended to issue Token to anonymous users.
+                .anonymous(AbstractHttpConfigurer::disable)
                 // use our unauthorized handler
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer -> httpSecurityExceptionHandlingConfigurer.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 // don't create session
