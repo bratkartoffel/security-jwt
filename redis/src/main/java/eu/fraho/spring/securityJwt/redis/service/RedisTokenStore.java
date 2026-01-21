@@ -9,20 +9,11 @@ package eu.fraho.spring.securityJwt.redis.service;
 import eu.fraho.spring.securityJwt.base.config.RefreshProperties;
 import eu.fraho.spring.securityJwt.base.dto.JwtUser;
 import eu.fraho.spring.securityJwt.base.dto.RefreshToken;
+import eu.fraho.spring.securityJwt.base.dto.TimeWithPeriod;
 import eu.fraho.spring.securityJwt.base.service.RefreshTokenStore;
 import eu.fraho.spring.securityJwt.redis.config.RedisProperties;
 import eu.fraho.spring.securityJwt.redis.dto.RedisEntry;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import redis.clients.jedis.AbstractTransaction;
-import redis.clients.jedis.DefaultJedisClientConfig;
-import redis.clients.jedis.Pipeline;
-import redis.clients.jedis.RedisClient;
-import redis.clients.jedis.Response;
-
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,6 +22,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.RedisKeyCommands;
+import org.springframework.data.redis.core.RedisCallback;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 @SuppressWarnings("SpringJavaAutowiredMembersInspection")
 @Slf4j
@@ -42,35 +42,24 @@ public class RedisTokenStore implements RefreshTokenStore {
 
     private UserDetailsService userDetailsService;
 
-    private RedisClient client;
+    private StringRedisTemplate redisTemplate;
 
     @Override
     public void saveToken(JwtUser user, String token) {
         String key = redisProperties.getPrefix() + token;
         String entry = RedisEntry.from(user).toString();
-        try (AbstractTransaction t = client.multi()) {
-            t.set(key, entry);
-            t.pexpire(key, refreshProperties.getExpiration().toMillis());
-            t.exec();
-        }
+        TimeWithPeriod period = refreshProperties.getExpiration();
+        redisTemplate.opsForValue().set(key, entry, period.getQuantity(), period.getTimeUnit());
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T extends JwtUser> Optional<T> useToken(String token) {
         String key = redisProperties.getPrefix() + token;
-        Optional<T> result = Optional.empty();
-        try (AbstractTransaction transaction = client.multi()) {
-            Response<String> tmp = transaction.get(key);
-            Response<Long> del = transaction.del(key);
-            transaction.exec();
-            String found = tmp.get();
-            if (found != null && del.get() == 1) {
-                String username = RedisEntry.from(found).getUsername();
-                result = Optional.ofNullable((T) userDetailsService.loadUserByUsername(username));
-            }
-        }
-        return result;
+        return Optional.ofNullable(redisTemplate.opsForValue().getAndDelete(key)).map(entry -> {
+            String username = RedisEntry.from(entry).getUsername();
+            return (T) userDetailsService.loadUserByUsername(username);
+        });
     }
 
 
@@ -83,78 +72,71 @@ public class RedisTokenStore implements RefreshTokenStore {
     public Map<Long, List<RefreshToken>> listTokens() {
         final Map<Long, List<RefreshToken>> result = new HashMap<>();
         final int prefixLen = redisProperties.getPrefix().length();
+
         Map<String, String> entries = listKeysWithValues();
-        List<Runnable> resultBuilder = new ArrayList<>();
-        try (Pipeline p = client.pipelined()) {
-            for (Map.Entry<String, String> entry : entries.entrySet()) {
-                Long id = RedisEntry.from(entry.getValue()).getId();
-                String token = entry.getKey().substring(prefixLen);
-                List<RefreshToken> tokenList = result.computeIfAbsent(id, s -> new ArrayList<>());
-                Response<Long> expiresIn = p.ttl(entry.getKey());
-                resultBuilder.add(() -> tokenList.add(
-                                RefreshToken.builder()
-                                        .token(token)
-                                        .expiresIn(expiresIn.get())
-                                        .build()
-                        )
-                );
+        List<Map.Entry<Long, String>> meta = new ArrayList<>();
+
+        List<Object> ttlResults = redisTemplate.executePipelined(
+            (RedisCallback<Object>) connection -> {
+                RedisKeyCommands redisKeyCommands = connection.keyCommands();
+                for (Map.Entry<String, String> entry : entries.entrySet()) {
+                    Long id = RedisEntry.from(entry.getValue()).getId();
+                    String token = entry.getKey().substring(prefixLen);
+                    meta.add(Map.entry(id, token));
+                    redisKeyCommands.ttl(entry.getKey().getBytes(StandardCharsets.UTF_8));
+                }
+                return null;
             }
-            p.sync();
-            resultBuilder.forEach(Runnable::run);
+        );
+
+        for (int i = 0; i < ttlResults.size(); i++) {
+            Long id = meta.get(i).getKey();
+            String token = meta.get(i).getValue();
+            Long expiresIn = (Long) ttlResults.get(i);
+
+            result.computeIfAbsent(id, k -> new ArrayList<>()).add(RefreshToken.builder()
+                .token(token)
+                .expiresIn(expiresIn)
+                .build());
         }
+
         return Collections.unmodifiableMap(result);
+
     }
 
     @Override
+    @SuppressWarnings("PointlessBooleanExpression")
     public boolean revokeToken(String token) {
         String key = redisProperties.getPrefix() + token;
-        return client.del(key) == 1L;
+        return Boolean.TRUE.equals(redisTemplate.delete(key));
     }
 
     @Override
     public int revokeTokens(JwtUser user) {
-        List<String> keys = new ArrayList<>(client.keys(redisProperties.getPrefix() + "*"));
-        List<String> values = client.mget(keys.toArray(new String[0]));
+        List<String> keys = new ArrayList<>(redisTemplate.keys(redisProperties.getPrefix() + "*"));
+        List<String> values = redisTemplate.opsForValue().multiGet(keys);
 
-        long counter = 0;
+        List<String> deleteKeys = new ArrayList<>();
         for (int i = 0; i < keys.size(); i++) {
+            //noinspection DataFlowIssue
             if (values.get(i) == null) continue;
             RedisEntry dto = RedisEntry.from(values.get(i));
             if (Objects.equals(dto.getId(), user.getId())) {
-                counter += client.del(keys.get(i));
+                deleteKeys.add(keys.get(i));
             }
         }
-        return (int) counter;
+        return redisTemplate.delete(deleteKeys).intValue();
     }
 
     @Override
     public int revokeTokens() {
-        List<String> keys = new ArrayList<>(client.keys(redisProperties.getPrefix() + "*"));
-        try (AbstractTransaction transaction = client.multi()) {
-            keys.forEach(transaction::del);
-            return transaction.exec().size();
-        }
+        Set<String> keys = redisTemplate.keys(redisProperties.getPrefix() + "*");
+        return redisTemplate.delete(keys).intValue();
     }
 
     @Override
     public void afterPropertiesSet() {
         log.info("Using redis implementation to handle refresh tokens");
-        log.info("Starting redis connection pool to {}:{}", redisProperties.getHost(), redisProperties.getPort());
-
-        DefaultJedisClientConfig.Builder clientConfig = DefaultJedisClientConfig.builder();
-        if (redisProperties.getPassword() != null) {
-            if (redisProperties.getUsername() != null) {
-                log.debug("Using authentication with username");
-                clientConfig.user(redisProperties.getUsername());
-            } else {
-                log.debug("Using authentication without username");
-            }
-            clientConfig.password(redisProperties.getPassword());
-        }
-        client = RedisClient.builder().hostAndPort(redisProperties.getHost(), redisProperties.getPort())
-                .clientConfig(clientConfig.build())
-                .poolConfig(redisProperties.getPoolConfig())
-                .build();
     }
 
     @Autowired
@@ -170,6 +152,11 @@ public class RedisTokenStore implements RefreshTokenStore {
     @Autowired
     public void setUserDetailsService(@NonNull UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
+    }
+
+    @Autowired
+    public void setStringRedisTemplate(@NonNull StringRedisTemplate redisTemplate) {
+        this.redisTemplate = redisTemplate;
     }
 
 
@@ -189,11 +176,14 @@ public class RedisTokenStore implements RefreshTokenStore {
     }
 
     protected Map<String, String> listKeysWithValues() {
-        List<String> keys = new ArrayList<>(client.keys(redisProperties.getPrefix() + "*"));
+        List<String> keys = new ArrayList<>(redisTemplate.keys(redisProperties.getPrefix() + "*"));
         if (keys.isEmpty()) {
             return Collections.emptyMap();
         }
-        List<String> values = client.mget(keys.toArray(new String[0]));
+
+        List<String> values = redisTemplate.opsForValue().multiGet(keys);
+
+        //noinspection DataFlowIssue
         return zipToMap(keys, values);
     }
 }

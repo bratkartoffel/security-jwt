@@ -13,19 +13,20 @@ import eu.fraho.spring.securityJwt.base.service.RefreshTokenStore;
 import eu.fraho.spring.securityJwt.base.ut.service.AbstractJwtTokenServiceWithRefreshTest;
 import eu.fraho.spring.securityJwt.redis.config.RedisProperties;
 import eu.fraho.spring.securityJwt.redis.service.RedisTokenStore;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import redis.clients.jedis.RedisClient;
-import redis.clients.jedis.params.SetParams;
-
 import java.lang.reflect.Field;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 public class AbstractJwtServiceRefreshRedisTest extends AbstractJwtTokenServiceWithRefreshTest {
@@ -36,15 +37,34 @@ public class AbstractJwtServiceRefreshRedisTest extends AbstractJwtTokenServiceW
         refreshTokenStore.setRefreshProperties(getRefreshProperties());
         refreshTokenStore.setRedisProperties(getRedisProperties());
         refreshTokenStore.setUserDetailsService(getUserdetailsService());
+        refreshTokenStore.setStringRedisTemplate(getStringRedisTemplate(getLettuceConnectionFactory()));
         refreshTokenStore.afterPropertiesSet();
     }
 
     protected RedisProperties getRedisProperties() {
         RedisProperties configuration = new RedisProperties();
-        configuration.setHost(System.getProperty("fraho.jwt.refresh.redis.host", "127.0.0.1"));
-        configuration.setPassword("changeit");
         configuration.afterPropertiesSet();
         return configuration;
+    }
+
+    protected StringRedisTemplate getStringRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        StringRedisTemplate stringRedisTemplate = new StringRedisTemplate();
+        stringRedisTemplate.setConnectionFactory(redisConnectionFactory);
+        stringRedisTemplate.afterPropertiesSet();
+        return stringRedisTemplate;
+    }
+
+    protected RedisStandaloneConfiguration getRedisConfiguration() {
+        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
+        configuration.setHostName(System.getProperty("spring.data.redis.host", "127.0.0.1"));
+        configuration.setPassword(System.getProperty("spring.data.redis.password", "changeit"));
+        return configuration;
+    }
+
+    protected RedisConnectionFactory getLettuceConnectionFactory() {
+        LettuceConnectionFactory factory = new LettuceConnectionFactory(getRedisConfiguration());
+        factory.afterPropertiesSet();
+        return factory;
     }
 
     @Override
@@ -65,7 +85,7 @@ public class AbstractJwtServiceRefreshRedisTest extends AbstractJwtTokenServiceW
         RefreshToken tokenB = Assertions.assertTimeout(Duration.ofSeconds(1), () -> service.generateRefreshToken(jsmith));
         RefreshToken tokenC = Assertions.assertTimeout(Duration.ofSeconds(1), () -> service.generateRefreshToken(xsmith));
 
-        Assertions.assertNull(getRedisClient().set("foobar", "hi", new SetParams().xx().ex(3)));
+        Assertions.assertTrue(getStringRedisTemplate().opsForValue().setIfAbsent("foobar", "hi", Duration.ofSeconds(3)));
 
         final Map<Long, List<RefreshToken>> tokenMap = service.listRefreshTokens();
         Assertions.assertEquals(2, tokenMap.size(), "User count don't match");
@@ -75,9 +95,9 @@ public class AbstractJwtServiceRefreshRedisTest extends AbstractJwtTokenServiceW
         Assertions.assertTrue(allTokens.containsAll(Arrays.asList(tokenA, tokenB, tokenC)), "Not all tokens returned");
     }
 
-    private RedisClient getRedisClient() throws Exception {
-        Field memcachedClient = RedisTokenStore.class.getDeclaredField("client");
+    private StringRedisTemplate getStringRedisTemplate() throws Exception {
+        Field memcachedClient = RedisTokenStore.class.getDeclaredField("redisTemplate");
         memcachedClient.setAccessible(true);
-        return ((RedisClient) memcachedClient.get(refreshTokenStore));
+        return ((StringRedisTemplate) memcachedClient.get(refreshTokenStore));
     }
 }

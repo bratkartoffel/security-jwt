@@ -11,9 +11,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.stereotype.Component;
-import redis.clients.jedis.ConnectionPoolConfig;
 
 @ConfigurationProperties(prefix = "fraho.jwt.refresh.redis")
 @Component
@@ -25,29 +23,6 @@ public class RedisProperties implements InitializingBean {
      * Defines a common prefix for all saved refresh entries.
      */
     private String prefix = "fraho-refresh";
-
-    /**
-     * Hostname or IP Adress of redis server
-     */
-    private String host = "127.0.0.1";
-
-    /**
-     * Port of redis server
-     */
-    private Integer port = 6379;
-
-    /**
-     * Optional username for redis server AUTH
-     */
-    private String username = null;
-
-    /**
-     * Optional password for redis server AUTH
-     */
-    private String password = null;
-
-    @NestedConfigurationProperty
-    private ConnectionPoolConfig poolConfig = new ConnectionPoolConfig();
 
     @Override
     public void afterPropertiesSet() {

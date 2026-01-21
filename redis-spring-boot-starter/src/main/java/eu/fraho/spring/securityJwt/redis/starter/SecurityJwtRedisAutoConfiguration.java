@@ -16,8 +16,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
@@ -32,16 +35,25 @@ public class SecurityJwtRedisAutoConfiguration {
         return new RedisProperties();
     }
 
+    @Bean("jwtStringRedisTemplate")
+    @ConditionalOnSingleCandidate(RedisConnectionFactory.class)
+    public StringRedisTemplate jwtStringRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        log.debug("Register StringRedisTemplate");
+        return new StringRedisTemplate(redisConnectionFactory);
+    }
+
     @Bean
     @ConditionalOnMissingBean
     public RefreshTokenStore refreshTokenStore(final RefreshProperties refreshProperties,
                                                final RedisProperties redisProperties,
-                                               final UserDetailsService userDetailsService) {
+                                               final UserDetailsService userDetailsService,
+                                               final StringRedisTemplate jwtStringRedisTemplate) {
         log.debug("Register RedisTokenStore");
         RedisTokenStore store = new RedisTokenStore();
         store.setRefreshProperties(refreshProperties);
         store.setRedisProperties(redisProperties);
         store.setUserDetailsService(userDetailsService);
+        store.setStringRedisTemplate(jwtStringRedisTemplate);
         return store;
     }
 }
