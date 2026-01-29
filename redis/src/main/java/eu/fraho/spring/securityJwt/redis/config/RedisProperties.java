@@ -20,6 +20,7 @@ import redis.clients.jedis.ConnectionPoolConfig;
 @Getter
 @Setter
 @Slf4j
+@Deprecated
 public class RedisProperties implements InitializingBean {
     /**
      * Defines a common prefix for all saved refresh entries.

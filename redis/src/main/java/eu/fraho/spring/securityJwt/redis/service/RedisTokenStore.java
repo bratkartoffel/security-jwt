@@ -35,6 +35,7 @@ import java.util.Optional;
 @SuppressWarnings("SpringJavaAutowiredMembersInspection")
 @Slf4j
 @NoArgsConstructor
+@Deprecated
 public class RedisTokenStore implements RefreshTokenStore {
     private RefreshProperties refreshProperties;
 

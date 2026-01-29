@@ -4,7 +4,7 @@
  *
  * Please see LICENCE.md for complete licence text.
  */
-package eu.fraho.spring.securityJwt.redis.dto;
+package eu.fraho.spring.securityJwt.dataRedis.dto;
 
 import eu.fraho.spring.securityJwt.base.dto.JwtUser;
 import lombok.AccessLevel;
@@ -15,18 +15,17 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Deprecated
-public class RedisEntry {
+public class DataRedisEntry {
     private final Long id;
     private final String username;
 
-    public static RedisEntry from(JwtUser user) {
-        return RedisEntry.builder().id(user.getId()).username(user.getUsername()).build();
+    public static DataRedisEntry from(JwtUser user) {
+        return DataRedisEntry.builder().id(user.getId()).username(user.getUsername()).build();
     }
 
-    public static RedisEntry from(String entry) {
+    public static DataRedisEntry from(String entry) {
         String[] parts = entry.split(",", 2);
-        return RedisEntry.builder().id(Long.valueOf(parts[0])).username(parts[1]).build();
+        return DataRedisEntry.builder().id(Long.valueOf(parts[0])).username(parts[1]).build();
     }
 
     public String toString() {

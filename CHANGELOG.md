@@ -1,7 +1,9 @@
 # Chanegelog
 
 ### [unreleased]
-* no changes yet
+* (redis) deprecate jedis implementation
+* (data-redis) add new module which utilizes spring-data-redis (add support for lettuce)
+  * the new module was primarily developed by [oiltea](https://github.com/oiltea), thank you!
 
 ### [5.2.0] (2026-01-13)
 * (redis) replace deprecated jedis classes
