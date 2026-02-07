@@ -1,0 +1,12 @@
+fraho.jwt.refresh:
+  cache-impl: eu.fraho.spring.securityJwt.dataRedis.service.DataRedisTokenStore
+  redis:
+    password: changeit
+    pool-config:
+      timeout: 1
+
+spring:
+  data:
+    redis:
+      host: localhost
+      password: changeit
