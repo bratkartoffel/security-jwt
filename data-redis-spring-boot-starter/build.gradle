@@ -1,0 +1,6 @@
+dependencies {
+    api project(':base-spring-boot-starter')
+    api project(':data-redis')
+
+    testImplementation testFixtures(project(':data-redis'))
+}

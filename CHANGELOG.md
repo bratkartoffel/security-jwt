@@ -3,9 +3,22 @@
 ### [unreleased]
 * no changes yet
 
+### [5.3.0] (2026-02-08)
+* (base) upgrade jackson to 3.0.4
+* (base) upgrade commons-codec to 1.21.0
+* (base) upgrade swagger-annotations to 2.2.42
+* (redis) deprecate jedis implementation
+* (data-redis) add new module which utilizes spring-data-redis (add support for lettuce)
+  * the new module was primarily developed by [oiltea](https://github.com/oiltea), thank you!
+
 ### [5.2.0] (2026-01-13)
 * (redis) replace deprecated jedis classes
 * (redis) add support for AUTH (fixes #446)
+* (base) upgrade bouncycastle to 1.83
+* (base) upgrade jackson to 3.0.3
+* (base) upgrade swagger-annotations to 2.2.41
+* (base) upgrade nimbus-jose-jwt to 10.7
+* (redis) upgrade jedis to 7.2.0
 
 ### [5.1.0] (2025-11-25)
 * add spring boot 4.0.0 support (and maintain spring boot 3.x compatibility)
@@ -282,7 +295,8 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.2.0...develop
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.3.0...develop
+[5.3.0]: https://github.com/bratkartoffel/security-jwt/compare/5.2.0...5.3.0
 [5.2.0]: https://github.com/bratkartoffel/security-jwt/compare/5.1.0...5.2.0
 [5.1.0]: https://github.com/bratkartoffel/security-jwt/compare/5.0.12...5.1.0
 [5.0.12]: https://github.com/bratkartoffel/security-jwt/compare/5.0.11...5.0.12
