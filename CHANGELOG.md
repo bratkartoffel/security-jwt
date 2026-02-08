@@ -1,6 +1,9 @@
 # Chanegelog
 
 ### [unreleased]
+* (base) upgrade jackson to 3.0.4
+* (base) upgrade commons-codec to 1.21.0
+* (base) upgrade swagger-annotations to 2.2.42
 * (redis) deprecate jedis implementation
 * (data-redis) add new module which utilizes spring-data-redis (add support for lettuce)
   * the new module was primarily developed by [oiltea](https://github.com/oiltea), thank you!
