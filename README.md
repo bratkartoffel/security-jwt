@@ -13,7 +13,8 @@ This project is split into multiple parts:
 * internal: Support for an in-memory cache (ExpiringMap) for refresh tokens
 * memcache: Support for memcache to store refresh tokens
 * hibernate: Support for hibernate to store refresh tokens
-* redis: Support for redis to store refresh tokens
+* redis: *deprecated* Support for redis using jedis directly to store refresh tokens
+* data-redis: Support for redis using spring-data-redis to store refresh tokens
 * files: Support for filesystem to store refresh tokens
 
 Simply use the dependencies within your build script, spring boot takes care of the rest. The default configuration
@@ -34,7 +35,7 @@ should be sufficient for the most use cases.
     * Refresh token support through an external memcache server
 * module [hibernate](hibernate):
     * Refresh token support using hibernate and a database table
-* module [redis](redis):
+* module [data-redis](data-redis):
     * Refresh token support using a redis server
 * module [files](files):
     * Refresh token support using a json file
@@ -82,7 +83,7 @@ When you want to add refresh token support, then choose one of the following dep
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
-        <artifactId>security-jwt-redis</artifactId>
+        <artifactId>security-jwt-data-redis</artifactId>
         <version>5.3.0</version>
     </dependency>
     <dependency>
