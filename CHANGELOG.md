@@ -1,6 +1,9 @@
 # Chanegelog
 
 ### [unreleased]
+* no changes yet
+
+### [5.3.0] (2026-02-08)
 * (base) upgrade jackson to 3.0.4
 * (base) upgrade commons-codec to 1.21.0
 * (base) upgrade swagger-annotations to 2.2.42
@@ -292,7 +295,8 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.2.0...develop
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.3.0...develop
+[5.3.0]: https://github.com/bratkartoffel/security-jwt/compare/5.2.0...5.3.0
 [5.2.0]: https://github.com/bratkartoffel/security-jwt/compare/5.1.0...5.2.0
 [5.1.0]: https://github.com/bratkartoffel/security-jwt/compare/5.0.12...5.1.0
 [5.0.12]: https://github.com/bratkartoffel/security-jwt/compare/5.0.11...5.0.12
