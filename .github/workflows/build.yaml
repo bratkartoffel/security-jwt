@@ -83,20 +83,28 @@ jobs:
         versions:
           - springBootVersion: 3.0.13
             springdocVersion: 2.1.0
+            gradleVersion: 8.14.3
           - springBootVersion: 3.1.12
             springdocVersion: 2.2.0
+            gradleVersion: latest
           - springBootVersion: 3.2.12
             springdocVersion: 2.5.0
+            gradleVersion: latest
           - springBootVersion: 3.3.13
             springdocVersion: 2.6.0
+            gradleVersion: latest
           - springBootVersion: 3.4.13
             springdocVersion: 2.8.16
+            gradleVersion: latest
           - springBootVersion: 3.5.11
             springdocVersion: 2.8.16
+            gradleVersion: latest
           - springBootVersion: 4.0.3
             springdocVersion: 3.0.2
+            gradleVersion: latest
           - springBootVersion: 4.1.0-M2
             springdocVersion: 3.0.2
+            gradleVersion: latest
     runs-on: ubuntu-latest
     needs: build
     steps:
@@ -141,5 +149,6 @@ jobs:
       - uses: niden/actions-memcached@9ff2b102979272958682d09bf262563039bea69c # v8
       - uses: supercharge/redis-github-action@bc274cb7238cd63a45029db04ee48c07a72609fd # v1.8.1
       - uses: gradle/actions/wrapper-validation@0723195856401067f7a2779048b490ace7a47d7c # v4
+      - run: ./gradlew --no-daemon wrapper --gradle-version=${{ matrix.versions.gradleVersion }}
       - run: ./gradlew --no-daemon -PspringBootVersion=${{ matrix.versions.springBootVersion }} -PspringdocVersion=${{ matrix.versions.springdocVersion }} -PsecurityJwtVersion=${{ needs.build.outputs.securityJwtVersion }} check
       - run: ./gradlew --no-daemon -PspringBootVersion=${{ matrix.versions.springBootVersion }} -PspringdocVersion=${{ matrix.versions.springdocVersion }} -PsecurityJwtVersion=${{ needs.build.outputs.securityJwtVersion }} starter-hibernate:dependencies | egrep '(:spring|:security-jwt)' | grep -v -- '->' | sed -e 's/^[+-\\| ]\+//' -e 's/ ([n\*])$//' | sort | uniq
