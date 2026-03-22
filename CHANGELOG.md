@@ -1,7 +1,7 @@
 # Chanegelog
 
 ### [unreleased]
-* no changes yet
+* (base) add option to disable anonymous access completely (implements [#475](https://github.com/bratkartoffel/security-jwt/issues/475))
 
 ### [5.3.0] (2026-02-08)
 * (base) upgrade jackson to 3.0.4

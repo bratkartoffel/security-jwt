@@ -1,4 +1,6 @@
 fraho:
+  anonymous:
+    disable: false
   totp:
     variance: 3
     length:   8

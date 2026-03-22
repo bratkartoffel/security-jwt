@@ -35,6 +35,7 @@ public class SecuredControllerTest {
     public static final String AUTH_LOGIN = "/auth/login";
     public static final String AUTH_REFRESH = "/auth/refresh";
     public static final String API_ADMIN = "/api/admin";
+    public static final String API_AUTHENTICATION = "/api/authentication";
     public static final String API_USER = "/api/user";
     public static final String HELLO_WORLD = "Hello world!";
 
@@ -59,6 +60,16 @@ public class SecuredControllerTest {
 
         mockMvc.perform(req)
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+    }
+
+    @Test
+    public void testRequestAnonymousAccess() throws Exception {
+        MockHttpServletRequestBuilder req = MockMvcRequestBuilders.get(API_AUTHENTICATION)
+                .accept(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(req)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("null token"));
     }
 
     @Test
