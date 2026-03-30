@@ -57,7 +57,7 @@ jobs:
       - uses: supercharge/redis-github-action@bc274cb7238cd63a45029db04ee48c07a72609fd # v1.8.1
         with:
           redis-password: 'changeit'
-      - uses: gradle/actions/wrapper-validation@0723195856401067f7a2779048b490ace7a47d7c # v4
+      - uses: gradle/actions/wrapper-validation@39e147cb9de83bb9910b8ef8bd7fff0ee20fcd6f # v4
       - run: ./gradlew --no-daemon check publishToMavenLocal
       - uses: codecov/codecov-action@1af58845a975a7985b0beb0cbe6fbbb71a41dbad # v5.5.3
         env:
@@ -156,7 +156,7 @@ jobs:
           cache: 'gradle'
       - uses: niden/actions-memcached@9ff2b102979272958682d09bf262563039bea69c # v8
       - uses: supercharge/redis-github-action@bc274cb7238cd63a45029db04ee48c07a72609fd # v1.8.1
-      - uses: gradle/actions/wrapper-validation@0723195856401067f7a2779048b490ace7a47d7c # v4
+      - uses: gradle/actions/wrapper-validation@39e147cb9de83bb9910b8ef8bd7fff0ee20fcd6f # v4
       - run: ./gradlew --no-daemon wrapper --gradle-version=${{ matrix.versions.gradleVersion }}
       - run: ./gradlew --no-daemon -PspringBootVersion=${{ matrix.versions.springBootVersion }} -PspringdocVersion=${{ matrix.versions.springdocVersion }} -PsecurityJwtVersion=${{ needs.build.outputs.securityJwtVersion }} check
       - run: ./gradlew --no-daemon -PspringBootVersion=${{ matrix.versions.springBootVersion }} -PspringdocVersion=${{ matrix.versions.springdocVersion }} -PsecurityJwtVersion=${{ needs.build.outputs.securityJwtVersion }} starter-hibernate:dependencies | egrep '(:spring|:security-jwt)' | grep -v -- '->' | sed -e 's/^[+-\\| ]\+//' -e 's/ ([n\*])$//' | sort | uniq
