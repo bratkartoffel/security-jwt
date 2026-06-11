@@ -96,13 +96,13 @@ jobs:
           - springBootVersion: 3.4.13
             springdocVersion: 2.8.17
             gradleVersion: latest
-          - springBootVersion: 3.5.14
+          - springBootVersion: 3.5.15
             springdocVersion: 2.8.17
             gradleVersion: latest
-          - springBootVersion: 4.0.6
+          - springBootVersion: 4.0.7
             springdocVersion: 3.0.3
             gradleVersion: latest
-          - springBootVersion: 4.1.0-RC1
+          - springBootVersion: 4.1.0
             springdocVersion: 3.0.3
             gradleVersion: latest
     runs-on: ubuntu-latest
