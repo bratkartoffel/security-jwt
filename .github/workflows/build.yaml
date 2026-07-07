@@ -39,6 +39,7 @@ jobs:
             plugins-artifacts.gradle.org:443
             production.cloudflare.docker.com:443
             registry-1.docker.io:443
+            release-assets.githubusercontent.com:443
             repo.maven.apache.org:443
             services.gradle.org:443
             uploader.codecov.io:443
@@ -128,6 +129,7 @@ jobs:
             plugins-artifacts.gradle.org:443
             production.cloudflare.docker.com:443
             registry-1.docker.io:443
+            release-assets.githubusercontent.com:443
             repo.maven.apache.org:443
             repo.spring.io:443
             services.gradle.org:443
