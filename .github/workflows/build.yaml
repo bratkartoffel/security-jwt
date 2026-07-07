@@ -24,6 +24,7 @@ jobs:
           egress-policy: block
           allowed-endpoints: >
             api.adoptopenjdk.net:443
+            api.adoptium.net:443
             api.github.com:443
             api.snapcraft.io:443
             auth.docker.io:443
@@ -96,7 +97,7 @@ jobs:
           - springBootVersion: 3.4.13
             springdocVersion: 2.8.17
             gradleVersion: latest
-          - springBootVersion: 3.5.15
+          - springBootVersion: 3.5.16
             springdocVersion: 2.8.17
             gradleVersion: latest
           - springBootVersion: 4.0.7
@@ -114,6 +115,7 @@ jobs:
           egress-policy: block
           allowed-endpoints: >
             api.adoptopenjdk.net:443
+            api.adoptium.net:443
             api.github.com:443
             auth.docker.io:443
             docker.io:443
