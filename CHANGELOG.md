@@ -1,7 +1,12 @@
 # Chanegelog
 
 ### [unreleased]
-* no changes yet
+* (base) upgrade bouncycastle to 1.85.2
+* (base) upgrade jackson to 3.2.2
+* (base) upgrade nimbus-jose-jwt to 10.9.1
+* (base) upgrade commons-codec to 1.22.1
+* (base) upgrade swagger-annotations to 2.2.53
+* (memcache) fix NPE during key listing on newer memcache versions
 
 ### [5.3.0] (2026-02-08)
 * (base) upgrade jackson to 3.0.4
