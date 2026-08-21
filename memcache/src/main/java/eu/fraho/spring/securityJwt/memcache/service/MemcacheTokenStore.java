@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.spy.memcached.MemcachedClient;
 import net.spy.memcached.internal.OperationFuture;
 import net.spy.memcached.ops.OperationStatus;
+import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -153,6 +154,9 @@ public class MemcacheTokenStore implements RefreshTokenStore {
         memcachedClient = new MemcachedClient(address);
 
         String version = memcachedClient.getVersions().get(address);
+        if (version == null) {
+            throw new BeanInitializationException("Could not connect to memcache");
+        }
         String[] parts = version.split("\\.", 3);
         lruCrawlerAvailable = Integer.parseInt(parts[0]) > 1 || (Integer.parseInt(parts[0]) == 1 && Integer.parseInt(parts[1]) >= 5);
     }
@@ -195,6 +199,7 @@ public class MemcacheTokenStore implements RefreshTokenStore {
         return entries.values().stream()
                 .flatMap(List::stream)
                 .map(LruMetadumpEntry::getKey)
+                .filter(Objects::nonNull)
                 .filter(e -> e.startsWith(memcacheProperties.getPrefix()))
                 .collect(Collectors.toList());
     }
