@@ -3,6 +3,14 @@
 ### [unreleased]
 * no changes yet
 
+### [5.3.1] (2026-08-21)
+* (base) upgrade bouncycastle to 1.85.2
+* (base) upgrade jackson to 3.2.2
+* (base) upgrade nimbus-jose-jwt to 10.9.1
+* (base) upgrade commons-codec to 1.22.1
+* (base) upgrade swagger-annotations to 2.2.53
+* (memcache) fix NPE during key listing on newer memcache versions
+
 ### [5.3.0] (2026-02-08)
 * (base) upgrade jackson to 3.0.4
 * (base) upgrade commons-codec to 1.21.0
@@ -295,7 +303,8 @@
 * Initial release to github and maven central
 
 
-[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.3.0...develop
+[unreleased]: https://github.com/bratkartoffel/security-jwt/compare/5.3.1...develop
+[5.3.1]: https://github.com/bratkartoffel/security-jwt/compare/5.3.0...5.3.1
 [5.3.0]: https://github.com/bratkartoffel/security-jwt/compare/5.2.0...5.3.0
 [5.2.0]: https://github.com/bratkartoffel/security-jwt/compare/5.1.0...5.2.0
 [5.1.0]: https://github.com/bratkartoffel/security-jwt/compare/5.0.12...5.1.0
