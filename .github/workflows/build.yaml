@@ -102,10 +102,13 @@ jobs:
           - springBootVersion: 3.5.16
             springdocVersion: 2.9.0
             gradleVersion: latest
-          - springBootVersion: 4.0.7
+          - springBootVersion: 4.0.8
             springdocVersion: 3.1.0
             gradleVersion: latest
-          - springBootVersion: 4.1.0
+          - springBootVersion: 4.1.1
+            springdocVersion: 3.1.0
+            gradleVersion: latest
+          - springBootVersion: 4.2.0-M1
             springdocVersion: 3.1.0
             gradleVersion: latest
     runs-on: ubuntu-latest
