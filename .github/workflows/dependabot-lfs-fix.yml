@@ -1,0 +1,43 @@
+name: Fix Dependabot LFS Pointers
+
+on:
+  pull_request:
+    # Trigger only on pull requests opened or updated by Dependabot
+    types: [opened, synchronize]
+
+jobs:
+  fix-lfs:
+    # Only run this job if the actor is actually Dependabot
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      # Step 1: Check out the repository using a token that allows pushing back
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.head_ref }}
+
+      # Step 2: Set up Git identity so the runner can commit changes
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@://github.com"
+
+      # Step 3: Install Git LFS on the runner system
+      - name: Install Git LFS
+        run: git lfs install
+
+      # Step 4: Force Git LFS to scan and convert raw files into correct pointers
+      - name: Fix LFS pointers
+        run: git lfs migrate import --everything --include="*"
+
+      # Step 5: Commit and push the corrected LFS pointers back to the branch if changes exist
+      - name: Push fixes
+        run: |
+          git add .
+          git diff-index --quiet HEAD || (git commit -m "chore: fix dependabot git-lfs pointers" && git push)
+
