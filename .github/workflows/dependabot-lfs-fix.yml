@@ -16,7 +16,7 @@ jobs:
     steps:
       # Step 1: Check out the repository using a token that allows pushing back
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           ref: ${{ github.head_ref }}
