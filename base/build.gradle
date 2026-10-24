@@ -1,7 +1,7 @@
 dependencies {
     api "org.springframework.boot:spring-boot-starter-web:3.0.0"
     api "org.springframework.boot:spring-boot-starter-security:3.0.0"
-    api "tools.jackson.core:jackson-databind:3.2.3"
+    api "tools.jackson.core:jackson-databind:3.2.4"
     api "com.nimbusds:nimbus-jose-jwt:10.10"
     api "commons-codec:commons-codec:1.23.0"
     api("io.swagger.core.v3:swagger-annotations-jakarta:2.2.55")
