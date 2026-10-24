@@ -1,6 +1,6 @@
 dependencies {
     api project(':base')
-    api group: "org.springframework.boot", name: "spring-boot-starter-data-redis", version: "3.0.0"
+    api "org.springframework.boot:spring-boot-starter-data-redis:3.0.0"
 
     testImplementation testFixtures(project(':base'))
 }

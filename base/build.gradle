@@ -1,14 +1,14 @@
 dependencies {
-    api group: "org.springframework.boot", name: "spring-boot-starter-web", version: "3.0.0"
-    api group: "org.springframework.boot", name: "spring-boot-starter-security", version: "3.0.0"
-    api group: "tools.jackson.core", name: "jackson-databind", version: "3.2.3"
-    api group: "com.nimbusds", name: "nimbus-jose-jwt", version: "10.10"
-    api group: "commons-codec", name: "commons-codec", version: "1.23.0"
-    api(group: "io.swagger.core.v3", name: "swagger-annotations-jakarta", version: "2.2.55")
-    api(group: "eu.fraho.libs", name: "libtotp", version: "1.1.0")
+    api "org.springframework.boot:spring-boot-starter-web:3.0.0"
+    api "org.springframework.boot:spring-boot-starter-security:3.0.0"
+    api "tools.jackson.core:jackson-databind:3.2.3"
+    api "com.nimbusds:nimbus-jose-jwt:10.10"
+    api "commons-codec:commons-codec:1.23.0"
+    api("io.swagger.core.v3:swagger-annotations-jakarta:2.2.55")
+    api("eu.fraho.libs:libtotp:1.1.0")
 
-    implementation group: "org.bouncycastle", name: "bcprov-jdk18on", version: "1.86"
-    testFixturesApi group: "org.bouncycastle", name: "bcprov-jdk18on", version: "1.86"
-    testImplementation group: "org.mockito", name: "mockito-core", version: "5.24.0"
-    testFixturesApi group: "org.mockito", name: "mockito-core", version: "5.24.0"
+    implementation "org.bouncycastle:bcprov-jdk18on:1.86"
+    testFixturesApi "org.bouncycastle:bcprov-jdk18on:1.86"
+    testImplementation "org.mockito:mockito-core:5.24.0"
+    testFixturesApi "org.mockito:mockito-core:5.24.0"
 }

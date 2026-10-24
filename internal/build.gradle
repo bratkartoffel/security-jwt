@@ -1,6 +1,6 @@
 dependencies {
     api project(':base')
-    api group: "net.jodah", name: "expiringmap", version: "0.5.11"
+    api "net.jodah:expiringmap:0.5.11"
 
     testImplementation testFixtures(project(':base'))
 }
