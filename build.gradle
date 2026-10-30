@@ -55,7 +55,7 @@ subprojects {
     }
 
     dependencies {
-        annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:4.1.1"
+        annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:4.1.2"
 
         testFixturesApi "org.springframework.boot:spring-boot-starter-test:3.0.0"
         testFixturesApi "org.springframework.boot:spring-boot-starter-web:3.0.0"
