@@ -22,11 +22,13 @@ should be sufficient for the most use cases.
 
 # Contents
 
+* bom:
+    * a platform bom for easier dependency management
 * base:
     * JWT Integration into Spring Security (including
       some [REST-Controllers](base/src/main/java/eu/fraho/spring/securityJwt/base/controller) to authenticate against)
     * A [CryptPasswordEncoder](base/src/main/java/eu/fraho/spring/securityJwt/base/password/CryptPasswordEncoder.java)
-      to generate / use linux system crypt(1)-hashes (supporting the newer $5$ and $6$ hashes and rounds)
+      to generate / use linux system crypt (1)-hashes (supporting the newer $5$ and $6$ hashes and rounds)
     * Full support for [Swagger 2](https://github.com/springfox/springfox) documentation (REST Controller and DTO are
       annotated and described)
 * module [internal](internal):
@@ -45,18 +47,27 @@ should be sufficient for the most use cases.
 # Dependencies
 
 ```xml
+<dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>eu.fraho.spring</groupId>
+      <artifactId>security-jwt-bom</artifactId>
+      <version>5.4.0</version>
+      <type>pom</type>
+      <scope>import</scope>
+    </dependency>
+  </dependencies>
+</dependencyManagement>
 
 <dependencies>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-base</artifactId>
-        <version>5.3.1</version>
     </dependency>
     <!-- or -->
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-base-spring-boot-starter</artifactId>
-        <version>5.3.1</version>
     </dependency>
 </dependencies>
 ```
@@ -64,32 +75,42 @@ should be sufficient for the most use cases.
 When you want to add refresh token support, then choose one of the following dependencies:
 
 ```xml
+<dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>eu.fraho.spring</groupId>
+      <artifactId>security-jwt-bom</artifactId>
+      <version>5.31</version>
+      <type>pom</type>
+      <scope>import</scope>
+    </dependency>
+  </dependencies>
+</dependencyManagement>
 
 <dependencies>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-internal</artifactId>
-        <version>5.3.1</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-memcache</artifactId>
-        <version>5.3.1</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-hibernate</artifactId>
-        <version>5.3.1</version>
+    </dependency>
+    <dependency>
+      <groupId>eu.fraho.spring</groupId>
+      <artifactId>security-jwt-redis</artifactId>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-data-redis</artifactId>
-        <version>5.3.1</version>
     </dependency>
     <dependency>
         <groupId>eu.fraho.spring</groupId>
         <artifactId>security-jwt-files</artifactId>
-        <version>5.3.1</version>
     </dependency>
 </dependencies>
 ```
@@ -149,7 +170,7 @@ updating this library in your project.
 # Usage for clients
 
 * Request new tokens by sending an authentication request to ```/auth/login```
-* Somehow store the received token(s)
+* Somehow store the received token (s)
     * Or use the cookie flow so the browser can store the tokens safely
 * To access a secured controller set the retrieved token as ```Authorization: <TokenType> <Token>```
     * When using cookies this is done automatically by your browser
@@ -227,8 +248,8 @@ gradlew.bat assemble
 * Changes are welcome, but please use pull requests with separate branches
 * TravisCI has to pass before merging
 * Code coverage should stay about the same level (please write tests for new features!)
-* When writing new modules please use my abstract testclasses which provide a great base (
-  see [internal](internal/src/test/java/eu/fraho/spring/securityJwt/internal) for an example)
+* When writing new modules please use my abstract testclasses which provide a great base
+  (see [internal](internal/src/test/java/eu/fraho/spring/securityJwt/internal) for an example)
 
 # Releasing
 

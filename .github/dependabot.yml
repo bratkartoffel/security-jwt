@@ -16,3 +16,5 @@ updates:
       - dependency-name: org.springframework.boot:spring-boot-starter-security
       - dependency-name: org.springframework.boot:spring-boot-starter-data-jpa
       - dependency-name: org.springframework.boot:spring-boot-starter-data-redis
+      - dependency-name: gradle-wrapper
+

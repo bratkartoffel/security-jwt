@@ -1,6 +1,9 @@
+apply from: '../gradle/module.gradle'
+apply from: '../gradle/publish.gradle'
+
 dependencies {
     api project(':base')
-    api group: "redis.clients", name: "jedis", version: "8.0.0"
+    api "redis.clients:jedis:8.0.2"
 
     testImplementation testFixtures(project(':base'))
 }

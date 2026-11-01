@@ -1,5 +1,8 @@
+apply from: '../gradle/module.gradle'
+apply from: '../gradle/publish.gradle'
+
 dependencies {
     api project(':base')
-    implementation group: "org.bouncycastle", name: "bcprov-jdk18on", version: "1.85.2"
+    implementation "org.bouncycastle:bcprov-jdk18on:1.86"
     testImplementation testFixtures(project(':base'))
 }
