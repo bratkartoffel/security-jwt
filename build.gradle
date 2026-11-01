@@ -7,21 +7,4 @@ subprojects {
     group = 'eu.fraho.spring'
     version = rootProject.file('version.txt').text.trim()
     description = "Spring boot security integration for JWT (" + project.name + ")"
-
-
-    // Signature of artifacts
-    apply plugin: 'maven-publish'
-    apply plugin: 'signing'
-    if (project.hasProperty('signing.gnupg.keyName')) {
-        signing {
-            useGpgCmd()
-            required = !rootProject.version.endsWith('-SNAPSHOT')
-            publishing.publications.forEach {
-                sign it
-            }
-        }
-    } else {
-        logger.info("Disable signing of artifacts as no key is configured")
-    }
 }
-

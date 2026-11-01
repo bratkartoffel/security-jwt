@@ -41,13 +41,15 @@ sed -i "s/$release_version/$next_version/" version.txt
 git add version.txt
 git commit -m "Update version to next snapshot"
 
-# push everything upstream
-git push --atomic origin -- develop master refs/tags/"$release_version"
-
 # publish to central
 ossrhUsername="unset"
 ossrhPassword="unset"
 eval "$(grep -E ^ossrh ~/.gradle/gradle.properties)"
 if [[  "$ossrhUsername" != "unset" ]] && [[  "$ossrhPassword" != "unset" ]]; then
-  curl -v -X POST -u "$ossrhUsername:$ossrhPassword" https://ossrh-staging-api.central.sonatype.com/manual/upload/defaultRepository/eu.fraho
+  # try ipv6 first, then fallback to ipv4
+  curl -6v -X POST -u "$ossrhUsername:$ossrhPassword" https://ossrh-staging-api.central.sonatype.com/manual/upload/defaultRepository/eu.fraho ||
+    curl -4v -X POST -u "$ossrhUsername:$ossrhPassword" https://ossrh-staging-api.central.sonatype.com/manual/upload/defaultRepository/eu.fraho
 fi
+
+# push everything upstream
+git push --atomic origin -- develop master refs/tags/"$release_version"
