@@ -1,0 +1,53 @@
+// release to central
+apply plugin: 'maven-publish'
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = project.group
+            artifactId = "${rootProject.name}-${project.name}"
+            version = project.version
+            from components.java
+
+            suppressPomMetadataWarningsFor('testFixturesApiElements')
+            suppressPomMetadataWarningsFor('testFixturesRuntimeElements')
+
+            pom {
+                name = "${rootProject.name}-${project.name}"
+                description = project.description
+                url = 'https://github.com/bratkartoffel/security-jwt'
+
+                scm {
+                    connection = 'scm:git:https://github.com/bratkartoffel/security-jwt.git'
+                    developerConnection = 'scm:git:git@github.com:bratkartoffel/security-jwt.git'
+                    url = 'https://github.com/bratkartoffel/security-jwt.git'
+                }
+
+                licenses {
+                    license {
+                        name = 'The MIT License (MIT)'
+                        url = 'https://opensource.org/licenses/MIT'
+                        distribution = 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'bratkartoffel'
+                        name = 'Simon Frankenberger'
+                        email = 'simon-ossrh-release@fraho.eu'
+                    }
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            credentials {
+                username = project.findProperty('ossrhUsername')
+                password = project.findProperty('ossrhPassword')
+            }
+            url = 'https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/'
+        }
+    }
+}

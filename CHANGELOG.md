@@ -1,7 +1,7 @@
 # Chanegelog
 
 ### [unreleased]
-* no changes yet
+* (bom) publish a bom for easier dependency management
 
 ### [5.3.1] (2026-08-21)
 * (base) upgrade bouncycastle to 1.85.2

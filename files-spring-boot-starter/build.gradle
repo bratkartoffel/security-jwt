@@ -1,3 +1,6 @@
+apply from: '../gradle/module.gradle'
+apply from: '../gradle/publish.gradle'
+
 dependencies {
     api project(':base-spring-boot-starter')
     api project(':files')

@@ -1,0 +1,74 @@
+plugins {
+    id("java-platform")
+}
+
+dependencies {
+    constraints {
+       api(project(":base"))
+       api(project(":files"))
+       api(project(":internal"))
+       api(project(":memcache"))
+       api(project(":hibernate"))
+       api(project(":redis"))
+       api(project(":data-redis"))
+       api(project(":base-spring-boot-starter"))
+       api(project(":files-spring-boot-starter"))
+       api(project(":internal-spring-boot-starter"))
+       api(project(":memcache-spring-boot-starter"))
+       api(project(":hibernate-spring-boot-starter"))
+       api(project(":redis-spring-boot-starter"))
+       api(project(":data-redis-spring-boot-starter"))
+    }
+}
+
+// release to central
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+publishing {
+   publications {
+      register('mavenBom', MavenPublication) {
+         groupId = project.group
+         artifactId = "${rootProject.name}-${project.name}"
+         version = project.version
+         from components.javaPlatform
+
+         pom {
+            name = "${rootProject.name}-${project.name}"
+            description = project.description
+            url = 'https://github.com/bratkartoffel/security-jwt'
+
+            scm {
+               connection = 'scm:git:https://github.com/bratkartoffel/security-jwt.git'
+               developerConnection = 'scm:git:git@github.com:bratkartoffel/security-jwt.git'
+               url = 'https://github.com/bratkartoffel/security-jwt.git'
+            }
+
+            licenses {
+               license {
+                  name = 'The MIT License (MIT)'
+                  url = 'https://opensource.org/licenses/MIT'
+                  distribution = 'repo'
+               }
+            }
+
+            developers {
+               developer {
+                  id = 'bratkartoffel'
+                  name = 'Simon Frankenberger'
+                  email = 'simon-ossrh-release@fraho.eu'
+               }
+            }
+         }
+      }
+   }
+   repositories {
+      maven {
+         credentials {
+            username = project.findProperty('ossrhUsername')
+            password = project.findProperty('ossrhPassword')
+         }
+         url = 'https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/'
+      }
+   }
+}
