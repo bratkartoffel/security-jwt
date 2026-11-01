@@ -2,6 +2,12 @@
 
 ### [unreleased]
 * (bom) publish a bom for easier dependency management
+* (base) upgrade org.bouncycastle:bcprov-jdk18on to 1.86
+* (base) upgrade tools.jackson.core:jackson-databind to 3.2.4
+* (base) upgrade com.nimbusds:nimbus-jose-jwt to 10.10
+* (base) upgrade commons-codec:commons-codec to 1.23.0
+* (base) upgrade io.swagger.core.v3:swagger-annotations-jakarta to 2.2.55
+* (redis) upgrade redis.clients:jedis to 8.0.2
 
 ### [5.3.1] (2026-08-21)
 * (base) upgrade bouncycastle to 1.85.2
