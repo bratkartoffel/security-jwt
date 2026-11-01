@@ -52,7 +52,7 @@ should be sufficient for the most use cases.
     <dependency>
       <groupId>eu.fraho.spring</groupId>
       <artifactId>security-jwt-bom</artifactId>
-      <version>5.3.1</version>
+      <version>5.4.0</version>
       <type>pom</type>
       <scope>import</scope>
     </dependency>
