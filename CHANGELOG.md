@@ -1,7 +1,7 @@
 # Chanegelog
 
 ### [unreleased]
-* no changes yet
+* (base) remember last used totp codes during login, prevent replay attacks (thanks to @HotWater-015 for reporting this)
 
 ### [5.4.0] (2026-11-01)
 * (bom) publish a bom for easier dependency management
