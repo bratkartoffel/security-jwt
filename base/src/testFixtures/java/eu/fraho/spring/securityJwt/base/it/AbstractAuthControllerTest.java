@@ -7,7 +7,6 @@
 package eu.fraho.spring.securityJwt.base.it;
 
 import eu.fraho.spring.securityJwt.base.it.spring.UserDetailsServiceTestImpl;
-import eu.fraho.spring.securityJwt.base.service.TotpServiceImpl;
 import eu.fraho.spring.securityJwt.base.util.TotpUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +17,11 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.Objects;
-
 @AutoConfigureMockMvc
 abstract class AbstractAuthControllerTest {
     public static final String AUTH_LOGIN = "/auth/login";
     public static final String AUTH_REFRESH = "/auth/refresh";
 
-    private TotpServiceImpl totpService;
     private MockMvc mockMvc;
 
     @Test
@@ -68,7 +64,6 @@ abstract class AbstractAuthControllerTest {
         mockMvc.perform(req)
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized())
                 .andReturn();
-
     }
 
     @Test
@@ -88,15 +83,27 @@ abstract class AbstractAuthControllerTest {
     }
 
     @Test
+    public void testLoginReplayTotp() throws Exception {
+        MockHttpServletRequestBuilder req;
+
+        long totp = TotpUtil.getCodeForTesting(UserDetailsServiceTestImpl.BASE32_TOTP, 1);
+        req = MockMvcRequestBuilders.post(AUTH_LOGIN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"username\":\"user_totp\",\"password\":\"user_totp\",\"totp\":" + totp + "}")
+                .accept(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(req)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+        mockMvc.perform(req)
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+    }
+
+    @Test
     public abstract void testRefresh() throws Exception;
 
     @Test
     public abstract void testLoginSuccess() throws Exception;
-
-    @Autowired
-    public void setTotpService(TotpServiceImpl totpService) {
-        this.totpService = Objects.requireNonNull(totpService);
-    }
 
     public MockMvc getMockMvc() {
         return this.mockMvc;

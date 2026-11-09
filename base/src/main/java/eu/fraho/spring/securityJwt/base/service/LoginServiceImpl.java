@@ -7,15 +7,13 @@
 package eu.fraho.spring.securityJwt.base.service;
 
 import com.nimbusds.jose.JOSEException;
-import eu.fraho.spring.securityJwt.base.dto.AccessToken;
-import eu.fraho.spring.securityJwt.base.dto.AuthenticationRequest;
-import eu.fraho.spring.securityJwt.base.dto.AuthenticationResponse;
-import eu.fraho.spring.securityJwt.base.dto.JwtUser;
-import eu.fraho.spring.securityJwt.base.dto.RefreshToken;
+import eu.fraho.spring.securityJwt.base.config.TotpProperties;
+import eu.fraho.spring.securityJwt.base.dto.*;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,7 +23,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @Slf4j
@@ -38,6 +38,10 @@ public class LoginServiceImpl implements LoginService {
     private UserDetailsService userDetailsService;
 
     private TotpService totpService;
+
+    private TotpProperties totpProperties;
+
+    private final Map<Long, UsedTotpEntry> lastTotpCodesUsed = Collections.synchronizedMap(new HashMap<>());
 
     @Override
     public AuthenticationResponse checkLogin(AuthenticationRequest authenticationRequest) throws AuthenticationException {
@@ -95,6 +99,13 @@ public class LoginServiceImpl implements LoginService {
                     return Optional.ofNullable(totp).map(code -> {
                                 boolean result = totpService.verifyCode(secret, code);
                                 log.debug("Pin verification returned {}", result);
+                                if (result) {
+                                    UsedTotpEntry oldValue = lastTotpCodesUsed.put(userDetails.getId(), new UsedTotpEntry(LocalDateTime.now(), code));
+                                    if (oldValue != null && oldValue.code() == code) {
+                                        log.warn("Replayed totp code detected for user {}!", userDetails.getId());
+                                        result = false;
+                                    }
+                                }
                                 return result;
                             }
                     ).orElse(false); // user has totp, but none in request = nok
@@ -120,5 +131,24 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     public void setTotpService(@NonNull TotpService totpService) {
         this.totpService = totpService;
+    }
+
+    @Autowired
+    public void setTotpProperties(TotpProperties totpProperties) {
+        this.totpProperties = totpProperties;
+    }
+
+    @Scheduled(fixedRateString = "#{ 5 + 30 * totpProperties.variance }", timeUnit = TimeUnit.SECONDS)
+    public void expireUsedTotpEntries() {
+        Iterator<Map.Entry<Long, UsedTotpEntry>> iter = lastTotpCodesUsed.entrySet().iterator();
+        LocalDateTime now = LocalDateTime.now();
+        int maxValiditySeconds = totpProperties.getVariance() * 30;
+        while (iter.hasNext()) {
+            Map.Entry<Long, UsedTotpEntry> entry = iter.next();
+            if (entry.getValue().lastUpdate().plusSeconds(maxValiditySeconds).isAfter(now)) {
+                log.debug("Removing used and expired totp code from {}", entry.getKey());
+                iter.remove();
+            }
+        }
     }
 }
