@@ -47,8 +47,8 @@ ossrhPassword="unset"
 eval "$(grep -E ^ossrh ~/.gradle/gradle.properties)"
 if [[  "$ossrhUsername" != "unset" ]] && [[  "$ossrhPassword" != "unset" ]]; then
   # try ipv6 first, then fallback to ipv4
-  curl -6v -X POST -u "$ossrhUsername:$ossrhPassword" https://ossrh-staging-api.central.sonatype.com/manual/upload/defaultRepository/eu.fraho ||
-    curl -4v -X POST -u "$ossrhUsername:$ossrhPassword" https://ossrh-staging-api.central.sonatype.com/manual/upload/defaultRepository/eu.fraho
+  curl --fail -6v -X POST -u "$ossrhUsername:$ossrhPassword" https://ossrh-staging-api.central.sonatype.com/manual/upload/defaultRepository/eu.fraho ||
+    curl --fail -4v -X POST -u "$ossrhUsername:$ossrhPassword" https://ossrh-staging-api.central.sonatype.com/manual/upload/defaultRepository/eu.fraho
 fi
 
 # push everything upstream
