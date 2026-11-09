@@ -11,7 +11,7 @@ The first version was primarily developed by [oiltea](https://github.com/oiltea)
 <dependency>
     <groupId>eu.fraho.spring</groupId>
     <artifactId>security-jwt-data-redis</artifactId>
-    <version>5.4.0</version>
+    <version>5.4.1</version>
 </dependency>
 ```
 
