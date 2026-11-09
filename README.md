@@ -52,7 +52,7 @@ should be sufficient for the most use cases.
     <dependency>
       <groupId>eu.fraho.spring</groupId>
       <artifactId>security-jwt-bom</artifactId>
-      <version>5.4.0</version>
+      <version>5.4.1</version>
       <type>pom</type>
       <scope>import</scope>
     </dependency>
@@ -80,7 +80,7 @@ When you want to add refresh token support, then choose one of the following dep
     <dependency>
       <groupId>eu.fraho.spring</groupId>
       <artifactId>security-jwt-bom</artifactId>
-      <version>5.4.0</version>
+      <version>5.4.1</version>
       <type>pom</type>
       <scope>import</scope>
     </dependency>
