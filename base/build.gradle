@@ -10,8 +10,8 @@ dependencies {
     api "io.swagger.core.v3:swagger-annotations-jakarta:2.2.55"
     api "eu.fraho.libs:libtotp:1.1.0"
 
-    implementation "org.bouncycastle:bcprov-jdk18on:1.86"
-    testFixturesApi "org.bouncycastle:bcprov-jdk18on:1.86"
+    implementation "org.bouncycastle:bcprov-jdk18on:1.87"
+    testFixturesApi "org.bouncycastle:bcprov-jdk18on:1.87"
     testImplementation "org.mockito:mockito-core:5.24.0"
     testFixturesApi "org.mockito:mockito-core:5.24.0"
 }
