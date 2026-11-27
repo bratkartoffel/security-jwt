@@ -7,7 +7,7 @@ dependencies {
     api "tools.jackson.core:jackson-databind:3.3.0"
     api "com.nimbusds:nimbus-jose-jwt:10.10"
     api "commons-codec:commons-codec:1.23.0"
-    api "io.swagger.core.v3:swagger-annotations-jakarta:2.2.55"
+    api "io.swagger.core.v3:swagger-annotations-jakarta:2.2.56"
     api "eu.fraho.libs:libtotp:1.1.0"
 
     implementation "org.bouncycastle:bcprov-jdk18on:1.86"
